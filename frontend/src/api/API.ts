@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios"
+import axios, {AxiosResponse} from "axios"
 
 const baseUrl: string = "http://localhost:4000"
 

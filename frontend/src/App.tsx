@@ -1,42 +1,22 @@
-import React, { useEffect, useState } from 'react'
-import GameItem from './components/Game'
-import { getGames, addGame } from './API'
+import React from 'react'
+import { Route, Routes } from "react-router-dom"
 
 import './App.css';
+import Home from "./home/Home";
+import Login from "./login/Login";
+import GameHistory from "./gamehistory/GameHistory";
 
 const App: React.FC = () => {
-  const [games, setGames] = useState<IGame[]>([])
-
-  useEffect(() => {
-    fetchGames()
-  }, [])
-
-  const fetchGames = (): void => {
-    getGames()
-        .then(({ data: { games } }: IGame[] | any) => setGames(games))
-        .catch((err: Error) => console.log(err))
-  }
-
-  const createGame = (): void => {
-    addGame()
-        .then(({ status, data }) => {
-          if (status !== 201) {
-            throw new Error("Error! Todo not saved")
-          }
-          setGames(data.games)
-        })
-        .catch(err => console.log(err))
-  }
-
-  return (
-      <main className='App'>
-        <h1>Games</h1>
-        <button onClick={createGame}>Create Game</button>
-        {games.map((game: IGame) => (
-            <GameItem key={game.game_id} game={game}/>
-        ))}
-      </main>
-  )
+    return (
+        <main className='App'>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/games/view/:id" element={<GameHistory />} />
+            </Routes>
+        </main>
+    )
 }
 
 export default App;

@@ -1,7 +1,7 @@
-import { OkPacket } from "mysql2"
+import {OkPacket} from "mysql2"
 
-import { connection } from "../db"
-import { IGame } from "../types/game";
+import {connection} from "../db"
+import {IGame} from "../types/game";
 
 export function readAll(): Promise<IGame[]> {
     return new Promise((resolve, reject) => {
@@ -33,7 +33,7 @@ export function create(): Promise<number> {
                 if (err) {
                     reject(err)
                 } else {
-                    const insertId = (<OkPacket> res).insertId;
+                    const insertId = (<OkPacket>res).insertId;
                     resolve(insertId)
                 }
             }

@@ -1,7 +1,7 @@
-import { OkPacket } from "mysql2"
+import {OkPacket} from "mysql2"
 
-import { connection } from "../db"
-import { IUser } from "../types/user";
+import {connection} from "../db"
+import {IUser} from "../types/user";
 
 export function readAll(): Promise<IUser[]> {
     return new Promise((resolve, reject) => {
