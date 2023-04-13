@@ -7,7 +7,8 @@ export interface IUser extends RowDataPacket {
     first_name?: string
     last_name?: string
     password: string
-    ranked: boolean
+    ranked_japanese: boolean
+    ranked_hongkong: boolean
     admin: boolean
     created_at: Date
 }

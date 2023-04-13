@@ -1,7 +1,7 @@
 import React from "react";
 import {useParams} from "react-router-dom";
 
-const GameHistory: React.FC = () => {
+const Game: React.FC = () => {
     const { id } = useParams()
 
     return (
@@ -11,4 +11,4 @@ const GameHistory: React.FC = () => {
     )
 }
 
-export default GameHistory
+export default Game
