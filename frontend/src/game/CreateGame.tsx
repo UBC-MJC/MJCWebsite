@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import GameItem from './GameItem'
-import {addGame, getGames} from '../api/API'
+import {addGame, getGames} from '../api/GameAPI'
 
 const CreateGame: React.FC = () => {
     const [games, setGames] = useState<IGame[]>([])
