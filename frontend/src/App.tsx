@@ -5,6 +5,7 @@ import './App.css';
 import Home from "./home/Home";
 import Login from "./login/Login";
 import GameHistory from "./gamehistory/GameHistory";
+import Admin from "./admin/Admin";
 
 const App: React.FC = () => {
     return (
