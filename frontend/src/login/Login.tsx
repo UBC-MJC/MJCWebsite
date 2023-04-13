@@ -18,7 +18,7 @@ const Login: React.FC = () => {
             return;
         }
 
-        const credentials: loginDataType = {username, password};
+        const credentials: LoginDataType = {username, password};
         login(credentials).then((res) => {
             console.log(res);
         }).catch((err: AxiosError) => {
@@ -69,6 +69,9 @@ const Login: React.FC = () => {
                     </div>
                 </Form>
             </Card>
+            <Button className="my-4 mx-auto w-25" variant="light" href="/">
+                Back
+            </Button>
         </Container>
     );
 };

@@ -7,6 +7,10 @@ interface GameProps {
     game: IGame
 }
 
+type GameTypeProp = {
+    gameType: "jp" | "hk"
+}
+
 type ApiDataType = {
     message: string
     status: string
@@ -14,12 +18,12 @@ type ApiDataType = {
     insertId?: number
 }
 
-type loginDataType = {
+type LoginDataType = {
     username: string
     password: string
 }
 
-type signUpDataType = {
+type SignUpDataType = {
     username: string
     email: string
     firstName: string

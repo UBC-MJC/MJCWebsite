@@ -20,7 +20,7 @@ const SignUp: React.FC = () => {
             return;
         }
 
-        const credentials: signUpDataType = {username, firstName, lastName, email, password};
+        const credentials: SignUpDataType = {username, firstName, lastName, email, password};
         signUp(credentials).then((res) => {
             console.log(res);
         }).catch((err) => {
@@ -107,6 +107,9 @@ const SignUp: React.FC = () => {
                     </div>
                 </Form>
             </Card>
+            <Button className="my-4 mx-auto w-25" variant="light" href="/login">
+                Back
+            </Button>
         </Container>
     );
 }

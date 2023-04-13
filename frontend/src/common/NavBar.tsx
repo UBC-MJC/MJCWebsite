@@ -11,12 +11,12 @@ const NavBar: React.FC = () => {
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="me-auto">
                     <NavDropdown title="Leaderboard" id="leaderboard-nav-dropdown">
-                        <NavDropdown.Item href="/">Riichi</NavDropdown.Item>
-                        <NavDropdown.Item href="/">Hong Kong</NavDropdown.Item>
+                        <NavDropdown.Item href="/leaderboard/jp">Riichi</NavDropdown.Item>
+                        <NavDropdown.Item href="/leaderboard/hk">Hong Kong</NavDropdown.Item>
                     </NavDropdown>
                     <NavDropdown title="Record Game" id="record-game-nav-dropdown">
-                        <NavDropdown.Item href="/games/create">Riichi</NavDropdown.Item>
-                        <NavDropdown.Item href="/games/create">Hong Kong</NavDropdown.Item>
+                        <NavDropdown.Item href="/games/create/jp">Riichi</NavDropdown.Item>
+                        <NavDropdown.Item href="/games/create/hk">Hong Kong</NavDropdown.Item>
                     </NavDropdown>
                     <Nav.Link href="/stats">Statistics</Nav.Link>
                 </Nav>

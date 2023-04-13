@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import GameItem from './GameItem'
 import {addGame, getGames} from '../api/GameAPI'
 
-const CreateGame: React.FC = () => {
+const CreateGame: React.FC<GameTypeProp> = ({gameType}) => {
     const [games, setGames] = useState<IGame[]>([])
 
     useEffect(() => {
@@ -29,6 +29,7 @@ const CreateGame: React.FC = () => {
     return (
         <div>
             <h1>Games</h1>
+            <h3>{gameType}</h3>
             <button onClick={createGame}>Create Game</button>
             {games.map((game: IGame) => (
                 <GameItem key={game.game_id} game={game}/>
