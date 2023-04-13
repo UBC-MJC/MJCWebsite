@@ -1,8 +1,11 @@
 import axios from "axios";
-import {resolveResponse} from "./APIUtils";
 
-async function login(username: string, password: string) {
-    return resolveResponse(axios.post('/login', { username, password }))
+async function login(data: loginDataType) {
+    return axios.post('/login', data)
 }
 
-export { login }
+async function signUp(data: signUpDataType) {
+    return axios.post('/signup', data)
+}
+
+export { login, signUp }

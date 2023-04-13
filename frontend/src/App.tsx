@@ -11,6 +11,7 @@ import Game from "./game/Game";
 import Statistics from "./statistics/Statistics";
 import Login from "./login/Login";
 import Admin from "./admin/Admin";
+import SignUp from "./login/SignUp";
 
 const App: React.FC = () => {
     return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
                 </Route>
                 <Route element={<WithoutNav />}>
                     <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<SignUp />} />
                 </Route>
             </Routes>
         </main>
