@@ -3,12 +3,12 @@ import {Button, Container, Form, Card} from 'react-bootstrap';
 import {login} from "../api/Login";
 
 const Login: React.FC = () => {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        login(email, password).then((res) => {
+        login(username, password).then((res) => {
             console.log(res);
         }).catch((err) => {
             console.error(err);
@@ -22,10 +22,9 @@ const Login: React.FC = () => {
                 <Form onSubmit={handleSubmit}>
                     <Form.Group controlId="formBasicEmail" className="my-4">
                         <Form.Control
-                            type="email"
                             placeholder="Username"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                         />
                     </Form.Group>
 
