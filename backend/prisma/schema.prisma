@@ -1,0 +1,95 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+enum GameType {
+    RIICHI
+    HONG_KONG
+}
+
+enum RoundEndType {
+    DEAL_IN
+    SELF_DRAW
+    DECK_OUT
+    MISTAKE
+    RESHUFFLE
+    PAO
+}
+
+enum GameStatus {
+    IN_PROGRESS
+    FINISHED
+}
+
+enum Wind {
+    EAST
+    SOUTH
+    WEST
+    NORTH
+}
+
+model Player {
+    id             String       @id @default(cuid())
+    email          String       @unique
+    username       String       @unique
+    firstName      String?
+    lastName       String?
+    password       String
+    admin          Boolean      @default(false)
+    rankedRiichi   Boolean      @default(false)
+    rankedHongKong Boolean      @default(false)
+    createdAt      DateTime     @default(now())
+    scores         Score[]
+    games          PlayerGame[]
+}
+
+model PlayerGame {
+    id        String  @id @default(cuid())
+    wind      Wind
+    eloChange Int
+    position  Int
+    recorded  Boolean @default(false)
+    player    Player  @relation(fields: [playerId], references: [id])
+    playerId  String
+    game      Game    @relation(fields: [gameId], references: [id])
+    gameId    String
+}
+
+model Game {
+    id        String       @id @default(cuid())
+    gameType  GameType
+    status    GameStatus
+    createdAt DateTime     @default(now())
+    rounds    Round[]
+    players   PlayerGame[]
+}
+
+model Round {
+    id          String        @id @default(cuid())
+    roundWind   Wind
+    roundNumber Int
+    bonus       Int?
+    points      Int?
+    fu          Int?
+    dora        Int?
+    endType     RoundEndType?
+    game        Game          @relation(fields: [gameId], references: [id])
+    gameId      String
+    scores      Score[]
+}
+
+model Score {
+    id          String   @id @default(cuid())
+    scoreChange Int
+    riichi      Boolean?
+    pao         Boolean?
+    round       Round    @relation(fields: [roundId], references: [id])
+    user        Player   @relation(fields: [userId], references: [id])
+    userId      String
+    roundId     String
+}
