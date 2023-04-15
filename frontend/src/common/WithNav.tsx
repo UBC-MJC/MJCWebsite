@@ -1,8 +1,8 @@
-import React from 'react';
+import {FC} from "react";
 import { Outlet } from 'react-router';
 import NavBar from './NavBar';
 
-const WithNav: React.FC = () => {
+const WithNav: FC = () => {
     return (
         <>
             <NavBar />

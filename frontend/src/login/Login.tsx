@@ -1,28 +1,39 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Button, Container, Form, Card} from 'react-bootstrap';
-import {login} from "../api/Login";
 import {AxiosError} from "axios";
+import {AuthContext} from "../common/AuthContext";
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const [validated, setValidated] = useState(false);
+    const [errors, setErrors] = useState<any>({});
+
+    const { login } = useContext(AuthContext);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setValidated(true);
 
-        const form = e.currentTarget;
-        if (!form.checkValidity()) {
+        const newErrors: any = {};
+        if (!username) {
+            newErrors["username"] = "Username is required";
+        }
+        if (!password) {
+            newErrors["password"] = "Password is required";
+        }
+        if (Object.keys(newErrors).length !== 0) {
+            setErrors(newErrors);
             return;
         }
 
         const credentials: LoginDataType = {username, password};
-        login(credentials).then((res) => {
-            console.log(res);
+        login(credentials).then((res: any) => {
+            console.log("Login successful!");
         }).catch((err: AxiosError) => {
-            console.log(err.message)
+            setErrors({
+                username: " ",
+                password: err.response?.data
+            });
         });
     };
 
@@ -30,16 +41,17 @@ const Login: React.FC = () => {
         <Container className="my-5 d-flex flex-column" style={{maxWidth: "540px"}}>
             <Card body>
                 <h2>UBC Mahjong Club Login</h2>
-                <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                <Form noValidate onSubmit={handleSubmit}>
                     <Form.Group controlId="formBasicUsername" className="my-4">
                         <Form.Control
                             required
                             placeholder="Username"
                             value={username}
+                            isInvalid={errors.username}
                             onChange={(e) => setUsername(e.target.value)}
                         />
                         <Form.Control.Feedback type="invalid">
-                            Please provide a username.
+                            {errors.username}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -50,10 +62,11 @@ const Login: React.FC = () => {
                             type="password"
                             placeholder="Password"
                             value={password}
+                            isInvalid={errors.password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                         <Form.Control.Feedback type="invalid">
-                            Please provide a password.
+                            {errors.password}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -64,7 +77,7 @@ const Login: React.FC = () => {
                     </div>
 
                     <div className="d-flex justify-content-between mx-2">
-                        <p>Not a member? <a href="/signup">Register</a></p>
+                        <p>Not a member? <a href="/register">Register</a></p>
                         <a href="/login">Forgot password?</a>
                     </div>
                 </Form>

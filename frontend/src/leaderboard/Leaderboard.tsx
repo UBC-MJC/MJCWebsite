@@ -1,6 +1,6 @@
-import React from "react";
+import {FC} from "react";
 
-const Leaderboard: React.FC<GameTypeProp> = ({gameType}) => {
+const Leaderboard: FC<GameTypeProp> = ({gameType}) => {
     return (
         <div>
             <h1>Leaderboard</h1>

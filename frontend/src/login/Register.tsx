@@ -1,47 +1,66 @@
-import React, {useState} from "react";
-import {signUp} from "../api/Login";
+import React, {useContext, useState} from "react";
 import {Button, Card, Container, Form, Row, Col} from "react-bootstrap";
+import {AuthContext} from "../common/AuthContext";
+import {AxiosError} from "axios";
 
-const SignUp: React.FC = () => {
+const isEmail = (email: string) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
+
+const Register: React.FC = () => {
     const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const [validated, setValidated] = useState(false);
+    const [errors, setErrors] = useState<any>({});
+
+    const { register } = useContext(AuthContext);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setValidated(true);
 
-        const form = e.currentTarget;
-        if (!form.checkValidity()) {
+        const newErrors: any = {};
+        if (!username) {
+            newErrors["username"] = "Username is required";
+        }
+        if (!password) {
+            newErrors["password"] = "Password is required";
+        }
+        if (!email) {
+            newErrors["email"] = "Email is required";
+        } else if (!isEmail(email)) {
+            newErrors["email"] = "Email is invalid";
+        }
+        if (Object.keys(newErrors).length !== 0) {
+            setErrors(newErrors);
             return;
         }
 
-        const credentials: SignUpDataType = {username, firstName, lastName, email, password};
-        signUp(credentials).then((res) => {
-            console.log(res);
-        }).catch((err) => {
-            console.log(err.message)
+        const credentials: RegisterDataType = {username, firstName, lastName, email, password};
+        register(credentials).then((res: any) => {
+            console.log("Registration successful!");
+        }).catch((err: AxiosError) => {
+            setErrors({
+                password: err.response?.data
+            });
         });
     };
 
     return (
         <Container className="my-5 d-flex flex-column" style={{maxWidth: "600px"}}>
             <Card body>
-                <h2>UBC Mahjong Club Sign Up</h2>
-                <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                <h2>UBC Mahjong Club Register</h2>
+                <Form noValidate onSubmit={handleSubmit}>
                     <Form.Group controlId="formBasicUsername" className="my-4">
                         <Form.Control
                             required
                             placeholder="Username"
                             value={username}
+                            isInvalid={errors.username}
                             onChange={(e) => setUsername(e.target.value)}
                         />
                         <Form.Control.Feedback type="invalid">
-                            Please provide a username.
+                            {errors.username}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -76,10 +95,11 @@ const SignUp: React.FC = () => {
                             type="email"
                             placeholder="Email"
                             value={email}
+                            isInvalid={errors.email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                         <Form.Control.Feedback type="invalid">
-                            Please provide a valid email.
+                            {errors.email}
                         </Form.Control.Feedback>
                     </Form.Group>
 
@@ -89,16 +109,17 @@ const SignUp: React.FC = () => {
                             type="password"
                             placeholder="Password"
                             value={password}
+                            isInvalid={errors.password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                         <Form.Control.Feedback type="invalid">
-                            Please provide a valid password.
+                            {errors.password}
                         </Form.Control.Feedback>
                     </Form.Group>
 
                     <div className="d-grid my-4">
                         <Button variant="primary" type="submit">
-                            Sign Up
+                                Sign Up
                         </Button>
                     </div>
 
@@ -114,4 +135,4 @@ const SignUp: React.FC = () => {
     );
 }
 
-export default SignUp;
+export default Register;

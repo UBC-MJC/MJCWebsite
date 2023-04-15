@@ -9,7 +9,10 @@ dotenv.config({path: __dirname + '/.env'});
 
 const app: Express = express()
 
-app.use(cors())
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
@@ -17,10 +20,7 @@ app.use(router)
 
 // Error handling
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    res.status(err.status || 500).json({
-        status: false,
-        message: err.message
-    })
+    res.status(err.status || 500).json(err.message)
 });
 
 const PORT: string | number = process.env.PORT || 4000

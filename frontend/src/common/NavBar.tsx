@@ -1,7 +1,10 @@
-import React from "react";
+import {FC, useContext} from "react";
 import {Container, Navbar, Nav, NavDropdown} from 'react-bootstrap';
+import {AuthContext} from "./AuthContext";
 
-const NavBar: React.FC = () => {
+const NavBar: FC = () => {
+    const { player, logout } = useContext(AuthContext);
+
     return <Navbar bg="light" expand="md">
         <Container fluid>
             <Navbar.Brand href="/">
@@ -22,7 +25,13 @@ const NavBar: React.FC = () => {
                 </Nav>
                 <Nav>
                     <Nav.Link href="/admin">Admin</Nav.Link>
-                    <Nav.Link href="/login">Login</Nav.Link>
+                    {player ?
+                        <NavDropdown title="Account" id="record-game-nav-dropdown">
+                            <NavDropdown.Item onClick={logout}>Log Out</NavDropdown.Item>
+                        </NavDropdown>
+                        :
+                        <Nav.Link href="/login">Login</Nav.Link>
+                    }
                 </Nav>
             </Navbar.Collapse>
         </Container>

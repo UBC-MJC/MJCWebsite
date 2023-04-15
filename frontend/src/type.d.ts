@@ -23,7 +23,7 @@ type LoginDataType = {
     password: string
 }
 
-type SignUpDataType = {
+type RegisterDataType = {
     username: string
     email: string
     firstName: string

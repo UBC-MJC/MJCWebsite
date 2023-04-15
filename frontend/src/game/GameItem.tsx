@@ -1,6 +1,6 @@
-import React from "react"
+import {FC} from "react"
 
-const GameItem: React.FC<GameProps> = ({game}) => {
+const GameItem: FC<GameProps> = ({game}) => {
     return (
         <div className="Card">
             <div className="Card--text">

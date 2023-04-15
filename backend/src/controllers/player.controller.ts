@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import createError from "http-errors";
 import {loginSchema, registerSchema} from "../validation/player.validation";
-import {createPlayer, findPlayerByEmail, findPlayerByUsername} from "../services/player.service";
+import {createPlayer, findPlayerByUsername} from "../services/player.service";
 import {generateToken} from "../auth/jwt";
 import bcrypt from "bcryptjs";
 
@@ -34,7 +34,7 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
                 next(createError.Unauthorized("Username or password is incorrect"))
             }
         }).catch((err: any) => {
-            next(createError.BadRequest(err.message))
+            next(createError.Unauthorized("Username or password is incorrect"))
         })
     } catch (error: any) {
         next(createError(error.statusCode, error.message))
