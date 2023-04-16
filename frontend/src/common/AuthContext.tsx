@@ -2,12 +2,16 @@ import { FC, ReactNode } from 'react';
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {loginAPICall, registerAPICall} from "../api/AuthAPI";
+import {AxiosResponse} from "axios";
 
 type ChildProps = {
     children: ReactNode
 };
 
-const AuthContext = createContext<any>({});
+const notInstantiated = () => {
+    return Promise.reject()
+}
+const AuthContext = createContext<AuthContextType>({player: undefined, login: notInstantiated, register: notInstantiated, logout: notInstantiated});
 
 const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
     const [player, setPlayer] = useState(() => {
@@ -19,16 +23,18 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
     });
     const navigate = useNavigate();
     const authLogin = async (loginData: LoginDataType) => {
-        const apiResponse = await loginAPICall(loginData)
-        localStorage.setItem("playerProfile", JSON.stringify(apiResponse.data));
-        setPlayer(apiResponse.data.player);
+        const apiResponse: AxiosResponse<PlayerAPIDataType> = await loginAPICall(loginData)
+        const playerAPIData: PlayerAPIDataType = apiResponse.data;
+        localStorage.setItem("playerProfile", JSON.stringify(playerAPIData));
+        setPlayer(playerAPIData.player);
         navigate("/");
     };
 
     const authRegister = async (registerData: RegisterDataType) => {
-        const apiResponse = await registerAPICall(registerData)
-        localStorage.setItem("playerProfile", JSON.stringify(apiResponse.data));
-        setPlayer(apiResponse.data.player);
+        const apiResponse: AxiosResponse<PlayerAPIDataType> = await registerAPICall(registerData)
+        const playerAPIData: PlayerAPIDataType = apiResponse.data;
+        localStorage.setItem("playerProfile", JSON.stringify(playerAPIData));
+        setPlayer(playerAPIData.player);
         navigate("/");
     }
 

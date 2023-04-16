@@ -30,3 +30,27 @@ type RegisterDataType = {
     lastName: string
     password: string
 }
+
+type PlayerAPIDataType = {
+    accessToken: string
+    player: IPlayer
+}
+
+interface IPlayer {
+    id: string
+    username: string
+    email: string
+    firstName?: string
+    lastName?: string
+    admin: boolean
+    rankedRiichi: boolean
+    rankedHongKong: boolean
+    createdAt: string
+}
+
+type AuthContextType = {
+    player: IPlayer | undefined
+    login: (loginData: LoginDataType) => Promise<void>;
+    register: (registerData: RegisterDataType) => Promise<void>;
+    logout: () => Promise<void>;
+};

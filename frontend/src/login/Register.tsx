@@ -37,7 +37,7 @@ const Register: React.FC = () => {
         }
 
         const credentials: RegisterDataType = {username, firstName, lastName, email, password};
-        register(credentials).then((res: any) => {
+        register(credentials).then(() => {
             console.log("Registration successful!");
         }).catch((err: AxiosError) => {
             setErrors({

@@ -13,10 +13,4 @@ const registerAPICall = (registerData: RegisterDataType) => {
     });
 }
 
-const logoutAPICall = () => {
-    return axios.post(baseUrl + "/logout", {
-        withCredentials: true,
-    });
-}
-
-export {loginAPICall, registerAPICall, logoutAPICall}
+export {loginAPICall, registerAPICall}

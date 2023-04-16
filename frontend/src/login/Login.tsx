@@ -27,7 +27,7 @@ const Login: React.FC = () => {
         }
 
         const credentials: LoginDataType = {username, password};
-        login(credentials).then((res: any) => {
+        login(credentials).then(() => {
             console.log("Login successful!");
         }).catch((err: AxiosError) => {
             setErrors({
