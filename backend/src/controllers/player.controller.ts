@@ -10,7 +10,7 @@ const register = async (req: Request, res: Response, next: NextFunction): Promis
         const token = generateToken(player.id)
         const {password, ...playerOmitted} = player;
         res.json({
-            accessToken: token,
+            authToken: token,
             player: playerOmitted
         })
     }).catch((err: any) => {
@@ -24,7 +24,7 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
             const token = generateToken(player.id)
             const {password, ...playerOmitted} = player;
             res.json({
-                accessToken: token,
+                authToken: token,
                 player: playerOmitted
             })
         } else {

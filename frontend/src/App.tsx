@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Routes } from "react-router-dom"
+import {Navigate, Route, Routes} from "react-router-dom"
 
 import './App.css';
 import WithoutNav from "./common/WithoutNav";
@@ -34,6 +34,9 @@ const App: React.FC = () => {
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                     </Route>
+                    <Route path="*" // redirect to home if no route matches
+                        element={<Navigate to="/" replace />}
+                    />
                 </Routes>
             </AuthContextProvider>
         </main>
