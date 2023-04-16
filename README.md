@@ -23,12 +23,12 @@ DATABASE_URL="mysql://mahjonguser:{PASSWORD}@localhost:3306/mahjong?schema=publi
 ACCESS_TOKEN_SECRET={SECRET}
 ```
 
-Replace all instances of `{PASSWORD}` with any string and `{SECRET}` with some random 32 character long string.
+Replace all instances of `{PASSWORD}` with any string and replace `{SECRET}` with some random 32 character long string. Don't forget the quotation marks.
 
 6. Run `docker-compose up` in the backend directory. This will create a MySQL database with the name `mahjong` 
 and a user with the name `mahjonguser` and the password you specified in the dotenv file. Warning: Closing this terminal might not
 stop the docker instance. Run `docker-compose down` or stop Docker Desktop to close the database.
-7. Run `npx prisma db push` and `npx prisma generate` in the backend directory
-8. Run `npm install` in both the frontend and backend directory
+7. Run `npm install` in both the frontend and backend directory 
+8. Run `npx prisma db push` and `npx prisma generate` in the backend directory (This needs to be done everytime the database schema is changed)
 9. Run `npm start` in both the frontend and backend directory 
 10. Open [http://localhost:4000](http://localhost:4000) to view the website

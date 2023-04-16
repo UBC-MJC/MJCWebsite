@@ -37,8 +37,8 @@ model Player {
     id             String       @id @default(cuid())
     email          String       @unique
     username       String       @unique
-    firstName      String?
-    lastName       String?
+    firstName      String
+    lastName       String
     password       String
     admin          Boolean      @default(false)
     rankedRiichi   Boolean      @default(false)

@@ -1,8 +1,8 @@
 import { object, string, InferType } from 'yup';
 
 const registerSchema = object({
-    firstName: string(),
-    lastName: string(),
+    firstName: string().required(),
+    lastName: string().required(),
     username: string().required(),
     email: string().email().required(),
     password: string().required()

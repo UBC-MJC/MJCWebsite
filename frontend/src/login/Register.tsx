@@ -26,6 +26,12 @@ const Register: React.FC = () => {
         if (!password) {
             newErrors["password"] = "Password is required";
         }
+        if (!firstName) {
+            newErrors["firstName"] = "First name is required";
+        }
+        if (!lastName) {
+            newErrors["lastName"] = "Last name is required";
+        }
         if (!email) {
             newErrors["email"] = "Email is required";
         } else if (!isEmail(email)) {
@@ -70,22 +76,24 @@ const Register: React.FC = () => {
                                 type="text"
                                 placeholder="First name"
                                 value={firstName}
+                                isInvalid={errors.firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
                             />
-                            <Form.Text muted>
-                                Optional
-                            </Form.Text>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.firstName}
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="formBasicLastName">
                             <Form.Control
                                 type="text"
                                 placeholder="Last name"
                                 value={lastName}
+                                isInvalid={errors.lastName}
                                 onChange={(e) => setLastName(e.target.value)}
                             />
-                            <Form.Text muted>
-                                Optional
-                            </Form.Text>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.lastName}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
 
