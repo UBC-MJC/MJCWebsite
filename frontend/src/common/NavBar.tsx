@@ -24,7 +24,7 @@ const NavBar: FC = () => {
                     <Nav.Link href="/stats">Statistics</Nav.Link>
                 </Nav>
                 <Nav>
-                    <Nav.Link href="/admin">Admin</Nav.Link>
+                    {player && player.admin && <Nav.Link href="/admin">Admin</Nav.Link>}
                     {player ?
                         <NavDropdown title="Account" id="record-game-nav-dropdown">
                             <NavDropdown.Item onClick={logout}>Log Out</NavDropdown.Item>

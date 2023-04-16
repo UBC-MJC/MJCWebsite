@@ -7,6 +7,8 @@ const createPlayer = (player: RegisterType) => {
     player.password = bcrypt.hashSync(player.password, 12);
     return prisma.player.create({
         data: player,
+    }).catch((err: any) => {
+        throw new Error("Username/email already exists");
     });
 }
 
