@@ -45,28 +45,30 @@ model Player {
     rankedHongKong Boolean      @default(false)
     createdAt      DateTime     @default(now())
     scores         Score[]
-    games          PlayerGame[]
+    gamesPlayed    PlayerGame[]
+    gamesRecorded  Game[]
 }
 
 model PlayerGame {
-    id        String  @id @default(cuid())
+    id        String @id @default(cuid())
     wind      Wind
     eloChange Int
     position  Int
-    recorded  Boolean @default(false)
-    player    Player  @relation(fields: [playerId], references: [id])
+    player    Player @relation(fields: [playerId], references: [id])
     playerId  String
-    game      Game    @relation(fields: [gameId], references: [id])
+    game      Game   @relation(fields: [gameId], references: [id])
     gameId    String
 }
 
 model Game {
-    id        String       @id @default(cuid())
-    gameType  GameType
-    status    GameStatus
-    createdAt DateTime     @default(now())
-    rounds    Round[]
-    players   PlayerGame[]
+    id           String       @id @default(cuid())
+    gameType     GameType
+    status       GameStatus
+    createdAt    DateTime     @default(now())
+    recordedBy   Player       @relation(fields: [recordedById], references: [id])
+    recordedById String
+    rounds       Round[]
+    players      PlayerGame[]
 }
 
 model Round {
