@@ -32,7 +32,7 @@ const createGame = async (req: Request, res: Response, next: NextFunction): Prom
 
         const newGame: Game = await createGameService(createGame.gameType, playerList.map((player) => {
             return {id: player.id}
-        }))
+        }), req.player.id)
         res.status(201).json({
             gameId: newGame.id
         })

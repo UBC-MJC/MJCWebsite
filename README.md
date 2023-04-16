@@ -6,7 +6,7 @@
 2. Install [npm](https://www.npmjs.com/get-npm)
 3. Install and run [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 4. Clone the repository
-5. Create a dotenv file in the backend directory and format it as follows:
+5. Create a .env file in the backend directory and format it as follows:
 
 ```bash
 PORT=4000
