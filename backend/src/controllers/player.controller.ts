@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import createError from "http-errors";
 import {loginSchema, registerSchema} from "../validation/player.validation";
-import {createPlayer, findPlayerByUsername} from "../services/player.service";
+import {createPlayer, findAllPlayers, findPlayerByUsername} from "../services/player.service";
 import {generateToken} from "../auth/jwt";
 import bcrypt from "bcryptjs";
 
@@ -35,4 +35,30 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
     })
 }
 
-export {register, login}
+const getPlayerNames = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const gameType = req.params.gameType
+
+    let query = {}
+    if (gameType === "jp") {
+        query = {
+            where: {
+                rankedRiichi: true
+            }
+        }
+    } else if (gameType === "hk") {
+        query = {
+            where: {
+                rankedHongKong: true
+            }
+        }
+    }
+
+    findAllPlayers(query).then((players) => {
+        const playerNames = players.map((player) => player.username)
+        res.json({playerNames})
+    }).catch((err: any) => {
+        next(createError.InternalServerError(err.message))
+    })
+}
+
+export {register, login, getPlayerNames}

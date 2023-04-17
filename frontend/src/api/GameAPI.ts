@@ -1,10 +1,8 @@
 import axios, {AxiosResponse} from "axios"
 import {baseUrl} from "./APIUtils";
 
-export const getGames = async (): Promise<AxiosResponse<ApiDataType>> => {
-    return axios.get(baseUrl + "/games")
+const getPlayerNames = async (gameType: string): Promise<AxiosResponse<{playerNames: string[]}>> => {
+    return axios.get(baseUrl + "/players/gametype/" + gameType)
 }
 
-export const addGame = async (): Promise<AxiosResponse<ApiDataType>> => {
-    return axios.post(baseUrl + "/add-game")
-}
+export {getPlayerNames}

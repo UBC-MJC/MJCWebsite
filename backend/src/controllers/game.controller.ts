@@ -33,8 +33,14 @@ const createGame = async (req: Request, res: Response, next: NextFunction): Prom
         const newGame: Game = await createGameService(createGame.gameType, playerList.map((player) => {
             return {id: player.id}
         }), req.player.id)
+
         res.status(201).json({
-            gameId: newGame.id
+            gameId: newGame.id,
+            rounds: [{
+                roundCount: 1,
+                roundNumber: 1,
+                roundWind: 'EAST'
+            }]
         })
     } catch (error: any) {
         next(createError.BadRequest(error.message))

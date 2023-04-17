@@ -57,11 +57,11 @@ model PlayerGame {
     player    Player @relation(fields: [playerId], references: [id])
     playerId  String
     game      Game   @relation(fields: [gameId], references: [id])
-    gameId    String
+    gameId    Int
 }
 
 model Game {
-    id           String       @id @default(cuid())
+    id           Int          @id @default(autoincrement())
     gameType     GameType
     status       GameStatus
     createdAt    DateTime     @default(now())
@@ -73,6 +73,7 @@ model Game {
 
 model Round {
     id          String        @id @default(cuid())
+    roundCount  Int
     roundWind   Wind
     roundNumber Int
     bonus       Int?
@@ -81,7 +82,7 @@ model Round {
     dora        Int?
     endType     RoundEndType?
     game        Game          @relation(fields: [gameId], references: [id])
-    gameId      String
+    gameId      Int
     scores      Score[]
 }
 

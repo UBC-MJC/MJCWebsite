@@ -11,13 +11,6 @@ type GameTypeProp = {
     gameType: "jp" | "hk"
 }
 
-type ApiDataType = {
-    message: string
-    status: string
-    games: IGame[]
-    insertId?: number
-}
-
 type LoginDataType = {
     username: string
     password: string

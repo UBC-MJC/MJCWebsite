@@ -23,6 +23,13 @@ const createGameService = async (gameType: GameType, playerIds: {id: string}[], 
             },
             players: {
                 connect: playerIds
+            },
+            rounds: {
+                create: {
+                    roundCount: 1,
+                    roundNumber: 1,
+                    roundWind: 'EAST'
+                }
             }
         }
     });

@@ -2,7 +2,7 @@ import {Router} from "express"
 
 import {isAuthenticated} from "../auth/auth";
 
-import {login, register} from "../controllers/player.controller";
+import {getPlayerNames, login, register} from "../controllers/player.controller";
 import {createGame, getGame, getGames} from "../controllers/game.controller"
 import {getAdmin} from "../controllers/admin.controller";
 
@@ -14,6 +14,8 @@ router.post("/login", login)
 router.get("/games", isAuthenticated, getGames)
 router.get("/games/:id", isAuthenticated, getGame)
 router.post("/games", isAuthenticated, createGame)
+
+router.get("/players/gametype/:gameType", getPlayerNames)
 
 router.get("/admin", isAuthenticated, getAdmin)
 

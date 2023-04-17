@@ -46,8 +46,8 @@ const findPlayerByUsername = async (username: string) => {
     });
 }
 
-const findAllPlayers = async () => {
-    return prisma.player.findMany();
+const findAllPlayers = async (query: any) => {
+    return prisma.player.findMany(query);
 }
 
 export {createPlayer, findPlayerByEmail, findPlayerById, findPlayerByUsername, findPlayerByUsernames, findAllPlayers}
