@@ -1,10 +1,14 @@
-import React, {FC, useEffect, useState} from 'react'
-import {getPlayerNames} from '../api/GameAPI'
+import React, {FC, useContext, useEffect, useState} from 'react'
+import {createGameAPI, getPlayerNames} from '../api/GameAPI'
 import {Button, Col, Container, Row} from "react-bootstrap";
 import PlayerSelect from "./PlayerSelect";
 import {AxiosError} from "axios";
+import {AuthContext} from "../common/AuthContext";
+import {withPlayerCondition} from "../common/withPlayerCondition";
 
-const CreateGame: FC<GameTypeProp> = ({gameType}) => {
+const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
+    const { player } = useContext(AuthContext);
+
     const [playerNames, setPlayerNames] = useState<string[]>([])
 
     const [eastPlayer, setEastPlayer] = useState<string | undefined>(undefined)
@@ -13,15 +17,24 @@ const CreateGame: FC<GameTypeProp> = ({gameType}) => {
     const [northPlayer, setNorthPlayer] = useState<string | undefined>(undefined)
 
     useEffect(() => {
-        getPlayerNames(gameType).then((response) => {
+        getPlayerNames(gameVariant).then((response) => {
             setPlayerNames(response.data.playerNames)
         }).catch((error: AxiosError) => {
             console.log("Error fetching player names: ", error.response?.data)
         })
-    }, [gameType])
+    }, [gameVariant])
 
     const createGame = () => {
-        console.log(eastPlayer, southPlayer, westPlayer, northPlayer)
+        if (playerSelectMissing || notUnique) {
+            return
+        }
+
+        const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
+        createGameAPI(player!.authToken, "RANKED", getGameVariant(gameVariant), playerList).then((response) => {
+            console.log("Created game: ", response.data)
+        }).catch((error: AxiosError) => {
+            console.log("Error creating game: ", error.response?.data)
+        })
     }
 
     const getGameTypeString = (gameType: "jp" | "hk"): string => {
@@ -33,7 +46,16 @@ const CreateGame: FC<GameTypeProp> = ({gameType}) => {
         return ""
     }
 
-    const title = `Create Ranked ${getGameTypeString(gameType)} Game`
+    const getGameVariant = (gameType: "jp" | "hk"): GameVariant => {
+        if (gameType === "jp") {
+            return "JAPANESE"
+        } else if (gameType === "hk") {
+            return "HONG_KONG"
+        }
+        return "JAPANESE"
+    }
+
+    const title = `Create Ranked ${getGameTypeString(gameVariant)} Game`
 
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer
     const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4
@@ -61,5 +83,16 @@ const CreateGame: FC<GameTypeProp> = ({gameType}) => {
         </Container>
     )
 }
+
+const hasGamePermissions = (player: IPlayer | undefined, props: any): boolean => {
+    if (props.gameVariant === "jp") {
+        return typeof player !== "undefined" && player.japaneseQualified
+    } else if (props.gameVariant === "hk") {
+        return typeof player !== "undefined" && player.hongKongQualified
+    }
+    return false
+}
+
+const CreateGame = withPlayerCondition(CreateGameComponent, hasGamePermissions, '/unauthorized')
 
 export default CreateGame;

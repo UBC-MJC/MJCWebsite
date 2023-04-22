@@ -2,7 +2,8 @@ import {object, string, mixed, InferType, array} from 'yup';
 import {GameType} from "@prisma/client";
 
 const createGameSchema = object({
-    gameType: mixed<GameType>().oneOf(['RIICHI', 'HONG_KONG']).required(),
+    gameType: mixed<GameType>().oneOf(['RANKED', 'PLAY_OFF', 'TOURNEY']).required(),
+    gameVariant: string().oneOf(['JAPANESE', 'HONG_KONG']).required(),
     players: array().of(string().required()).length(4).required()
 })
 

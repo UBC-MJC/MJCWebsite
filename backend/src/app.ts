@@ -4,6 +4,7 @@ import cors from "cors"
 import bodyParser from "body-parser";
 
 import router from "./routes"
+import {createAdmin} from "./services/admin.service";
 
 dotenv.config({path: __dirname + '/.env'});
 
@@ -25,6 +26,12 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 const PORT: string | number = process.env.PORT || 4000
-app.listen(PORT, () =>
-    console.log(`Server running on http://localhost:${PORT}`)
-)
+
+
+createAdmin().then(() => {
+    app.listen(PORT, () =>
+        console.log(`Server running on http://localhost:${PORT}`)
+    )
+}).catch((err: any) => {
+    console.log(err)
+})

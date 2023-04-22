@@ -10,8 +10,7 @@ const register = async (req: Request, res: Response, next: NextFunction): Promis
         const token = generateToken(player.id)
         const {password, ...playerOmitted} = player;
         res.json({
-            authToken: token,
-            player: playerOmitted
+            player: {authToken: token, ...playerOmitted}
         })
     }).catch((err: any) => {
         next(createError.BadRequest(err.message))
@@ -24,8 +23,7 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
             const token = generateToken(player.id)
             const {password, ...playerOmitted} = player;
             res.json({
-                authToken: token,
-                player: playerOmitted
+                player: {authToken: token, ...playerOmitted}
             })
         } else {
             next(createError.Unauthorized("Username or password is incorrect"))
@@ -42,13 +40,13 @@ const getPlayerNames = async (req: Request, res: Response, next: NextFunction): 
     if (gameType === "jp") {
         query = {
             where: {
-                rankedRiichi: true
+                japaneseQualified: true
             }
         }
     } else if (gameType === "hk") {
         query = {
             where: {
-                rankedHongKong: true
+                hongKongQualified: true
             }
         }
     }

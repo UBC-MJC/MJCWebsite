@@ -1,8 +1,8 @@
 import {NextFunction, Request, Response} from "express"
 import createError from "http-errors";
 import {createGameSchema, CreateGameType} from "../validation/game.validation";
-import {checkPlayerGameEligibility, createGameService} from "../services/game.service";
-import {Game} from "@prisma/client";
+import {checkPlayerGameEligibility, addGame, getCurrentSeason, checkPlayerListUnique} from "../services/game.service";
+import {Game, Player} from "@prisma/client";
 import {findPlayerByUsernames} from "../services/player.service";
 
 const getGames = async (req: Request, res: Response): Promise<void> => {
@@ -21,29 +21,54 @@ const getGame = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
-
 const createGame = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const createGame: CreateGameType = await createGameSchema.validate(req.body)
+        const createGameObject: CreateGameType = await createGameSchema.validate(req.body)
 
-        checkPlayerGameEligibility(createGame.gameType, req.player)
-        const playerList = await findPlayerByUsernames(createGame.players);
-        playerList.forEach((player) => checkPlayerGameEligibility(createGame.gameType, player))
+        checkPlayerListUnique(createGameObject.players)
+        checkPlayerGameEligibility(createGameObject.gameVariant, req.player)
+        const playerList = await findPlayerByUsernames(createGameObject.players);
+        playerList.forEach((player) => checkPlayerGameEligibility(createGameObject.gameVariant, player))
+        const playersQuery = playerList.map((player: Player, index) => {
+            return {
+                wind: getWind(createGameObject.players.indexOf(player.username)),
+                player: {
+                    connect: {
+                        id: player.id
+                    }
+                }
+            }
+        })
 
-        const newGame: Game = await createGameService(createGame.gameType, playerList.map((player) => {
-            return {id: player.id}
-        }), req.player.id)
+        const season = await getCurrentSeason();
+
+        const newGame: Game = await addGame(createGameObject, playersQuery, req.player.id, season.id)
 
         res.status(201).json({
             gameId: newGame.id,
             rounds: [{
                 roundCount: 1,
                 roundNumber: 1,
-                roundWind: 'EAST'
+                roundWind: "EAST"
             }]
         })
     } catch (error: any) {
         next(createError.BadRequest(error.message))
+    }
+}
+
+const getWind = (index: number): string => {
+    switch (index) {
+        case 0:
+            return "EAST"
+        case 1:
+            return "SOUTH"
+        case 2:
+            return "WEST"
+        case 3:
+            return "NORTH"
+        default:
+            return "NONE"
     }
 }
 

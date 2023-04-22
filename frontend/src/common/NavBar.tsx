@@ -18,10 +18,16 @@ const NavBar: FC = () => {
                         <NavDropdown.Item as={Link} to="/leaderboard/jp">Riichi</NavDropdown.Item>
                         <NavDropdown.Item as={Link} to="/leaderboard/hk">Hong Kong</NavDropdown.Item>
                     </NavDropdown>
-                    <NavDropdown title="Record Game" id="record-game-nav-dropdown">
-                        <NavDropdown.Item as={Link} to="/games/create/jp">Riichi</NavDropdown.Item>
-                        <NavDropdown.Item as={Link} to="/games/create/hk">Hong Kong</NavDropdown.Item>
-                    </NavDropdown>
+                    {player && (player.japaneseQualified || player.hongKongQualified) &&
+                        <NavDropdown title="Record Game" id="record-game-nav-dropdown">
+                            {player.japaneseQualified &&
+                                <NavDropdown.Item as={Link} to="/games/create/jp">Riichi</NavDropdown.Item>
+                            }
+                            {player.hongKongQualified &&
+                                <NavDropdown.Item as={Link} to="/games/create/hk">Hong Kong</NavDropdown.Item>
+                            }
+                        </NavDropdown>
+                    }
                     <Nav.Link as={Link} to="/stats">Statistics</Nav.Link>
                 </Nav>
                 <Nav>

@@ -8,16 +8,27 @@ datasource db {
 }
 
 enum GameType {
-    RIICHI
-    HONG_KONG
+    RANKED
+    PLAY_OFF
+    TOURNEY
 }
 
-enum RoundEndType {
+enum JapaneseScoreType {
     DEAL_IN
+    RON
     SELF_DRAW
     DECK_OUT
     MISTAKE
     RESHUFFLE
+    PAO_KAN
+    PAO_YAKUMAN
+}
+
+enum HongKongScoreType {
+    DEAL_IN
+    SELF_DRAW
+    DECK_OUT
+    MISTAKE
     PAO
 }
 
@@ -34,26 +45,27 @@ enum Wind {
 }
 
 model Player {
-    id             String       @id @default(cuid())
-    email          String       @unique
-    username       String       @unique
-    firstName      String
-    lastName       String
-    password       String
-    admin          Boolean      @default(false)
-    rankedRiichi   Boolean      @default(false)
-    rankedHongKong Boolean      @default(false)
-    createdAt      DateTime     @default(now())
-    scores         Score[]
-    gamesPlayed    PlayerGame[]
-    gamesRecorded  Game[]
+    id                String          @id @default(cuid())
+    email             String          @unique
+    username          String          @unique
+    firstName         String
+    lastName          String
+    password          String
+    admin             Boolean         @default(false)
+    japaneseQualified Boolean         @default(false)
+    hongKongQualified Boolean         @default(false)
+    createdAt         DateTime        @default(now())
+    japaneseScores    JapaneseScore[]
+    hongKongScores    HongKongScore[]
+    gamesPlayed       PlayerGame[]
+    gamesRecorded     Game[]
 }
 
 model PlayerGame {
     id        String @id @default(cuid())
     wind      Wind
-    eloChange Int
-    position  Int
+    eloChange Int?
+    position  Int?
     player    Player @relation(fields: [playerId], references: [id])
     playerId  String
     game      Game   @relation(fields: [gameId], references: [id])
@@ -61,38 +73,83 @@ model PlayerGame {
 }
 
 model Game {
-    id           Int          @id @default(autoincrement())
-    gameType     GameType
-    status       GameStatus
-    createdAt    DateTime     @default(now())
-    recordedBy   Player       @relation(fields: [recordedById], references: [id])
-    recordedById String
-    rounds       Round[]
-    players      PlayerGame[]
+    id            Int            @id @default(autoincrement())
+    season        Season         @relation(fields: [seasonId], references: [id])
+    seasonId      String
+    status        GameStatus
+    gameType      GameType
+    createdAt     DateTime       @default(now())
+    endedAt       DateTime?
+    recordedBy    Player         @relation(fields: [recordedById], references: [id])
+    recordedById  String
+    players       PlayerGame[]
+    japaneseGames JapaneseGame[]
+    hongKongGames HongKongGame[]
 }
 
-model Round {
-    id          String        @id @default(cuid())
+model Season {
+    id        String    @id @default(cuid())
+    name      String
+    startDate DateTime
+    endDate   DateTime?
+    games     Game[]
+}
+
+model JapaneseGame {
+    id     String          @id @default(cuid())
+    game   Game            @relation(fields: [gameId], references: [id])
+    gameId Int
+    rounds JapaneseRound[]
+}
+
+model HongKongGame {
+    id            String          @id @default(cuid())
+    game          Game            @relation(fields: [gameId], references: [id])
+    gameId        Int
+    rounds        HongKongRound[]
+    JapaneseRound JapaneseRound[]
+}
+
+model JapaneseRound {
+    id             String          @id @default(cuid())
+    roundCount     Int
+    roundWind      Wind
+    roundNumber    Int
+    bonus          Int
+    riichiSticks   Int
+    game           JapaneseGame    @relation(fields: [gameId], references: [id])
+    gameId         String
+    scores         JapaneseScore[]
+    HongKongGame   HongKongGame?   @relation(fields: [hongKongGameId], references: [id])
+    hongKongGameId String?
+}
+
+model HongKongRound {
+    id          String          @id @default(cuid())
     roundCount  Int
     roundWind   Wind
     roundNumber Int
-    bonus       Int?
-    points      Int?
-    fu          Int?
-    dora        Int?
-    endType     RoundEndType?
-    game        Game          @relation(fields: [gameId], references: [id])
-    gameId      Int
-    scores      Score[]
+    game        HongKongGame    @relation(fields: [gameId], references: [id])
+    gameId      String
+    scores      HongKongScore[]
 }
 
-model Score {
-    id          String   @id @default(cuid())
+model JapaneseScore {
+    id          String        @id @default(cuid())
     scoreChange Int
     riichi      Boolean?
-    pao         Boolean?
-    round       Round    @relation(fields: [roundId], references: [id])
-    user        Player   @relation(fields: [userId], references: [id])
+    round       JapaneseRound @relation(fields: [roundId], references: [id])
+    user        Player        @relation(fields: [userId], references: [id])
+    userId      String
+    roundId     String
+}
+
+model HongKongScore {
+    id          String        @id @default(cuid())
+    scoreChange Int
+    riichi      Boolean?
+    round       HongKongRound @relation(fields: [roundId], references: [id])
+    user        Player        @relation(fields: [userId], references: [id])
     userId      String
     roundId     String
 }

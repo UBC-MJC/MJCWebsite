@@ -7,8 +7,12 @@ interface GameProps {
     game: IGame
 }
 
+type GameVariant  = "JAPANESE" | "HONG_KONG"
+
+type GameType = "RANKED" | "PLAY_OFF" | "TOURNEY"
+
 type GameTypeProp = {
-    gameType: "jp" | "hk"
+    gameVariant: "jp" | "hk"
 }
 
 type LoginDataType = {
@@ -25,24 +29,23 @@ type RegisterDataType = {
 }
 
 type PlayerAPIDataType = {
-    authToken: string
     player: IPlayer
 }
 
 interface IPlayer {
     id: string
+    authToken: string
     username: string
     email: string
     firstName?: string
     lastName?: string
     admin: boolean
-    rankedRiichi: boolean
-    rankedHongKong: boolean
+    japaneseQualified: boolean
+    hongKongQualified: boolean
     createdAt: string
 }
 
 type AuthContextType = {
-    authToken: string | undefined
     player: IPlayer | undefined
     login: (loginData: LoginDataType) => Promise<void>;
     register: (registerData: RegisterDataType) => Promise<void>;

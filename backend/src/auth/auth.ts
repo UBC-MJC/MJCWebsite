@@ -7,7 +7,7 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
     const { authorization } = req.headers
 
     if (typeof authorization === "undefined") {
-        return next(createError.Unauthorized())
+        return next(createError.Unauthorized("Invalid token"))
     }
 
     try {
@@ -20,6 +20,7 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
         findPlayerById(payloadId).then((player) => {
             if (player) {
                 req.player = player;
+                return next();
             } else {
                 return next(createError.Unauthorized("Invalid token"))
             }
@@ -29,8 +30,6 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
     } catch (err) {
         return next(createError.Unauthorized())
     }
-
-    return next();
 }
 
 export { isAuthenticated };

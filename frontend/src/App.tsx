@@ -14,6 +14,7 @@ import Statistics from "./statistics/Statistics";
 import Login from "./login/Login";
 import Admin from "./admin/Admin";
 import Register from "./login/Register";
+import Unauthorized from "./common/Unauthorized";
 
 const App: React.FC = () => {
     return (
@@ -22,13 +23,14 @@ const App: React.FC = () => {
                 <Routes>
                     <Route element={<WithNav />}>
                         <Route path="/" element={<Home />} />
-                        <Route path="/leaderboard/jp" element={<Leaderboard gameType="jp" />} />
-                        <Route path="/leaderboard/hk" element={<Leaderboard gameType="hk" />} />
+                        <Route path="/leaderboard/jp" element={<Leaderboard gameVariant="jp" />} />
+                        <Route path="/leaderboard/hk" element={<Leaderboard gameVariant="hk" />} />
                         <Route path="/games/:id" element={<Game />} />
-                        <Route path="/games/create/jp" element={<CreateGame gameType="jp" />} />
-                        <Route path="/games/create/hk" element={<CreateGame gameType="hk" />} />
+                        <Route path="/games/create/jp" element={<CreateGame gameVariant="jp" />} />
+                        <Route path="/games/create/hk" element={<CreateGame gameVariant="hk" />} />
                         <Route path="/stats" element={<Statistics />} />
                         <Route path="/admin" element={<Admin />} />
+                        <Route path="/unauthorized" element={<Unauthorized />} />
                     </Route>
                     <Route element={<WithoutNav />}>
                         <Route path="/login" element={<Login />} />
