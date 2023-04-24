@@ -65,10 +65,14 @@ const getPlayerNames = async (req: Request, res: Response, next: NextFunction): 
 
 const getPlayers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     findAllPlayers({}).then((players) => {
-        res.json({players})
+        const playersCleaned = players.map((player) => {
+            const {password, ...playerOmitted} = player;
+            return playerOmitted
+        })
+        res.json({playersCleaned})
     }).catch((err: any) => {
         next(createError.InternalServerError(err.message))
     })
 }
 
-export {register, login, getPlayerNames}
+export {register, login, getPlayerNames, getPlayers}

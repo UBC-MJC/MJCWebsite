@@ -1,26 +1,44 @@
-import {FC, useContext, useEffect} from "react";
-import {AuthContext} from "../common/AuthContext";
-import {useNavigate} from "react-router-dom";
-import {checkAdmin} from "../api/AdminAPI";
+import {FC, useState} from "react";
 import {withPlayerCondition} from "../common/withPlayerCondition";
+import { Nav, Container } from 'react-bootstrap';
+import AdminPlayers from "./AdminPlayers";
+import AdminSeason from "./AdminSeason";
 
+
+type AdminTab = "players" | "season"
 const AdminComponent: FC = () => {
-    const { player } = useContext(AuthContext);
-    const navigate = useNavigate();
 
-    useEffect(() => {
-        checkAdmin(player!.authToken).then((response) => {
-            console.log(response.data.message)
-        }).catch(() => {
-            navigate("/");
-        })
-    }, [player, navigate]);
+    const [tab, setTab] = useState<AdminTab>("players");
+
+    const handleSelect = (eventKey: any) => {
+        setTab(eventKey)
+    }
+
+    const playersHeader = AdminPlayers({})
+    const seasonHeader = AdminSeason({})
+
+    const getTabContent = (tab: AdminTab) => {
+        switch (tab) {
+            case "players":
+                return playersHeader
+            case "season":
+                return seasonHeader
+        }
+    }
 
     return (
-        <div>
-            <h1>Admin</h1>
-        </div>
-    )
+        <Container fluid="md" className="my-4">
+            <Nav variant="tabs" defaultActiveKey="players" onSelect={handleSelect}>
+                <Nav.Item>
+                    <Nav.Link eventKey="players">Players</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link eventKey="season">Season</Nav.Link>
+                </Nav.Item>
+            </Nav>
+            {getTabContent(tab)}
+        </Container>
+    );
 }
 
 const hasAdminPermissions = (player: IPlayer | undefined): boolean => {
