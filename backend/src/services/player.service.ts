@@ -4,15 +4,17 @@ import prisma from "../db";
 
 
 const createPlayer = async (player: RegisterType) => {
-    player.password = await bcrypt.hash(player.password, 12);
-    return prisma.player.create({
-        data: player,
-    }).catch((err: any) => {
-        throw new Error("Username/email already exists");
-    });
+    return bcrypt.hash(player.password, 12).then((hash) => {
+        return prisma.player.create({
+            data: {
+                ...player,
+                password: hash
+            }
+        })
+    })
 }
 
-const findPlayerByEmail = async (email: string) => {
+const findPlayerByEmail = (email: string) => {
     return prisma.player.findUnique({
         where: {
             email,
@@ -20,7 +22,7 @@ const findPlayerByEmail = async (email: string) => {
     });
 }
 
-const findPlayerById = async (id: string) => {
+const findPlayerById = (id: string) => {
     return prisma.player.findUnique({
         where: {
             id,
@@ -28,7 +30,7 @@ const findPlayerById = async (id: string) => {
     });
 }
 
-const findPlayerByUsernames = async (usernames: string[]) => {
+const findPlayerByUsernames = (usernames: string[]) => {
     return prisma.player.findMany({
         where: {
             username: {
@@ -38,7 +40,7 @@ const findPlayerByUsernames = async (usernames: string[]) => {
     });
 }
 
-const findPlayerByUsername = async (username: string) => {
+const findPlayerByUsername = (username: string) => {
     return prisma.player.findUnique({
         where: {
             username,
@@ -46,7 +48,7 @@ const findPlayerByUsername = async (username: string) => {
     });
 }
 
-const findAllPlayers = async (query: any) => {
+const findAllPlayers = (query: any) => {
     return prisma.player.findMany(query);
 }
 

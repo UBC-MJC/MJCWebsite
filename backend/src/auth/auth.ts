@@ -32,4 +32,12 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+const isAdmin = (req: Request, res: Response, next: NextFunction) => {
+    if (req.player && req.player.admin) {
+        return next();
+    } else {
+        return next(createError.Unauthorized("You are not an admin"))
+    }
+}
+
 export { isAuthenticated };

@@ -7,6 +7,10 @@ import bcrypt from "bcryptjs";
 
 const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     registerSchema.validate(req.body).then(() => createPlayer(req.body)).then((player) => {
+        if (typeof player === "undefined") {
+            throw new Error("Error creating player")
+        }
+
         const token = generateToken(player.id)
         const {password, ...playerOmitted} = player;
         res.json({
@@ -54,6 +58,14 @@ const getPlayerNames = async (req: Request, res: Response, next: NextFunction): 
     findAllPlayers(query).then((players) => {
         const playerNames = players.map((player) => player.username)
         res.json({playerNames})
+    }).catch((err: any) => {
+        next(createError.InternalServerError(err.message))
+    })
+}
+
+const getPlayers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    findAllPlayers({}).then((players) => {
+        res.json({players})
     }).catch((err: any) => {
         next(createError.InternalServerError(err.message))
     })
