@@ -31,7 +31,8 @@ Replace all instances of `{PASSWORD}` with any string and replace `{SECRET}` wit
 
 6. Run `docker-compose up` in the backend directory. This will create a MySQL database with the name `mahjong` 
 and a user with the name `mahjonguser` and the password you specified in the dotenv file. Warning: Closing this terminal might not
-stop the docker instance. Run `docker-compose down` or stop Docker Desktop to close the database.
+stop the docker instance. Run `docker-compose down` or stop Docker Desktop to close the database. To connect directly to
+the mysql database, run `mysql -u root -p -h 127.0.0.1` and enter the password you specified in the dotenv file.
 7. Run `npm install` in both the frontend and backend directory 
 8. Run `npx prisma db push` and `npx prisma generate` in the backend directory (This needs to be done everytime the database schema is changed)
 9. Run `npm start` in both the frontend and backend directory 
