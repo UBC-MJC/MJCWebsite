@@ -6,8 +6,8 @@ import AdminSeason from "./AdminSeason";
 
 
 type AdminTab = "players" | "season"
-const AdminComponent: FC = () => {
 
+const AdminComponent: FC = () => {
     const [tab, setTab] = useState<AdminTab>("players");
 
     const handleSelect = (eventKey: any) => {

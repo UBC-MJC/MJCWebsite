@@ -69,7 +69,7 @@ const getPlayers = async (req: Request, res: Response, next: NextFunction): Prom
             const {password, ...playerOmitted} = player;
             return playerOmitted
         })
-        res.json({playersCleaned})
+        res.json({players: playersCleaned})
     }).catch((err: any) => {
         next(createError.InternalServerError(err.message))
     })
