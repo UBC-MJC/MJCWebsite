@@ -21,6 +21,10 @@ DATABASE_PASSWORD={PASSWORD}
 DATABASE_URL="mysql://mahjonguser:{PASSWORD}@localhost:3306/mahjong?schema=public"
 
 ACCESS_TOKEN_SECRET={SECRET}
+
+ADMIN_USERNAME="admin"
+ADMIN_PASSWORD={ADMIN_PASSWORD}
+ADMIN_EMAIL="ubcmahjongclub@gmail.com"
 ```
 
 Replace all instances of `{PASSWORD}` with any string and replace `{SECRET}` with some random 32 character long string. Don't forget the quotation marks.
