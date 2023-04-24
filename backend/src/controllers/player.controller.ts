@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 
 const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     registerSchema.validate(req.body).then(() => createPlayer(req.body)).then((player) => {
-        if (typeof player === "undefined") {
+        if (!player) {
             throw new Error("Error creating player")
         }
 

@@ -1,9 +1,10 @@
 import bcrypt from "bcryptjs";
 import {RegisterType} from "../validation/player.validation";
 import prisma from "../db";
+import {Player} from "@prisma/client";
 
 
-const createPlayer = async (player: RegisterType) => {
+const createPlayer = async (player: RegisterType): Promise<Player> => {
     return bcrypt.hash(player.password, 12).then((hash) => {
         return prisma.player.create({
             data: {
@@ -14,7 +15,7 @@ const createPlayer = async (player: RegisterType) => {
     })
 }
 
-const findPlayerByEmail = (email: string) => {
+const findPlayerByEmail = (email: string): Promise<Player | null> => {
     return prisma.player.findUnique({
         where: {
             email,
@@ -22,7 +23,7 @@ const findPlayerByEmail = (email: string) => {
     });
 }
 
-const findPlayerById = (id: string) => {
+const findPlayerById = (id: string): Promise<Player | null> => {
     return prisma.player.findUnique({
         where: {
             id,
@@ -30,7 +31,7 @@ const findPlayerById = (id: string) => {
     });
 }
 
-const findPlayerByUsernames = (usernames: string[]) => {
+const findPlayerByUsernames = (usernames: string[]): Promise<Player[]> => {
     return prisma.player.findMany({
         where: {
             username: {
@@ -40,7 +41,7 @@ const findPlayerByUsernames = (usernames: string[]) => {
     });
 }
 
-const findPlayerByUsername = (username: string) => {
+const findPlayerByUsername = (username: string): Promise<Player | null> => {
     return prisma.player.findUnique({
         where: {
             username,
@@ -48,7 +49,7 @@ const findPlayerByUsername = (username: string) => {
     });
 }
 
-const findAllPlayers = (query: any) => {
+const findAllPlayers = (query: any): Promise<Player[]> => {
     return prisma.player.findMany(query);
 }
 

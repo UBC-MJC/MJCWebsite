@@ -20,7 +20,7 @@ app.use(bodyParser.json())
 app.use(router)
 
 // Error handling
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+app.use((err: any, req: Request, res: Response) => {
     console.log("Error: ", err.message);
     res.status(err.status || 500).json(err.message)
 });

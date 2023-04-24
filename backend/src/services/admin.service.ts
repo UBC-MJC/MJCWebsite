@@ -1,8 +1,9 @@
 import prisma from "../db";
 import bcrypt from "bcryptjs";
+import {Player} from "@prisma/client";
 
 // creates an admin account if one does not already exist
-const createAdmin = async () => {
+const createAdmin = async (): Promise<Player> => {
     return prisma.player.upsert({
         where: {
             username: process.env.ADMIN_USERNAME || 'admin'
