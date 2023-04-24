@@ -2,9 +2,9 @@ import {Router} from "express"
 
 import {isAdmin, isAuthenticated} from "../auth/auth";
 
-import {getPlayerNames, getPlayers, login, register} from "../controllers/player.controller";
+import {getPlayerNames, login, register} from "../controllers/player.controller";
 import {createGame, getGame, getGames} from "../controllers/game.controller"
-import {getAdmin} from "../controllers/admin.controller";
+import {getPlayers, addSeason, getSeasons} from "../controllers/admin.controller";
 
 const router: Router = Router()
 
@@ -15,9 +15,10 @@ router.get("/games", isAuthenticated, getGames)
 router.get("/games/:id", isAuthenticated, getGame)
 router.post("/games", isAuthenticated, createGame)
 
-router.get("/players", isAuthenticated, isAdmin, getPlayers)
 router.get("/players/gametype/:gameType", getPlayerNames)
 
-router.get("/admin", isAuthenticated, getAdmin)
+router.get("/admin/players", isAuthenticated, isAdmin, getPlayers)
+router.get("/admin/seasons", isAuthenticated, isAdmin, getSeasons)
+router.post("/admin/seasons", isAuthenticated, isAdmin, addSeason)
 
 export default router

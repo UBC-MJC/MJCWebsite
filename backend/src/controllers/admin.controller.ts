@@ -1,11 +1,30 @@
-import {Request, Response} from "express";
+import {NextFunction, Request, Response} from "express";
+import {findAllPlayers} from "../services/player.service";
+import createError from "http-errors";
+import {getAllSeasons} from "../services/season.service";
 
-const getAdmin = async (req: Request, res: Response): Promise<void> => {
-    try {
-        res.status(200).json({message: "Admin"})
-    } catch (error) {
-        throw error
-    }
+const getPlayers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    findAllPlayers({}).then((players) => {
+        const playersCleaned = players.map((player) => {
+            const {password, ...playerOmitted} = player;
+            return playerOmitted
+        })
+        res.json({players: playersCleaned})
+    }).catch((err: any) => {
+        next(createError.InternalServerError(err.message))
+    })
 }
 
-export {getAdmin}
+const getSeasons = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    getAllSeasons().then((seasons) => {
+        res.json({seasons})
+    }).catch((err: any) => {
+        next(createError.InternalServerError(err.message))
+    })
+}
+
+const addSeason = async (req: Request, res: Response): Promise<void> => {
+
+}
+
+export {getPlayers, getSeasons, addSeason}

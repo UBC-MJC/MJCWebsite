@@ -53,18 +53,4 @@ const addGame = async (createGame: CreateGameType, players: any[], recorderId: s
     });
 }
 
-const getCurrentSeason = async (): Promise<Season> => {
-    const season = await prisma.season.findFirst({
-        where: {
-            endDate: null
-        }
-    })
-
-    if (!season) {
-        throw new Error("No season in progress")
-    }
-
-    return season
-}
-
-export {checkPlayerGameEligibility, addGame, getCurrentSeason, checkPlayerListUnique}
+export {checkPlayerGameEligibility, addGame, checkPlayerListUnique}

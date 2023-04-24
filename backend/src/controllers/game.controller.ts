@@ -1,9 +1,10 @@
 import {NextFunction, Request, Response} from "express"
 import createError from "http-errors";
 import {createGameSchema, CreateGameType} from "../validation/game.validation";
-import {checkPlayerGameEligibility, addGame, getCurrentSeason, checkPlayerListUnique} from "../services/game.service";
+import {checkPlayerGameEligibility, addGame, checkPlayerListUnique} from "../services/game.service";
 import {Game, Player} from "@prisma/client";
 import {findPlayerByUsernames} from "../services/player.service";
+import {getCurrentSeason} from "../services/season.service";
 
 const getGames = async (req: Request, res: Response): Promise<void> => {
     try {
