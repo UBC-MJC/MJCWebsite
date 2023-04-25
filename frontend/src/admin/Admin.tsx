@@ -1,13 +1,18 @@
-import {FC, useState} from "react";
+import React, {FC, useContext, useState} from "react";
 import {withPlayerCondition} from "../common/withPlayerCondition";
-import { Nav, Container } from 'react-bootstrap';
+import {Nav, Container, Button} from 'react-bootstrap';
 import AdminPlayers from "./AdminPlayers";
 import AdminSeason from "./AdminSeason";
+import {makeDummyAdmins} from "../api/AdminAPI";
+import {AuthContext} from "../common/AuthContext";
+import {AxiosError} from "axios/index";
 
 
 type AdminTab = "players" | "season"
 
 const AdminComponent: FC = () => {
+    const { player } = useContext(AuthContext);
+
     const [tab, setTab] = useState<AdminTab>("players");
 
     const handleSelect = (eventKey: any) => {
@@ -26,8 +31,19 @@ const AdminComponent: FC = () => {
         }
     }
 
+    const makeTestAdmins = () => {
+        makeDummyAdmins(player!.authToken).catch((err: any) => {
+            console.log("hi");
+        });
+    }
+
     return (
         <Container fluid="md" className="my-4">
+            <div className="d-grid my-4">
+                <Button variant="primary" onClick={makeTestAdmins}>
+                    Make Admins
+                </Button>
+            </div>
             <Nav variant="tabs" defaultActiveKey="players" onSelect={handleSelect}>
                 <Nav.Item>
                     <Nav.Link eventKey="players">Players</Nav.Link>

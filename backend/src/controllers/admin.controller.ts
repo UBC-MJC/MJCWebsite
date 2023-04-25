@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import {findAllPlayers} from "../services/player.service";
 import createError from "http-errors";
 import {getAllSeasons} from "../services/season.service";
+import {makeDummyAdmins} from "../services/admin.service";
 
 const getPlayers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     findAllPlayers({}).then((players) => {
@@ -27,4 +28,10 @@ const addSeason = async (req: Request, res: Response): Promise<void> => {
 
 }
 
-export {getPlayers, getSeasons, addSeason}
+const makeTestAdmins = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    makeDummyAdmins().catch((err: any) => {
+        next(createError.InternalServerError(err.message))
+    })
+}
+
+export {getPlayers, getSeasons, addSeason, makeTestAdmins}
