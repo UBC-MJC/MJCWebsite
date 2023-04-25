@@ -24,13 +24,13 @@ const getAllSeasons = async (): Promise<Season[]> => {
     })
 }
 
-const addSeason = async (startDate: Date): Promise<Season> => {
+const createSeason = async (seasonName: string, startDate: Date): Promise<Season> => {
     return prisma.season.create({
         data: {
-            name: "Season 1",
+            name: seasonName,
             startDate: startDate
         }
     })
 }
 
-export {getCurrentSeason, getAllSeasons, addSeason}
+export {getCurrentSeason, getAllSeasons, createSeason}

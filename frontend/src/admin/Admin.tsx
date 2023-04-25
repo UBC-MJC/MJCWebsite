@@ -1,35 +1,13 @@
-import React, {FC, useContext, useState} from "react";
+import React, {FC, useContext} from "react";
 import {withPlayerCondition} from "../common/withPlayerCondition";
-import {Nav, Container, Button} from 'react-bootstrap';
+import {Container, Button, Tabs, Tab} from 'react-bootstrap';
 import AdminPlayers from "./AdminPlayers";
 import AdminSeason from "./AdminSeason";
 import {makeDummyAdmins} from "../api/AdminAPI";
 import {AuthContext} from "../common/AuthContext";
-import {AxiosError} from "axios/index";
-
-
-type AdminTab = "players" | "season"
 
 const AdminComponent: FC = () => {
     const { player } = useContext(AuthContext);
-
-    const [tab, setTab] = useState<AdminTab>("players");
-
-    const handleSelect = (eventKey: any) => {
-        setTab(eventKey)
-    }
-
-    const playersHeader = AdminPlayers({})
-    const seasonHeader = AdminSeason({})
-
-    const getTabContent = (tab: AdminTab) => {
-        switch (tab) {
-            case "players":
-                return playersHeader
-            case "season":
-                return seasonHeader
-        }
-    }
 
     const makeTestAdmins = () => {
         makeDummyAdmins(player!.authToken).catch((err: any) => {
@@ -44,15 +22,14 @@ const AdminComponent: FC = () => {
                     Make Admins
                 </Button>
             </div>
-            <Nav variant="tabs" defaultActiveKey="players" onSelect={handleSelect}>
-                <Nav.Item>
-                    <Nav.Link eventKey="players">Players</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link eventKey="season">Season</Nav.Link>
-                </Nav.Item>
-            </Nav>
-            {getTabContent(tab)}
+            <Tabs variant="tabs" defaultActiveKey="players">
+                <Tab eventKey="players" title="Players">
+                    <AdminPlayers />
+                </Tab>
+                <Tab eventKey="season" title="Season">
+                    <AdminSeason />
+                </Tab>
+            </Tabs>
         </Container>
     );
 }

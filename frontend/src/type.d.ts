@@ -45,6 +45,13 @@ interface IPlayer {
     createdAt: string
 }
 
+interface ISeason {
+    id: number
+    name: string
+    startDate: string
+    endDate?: string
+}
+
 type AuthContextType = {
     player: IPlayer | undefined
     login: (loginData: LoginDataType) => Promise<void>;
