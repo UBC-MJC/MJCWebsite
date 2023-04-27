@@ -1,11 +1,12 @@
 import {NextFunction, Request, Response} from "express";
 import {findAllPlayers} from "../services/player.service";
 import createError from "http-errors";
-import {createSeason, getAllSeasons, getCurrentSeason} from "../services/season.service";
-import {makeDummyAdmins} from "../services/admin.service";
+import {createSeason, findAllSeasons, getCurrentSeason} from "../services/season.service";
+import {makeDummyAdmins, deletePlayer, updatePlayer} from "../services/admin.service";
 import {Season} from "@prisma/client";
+import {playerSchema, PlayerType} from "../validation/player.validation";
 
-const getPlayers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const getPlayersHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     findAllPlayers({}).then((players) => {
         const playersCleaned = players.map((player) => {
             const {password, ...playerOmitted} = player;
@@ -17,17 +18,37 @@ const getPlayers = async (req: Request, res: Response, next: NextFunction): Prom
     })
 }
 
-const deletePlayer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const updatePlayerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const {id} = req.params
     if (!id) {
         next(createError.BadRequest("Invalid player id"))
     }
 
-    
+    playerSchema.validate(req.body.player).then((player: PlayerType) =>
+        updatePlayer(id, player)
+    ).then((player) => {
+        const {password, ...playerOmitted} = player;
+        res.json({player: playerOmitted})
+    }).catch((err: any) => {
+        next(createError.InternalServerError(err.message))
+    })
 }
 
-const getSeasons = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    getAllSeasons().then((seasons) => {
+const deletePlayerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const {id} = req.params
+    if (!id) {
+        next(createError.BadRequest("Invalid player id"))
+    }
+
+    deletePlayer(id).then((player) => {
+        res.json({player: player})
+    }).catch((err: any) => {
+        next(createError.InternalServerError(err.message))
+    })
+}
+
+const getSeasonsHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    findAllSeasons().then((seasons) => {
         let currentSeason: Season | undefined = undefined
 
         for (let i = 0; i < seasons.length; i++) {
@@ -47,7 +68,7 @@ const getSeasons = async (req: Request, res: Response, next: NextFunction): Prom
     })
 }
 
-const addSeason = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const createSeasonHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     getCurrentSeason().then((season) => {
         next(createError.InternalServerError("Season already in progress"))
     }).catch((err: any) => {
@@ -64,10 +85,10 @@ const addSeason = async (req: Request, res: Response, next: NextFunction): Promi
     })
 }
 
-const makeTestAdmins = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const makeTestAdminsHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     makeDummyAdmins().catch((err: any) => {
         next(createError.InternalServerError(err.message))
     })
 }
 
-export {getPlayers, getSeasons, addSeason, makeTestAdmins}
+export {getPlayersHandler, updatePlayerHandler, deletePlayerHandler, getSeasonsHandler, createSeasonHandler, makeTestAdminsHandler}

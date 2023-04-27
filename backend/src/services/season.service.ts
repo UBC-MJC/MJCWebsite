@@ -15,7 +15,7 @@ const getCurrentSeason = async (): Promise<Season> => {
     return season
 }
 
-const getAllSeasons = async (): Promise<Season[]> => {
+const findAllSeasons = async (): Promise<Season[]> => {
     const desc: 'asc' | 'desc' = 'desc'
     return prisma.season.findMany({
         orderBy: {
@@ -33,4 +33,4 @@ const createSeason = async (seasonName: string, startDate: Date): Promise<Season
     })
 }
 
-export {getCurrentSeason, getAllSeasons, createSeason}
+export {getCurrentSeason, findAllSeasons, createSeason}

@@ -4,7 +4,13 @@ import {isAdmin, isAuthenticated} from "../auth/auth";
 
 import {getPlayerNamesHandler, loginHandler, registerHandler} from "../controllers/player.controller";
 import {createGameHandler, getGameHandler, getGamesHandler} from "../controllers/game.controller"
-import {getPlayers, addSeason, getSeasons, makeTestAdmins} from "../controllers/admin.controller";
+import {
+    getPlayersHandler,
+    createSeasonHandler,
+    getSeasonsHandler,
+    makeTestAdminsHandler,
+    deletePlayerHandler, updatePlayerHandler
+} from "../controllers/admin.controller";
 
 const router: Router = Router()
 
@@ -17,9 +23,11 @@ router.post("/games", isAuthenticated, createGameHandler)
 
 router.get("/players/gametype/:gameType", getPlayerNamesHandler)
 
-router.get("/admin/players", isAuthenticated, isAdmin, getPlayers)
-router.get("/admin/seasons", isAuthenticated, isAdmin, getSeasons)
-router.post("/admin/seasons", isAuthenticated, isAdmin, addSeason)
-router.post("/admin/makeDummyAdmins", isAuthenticated, isAdmin, makeTestAdmins)
+router.get("/admin/players", isAuthenticated, isAdmin, getPlayersHandler)
+router.put("/admin/players/:id", isAuthenticated, isAdmin, updatePlayerHandler)
+router.delete("/admin/players/:id", isAuthenticated, isAdmin, deletePlayerHandler)
+router.get("/admin/seasons", isAuthenticated, isAdmin, getSeasonsHandler)
+router.post("/admin/seasons", isAuthenticated, isAdmin, createSeasonHandler)
+router.post("/admin/makeDummyAdmins", isAuthenticated, isAdmin, makeTestAdminsHandler)
 
 export default router

@@ -15,6 +15,7 @@ import {
 } from "@tanstack/react-table"
 import { FaEdit, FaTrash, FaCheck, FaSave, FaBan } from "react-icons/fa";
 import IconButton from "../common/IconButton";
+import confirmDialog from "../common/ConfirmationDialog";
 
 const booleanToCheckmark = (value: boolean) => {
     return value ? <div className="d-flex align-items-center justify-content-center"><FaCheck /></div> : ""
@@ -26,7 +27,7 @@ declare module '@tanstack/table-core' {
         setEditableRowId: (id: string | undefined) => void
         editedPlayer: TData | undefined
         setEditedPlayer: (player: TData | undefined) => void
-        savePlayer: (player: Row<TData>) => void
+        savePlayer: () => void
         deletePlayer: (playerId: string) => void
     }
 }
@@ -106,6 +107,15 @@ const AdminPlayers: FC = () => {
     }, [player])
 
     const deletePlayer = async (playerId: string) => {
+        const dialogOptions = {
+            okText: "Delete",
+            okButtonStyle: "danger"
+        }
+        const response = await confirmDialog('Are you sure you want to delete this player?', dialogOptions)
+        if (!response) {
+            return
+        }
+
         deletePlayerAPI(player!.authToken, playerId).then((response) => {
             setPlayers(players.filter((player) => player.id !== playerId))
         }).catch((error: AxiosError) => {
@@ -113,8 +123,12 @@ const AdminPlayers: FC = () => {
         })
     }
 
-    const savePlayer = async (playerRow: Row<Player>) => {
-        const editedPlayer = playerRow.original
+    const savePlayer = async () => {
+        if (typeof editedPlayer === "undefined") {
+            console.log("Error updating player: editedPlayer is undefined")
+            return
+        }
+
         updatePlayerAPI(player!.authToken, editedPlayer).then((response) => {
             const newPlayers = players.map((player) => {
                 if (player.id === editedPlayer.id) {
@@ -123,6 +137,8 @@ const AdminPlayers: FC = () => {
                 return {...player}
             })
             setPlayers(newPlayers)
+            setEditableRowId(undefined)
+            setEditedPlayer(undefined)
         }).catch((error: AxiosError) => {
             console.log("Error updating player: ", error.response?.data)
         })
@@ -192,8 +208,8 @@ const PlayerRowActions: FC<PlayerRowActionsProps> = ({context}) => {
         meta.setEditedPlayer(undefined)
     }
 
-    const saveRow = (row: Row<Player>) => {
-        meta.savePlayer(row)
+    const saveRow = () => {
+        meta.savePlayer()
     }
 
     const deleteRow = (rowId: string) => {
@@ -207,7 +223,7 @@ const PlayerRowActions: FC<PlayerRowActionsProps> = ({context}) => {
                     <IconButton onClick={() => exitRow()}>
                         <FaBan />
                     </IconButton>
-                    <IconButton onClick={() => saveRow(context.row)}>
+                    <IconButton onClick={() => saveRow()}>
                         <FaSave />
                     </IconButton>
                 </>
