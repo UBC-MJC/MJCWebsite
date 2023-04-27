@@ -4,7 +4,7 @@ import {AuthContext} from "./AuthContext";
 
 const withPlayerCondition = (
     Component: FC<any>,
-    condition: (player: IPlayer | undefined, props?: any) => boolean,
+    condition: (player: Player | undefined, props?: any) => boolean,
     redirectTo: string
 ) => {
     return function InnerComponent(props: any) {

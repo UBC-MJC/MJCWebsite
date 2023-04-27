@@ -27,7 +27,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 const PORT: string | number = process.env.PORT || 4000
 
-
 createAdmin().then(() => {
     app.listen(PORT, () =>
         console.log(`Server running on http://localhost:${PORT}`)

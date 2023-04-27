@@ -2,20 +2,28 @@ import axios from "axios"
 import {baseUrl, getAuthConfig} from "./APIUtils";
 import {AxiosResponse} from "axios";
 
-const getPlayersAdmin = async (authToken: string) => {
+const getPlayersAdminAPI = async (authToken: string) => {
     return axios.get(baseUrl + "/admin/players", getAuthConfig(authToken))
 }
 
-const getSeasonsAdmin = async (authToken: string) => {
+const deletePlayerAPI = async (authToken: string, playerId: string) => {
+    return axios.delete(baseUrl + "/admin/players/" + playerId, getAuthConfig(authToken))
+}
+
+const updatePlayerAPI = async (authToken: string, player: Player) => {
+    return axios.put(baseUrl + "/admin/players/" + player.id, {player}, getAuthConfig(authToken))
+}
+
+const getSeasonsAdminAPI = async (authToken: string) => {
     return axios.get(baseUrl + "/admin/seasons", getAuthConfig(authToken))
 }
 
-const createSeasonAdmin = async (authToken: string, seasonName: string) => {
+const createSeasonAdminAPI = async (authToken: string, seasonName: string) => {
     return axios.post(baseUrl + "/admin/seasons", {seasonName}, getAuthConfig(authToken))
 }
 
-const makeDummyAdmins = async (authToken: string): Promise<AxiosResponse<void>> => {
+const makeDummyAdminsAPI = async (authToken: string): Promise<AxiosResponse<void>> => {
     return axios.post(baseUrl + "/admin/makeDummyAdmins", {}, getAuthConfig(authToken))
 }
 
-export {getPlayersAdmin, getSeasonsAdmin, createSeasonAdmin, makeDummyAdmins}
+export {getPlayersAdminAPI, deletePlayerAPI, updatePlayerAPI, getSeasonsAdminAPI, createSeasonAdminAPI, makeDummyAdminsAPI}

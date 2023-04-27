@@ -29,10 +29,10 @@ type RegisterDataType = {
 }
 
 type PlayerAPIDataType = {
-    player: IPlayer
+    player: Player
 }
 
-interface IPlayer {
+type Player = {
     id: string
     authToken: string
     username: string
@@ -45,7 +45,7 @@ interface IPlayer {
     createdAt: string
 }
 
-interface ISeason {
+type Season = {
     id: number
     name: string
     startDate: string
@@ -53,7 +53,7 @@ interface ISeason {
 }
 
 type AuthContextType = {
-    player: IPlayer | undefined
+    player: Player | undefined
     login: (loginData: LoginDataType) => Promise<void>;
     register: (registerData: RegisterDataType) => Promise<void>;
     logout: () => Promise<void>;

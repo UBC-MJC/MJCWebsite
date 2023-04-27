@@ -17,6 +17,15 @@ const getPlayers = async (req: Request, res: Response, next: NextFunction): Prom
     })
 }
 
+const deletePlayer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const {id} = req.params
+    if (!id) {
+        next(createError.BadRequest("Invalid player id"))
+    }
+
+    
+}
+
 const getSeasons = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     getAllSeasons().then((seasons) => {
         let currentSeason: Season | undefined = undefined
@@ -42,18 +51,16 @@ const addSeason = async (req: Request, res: Response, next: NextFunction): Promi
     getCurrentSeason().then((season) => {
         next(createError.InternalServerError("Season already in progress"))
     }).catch((err: any) => {
-        return
-    }).then(() => {
         const {seasonName} = req.body
         if (!seasonName || typeof seasonName !== "string") {
             next(createError.BadRequest("Invalid season name"))
         }
 
-        return createSeason(seasonName, new Date())
-    }).then((season) => {
-        res.json({season})
-    }).catch((err: any) => {
-        next(createError.InternalServerError(err.message))
+        createSeason(seasonName, new Date()).then((season) => {
+            res.json({season})
+        }).catch((err: any) => {
+            next(createError.InternalServerError(err.message))
+        })
     })
 }
 

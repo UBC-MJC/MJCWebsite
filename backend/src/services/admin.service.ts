@@ -70,5 +70,12 @@ const makeDummyAdmins = async (): Promise<any> => {
     })
 }
 
+const deleteAdmin = async (id: string): Promise<Player> => {
+    return prisma.player.delete({
+        where: {
+            id
+        }
+    })
+}
 
 export {createAdmin, makeDummyAdmins}

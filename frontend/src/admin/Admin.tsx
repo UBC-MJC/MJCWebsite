@@ -3,14 +3,14 @@ import {withPlayerCondition} from "../common/withPlayerCondition";
 import {Container, Button, Tabs, Tab} from 'react-bootstrap';
 import AdminPlayers from "./AdminPlayers";
 import AdminSeason from "./AdminSeason";
-import {makeDummyAdmins} from "../api/AdminAPI";
+import {makeDummyAdminsAPI} from "../api/AdminAPI";
 import {AuthContext} from "../common/AuthContext";
 
 const AdminComponent: FC = () => {
     const { player } = useContext(AuthContext);
 
     const makeTestAdmins = () => {
-        makeDummyAdmins(player!.authToken).catch((err: any) => {
+        makeDummyAdminsAPI(player!.authToken).catch((err: any) => {
             console.log("hi");
         });
     }
@@ -34,7 +34,7 @@ const AdminComponent: FC = () => {
     );
 }
 
-const hasAdminPermissions = (player: IPlayer | undefined): boolean => {
+const hasAdminPermissions = (player: Player | undefined): boolean => {
     return typeof player !== "undefined" && player.admin
 }
 
