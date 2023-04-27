@@ -2,21 +2,21 @@ import {Router} from "express"
 
 import {isAuthenticated} from "../auth/auth";
 
-import {getPlayerNames, login, register} from "../controllers/player.controller";
-import {createGame, getGame, getGames} from "../controllers/game.controller"
-import {getAdmin} from "../controllers/admin.controller";
+import {getPlayerNamesHandler, loginHandler, registerHandler} from "../controllers/player.controller";
+import {createGameHandler, getGameHandler, getGamesHandler} from "../controllers/game.controller"
+import {getAdminHandler} from "../controllers/admin.controller";
 
 const router: Router = Router()
 
-router.post("/register", register)
-router.post("/login", login)
+router.post("/register", registerHandler)
+router.post("/login", loginHandler)
 
-router.get("/games", isAuthenticated, getGames)
-router.get("/games/:id", isAuthenticated, getGame)
-router.post("/games", isAuthenticated, createGame)
+router.get("/games", isAuthenticated, getGamesHandler)
+router.get("/games/:id", isAuthenticated, getGameHandler)
+router.post("/games", isAuthenticated, createGameHandler)
 
-router.get("/players/gametype/:gameType", getPlayerNames)
+router.get("/players/gametype/:gameType", getPlayerNamesHandler)
 
-router.get("/admin", isAuthenticated, getAdmin)
+router.get("/admin", isAuthenticated, getAdminHandler)
 
 export default router
