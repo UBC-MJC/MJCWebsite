@@ -20,7 +20,7 @@ const checkPlayerGameEligibility = (gameVariant: string, player: Player): void =
     throw new Error("Player not eligible for game type")
 }
 
-const addGame = async (createGame: CreateGameType, players: any[], recorderId: string, seasonId: string): Promise<Game> => {
+const createGame = async (createGame: CreateGameType, players: any[], recorderId: string, seasonId: string): Promise<Game> => {
     return prisma.game.create({
         data: {
             season: {
@@ -53,4 +53,4 @@ const addGame = async (createGame: CreateGameType, players: any[], recorderId: s
     });
 }
 
-export {checkPlayerGameEligibility, addGame, checkPlayerListUnique}
+export {checkPlayerGameEligibility, createGame, checkPlayerListUnique}

@@ -1,12 +1,12 @@
 import {NextFunction, Request, Response} from "express"
 import createError from "http-errors";
 import {createGameSchema, CreateGameType} from "../validation/game.validation";
-import {checkPlayerGameEligibility, addGame, checkPlayerListUnique} from "../services/game.service";
+import {checkPlayerGameEligibility, createGame, checkPlayerListUnique} from "../services/game.service";
 import {Game, Player} from "@prisma/client";
 import {findPlayerByUsernames} from "../services/player.service";
 import {getCurrentSeason} from "../services/season.service";
 
-const getGames = async (req: Request, res: Response): Promise<void> => {
+const getGamesHandler = async (req: Request, res: Response): Promise<void> => {
     try {
         res.status(200).json({})
     } catch (error) {
@@ -14,7 +14,7 @@ const getGames = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
-const getGame = async (req: Request, res: Response): Promise<void> => {
+const getGameHandler = async (req: Request, res: Response): Promise<void> => {
     try {
         res.status(200).json({})
     } catch (error) {
@@ -22,7 +22,7 @@ const getGame = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
-const createGame = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const createGameHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const createGameObject: CreateGameType = await createGameSchema.validate(req.body)
 
@@ -43,7 +43,7 @@ const createGame = async (req: Request, res: Response, next: NextFunction): Prom
 
         const season = await getCurrentSeason();
 
-        const newGame: Game = await addGame(createGameObject, playersQuery, req.player.id, season.id)
+        const newGame: Game = await createGame(createGameObject, playersQuery, req.player.id, season.id)
 
         res.status(201).json({
             gameId: newGame.id,
@@ -73,4 +73,4 @@ const getWind = (index: number): string => {
     }
 }
 
-export {getGames, getGame, createGame}
+export {getGamesHandler, getGameHandler, createGameHandler}

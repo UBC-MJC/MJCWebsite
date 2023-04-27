@@ -5,7 +5,7 @@ import {createPlayer, findAllPlayers, findPlayerByUsername} from "../services/pl
 import {generateToken} from "../auth/jwt";
 import bcrypt from "bcryptjs";
 
-const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const registerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     registerSchema.validate(req.body).then(() => createPlayer(req.body)).then((player) => {
         if (!player) {
             throw new Error("Error creating player")
@@ -21,7 +21,7 @@ const register = async (req: Request, res: Response, next: NextFunction): Promis
     })
 }
 
-const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const loginHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     loginSchema.validate(req.body).then(() => findPlayerByUsername(req.body.username)).then((player) => {
         if (player && bcrypt.compareSync(req.body.password, player.password)) {
             const token = generateToken(player.id)
@@ -37,7 +37,7 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
     })
 }
 
-const getPlayerNames = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const getPlayerNamesHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const gameType = req.params.gameType
 
     let query = {}
@@ -63,4 +63,4 @@ const getPlayerNames = async (req: Request, res: Response, next: NextFunction): 
     })
 }
 
-export {register, login, getPlayerNames}
+export {registerHandler, loginHandler, getPlayerNamesHandler}
