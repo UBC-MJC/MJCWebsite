@@ -84,7 +84,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
     )
 }
 
-const hasGamePermissions = (player: IPlayer | undefined, props: any): boolean => {
+const hasGamePermissions = (player: Player | undefined, props: any): boolean => {
     if (props.gameVariant === "jp") {
         return typeof player !== "undefined" && player.japaneseQualified
     } else if (props.gameVariant === "hk") {

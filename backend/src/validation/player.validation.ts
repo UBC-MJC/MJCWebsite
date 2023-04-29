@@ -1,4 +1,17 @@
-import { object, string, InferType } from 'yup';
+import {object, string, InferType, boolean} from 'yup';
+
+const playerSchema = object({
+    id: string().required(),
+    firstName: string().required(),
+    lastName: string().required(),
+    username: string().required(),
+    email: string().email().required(),
+    admin: boolean().required(),
+    japaneseQualified: boolean().required(),
+    hongKongQualified: boolean().required()
+})
+
+type PlayerType = InferType<typeof playerSchema>
 
 const registerSchema = object({
     firstName: string().required(),
@@ -17,4 +30,4 @@ const loginSchema = object({
 
 type LoginType = InferType<typeof loginSchema>
 
-export { registerSchema, RegisterType, loginSchema, LoginType }
+export { playerSchema, PlayerType, registerSchema, RegisterType, loginSchema, LoginType }

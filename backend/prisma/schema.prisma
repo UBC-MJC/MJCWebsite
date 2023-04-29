@@ -88,10 +88,10 @@ model Game {
 }
 
 model Season {
-    id        String    @id @default(cuid())
+    id        String   @id @default(cuid())
     name      String
-    startDate DateTime
-    endDate   DateTime?
+    startDate DateTime @default(now())
+    endDate   DateTime
     games     Game[]
 }
 

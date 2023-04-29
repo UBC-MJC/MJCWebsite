@@ -1,29 +1,25 @@
-import {FC, useContext, useEffect} from "react";
-import {AuthContext} from "../common/AuthContext";
-import {useNavigate} from "react-router-dom";
-import {checkAdmin} from "../api/AdminAPI";
+import React, {FC} from "react";
 import {withPlayerCondition} from "../common/withPlayerCondition";
+import {Container, Tabs, Tab} from 'react-bootstrap';
+import AdminPlayers from "./AdminPlayers";
+import AdminSeason from "./AdminSeason";
 
 const AdminComponent: FC = () => {
-    const { player } = useContext(AuthContext);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        checkAdmin(player!.authToken).then((response) => {
-            console.log(response.data.message)
-        }).catch(() => {
-            navigate("/");
-        })
-    }, [player, navigate]);
-
     return (
-        <div>
-            <h1>Admin</h1>
-        </div>
-    )
+        <Container fluid="lg" className="my-4">
+            <Tabs variant="tabs" defaultActiveKey="players">
+                <Tab eventKey="players" title="Players">
+                    <AdminPlayers />
+                </Tab>
+                <Tab eventKey="season" title="Season">
+                    <AdminSeason />
+                </Tab>
+            </Tabs>
+        </Container>
+    );
 }
 
-const hasAdminPermissions = (player: IPlayer | undefined): boolean => {
+const hasAdminPermissions = (player: Player | undefined): boolean => {
     return typeof player !== "undefined" && player.admin
 }
 

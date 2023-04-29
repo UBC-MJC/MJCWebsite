@@ -36,8 +36,8 @@ const isAdmin = (req: Request, res: Response, next: NextFunction) => {
     if (req.player && req.player.admin) {
         return next();
     } else {
-        return next(createError.Unauthorized("You are not an admin"))
+        return next(createError.Unauthorized("User is not an admin"))
     }
 }
 
-export { isAuthenticated };
+export { isAuthenticated, isAdmin };

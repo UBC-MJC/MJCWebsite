@@ -63,12 +63,4 @@ const getPlayerNamesHandler = async (req: Request, res: Response, next: NextFunc
     })
 }
 
-const getPlayers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    findAllPlayers({}).then((players) => {
-        res.json({players})
-    }).catch((err: any) => {
-        next(createError.InternalServerError(err.message))
-    })
-}
-
 export {registerHandler, loginHandler, getPlayerNamesHandler}
