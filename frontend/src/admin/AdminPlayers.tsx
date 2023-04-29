@@ -1,15 +1,14 @@
 import React, {FC, useContext, useEffect, useState} from "react";
 import {AuthContext} from "../common/AuthContext";
 import {AxiosError} from "axios";
-import {deletePlayerAPI, getPlayersAdminAPI, updatePlayerAPI} from "../api/AdminAPI";
-import {Form, Table as BTable} from "react-bootstrap";
+import {deletePlayerAPI, getPlayersAdminAPI, makeDummyAdminsAPI, updatePlayerAPI} from "../api/AdminAPI";
+import {Button, Form, Table as BTable} from "react-bootstrap";
 import {
     CellContext,
     ColumnDef,
     createColumnHelper,
     flexRender,
     getCoreRowModel,
-    Row,
     RowData,
     useReactTable,
 } from "@tanstack/react-table"
@@ -23,12 +22,12 @@ const booleanToCheckmark = (value: boolean) => {
 
 declare module '@tanstack/table-core' {
     interface TableMeta<TData extends RowData> {
-        editableRowId: string | undefined
-        setEditableRowId: (id: string | undefined) => void
-        editedPlayer: TData | undefined
-        setEditedPlayer: (player: TData | undefined) => void
-        savePlayer: () => void
-        deletePlayer: (playerId: string) => void
+        playersEditableRowId?: string | undefined
+        setPlayersEditableRowId?: (id: string | undefined) => void
+        editedPlayer?: TData | undefined
+        setEditedPlayer?: (player: TData | undefined) => void
+        savePlayer?: () => Promise<void>
+        deletePlayer?: (playerId: string) => Promise<void>
     }
 }
 
@@ -42,14 +41,14 @@ const EditableBooleanCell = (cellContext: CellContext<Player, any>) => {
             [column.id]: e.target.checked as boolean
         }
 
-        table.options.meta!.setEditedPlayer(newPlayer)
+        table.options.meta!.setEditedPlayer!(newPlayer)
     }
 
     return (
         <>
-            {row.id === table.options.meta?.editableRowId ? (
+            {row.id === table.options.meta?.playersEditableRowId ? (
                 <Form.Check
-                    className="d-flex align-items-center justify-content-center"
+                    className="text-center"
                     defaultChecked={initialValue}
                     onChange={onChange}
                 />
@@ -117,7 +116,7 @@ const AdminPlayers: FC = () => {
         }
 
         deletePlayerAPI(player!.authToken, playerId).then((response) => {
-            setPlayers(players.filter((player) => player.id !== playerId))
+            setPlayers(players.filter((player) => player.id !== response.data.id))
         }).catch((error: AxiosError) => {
             console.log("Error deleting player: ", error.response?.data)
         })
@@ -144,14 +143,20 @@ const AdminPlayers: FC = () => {
         })
     }
 
+    const makeTestAdmins = () => {
+        makeDummyAdminsAPI(player!.authToken).catch((err: any) => {
+            console.log("Error making dummy admins: ", err.response?.data);
+        });
+    }
+
     const table = useReactTable({
         data: players,
         columns: playerColumns,
         getCoreRowModel: getCoreRowModel(),
         getRowId: (row) => row.id,
         meta: {
-            editableRowId,
-            setEditableRowId,
+            playersEditableRowId: editableRowId,
+            setPlayersEditableRowId: setEditableRowId,
             editedPlayer,
             setEditedPlayer,
             savePlayer,
@@ -160,33 +165,40 @@ const AdminPlayers: FC = () => {
     })
 
     return (
-        <BTable striped borderless hover responsive className="my-4 text-start text-nowrap align-middle">
-            <thead>
-                {table.getHeaderGroups().map(headerGroup => (
-                    <tr key={headerGroup.id}>
-                        {headerGroup.headers.map(header => (
-                            <th key={header.id}>
-                                {flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext()
-                                )}
-                            </th>
-                        ))}
-                    </tr>
-                ))}
-            </thead>
-            <tbody>
-                {table.getRowModel().rows.map(row => (
-                    <tr key={row.id}>
-                        {row.getVisibleCells().map(cell => (
-                            <td key={cell.id}>
-                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </td>
-                        ))}
-                    </tr>
-                ))}
-            </tbody>
-        </BTable>
+        <>
+            <BTable striped borderless hover responsive className="my-4 text-start text-nowrap align-middle">
+                <thead>
+                    {table.getHeaderGroups().map(headerGroup => (
+                        <tr key={headerGroup.id}>
+                            {headerGroup.headers.map(header => (
+                                <th key={header.id}>
+                                    {flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext()
+                                    )}
+                                </th>
+                            ))}
+                        </tr>
+                    ))}
+                </thead>
+                <tbody>
+                    {table.getRowModel().rows.map(row => (
+                        <tr key={row.id}>
+                            {row.getVisibleCells().map(cell => (
+                                <td key={cell.id}>
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </BTable>
+            <div className="my-4">
+                <Button variant="outline-dark" onClick={makeTestAdmins}>
+                    Make Test Admins
+                </Button>
+            </div>
+        </>
     );
 }
 
@@ -195,25 +207,25 @@ type PlayerRowActionsProps = {
 }
 const PlayerRowActions: FC<PlayerRowActionsProps> = ({context}) => {
     const meta = context.table.options?.meta!
-    const rowIsEditable = context.row.id === meta.editableRowId
-    const rowBeingEdited = typeof meta.editableRowId !== "undefined"
+    const rowIsEditable = context.row.id === meta.playersEditableRowId
+    const rowBeingEdited = typeof meta.playersEditableRowId !== "undefined"
 
     const editRow = () => {
-        meta.setEditableRowId(context.row.id)
-        meta.setEditedPlayer(context.row.original)
+        meta.setPlayersEditableRowId!(context.row.id)
+        meta.setEditedPlayer!(context.row.original)
     }
 
     const exitRow = () => {
-        meta.setEditableRowId(undefined)
-        meta.setEditedPlayer(undefined)
+        meta.setPlayersEditableRowId!(undefined)
+        meta.setEditedPlayer!(undefined)
     }
 
     const saveRow = () => {
-        meta.savePlayer()
+        meta.savePlayer!()
     }
 
     const deleteRow = (rowId: string) => {
-        meta.deletePlayer(rowId)
+        meta.deletePlayer!(rowId)
     }
 
     return (

@@ -70,21 +70,4 @@ const makeDummyAdmins = async (): Promise<any> => {
     })
 }
 
-const updatePlayer = async (id: string, player: Partial<Player>): Promise<Player> => {
-    return prisma.player.update({
-        where: {
-            id
-        },
-        data: player
-    })
-}
-
-const deletePlayer = async (id: string): Promise<Player> => {
-    return prisma.player.delete({
-        where: {
-            id
-        }
-    })
-}
-
-export {createAdmin, makeDummyAdmins, deletePlayer, updatePlayer}
+export {createAdmin, makeDummyAdmins}

@@ -3,12 +3,12 @@ import prisma from "../db";
 
 const getCurrentSeason = async (): Promise<Season> => {
     const season = await prisma.season.findFirst({
-        where: {
-            endDate: null
-        }
+        orderBy: {
+            endDate: 'desc',
+        },
     })
 
-    if (!season) {
+    if (!season || season.endDate < new Date()) {
         throw new Error("No season in progress")
     }
 
@@ -16,21 +16,42 @@ const getCurrentSeason = async (): Promise<Season> => {
 }
 
 const findAllSeasons = async (): Promise<Season[]> => {
-    const desc: 'asc' | 'desc' = 'desc'
     return prisma.season.findMany({
         orderBy: {
-            startDate: desc
+            startDate: 'desc'
         }
     })
 }
 
-const createSeason = async (seasonName: string, startDate: Date): Promise<Season> => {
+const createSeason = async (seasonName: string, startDate: Date, endDate: Date): Promise<Season> => {
     return prisma.season.create({
         data: {
             name: seasonName,
-            startDate: startDate
+            startDate: startDate,
+            endDate: endDate
         }
     })
 }
 
-export {getCurrentSeason, findAllSeasons, createSeason}
+const updateSeason = async (season: Season): Promise<Season> => {
+    return prisma.season.update({
+        where: {
+            id: season.id
+        },
+        data: {
+            name: season.name,
+            startDate: season.startDate,
+            endDate: season.endDate
+        }
+    })
+}
+
+const deleteSeason = async (id: string): Promise<Season> => {
+    return prisma.season.delete({
+        where: {
+            id
+        }
+    })
+}
+
+export {getCurrentSeason, findAllSeasons, createSeason, updateSeason, deleteSeason}

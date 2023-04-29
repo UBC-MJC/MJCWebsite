@@ -15,6 +15,22 @@ const createPlayer = async (player: RegisterType): Promise<Player> => {
     })
 }
 
+const updatePlayer = async (id: string, player: Partial<Player>): Promise<Player> => {
+    return prisma.player.update({
+        where: {
+            id
+        },
+        data: player
+    })
+}
+const deletePlayer = async (id: string): Promise<Player> => {
+    return prisma.player.delete({
+        where: {
+            id
+        }
+    })
+}
+
 const findPlayerByEmail = (email: string): Promise<Player | null> => {
     return prisma.player.findUnique({
         where: {
@@ -53,4 +69,4 @@ const findAllPlayers = (query: any): Promise<Player[]> => {
     return prisma.player.findMany(query);
 }
 
-export {createPlayer, findPlayerByEmail, findPlayerById, findPlayerByUsername, findPlayerByUsernames, findAllPlayers}
+export {createPlayer, updatePlayer, deletePlayer, findPlayerByEmail, findPlayerById, findPlayerByUsername, findPlayerByUsernames, findAllPlayers}

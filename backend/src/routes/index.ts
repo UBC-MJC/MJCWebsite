@@ -9,7 +9,10 @@ import {
     createSeasonHandler,
     getSeasonsHandler,
     makeTestAdminsHandler,
-    deletePlayerHandler, updatePlayerHandler
+    deletePlayerHandler,
+    updatePlayerHandler,
+    deleteSeasonHandler,
+    updateSeasonHandler
 } from "../controllers/admin.controller";
 
 const router: Router = Router()
@@ -26,8 +29,12 @@ router.get("/players/gametype/:gameType", getPlayerNamesHandler)
 router.get("/admin/players", isAuthenticated, isAdmin, getPlayersHandler)
 router.put("/admin/players/:id", isAuthenticated, isAdmin, updatePlayerHandler)
 router.delete("/admin/players/:id", isAuthenticated, isAdmin, deletePlayerHandler)
+
 router.get("/admin/seasons", isAuthenticated, isAdmin, getSeasonsHandler)
 router.post("/admin/seasons", isAuthenticated, isAdmin, createSeasonHandler)
+router.put("/admin/seasons/:id", isAuthenticated, isAdmin, updateSeasonHandler)
+router.delete("/admin/seasons/:id", isAuthenticated, isAdmin, deleteSeasonHandler)
+
 router.post("/admin/makeDummyAdmins", isAuthenticated, isAdmin, makeTestAdminsHandler)
 
 export default router

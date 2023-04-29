@@ -1,6 +1,5 @@
 import React, {FC, ReactNode} from "react";
 import {Button} from "react-bootstrap";
-import "./IconButton.css"
 
 interface IconButtonProps {
     children: ReactNode

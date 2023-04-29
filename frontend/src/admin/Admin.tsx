@@ -1,27 +1,12 @@
-import React, {FC, useContext} from "react";
+import React, {FC} from "react";
 import {withPlayerCondition} from "../common/withPlayerCondition";
-import {Container, Button, Tabs, Tab} from 'react-bootstrap';
+import {Container, Tabs, Tab} from 'react-bootstrap';
 import AdminPlayers from "./AdminPlayers";
 import AdminSeason from "./AdminSeason";
-import {makeDummyAdminsAPI} from "../api/AdminAPI";
-import {AuthContext} from "../common/AuthContext";
 
 const AdminComponent: FC = () => {
-    const { player } = useContext(AuthContext);
-
-    const makeTestAdmins = () => {
-        makeDummyAdminsAPI(player!.authToken).catch((err: any) => {
-            console.log("hi");
-        });
-    }
-
     return (
-        <Container fluid="md" className="my-4">
-            <div className="d-grid my-4">
-                <Button variant="primary" onClick={makeTestAdmins}>
-                    Make Admins
-                </Button>
-            </div>
+        <Container fluid="lg" className="my-4">
             <Tabs variant="tabs" defaultActiveKey="players">
                 <Tab eventKey="players" title="Players">
                     <AdminPlayers />

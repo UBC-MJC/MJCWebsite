@@ -46,10 +46,10 @@ type Player = {
 }
 
 type Season = {
-    id: number
+    id: string
     name: string
     startDate: string
-    endDate?: string
+    endDate: string
 }
 
 type AuthContextType = {
