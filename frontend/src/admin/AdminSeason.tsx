@@ -14,7 +14,6 @@ import {
 import IconButton from "../common/IconButton";
 import {FaBan, FaEdit, FaSave} from "react-icons/fa";
 import ModifySeasonModal from "./ModifySeasonModal";
-// import "./Admin.css";
 
 declare module '@tanstack/table-core' {
     interface TableMeta<TData extends RowData> {
