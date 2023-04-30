@@ -1,22 +1,27 @@
 import React, {FC, useContext, useEffect, useState} from 'react'
 import {createGameAPI, getPlayerNames} from '../api/GameAPI'
 import {Button, Col, Container, Row} from "react-bootstrap";
-import PlayerSelect from "./PlayerSelect";
 import {AxiosError} from "axios";
 import {AuthContext} from "../common/AuthContext";
 import {withPlayerCondition} from "../common/withPlayerCondition";
+import Select from 'react-select'
 
 const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
     const { player } = useContext(AuthContext);
 
     const [playerNames, setPlayerNames] = useState<string[]>([])
 
-    const [eastPlayer, setEastPlayer] = useState<string | undefined>(undefined)
-    const [southPlayer, setSouthPlayer] = useState<string | undefined>(undefined)
-    const [westPlayer, setWestPlayer] = useState<string | undefined>(undefined)
-    const [northPlayer, setNorthPlayer] = useState<string | undefined>(undefined)
+    const [eastPlayer, setEastPlayer] = useState<string | null>(null)
+    const [southPlayer, setSouthPlayer] = useState<string | null>(null)
+    const [westPlayer, setWestPlayer] = useState<string | null>(null)
+    const [northPlayer, setNorthPlayer] = useState<string | null>(null)
 
     useEffect(() => {
+        setWestPlayer(null)
+        setSouthPlayer(null)
+        setEastPlayer(null)
+        setNorthPlayer(null)
+
         getPlayerNames(gameVariant).then((response) => {
             setPlayerNames(response.data.playerNames)
         }).catch((error: AxiosError) => {
@@ -57,6 +62,10 @@ const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
 
     const title = `Create Ranked ${getGameTypeString(gameVariant)} Game`
 
+    const selectOptions = playerNames.map((name) => {
+        return { label: name }
+    })
+
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer
     const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4
 
@@ -65,16 +74,44 @@ const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
             <h1 className="my-4">{title}</h1>
             <Row>
                 <Col xs={12} md={6} lg={3} className="mb-4">
-                    <PlayerSelect title={"East"} playerNames={playerNames} setPlayer={setEastPlayer}></PlayerSelect>
+                    <h3>East</h3>
+                    <div className="text-start">
+                        <Select options={selectOptions}
+                                isSearchable
+                                placeholder="Choose a Player"
+                                value={!!eastPlayer ? {label: eastPlayer} : null}
+                                onChange={e => setEastPlayer(e!.label)}/>
+                    </div>
                 </Col>
                 <Col xs={12} md={6} lg={3} className="mb-4">
-                    <PlayerSelect title={"South"} playerNames={playerNames} setPlayer={setSouthPlayer}></PlayerSelect>
+                    <h3>South</h3>
+                    <div className="text-start">
+                        <Select options={selectOptions}
+                                isSearchable
+                                placeholder="Choose a Player"
+                                value={!!southPlayer ? {label: southPlayer} : null}
+                                onChange={e => setSouthPlayer(e!.label)}/>
+                    </div>
                 </Col>
                 <Col xs={12} md={6} lg={3} className="mb-4">
-                    <PlayerSelect title={"West"} playerNames={playerNames} setPlayer={setWestPlayer}></PlayerSelect>
+                    <h3>West</h3>
+                    <div className="text-start">
+                        <Select options={selectOptions}
+                                isSearchable
+                                placeholder="Choose a Player"
+                                value={!!westPlayer ? {label: westPlayer} : null}
+                                onChange={e => setWestPlayer(e!.label)}/>
+                    </div>
                 </Col>
                 <Col xs={12} md={6} lg={3} className="mb-4">
-                    <PlayerSelect title={"North"} playerNames={playerNames} setPlayer={setNorthPlayer}></PlayerSelect>
+                    <h3>North</h3>
+                    <div className="text-start">
+                        <Select options={selectOptions}
+                                isSearchable
+                                placeholder="Choose a Player"
+                                value={!!northPlayer ? {label: northPlayer} : null}
+                                onChange={e => setNorthPlayer(e!.label)}/>
+                    </div>
                 </Col>
             </Row>
             <Button className="my-4 mx-auto" variant="primary" disabled={playerSelectMissing || notUnique} onClick={createGame}>
