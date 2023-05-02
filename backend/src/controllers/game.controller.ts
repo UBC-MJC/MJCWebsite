@@ -8,7 +8,7 @@ import {
     getDefaultRound,
     getWind, getGame
 } from "../services/game.service";
-import {Game, GameVariant, Player} from "@prisma/client";
+import {Game, Player} from "@prisma/client";
 import {findPlayerByUsernames} from "../services/player.service";
 import {getCurrentSeason} from "../services/season.service";
 
@@ -55,7 +55,7 @@ const createGameHandler = async (req: Request, res: Response, next: NextFunction
         checkPlayerGameEligibility(gameVariant, req.player)
         const playerList = await findPlayerByUsernames(players);
         playerList.forEach((player) => checkPlayerGameEligibility(gameVariant, player))
-        const playersQuery = playerList.map((player: Player, index) => {
+        const playersQuery = playerList.map((player: Player) => {
             return {
                 wind: getWind(players.indexOf(player.username)),
                 player: {
