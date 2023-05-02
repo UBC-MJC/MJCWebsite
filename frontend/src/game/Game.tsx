@@ -25,7 +25,7 @@ const Game: FC = () => {
                 return
             }
         })
-    }, [gameId])
+    }, [gameId, navigate])
 
     if (isNaN(gameId)) {
         return (
