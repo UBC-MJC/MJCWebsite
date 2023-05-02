@@ -7,5 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2023-05-02
+
+### Added
+- getGame routes for backend
+
+### Changed
+- Simplified Game schema
+
 ## [0.0.1] - 2023-04-17
 - Start a changelog

@@ -5,8 +5,10 @@ import {AxiosError} from "axios";
 import {AuthContext} from "../common/AuthContext";
 import {withPlayerCondition} from "../common/withPlayerCondition";
 import Select from 'react-select'
+import {useNavigate} from "react-router-dom";
 
 const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
+    const navigate = useNavigate();
     const { player } = useContext(AuthContext);
 
     const [playerNames, setPlayerNames] = useState<string[]>([])
@@ -36,7 +38,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
 
         const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
         createGameAPI(player!.authToken, "RANKED", getGameVariant(gameVariant), playerList).then((response) => {
-            console.log("Created game: ", response.data)
+            navigate(`/games/${response.data.id}`)
         }).catch((error: AxiosError) => {
             console.log("Error creating game: ", error.response?.data)
         })

@@ -13,4 +13,8 @@ const createGameAPI = async (authToken: string, gameType: GameType, gameVariant:
     }, getAuthConfig(authToken))
 }
 
-export {getPlayerNames, createGameAPI}
+const getGameAPI = async (gameId: number): Promise<AxiosResponse<Game>> => {
+    return axios.get(baseUrl + "/games/" + gameId)
+}
+
+export {getPlayerNames, createGameAPI, getGameAPI}

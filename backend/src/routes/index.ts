@@ -21,7 +21,7 @@ router.post("/register", registerHandler)
 router.post("/login", loginHandler)
 
 router.get("/games", isAuthenticated, getGamesHandler)
-router.get("/games/:id", isAuthenticated, getGameHandler)
+router.get("/games/:id", getGameHandler)
 router.post("/games", isAuthenticated, createGameHandler)
 
 router.get("/players/gametype/:gameType", getPlayerNamesHandler)

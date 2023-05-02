@@ -58,3 +58,13 @@ type AuthContextType = {
     register: (registerData: RegisterDataType) => Promise<void>;
     logout: () => Promise<void>;
 };
+
+type Game = {
+    id: string
+    gameType: GameType
+    gameVariant: GameVariant
+    status: string
+    recordedById: string
+    players: any[]
+    rounds: any[]
+}
