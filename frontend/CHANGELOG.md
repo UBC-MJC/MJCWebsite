@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.5] - 2023-05-04
+
+### Added
+- Leaderboard page
+
+## [0.0.4] - 2023-05-02
+
+### Changed
+- Create Game page now redirects to the game page
+- Game page now shows relevant information
+
 ## [0.0.3] - 2023-04-30
 
 ### Changed

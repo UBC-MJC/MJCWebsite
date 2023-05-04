@@ -2,7 +2,12 @@ import {Router} from "express"
 
 import {isAdmin, isAuthenticated} from "../auth/auth";
 
-import {getPlayerNamesHandler, loginHandler, registerHandler} from "../controllers/player.controller";
+import {
+    getPlayerLeaderboardHandler,
+    getPlayerNamesHandler,
+    loginHandler,
+    registerHandler
+} from "../controllers/player.controller";
 import {createGameHandler, getGameHandler, getGamesHandler} from "../controllers/game.controller"
 import {
     getPlayersHandler,
@@ -14,6 +19,7 @@ import {
     deleteSeasonHandler,
     updateSeasonHandler
 } from "../controllers/admin.controller";
+import {getCurrentSeasonHandler} from "../controllers/season.controller";
 
 const router: Router = Router()
 
@@ -21,10 +27,13 @@ router.post("/register", registerHandler)
 router.post("/login", loginHandler)
 
 router.get("/games", isAuthenticated, getGamesHandler)
-router.get("/games/:id", isAuthenticated, getGameHandler)
+router.get("/games/:id", getGameHandler)
 router.post("/games", isAuthenticated, createGameHandler)
 
-router.get("/players/gametype/:gameType", getPlayerNamesHandler)
+router.get("/players/gametype/:gameType/names", getPlayerNamesHandler)
+router.get("/players/gametype/:gameType/leaderboard", getPlayerLeaderboardHandler)
+
+router.get("/seasons/current", getCurrentSeasonHandler)
 
 router.get("/admin/players", isAuthenticated, isAdmin, getPlayersHandler)
 router.put("/admin/players/:id", isAuthenticated, isAdmin, updatePlayerHandler)

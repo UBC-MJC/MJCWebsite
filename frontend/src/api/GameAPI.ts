@@ -2,7 +2,7 @@ import axios, {AxiosResponse} from "axios"
 import {baseUrl, getAuthConfig} from "./APIUtils";
 
 const getPlayerNames = async (gameType: string): Promise<AxiosResponse<{playerNames: string[]}>> => {
-    return axios.get(baseUrl + "/players/gametype/" + gameType)
+    return axios.get(baseUrl + "/players/gametype/" + gameType + "/names")
 }
 
 const createGameAPI = async (authToken: string, gameType: GameType, gameVariant: GameVariant, players: string[]): Promise<AxiosResponse> => {
@@ -13,4 +13,8 @@ const createGameAPI = async (authToken: string, gameType: GameType, gameVariant:
     }, getAuthConfig(authToken))
 }
 
-export {getPlayerNames, createGameAPI}
+const getGameAPI = async (gameId: number): Promise<AxiosResponse<Game>> => {
+    return axios.get(baseUrl + "/games/" + gameId)
+}
+
+export {getPlayerNames, createGameAPI, getGameAPI}

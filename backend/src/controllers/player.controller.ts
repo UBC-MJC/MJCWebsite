@@ -32,7 +32,7 @@ const loginHandler = async (req: Request, res: Response, next: NextFunction): Pr
         } else {
             next(createError.Unauthorized("Username or password is incorrect"))
         }
-    }).catch((err: any) => {
+    }).catch(() => {
         next(createError.Unauthorized("Username or password is incorrect"))
     })
 }
@@ -63,4 +63,44 @@ const getPlayerNamesHandler = async (req: Request, res: Response, next: NextFunc
     })
 }
 
-export {registerHandler, loginHandler, getPlayerNamesHandler}
+const getPlayerLeaderboardHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const gameType = req.params.gameType
+
+    let query = {}
+    if (gameType === "jp") {
+        query = {
+            where: {
+                japaneseQualified: true
+            }
+        }
+    } else if (gameType === "hk") {
+        query = {
+            where: {
+                hongKongQualified: true
+            }
+        }
+    } else {
+        next(createError.BadRequest("Invalid game type"))
+    }
+
+    findAllPlayers(query).then((players) => {
+        const playerElos = players.map((player) => {
+            let elo = 1500
+            if (gameType === "jp") {
+                elo = player.japaneseElo
+            } else if (gameType === "hk") {
+                elo = player.hongKongElo
+            }
+
+            return {
+                username: player.username,
+                elo
+            }
+        })
+        res.json({players: playerElos})
+    }).catch((err: any) => {
+        next(createError.InternalServerError(err.message))
+    })
+}
+
+export {registerHandler, loginHandler, getPlayerNamesHandler, getPlayerLeaderboardHandler}

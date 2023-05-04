@@ -1,5 +1,7 @@
 # UBC Mahjong Club Website
 
+### [Development Guide](https://docs.google.com/document/d/1FmSUD-EqHhf2XEkG1CkzElLQ91N8OO2Ojf6pMJxwn-s/edit?usp=sharing)
+
 ### Development Setup
 
 #### Developing on Windows - Windows Subsystem for Linux
