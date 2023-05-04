@@ -6,6 +6,7 @@ import {AuthContext} from "../common/AuthContext";
 import {withPlayerCondition} from "../common/withPlayerCondition";
 import Select from 'react-select'
 import {useNavigate} from "react-router-dom";
+import {getGameTypeString, getGameVariant} from "../common/Utils";
 
 const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
     const navigate = useNavigate();
@@ -42,24 +43,6 @@ const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
         }).catch((error: AxiosError) => {
             console.log("Error creating game: ", error.response?.data)
         })
-    }
-
-    const getGameTypeString = (gameType: "jp" | "hk"): string => {
-        if (gameType === "jp") {
-            return "Riichi"
-        } else if (gameType === "hk") {
-            return "Hong Kong"
-        }
-        return ""
-    }
-
-    const getGameVariant = (gameType: "jp" | "hk"): GameVariant => {
-        if (gameType === "jp") {
-            return "JAPANESE"
-        } else if (gameType === "hk") {
-            return "HONG_KONG"
-        }
-        return "JAPANESE"
     }
 
     const title = `Create Ranked ${getGameTypeString(gameVariant)} Game`

@@ -68,3 +68,8 @@ type Game = {
     players: any[]
     rounds: any[]
 }
+
+type LeaderboardType = {
+    username: string
+    elo: number
+}

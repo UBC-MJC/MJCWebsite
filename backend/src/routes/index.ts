@@ -2,7 +2,12 @@ import {Router} from "express"
 
 import {isAdmin, isAuthenticated} from "../auth/auth";
 
-import {getPlayerNamesHandler, loginHandler, registerHandler} from "../controllers/player.controller";
+import {
+    getPlayerLeaderboardHandler,
+    getPlayerNamesHandler,
+    loginHandler,
+    registerHandler
+} from "../controllers/player.controller";
 import {createGameHandler, getGameHandler, getGamesHandler} from "../controllers/game.controller"
 import {
     getPlayersHandler,
@@ -24,7 +29,9 @@ router.get("/games", isAuthenticated, getGamesHandler)
 router.get("/games/:id", getGameHandler)
 router.post("/games", isAuthenticated, createGameHandler)
 
-router.get("/players/gametype/:gameType", getPlayerNamesHandler)
+
+router.get("/players/gametype/:gameType/names", getPlayerNamesHandler)
+router.get("/players/gametype/:gameType/leaderboard", getPlayerLeaderboardHandler)
 
 router.get("/admin/players", isAuthenticated, isAdmin, getPlayersHandler)
 router.put("/admin/players/:id", isAuthenticated, isAdmin, updatePlayerHandler)

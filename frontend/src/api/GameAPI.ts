@@ -2,7 +2,7 @@ import axios, {AxiosResponse} from "axios"
 import {baseUrl, getAuthConfig} from "./APIUtils";
 
 const getPlayerNames = async (gameType: string): Promise<AxiosResponse<{playerNames: string[]}>> => {
-    return axios.get(baseUrl + "/players/gametype/" + gameType)
+    return axios.get(baseUrl + "/players/gametype/" + gameType + "/names")
 }
 
 const createGameAPI = async (authToken: string, gameType: GameType, gameVariant: GameVariant, players: string[]): Promise<AxiosResponse> => {
