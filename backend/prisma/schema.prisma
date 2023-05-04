@@ -59,6 +59,8 @@ model Player {
     admin             Boolean         @default(false)
     japaneseQualified Boolean         @default(false)
     hongKongQualified Boolean         @default(false)
+    japaneseElo       Int             @default(1500)
+    hongKongElo       Int             @default(1500)
     createdAt         DateTime        @default(now())
     japaneseScores    JapaneseScore[]
     hongKongScores    HongKongScore[]
