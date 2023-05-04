@@ -19,6 +19,7 @@ import {
     deleteSeasonHandler,
     updateSeasonHandler
 } from "../controllers/admin.controller";
+import {getCurrentSeasonHandler} from "../controllers/season.controller";
 
 const router: Router = Router()
 
@@ -29,9 +30,10 @@ router.get("/games", isAuthenticated, getGamesHandler)
 router.get("/games/:id", getGameHandler)
 router.post("/games", isAuthenticated, createGameHandler)
 
-
 router.get("/players/gametype/:gameType/names", getPlayerNamesHandler)
 router.get("/players/gametype/:gameType/leaderboard", getPlayerLeaderboardHandler)
+
+router.get("/seasons/current", getCurrentSeasonHandler)
 
 router.get("/admin/players", isAuthenticated, isAdmin, getPlayersHandler)
 router.put("/admin/players/:id", isAuthenticated, isAdmin, updatePlayerHandler)
