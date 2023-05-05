@@ -65,6 +65,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
                                 isSearchable
                                 placeholder="Choose a Player"
                                 value={!!eastPlayer ? {label: eastPlayer} : null}
+                                getOptionValue={(selectOptions) => selectOptions.label}
                                 onChange={e => setEastPlayer(e!.label)}/>
                     </div>
                 </Col>
@@ -75,6 +76,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
                                 isSearchable
                                 placeholder="Choose a Player"
                                 value={!!southPlayer ? {label: southPlayer} : null}
+                                getOptionValue={(selectOptions) => selectOptions.label}
                                 onChange={e => setSouthPlayer(e!.label)}/>
                     </div>
                 </Col>
@@ -85,6 +87,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
                                 isSearchable
                                 placeholder="Choose a Player"
                                 value={!!westPlayer ? {label: westPlayer} : null}
+                                getOptionValue={(selectOptions) => selectOptions.label}
                                 onChange={e => setWestPlayer(e!.label)}/>
                     </div>
                 </Col>
@@ -95,6 +98,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({gameVariant}) => {
                                 isSearchable
                                 placeholder="Choose a Player"
                                 value={!!northPlayer ? {label: northPlayer} : null}
+                                getOptionValue={(selectOptions) => selectOptions.label}
                                 onChange={e => setNorthPlayer(e!.label)}/>
                     </div>
                 </Col>
