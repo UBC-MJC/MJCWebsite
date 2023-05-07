@@ -1,4 +1,4 @@
 .PHONY: frontend
 frontend:
-    npm install
+	npm install
 	pm2 start npm --name "frontend" -- start
