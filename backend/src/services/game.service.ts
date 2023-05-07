@@ -20,15 +20,6 @@ const createGame = async (gameVariant: GameVariant, gameType: GameType, players:
             players: {
                 create: players
             },
-            japaneseRounds: {
-                create: [{
-                    roundCount: 1,
-                    roundNumber: 1,
-                    roundWind: 'EAST',
-                    bonus: 0,
-                    riichiSticks: 0
-                }]
-            },
             [gameVariant === GameVariant.JAPANESE ? 'japaneseRounds' : 'hongKongRounds']: {
                 create: defaultRound
             }
@@ -86,22 +77,12 @@ const getWind = (index: number): string => {
     }
 }
 
-const getDefaultRound = (gameVariant: GameVariant): any => {
-    if (gameVariant === GameVariant.JAPANESE) {
-        return {
-            roundCount: 1,
-            roundNumber: 1,
-            roundWind: 'EAST',
-            bonus: 0,
-            riichiSticks: 0
-        }
-    } else if (gameVariant === GameVariant.HONG_KONG) {
-        return {
-            roundCount: 1,
-            roundNumber: 1,
-            roundWind: 'EAST',
-            bonus: 0
-        }
+const getDefaultRound = (): any => {
+    return {
+        roundCount: 1,
+        roundNumber: 1,
+        roundWind: 'EAST',
+        bonus: 0,
     }
 }
 

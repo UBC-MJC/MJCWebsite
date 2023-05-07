@@ -104,15 +104,14 @@ model Season {
 }
 
 model JapaneseRound {
-    id           String          @id @default(cuid())
-    roundCount   Int
-    roundWind    Wind
-    roundNumber  Int
-    bonus        Int
-    riichiSticks Int
-    game         Game            @relation(fields: [gameId], references: [id])
-    gameId       Int
-    scores       JapaneseScore[]
+    id          String          @id @default(cuid())
+    roundCount  Int
+    roundWind   Wind
+    roundNumber Int
+    bonus       Int
+    game        Game            @relation(fields: [gameId], references: [id])
+    gameId      Int
+    scores      JapaneseScore[]
 }
 
 model HongKongRound {
@@ -127,21 +126,23 @@ model HongKongRound {
 }
 
 model JapaneseScore {
-    id          String        @id @default(cuid())
+    id          String            @id @default(cuid())
     scoreChange Int
+    scoreType   JapaneseScoreType
     riichi      Boolean?
-    round       JapaneseRound @relation(fields: [roundId], references: [id])
-    user        Player        @relation(fields: [userId], references: [id])
+    round       JapaneseRound     @relation(fields: [roundId], references: [id])
+    user        Player            @relation(fields: [userId], references: [id])
     userId      String
     roundId     String
 }
 
 model HongKongScore {
-    id          String        @id @default(cuid())
+    id          String            @id @default(cuid())
     scoreChange Int
+    scoreType   HongKongScoreType
     riichi      Boolean?
-    round       HongKongRound @relation(fields: [roundId], references: [id])
-    user        Player        @relation(fields: [userId], references: [id])
+    round       HongKongRound     @relation(fields: [roundId], references: [id])
+    user        Player            @relation(fields: [userId], references: [id])
     userId      String
     roundId     String
 }

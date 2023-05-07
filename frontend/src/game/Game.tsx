@@ -1,34 +1,16 @@
-import {FC, useEffect, useState} from "react";
+import {FC, useContext, useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {AxiosError} from "axios";
 import {getGameAPI} from "../api/GameAPI";
-import WheelPicker, {PickerData} from 'react-simple-wheel-picker';
+import {AuthContext} from "../common/AuthContext";
+import EditGame from "./EditGame";
+import {windComparison} from "../common/Utils";
 
 
-const data = [
-    {
-        id: '1',
-        value: 'test1'
-    },
-    {
-        id: '2',
-        value: 'test2'
-    },
-    {
-        id: '3',
-        value: 'test3'
-    },
-    {
-        id: '4',
-        value: 'test4'
-    },
-    {
-        id: '5',
-        value: 'test5'
-    }
-];
+
 const Game: FC = () => {
     const { id } = useParams()
+    const { player } = useContext(AuthContext);
     const navigate = useNavigate();
     const gameId = Number(id)
 
@@ -40,6 +22,9 @@ const Game: FC = () => {
         }
 
         getGameAPI(gameId).then((response) => {
+            for (const player of response.data.players) {
+                player.score = 25000
+            }
             console.log("Game: ", response.data)
             setGame(response.data)
         }).catch((error: AxiosError) => {
@@ -51,9 +36,34 @@ const Game: FC = () => {
         })
     }, [gameId, navigate])
 
-    const handleOnChange = (target: PickerData) => {
-        console.log(target);
-    };
+    const getOrderedPlayers = () => {
+        if (!game) {
+            return []
+        }
+
+        const orderedPlayers = game.players.slice()
+
+        if (typeof player !== "undefined" && game.recordedById === player.id) {
+            const playerWind = game.players.find((testPlayer) => {
+                return testPlayer.id === player.id
+            }).trueWind
+
+            orderedPlayers.sort((a, b) => {
+                return windComparison(a.trueWind, b.trueWind, playerWind)
+            })
+        } else {
+            orderedPlayers.sort((a, b) => {
+                return windComparison(a.trueWind, b.trueWind)
+            })
+        }
+
+        return orderedPlayers
+    }
+
+    const gameRoundString = (game: Game) => {
+        const lastRound = game.rounds[game.rounds.length - 1]
+        return `${lastRound.roundWind} ${lastRound.roundNumber} Bonus ${lastRound.bonus}`
+    }
 
     if (isNaN(gameId)) {
         return (
@@ -65,46 +75,10 @@ const Game: FC = () => {
 
     return (
         <>
-            <h1>ID: {id}</h1>
-            <div>GameType: {game?.gameType}</div>
-            <div>GameVariant: {game?.gameVariant}</div>
-            <div>GameStatus: {game?.status}</div>
-            <h3>Players</h3>
-            {game?.players.map((player) => {
-                return (
-                    <div key={player.playerId}>{player.wind} | {player.player.username}</div>
-                )
-            })}
-            <h3>Rounds</h3>
-            {game?.rounds.map((round) => {
-                return (
-                    <div key={round.id}>{round.roundWind} | {round.roundNumber} | {round.roundCount}</div>
-                )
-            })}
-            <WheelPicker
-                data={data}
-                onChange={handleOnChange}
-                height={150}
-                width={100}
-                titleText="Enter value same as aria-label"
-                itemHeight={30}
-                selectedID={data[0].id}
-                color="#ccc"
-                activeColor="#333"
-                backgroundColor="#fff"
-            />
-            <WheelPicker
-                data={data}
-                onChange={handleOnChange}
-                height={150}
-                width={100}
-                titleText="Enter value same as aria-label"
-                itemHeight={30}
-                selectedID={data[0].id}
-                color="#ccc"
-                activeColor="#333"
-                backgroundColor="#fff"
-            />
+            <h1>{game?.gameType} {game?.gameVariant} Game{game?.status === "IN_PROGRESS" && " - " + gameRoundString(game)}</h1>
+            {game && game.status === "IN_PROGRESS" && game.recordedById === player?.id &&
+                <EditGame gameVariant={game.gameVariant} players={getOrderedPlayers()} />
+            }
         </>
     )
 }

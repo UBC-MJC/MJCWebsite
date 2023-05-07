@@ -69,6 +69,10 @@ type Game = {
     rounds: any[]
 }
 
+type RoundInputProps = {
+    players: any[]
+}
+
 type LeaderboardType = {
     username: string
     elo: number

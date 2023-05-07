@@ -28,7 +28,7 @@ const Leaderboard: FC<GameTypeProp> = ({gameVariant}) => {
         <Container fluid="lg">
             <div className="my-4">
                 <h1>{getGameTypeString(gameVariant)} Leaderboard</h1>
-                {currentSeason && <h3>{currentSeason.name} season ends {new Date(currentSeason.endDate).toDateString()}</h3>}
+                {currentSeason && <h5>{currentSeason.name} season ends {new Date(currentSeason.endDate).toDateString()}</h5>}
             </div>
             <Table striped responsive hover className="text-nowrap">
                 <thead>

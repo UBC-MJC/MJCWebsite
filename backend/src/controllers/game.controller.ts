@@ -33,14 +33,22 @@ const getGameHandler = async (req: Request, res: Response, next: NextFunction): 
             return
         }
 
+        const rounds = newGame.japaneseRounds.length !== 0 ? newGame.japaneseRounds : newGame.hongKongRounds
+
         res.status(200).json({
             id: newGame.id,
             gameType: newGame.gameType,
             gameVariant: newGame.gameVariant,
             status: newGame.status,
             recordedById: newGame.recordedById,
-            players: newGame.players,
-            rounds: newGame.japaneseRounds || newGame.hongKongRounds
+            players: newGame.players.map((player: any) => {
+                return {
+                    id: player.player.id,
+                    username: player.player.username,
+                    trueWind: player.wind
+                }
+            }),
+            rounds
         })
     }).catch((err) => {
         next(createError.InternalServerError(err.message))
@@ -68,7 +76,7 @@ const createGameHandler = async (req: Request, res: Response, next: NextFunction
 
         const season = await getCurrentSeason();
 
-        const defaultRoundQuery = getDefaultRound(gameVariant);
+        const defaultRoundQuery = getDefaultRound();
 
         const newGame: Game = await createGame(gameVariant, gameType, playersQuery, defaultRoundQuery, req.player.id, season.id)
 
