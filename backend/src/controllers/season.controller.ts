@@ -1,8 +1,12 @@
-import {NextFunction, Request, Response} from "express";
-import {getCurrentSeason} from "../services/season.service";
+import { NextFunction, Request, Response } from "express";
+import { getCurrentSeason } from "../services/season.service";
 import createError from "http-errors";
 
-const getCurrentSeasonHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const getCurrentSeasonHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
     try {
         const season = await getCurrentSeason();
 
@@ -11,10 +15,10 @@ const getCurrentSeasonHandler = async (req: Request, res: Response, next: NextFu
             name: season.name,
             startDate: season.startDate,
             endDate: season.endDate,
-        })
+        });
     } catch (error: any) {
-        next(createError.InternalServerError(error.message))
+        next(createError.InternalServerError(error.message));
     }
-}
+};
 
-export {getCurrentSeasonHandler}
+export { getCurrentSeasonHandler };

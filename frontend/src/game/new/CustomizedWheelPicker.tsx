@@ -1,18 +1,18 @@
-import {FC} from "react";
-import WheelPicker, {PickerData} from "react-simple-wheel-picker";
+import { FC } from "react";
+import WheelPicker, { PickerData } from "react-simple-wheel-picker";
 
 type CustomizedWheelPickerProps = {
-    data: PickerData[]
-    onChange: (item: PickerData) => void
-}
+    data: PickerData[];
+    onChange: (item: PickerData) => void;
+};
 
-const CustomizedWheelPicker: FC<CustomizedWheelPickerProps> = ({data, onChange}) => {
+const CustomizedWheelPicker: FC<CustomizedWheelPickerProps> = ({ data, onChange }) => {
     return (
         <WheelPicker
             data={data}
             onChange={onChange}
             height={150}
-            width={120}
+            width={110}
             itemHeight={30}
             fontSize={20}
             selectedID={data[0].id}
@@ -21,7 +21,7 @@ const CustomizedWheelPicker: FC<CustomizedWheelPickerProps> = ({data, onChange})
             backgroundColor="#fff"
             shadowColor="#dbdbdb"
         />
-    )
-}
+    );
+};
 
 export default CustomizedWheelPicker;

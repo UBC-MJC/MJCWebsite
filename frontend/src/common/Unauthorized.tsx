@@ -1,4 +1,4 @@
-import {FC} from "react";
+import { FC } from "react";
 
 const Unauthorized: FC = () => {
     return (
@@ -6,7 +6,7 @@ const Unauthorized: FC = () => {
             <h1>Unauthorized</h1>
             Nice try
         </div>
-    )
-}
+    );
+};
 
-export default Unauthorized
+export default Unauthorized;

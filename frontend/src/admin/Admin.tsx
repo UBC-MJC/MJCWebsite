@@ -1,6 +1,6 @@
-import React, {FC} from "react";
-import {withPlayerCondition} from "../common/withPlayerCondition";
-import {Container, Tabs, Tab} from 'react-bootstrap';
+import React, { FC } from "react";
+import { withPlayerCondition } from "../common/withPlayerCondition";
+import { Container, Tabs, Tab } from "react-bootstrap";
 import AdminPlayers from "./AdminPlayers";
 import AdminSeason from "./AdminSeason";
 
@@ -17,12 +17,12 @@ const AdminComponent: FC = () => {
             </Tabs>
         </Container>
     );
-}
+};
 
 const hasAdminPermissions = (player: Player | undefined): boolean => {
-    return typeof player !== "undefined" && player.admin
-}
+    return typeof player !== "undefined" && player.admin;
+};
 
-const Admin = withPlayerCondition(AdminComponent, hasAdminPermissions, '/unauthorized')
+const Admin = withPlayerCondition(AdminComponent, hasAdminPermissions, "/unauthorized");
 
-export default Admin
+export default Admin;

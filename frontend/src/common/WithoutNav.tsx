@@ -1,8 +1,6 @@
-import {FC} from "react";
-import { Outlet } from 'react-router';
+import { FC } from "react";
+import { Outlet } from "react-router";
 
-const WithNav: FC = () => <Outlet />
+const WithNav: FC = () => <Outlet />;
 
 export default WithNav;
-
-

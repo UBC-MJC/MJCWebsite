@@ -1,73 +1,73 @@
 import prisma from "../db";
 import bcrypt from "bcryptjs";
-import {Player} from "@prisma/client";
+import { Player } from "@prisma/client";
 
 // creates an admin account if one does not already exist
 const createAdmin = async (): Promise<Player> => {
     return prisma.player.upsert({
         where: {
-            username: process.env.ADMIN_USERNAME || 'admin'
+            username: process.env.ADMIN_USERNAME || "admin",
         },
         update: {},
         create: {
-            username: process.env.ADMIN_USERNAME || 'admin',
-            password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'password', 12),
-            firstName: 'Admin',
-            lastName: 'Account',
-            email: process.env.ADMIN_EMAIL || 'example@example.com',
+            username: process.env.ADMIN_USERNAME || "admin",
+            password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || "password", 12),
+            firstName: "Admin",
+            lastName: "Account",
+            email: process.env.ADMIN_EMAIL || "example@example.com",
             admin: true,
             japaneseQualified: true,
-            hongKongQualified: true
-        }
-    })
-}
+            hongKongQualified: true,
+        },
+    });
+};
 
 const makeDummyAdmins = async (): Promise<any> => {
     return prisma.player.createMany({
         data: [
             {
-                username: process.env.ADMIN_USERNAME || 'admin',
-                password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'password', 12),
-                firstName: 'Admin',
-                lastName: 'Account',
-                email: process.env.ADMIN_EMAIL || 'example@example.com',
+                username: process.env.ADMIN_USERNAME || "admin",
+                password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || "password", 12),
+                firstName: "Admin",
+                lastName: "Account",
+                email: process.env.ADMIN_EMAIL || "example@example.com",
                 admin: true,
                 japaneseQualified: true,
-                hongKongQualified: true
+                hongKongQualified: true,
             },
             {
-                username: 'admin1',
-                password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'password', 12),
-                firstName: 'Admin1',
-                lastName: 'Account',
-                email: 'example1@example.com',
+                username: "admin1",
+                password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || "password", 12),
+                firstName: "Admin1",
+                lastName: "Account",
+                email: "example1@example.com",
                 admin: true,
                 japaneseQualified: true,
-                hongKongQualified: true
+                hongKongQualified: true,
             },
             {
-                username: 'admin2',
-                password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'password', 12),
-                firstName: 'Admin2',
-                lastName: 'Account',
-                email: 'example2@example.com',
+                username: "admin2",
+                password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || "password", 12),
+                firstName: "Admin2",
+                lastName: "Account",
+                email: "example2@example.com",
                 admin: true,
                 japaneseQualified: true,
-                hongKongQualified: true
+                hongKongQualified: true,
             },
             {
-                username: 'admin3',
-                password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'password', 12),
-                firstName: 'Admin3',
-                lastName: 'Account',
-                email: 'example3@example.com',
+                username: "admin3",
+                password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || "password", 12),
+                firstName: "Admin3",
+                lastName: "Account",
+                email: "example3@example.com",
                 admin: true,
                 japaneseQualified: true,
-                hongKongQualified: true
-            }
+                hongKongQualified: true,
+            },
         ],
-        skipDuplicates:true
-    })
-}
+        skipDuplicates: true,
+    });
+};
 
-export {createAdmin, makeDummyAdmins}
+export { createAdmin, makeDummyAdmins };

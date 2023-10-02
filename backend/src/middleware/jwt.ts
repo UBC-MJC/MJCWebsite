@@ -1,9 +1,9 @@
-import jwt, {Secret, SignOptions} from 'jsonwebtoken';
+import jwt, { Secret, SignOptions } from "jsonwebtoken";
 
-require('dotenv').config()
+require("dotenv").config();
 
-const accessTokenSecret: Secret = process.env.ACCESS_TOKEN_SECRET || ""
-const generateToken = (payload: Object, options: SignOptions = {}) => {
+const accessTokenSecret: Secret = process.env.ACCESS_TOKEN_SECRET || "";
+const generateToken = (payload: object | string, options: SignOptions = {}) => {
     return jwt.sign(payload, accessTokenSecret, {
         ...(options && options),
     });
@@ -17,4 +17,4 @@ const verifyToken = (token: string): string | undefined => {
     }
 };
 
-export { generateToken, verifyToken }
+export { generateToken, verifyToken };

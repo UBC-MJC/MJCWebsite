@@ -1,91 +1,208 @@
-import {NextFunction, Request, Response} from "express"
+import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
-import {createGameSchema} from "../validation/game.validation";
-import {
-    checkPlayerGameEligibility,
-    createGame,
-    checkPlayerListUnique,
-    getDefaultRound,
-    getWind, getGame
-} from "../services/game.service";
-import {Game, Player} from "@prisma/client";
-import {findPlayerByUsernames} from "../services/player.service";
-import {getCurrentSeason} from "../services/season.service";
+import { createGameSchema, validateRound } from "../validation/game.validation";
+import { getCurrentSeason } from "../services/season.service";
+import { generatePlayerQuery, getGameService } from "../services/game/game.util";
+import GameService from "../services/game/game.service";
 
-const getGamesHandler = async (req: Request, res: Response): Promise<void> => {
+const getGamesHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        res.status(200).json({})
-    } catch (error) {
-        throw error
+        res.status(200).json({});
+    } catch (error: any) {
+        console.error("Error in getGamesHandler:", error);
+        next(createError.InternalServerError(error.message));
     }
-}
+};
 
 const getGameHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const id = Number(req.params.id)
+    const id = Number(req.params.id);
+    const gameVariant = req.params.gameVariant;
     if (isNaN(id)) {
-        next(createError.NotFound("Game not found"))
-        return
+        return next(createError.NotFound("Game id is not a number"));
     }
 
-    getGame(id).then((newGame) => {
+    const gameService: GameService = getGameService(gameVariant);
+
+    try {
+        const newGame = await gameService.getGame(id);
         if (!newGame) {
-            next(createError.NotFound("Game not found"))
-            return
+            return next(createError.NotFound("Game not found"));
         }
 
-        const rounds = newGame.japaneseRounds.length !== 0 ? newGame.japaneseRounds : newGame.hongKongRounds
+        const result = gameService.mapGameObject(newGame);
+        res.status(200).json(result);
+    } catch (error: any) {
+        console.error("Error in getGameHandler:", error);
+        next(createError.InternalServerError(error.message));
+    }
+};
 
-        res.status(200).json({
-            id: newGame.id,
-            gameType: newGame.gameType,
-            gameVariant: newGame.gameVariant,
-            status: newGame.status,
-            recordedById: newGame.recordedById,
-            players: newGame.players.map((player: any) => {
-                return {
-                    id: player.player.id,
-                    username: player.player.username,
-                    trueWind: player.wind
-                }
-            }),
-            rounds
-        })
-    }).catch((err) => {
-        next(createError.InternalServerError(err.message))
-    })
-}
+const createGameHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    const gameVariant: string = req.params.gameVariant;
 
-const createGameHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const {players, gameType, gameVariant} = await createGameSchema.validate(req.body)
+        const { players, gameType } = await createGameSchema.validate(req.body);
 
-        checkPlayerListUnique(players)
-        checkPlayerGameEligibility(gameVariant, req.player)
-        const playerList = await findPlayerByUsernames(players);
-        playerList.forEach((player) => checkPlayerGameEligibility(gameVariant, player))
-        const playersQuery = playerList.map((player: Player) => {
-            return {
-                wind: getWind(players.indexOf(player.username)),
-                player: {
-                    connect: {
-                        id: player.id
-                    }
-                }
-            }
-        })
-
+        const playersQuery = await generatePlayerQuery(gameVariant, players);
         const season = await getCurrentSeason();
 
-        const defaultRoundQuery = getDefaultRound();
-
-        const newGame: Game = await createGame(gameVariant, gameType, playersQuery, defaultRoundQuery, req.player.id, season.id)
+        const gameService: GameService = getGameService(gameVariant);
+        const newGame = await gameService.createGame(
+            gameType,
+            playersQuery,
+            req.player.id,
+            season.id,
+        );
 
         res.status(201).json({
-            id: newGame.id
-        })
+            id: newGame.id,
+        });
     } catch (error: any) {
-        next(createError.BadRequest(error.message))
+        next(createError.BadRequest(error.message));
     }
-}
+};
 
-export {getGamesHandler, getGameHandler, createGameHandler}
+const deleteGameHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    const gameVariant: string = req.params.gameVariant;
+    const gameId = Number(req.params.id);
+    if (isNaN(gameId)) {
+        return next(createError.NotFound("Game id is not a number"));
+    }
+
+    const gameService: GameService = getGameService(gameVariant);
+    try {
+        const game = await gameService.getGame(gameId);
+        if (!game) {
+            return next(createError.NotFound("Game not found"));
+        } else if (game.status !== "IN_PROGRESS") {
+            return next(createError.BadRequest("Game is not in progress"));
+        } else if (game.recordedById !== req.player.id) {
+            return next(createError.Forbidden("You are not the recorder of this game"));
+        }
+
+        await gameService.deleteGame(gameId);
+        res.status(201).json({});
+    } catch (error: any) {
+        console.error("Error in deleteGameHandler:", error);
+        next(createError.BadRequest(error.message));
+    }
+};
+
+const submitGameHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    const gameVariant: string = req.params.gameVariant;
+    const gameId = Number(req.params.id);
+    if (isNaN(gameId)) {
+        return next(createError.NotFound("Game id is not a number"));
+    }
+
+    const gameService: GameService = getGameService(gameVariant);
+    try {
+        const game = await gameService.getGame(gameId);
+        if (!game) {
+            return next(createError.NotFound("Game not found"));
+        } else if (game.status !== "IN_PROGRESS") {
+            return next(createError.BadRequest("Game is not in progress"));
+        } else if (game.recordedById !== req.player.id) {
+            return next(createError.Forbidden("You are not the recorder of this game"));
+        } else if (!gameService.isGameOver(game)) {
+            return next(createError.BadRequest("Game is not over yet"));
+        }
+
+        await gameService.submitGame(game);
+        res.status(201).json({});
+    } catch (error: any) {
+        console.error("Error in submitGameHandler:", error);
+        next(createError.BadRequest(error.message));
+    }
+};
+
+const createRoundHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    const gameVariant: string = req.params.gameVariant;
+    const gameId = Number(req.params.id);
+    if (isNaN(gameId)) {
+        return next(createError.NotFound("Game id is not a number"));
+    }
+    const { roundRequest } = req.body;
+
+    const gameService: GameService = getGameService(gameVariant);
+    try {
+        const game = await gameService.getGame(gameId);
+        if (!game) {
+            return next(createError.NotFound("Game not found"));
+        } else if (game.status !== "IN_PROGRESS") {
+            return next(createError.BadRequest("Game is not in progress"));
+        }
+        validateRound(roundRequest, game, gameVariant);
+        if (game.recordedById !== req.player.id) {
+            return next(createError.Forbidden("You are not the recorder of this game"));
+        } else if (gameService.isGameOver(game)) {
+            return next(createError.BadRequest("Game is already over"));
+        }
+
+        await gameService.createRound(game, roundRequest);
+        const updatedGame = await gameService.getGame(gameId);
+        res.status(201).json(gameService.mapGameObject(updatedGame));
+    } catch (error: any) {
+        console.error("Error in createRoundHandler:", error);
+        next(createError.BadRequest(error.message));
+    }
+};
+
+const deleteLastRoundHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    const gameVariant: string = req.params.gameVariant;
+    const gameId = Number(req.params.id);
+    if (isNaN(gameId)) {
+        return next(createError.NotFound("Game id is not a number"));
+    }
+
+    const gameService: GameService = getGameService(gameVariant);
+    try {
+        const game = await gameService.getGame(gameId);
+        if (!game) {
+            return next(createError.NotFound("Game not found"));
+        } else if (game.status !== "IN_PROGRESS") {
+            return next(createError.BadRequest("Game is not in progress"));
+        } else if (game.rounds.length === 0) {
+            return next(createError.BadRequest("Game has no rounds"));
+        } else if (game.recordedById !== req.player.id) {
+            return next(createError.Forbidden("You are not the recorder of this game"));
+        }
+
+        await gameService.deleteRound(game.rounds[game.rounds.length - 1].id);
+        const updatedGame = await gameService.getGame(gameId);
+        res.status(201).json(gameService.mapGameObject(updatedGame));
+    } catch (error: any) {
+        console.error("Error in deleteLastRoundHandler:", error);
+        next(createError.BadRequest(error.message));
+    }
+};
+
+export {
+    getGamesHandler,
+    getGameHandler,
+    createGameHandler,
+    deleteGameHandler,
+    submitGameHandler,
+    createRoundHandler,
+    deleteLastRoundHandler,
+};

@@ -1,11 +1,11 @@
-import React, {useContext, useState} from 'react';
-import {Button, Container, Form, Card} from 'react-bootstrap';
-import {AxiosError} from "axios";
-import {AuthContext} from "../common/AuthContext";
+import React, { useContext, useState } from "react";
+import { Button, Container, Form, Card } from "react-bootstrap";
+import { AxiosError } from "axios";
+import { AuthContext } from "../common/AuthContext";
 
 const Login: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
 
     const [errors, setErrors] = useState<any>({});
 
@@ -26,19 +26,21 @@ const Login: React.FC = () => {
             return;
         }
 
-        const credentials: LoginDataType = {username, password};
-        login(credentials).then(() => {
-            console.log("Login successful!");
-        }).catch((err: AxiosError) => {
-            setErrors({
-                username: " ",
-                password: err.response?.data
+        const credentials: LoginDataType = { username, password };
+        login(credentials)
+            .then(() => {
+                console.log("Login successful!");
+            })
+            .catch((err: AxiosError) => {
+                setErrors({
+                    username: " ",
+                    password: err.response?.data,
+                });
             });
-        });
     };
 
     return (
-        <Container className="my-5 d-flex flex-column" style={{maxWidth: "540px"}}>
+        <Container className="my-5 d-flex flex-column" style={{ maxWidth: "540px" }}>
             <Card body>
                 <h2>UBC Mahjong Club Login</h2>
                 <Form noValidate onSubmit={handleSubmit}>
@@ -54,7 +56,6 @@ const Login: React.FC = () => {
                             {errors.username}
                         </Form.Control.Feedback>
                     </Form.Group>
-
 
                     <Form.Group controlId="formBasicPassword" className="my-4">
                         <Form.Control
@@ -77,7 +78,9 @@ const Login: React.FC = () => {
                     </div>
 
                     <div className="d-flex justify-content-between mx-2">
-                        <p>Not a member? <a href="/register">Register</a></p>
+                        <p>
+                            Not a member? <a href="/register">Register</a>
+                        </p>
                         <a href="/login">Forgot password?</a>
                     </div>
                 </Form>
@@ -88,6 +91,5 @@ const Login: React.FC = () => {
         </Container>
     );
 };
-
 
 export default Login;

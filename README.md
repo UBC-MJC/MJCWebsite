@@ -77,3 +77,7 @@ The following steps may be tried in sequence to potentially fix the problem.
 8. Reclone the repository
 9. Reinstall npm/Node.js
 10. Cry for help
+
+### Local database access
+
+To access the MySql database locally, run ` mysql -h localhost -P 3306 --protocol=tcp -u root -p` then enter the password you specified in the dotenv file.

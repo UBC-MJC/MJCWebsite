@@ -1,6 +1,6 @@
-import {FC} from "react";
-import { Outlet } from 'react-router';
-import NavBar from './NavBar';
+import { FC } from "react";
+import { Outlet } from "react-router";
+import NavBar from "./NavBar";
 
 const WithNav: FC = () => {
     return (
@@ -9,6 +9,6 @@ const WithNav: FC = () => {
             <Outlet />
         </>
     );
-}
+};
 
 export default WithNav;

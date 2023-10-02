@@ -50,7 +50,6 @@
     transition: opacity 0.2s ease;
 }
 
-
 .table-responsive::-webkit-scrollbar {
     -webkit-appearance: none;
 }
@@ -64,7 +63,7 @@
 }
 
 .table-responsive::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, .5);
+    background-color: rgba(0, 0, 0, 0.5);
     border-radius: 10px;
     border: 2px solid #ffffff;
 }
@@ -126,4 +125,12 @@
 }
 .wheel-picker-container ul {
     -ms-overflow-style: none;
+}
+
+table tr.footer-row {
+    border-top: black 1px solid;
+}
+
+table tr.footer-row td:first-child {
+    font-weight: bold;
 }

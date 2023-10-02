@@ -1,36 +1,39 @@
-import * as dotenv from 'dotenv'
-import express, { Express, NextFunction, Request, Response } from 'express';
-import cors from "cors"
+import * as dotenv from "dotenv";
+import express, { Express, NextFunction, Request, Response } from "express";
+import cors from "cors";
 import bodyParser from "body-parser";
 
-import router from "./routes"
-import {createAdmin} from "./services/admin.service";
+import router from "./routes";
+import { createAdmin } from "./services/admin.service";
 
-dotenv.config({path: __dirname + '/.env'});
+dotenv.config({ path: __dirname + "/.env" });
 
-const app: Express = express()
+const app: Express = express();
 
-app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true
-}))
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
+app.use(
+    cors({
+        origin: "http://localhost:3000",
+        credentials: true,
+    }),
+);
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-app.use(router)
+app.use(router);
 
-// Error handling
+// Error handling, need next function for express to recognize this as an error handler
+/* eslint-disable  @typescript-eslint/no-unused-vars */
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    console.log("Error: ", err.message);
-    res.status(err.status || 500).json(err.message)
+    console.error("Error: ", err.message);
+    res.status(err.status || 500).json(err.message);
 });
 
-const PORT: string | number = process.env.PORT || 4000
+const PORT: string | number = process.env.PORT || 4000;
 
-createAdmin().then(() => {
-    app.listen(PORT, () =>
-        console.log(`Server running on http://localhost:${PORT}`)
-    )
-}).catch((err: any) => {
-    console.log(err)
-})
+createAdmin()
+    .then(() => {
+        app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+    })
+    .catch((err: any) => {
+        console.log(err);
+    });

@@ -1,16 +1,16 @@
-import React, {useContext, useState} from "react";
-import {Button, Card, Container, Form, Row, Col} from "react-bootstrap";
-import {AuthContext} from "../common/AuthContext";
-import {AxiosError} from "axios";
+import React, { useContext, useState } from "react";
+import { Button, Card, Container, Form, Row, Col } from "react-bootstrap";
+import { AuthContext } from "../common/AuthContext";
+import { AxiosError } from "axios";
 
 const isEmail = (email: string) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
 
 const Register: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     const [errors, setErrors] = useState<any>({});
 
@@ -42,18 +42,26 @@ const Register: React.FC = () => {
             return;
         }
 
-        const credentials: RegisterDataType = {username, firstName, lastName, email, password};
-        register(credentials).then(() => {
-            console.log("Registration successful!");
-        }).catch((err: AxiosError) => {
-            setErrors({
-                password: err.response?.data
+        const credentials: RegisterDataType = {
+            username,
+            firstName,
+            lastName,
+            email,
+            password,
+        };
+        register(credentials)
+            .then(() => {
+                console.log("Registration successful!");
+            })
+            .catch((err: AxiosError) => {
+                setErrors({
+                    password: err.response?.data,
+                });
             });
-        });
     };
 
     return (
-        <Container className="my-5 d-flex flex-column" style={{maxWidth: "600px"}}>
+        <Container className="my-5 d-flex flex-column" style={{ maxWidth: "600px" }}>
             <Card body>
                 <h2>UBC Mahjong Club Register</h2>
                 <Form noValidate onSubmit={handleSubmit}>
@@ -106,9 +114,7 @@ const Register: React.FC = () => {
                             isInvalid={errors.email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.email}
-                        </Form.Control.Feedback>
+                        <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
                     </Form.Group>
 
                     <Form.Group controlId="formBasicPassword" className="my-4">
@@ -127,12 +133,14 @@ const Register: React.FC = () => {
 
                     <div className="d-grid my-4">
                         <Button variant="primary" type="submit">
-                                Sign Up
+                            Sign Up
                         </Button>
                     </div>
 
                     <div className="d-flex justify-content-center mx-2">
-                        <p>Have an account? <a href="/login">Login</a></p>
+                        <p>
+                            Have an account? <a href="/login">Login</a>
+                        </p>
                     </div>
                 </Form>
             </Card>
@@ -141,6 +149,6 @@ const Register: React.FC = () => {
             </Button>
         </Container>
     );
-}
+};
 
 export default Register;

@@ -18,18 +18,17 @@ enum GameType {
     TOURNEY
 }
 
-enum JapaneseScoreType {
+enum JapaneseRoundType {
     DEAL_IN
-    RON
     SELF_DRAW
     DECK_OUT
     MISTAKE
     RESHUFFLE
-    PAO_KAN
-    PAO_YAKUMAN
+    DEAL_IN_PAO
+    SELF_DRAW_PAO
 }
 
-enum HongKongScoreType {
+enum HongKongRoundType {
     DEAL_IN
     SELF_DRAW
     DECK_OUT
@@ -50,99 +49,144 @@ enum Wind {
 }
 
 model Player {
-    id                String          @id @default(cuid())
-    email             String          @unique
-    username          String          @unique
-    firstName         String
-    lastName          String
-    password          String
-    admin             Boolean         @default(false)
-    japaneseQualified Boolean         @default(false)
-    hongKongQualified Boolean         @default(false)
-    japaneseElo       Int             @default(1500)
-    hongKongElo       Int             @default(1500)
-    createdAt         DateTime        @default(now())
-    japaneseScores    JapaneseScore[]
-    hongKongScores    HongKongScore[]
-    gamesPlayed       PlayerGame[]
-    gamesRecorded     Game[]
+    id                    String               @id @default(cuid())
+    email                 String               @unique
+    username              String               @unique
+    firstName             String
+    lastName              String
+    password              String
+    admin                 Boolean              @default(false)
+    japaneseQualified     Boolean              @default(false)
+    hongKongQualified     Boolean              @default(false)
+    legacyDisplayGame     Boolean              @default(false)
+    createdAt             DateTime             @default(now())
+    japaneseGames         JapanesePlayerGame[]
+    japaneseScores        JapaneseScore[]
+    japaneseGamesRecorded JapaneseGame[]
+    hongKongGames         HongKongPlayerGame[]
+    hongKongScores        HongKongScore[]
+    hongKongGamesRecorded HongKongGame[]
 }
 
-model PlayerGame {
-    id        String @id @default(cuid())
+model JapanesePlayerGame {
+    id        String        @id @default(cuid())
     wind      Wind
-    eloChange Int?
+    eloChange Float?
     position  Int?
-    player    Player @relation(fields: [playerId], references: [id])
+    player    Player        @relation(fields: [playerId], references: [id])
     playerId  String
-    game      Game   @relation(fields: [gameId], references: [id])
-    gameId    Int
+    game      JapaneseGame? @relation(fields: [gameId], references: [id])
+    gameId    Int?
 }
 
-model Game {
-    id             Int             @id @default(autoincrement())
-    season         Season          @relation(fields: [seasonId], references: [id])
-    seasonId       String
-    status         GameStatus
-    gameVariant    GameVariant
-    gameType       GameType
-    createdAt      DateTime        @default(now())
-    endedAt        DateTime?
-    recordedBy     Player          @relation(fields: [recordedById], references: [id])
-    recordedById   String
-    players        PlayerGame[]
-    japaneseRounds JapaneseRound[]
-    hongKongRounds HongKongRound[]
+model HongKongPlayerGame {
+    id        String        @id @default(cuid())
+    wind      Wind
+    eloChange Float?
+    position  Int?
+    player    Player        @relation(fields: [playerId], references: [id])
+    playerId  String
+    game      HongKongGame? @relation(fields: [gameId], references: [id])
+    gameId    Int?
 }
 
 model Season {
-    id        String   @id @default(cuid())
-    name      String
-    startDate DateTime @default(now())
-    endDate   DateTime
-    games     Game[]
+    id            String         @id @default(cuid())
+    name          String
+    startDate     DateTime       @default(now())
+    endDate       DateTime
+    japaneseGames JapaneseGame[]
+    hongKongGames HongKongGame[]
+}
+
+model JapaneseGame {
+    id           Int                  @id @default(autoincrement())
+    season       Season               @relation(fields: [seasonId], references: [id])
+    seasonId     String
+    status       GameStatus
+    gameType     GameType
+    createdAt    DateTime             @default(now())
+    endedAt      DateTime?
+    recordedBy   Player               @relation(fields: [recordedById], references: [id])
+    recordedById String
+    rounds       JapaneseRound[]
+    players      JapanesePlayerGame[]
 }
 
 model JapaneseRound {
-    id          String          @id @default(cuid())
-    roundCount  Int
-    roundWind   Wind
-    roundNumber Int
-    bonus       Int
-    game        Game            @relation(fields: [gameId], references: [id])
-    gameId      Int
-    scores      JapaneseScore[]
-}
-
-model HongKongRound {
-    id          String          @id @default(cuid())
-    roundCount  Int
-    roundWind   Wind
-    roundNumber Int
-    bonus       Int
-    game        Game            @relation(fields: [gameId], references: [id])
-    gameId      Int
-    scores      HongKongScore[]
+    id                  String            @id @default(cuid())
+    roundCount          Int
+    roundWind           Wind
+    roundNumber         Int
+    bonus               Int
+    riichiSticksOnTable Int
+    roundType           JapaneseRoundType
+    game                JapaneseGame      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+    gameId              Int
+    scores              JapaneseScore[]
+    hand                JapaneseHand[]
 }
 
 model JapaneseScore {
-    id          String            @id @default(cuid())
+    id          String        @id @default(cuid())
     scoreChange Int
-    scoreType   JapaneseScoreType
-    riichi      Boolean?
-    round       JapaneseRound     @relation(fields: [roundId], references: [id])
-    user        Player            @relation(fields: [userId], references: [id])
-    userId      String
+    riichi      Boolean
+    round       JapaneseRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+    player      Player        @relation(fields: [playerId], references: [id])
+    playerId    String
     roundId     String
 }
 
-model HongKongScore {
+model JapaneseHand {
+    id          String        @id @default(cuid())
+    points      Int
+    fu          Int
+    dora        Int
+    description String?
+    round       JapaneseRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+    roundId     String
+}
+
+model HongKongGame {
+    id           Int                  @id @default(autoincrement())
+    season       Season               @relation(fields: [seasonId], references: [id])
+    seasonId     String
+    status       GameStatus
+    gameType     GameType
+    createdAt    DateTime             @default(now())
+    endedAt      DateTime?
+    recordedBy   Player               @relation(fields: [recordedById], references: [id])
+    recordedById String
+    rounds       HongKongRound[]
+    players      HongKongPlayerGame[]
+}
+
+model HongKongRound {
     id          String            @id @default(cuid())
+    roundCount  Int
+    roundWind   Wind
+    roundNumber Int
+    bonus       Int
+    roundType   HongKongRoundType
+    game        HongKongGame      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+    gameId      Int
+    scores      HongKongScore[]
+    hand        HongKongHand[]
+}
+
+model HongKongScore {
+    id          String        @id @default(cuid())
     scoreChange Int
-    scoreType   HongKongScoreType
-    riichi      Boolean?
-    round       HongKongRound     @relation(fields: [roundId], references: [id])
-    user        Player            @relation(fields: [userId], references: [id])
-    userId      String
+    round       HongKongRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+    player      Player        @relation(fields: [playerId], references: [id])
+    playerId    String
+    roundId     String
+}
+
+model HongKongHand {
+    id          String        @id @default(cuid())
+    points      Int
+    description String?
+    round       HongKongRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
     roundId     String
 }
