@@ -58,6 +58,7 @@ the mysql database, run `mysql -u root -p -h 127.0.0.1` and enter the password y
 **ALTERNATIVELY:**
 1. Install `pm2` globally: `npm install pm2 -g`
 2. Install some version of `cmake` (Should be bundled in with some basic stuff)
+3. Run `docker-compose up` in the backend directory
 3. Run `make develop` in this folder, and it does everything automatically. 
 
 You may have to delete the caches manually though (since I don't know anything about docker)
@@ -77,7 +78,3 @@ The following steps may be tried in sequence to potentially fix the problem.
 8. Reclone the repository
 9. Reinstall npm/Node.js
 10. Cry for help
-
-### Local database access
-
-To access the MySql database locally, run ` mysql -h localhost -P 3306 --protocol=tcp -u root -p` then enter the password you specified in the dotenv file.
