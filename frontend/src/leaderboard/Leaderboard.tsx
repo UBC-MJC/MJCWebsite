@@ -7,6 +7,7 @@ import { Container, Table } from "react-bootstrap";
 const Leaderboard: FC<GameTypeProp> = ({ gameVariant }) => {
     const [currentSeason, setCurrentSeason] = useState<Season | undefined>(undefined);
     const [leaderboard, setLeaderboard] = useState<LeaderboardType[]>([]);
+    const [noSeasonsMessage, setNoSeasonsMessage] = useState<string>("");
 
     useEffect(() => {
         getPlayerLeaderboard(gameVariant)
@@ -34,9 +35,13 @@ const Leaderboard: FC<GameTypeProp> = ({ gameVariant }) => {
                 setCurrentSeason(response.data);
             })
             .catch((error: AxiosError) => {
-                console.log("Error fetching current season: ", error.response?.data);
+                setNoSeasonsMessage("No seasons currently active.");
             });
     }, []);
+
+    if (currentSeason === undefined) {
+        return <h5>{noSeasonsMessage}</h5>;
+    }
 
     return (
         <Container fluid="lg">
