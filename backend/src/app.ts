@@ -3,7 +3,6 @@ import express, { Express, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import router from "./routes";
-import { createAdmin } from "./services/admin.service";
 import path from "path";
 import { Player } from "@prisma/client";
 
@@ -57,11 +56,5 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 const PORT: string | number = process.env.PORT || 80;
-//
-// createAdmin()
-//     .then(() => {
+
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-    // })
-    // .catch((err: any) => {
-    //     console.log(err);
-    // });
