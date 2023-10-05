@@ -10,4 +10,4 @@ backend-production:
 	npm install --omit=dev
 	npx prisma db push
 	npx prisma generate
-	pm2 start npm --name "backend" -- start -- --production
+	pm2 start npm --name "backend" -- start

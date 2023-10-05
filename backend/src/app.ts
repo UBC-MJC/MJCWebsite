@@ -2,38 +2,66 @@ import * as dotenv from "dotenv";
 import express, { Express, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-
 import router from "./routes";
 import { createAdmin } from "./services/admin.service";
+import path from "path";
+import { Player } from "@prisma/client";
 
-dotenv.config({ path: __dirname + "/.env" });
+console.log("NODE_ENV:", process.env.NODE_ENV );
+
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config({ path: `${__dirname}/../../../.env.development` });
+}
+
+declare global {
+    namespace Express {
+        export interface Request {
+            player: Player;
+        }
+    }
+}
 
 const app: Express = express();
 
-app.use(
-    cors({
-        origin: "http://localhost:3000",
-        credentials: true,
-    }),
-);
+if (process.env.NODE_ENV === "production") {
+    // Set static folder
+    app.use(express.static(path.join(__dirname, '../build')));
+
+    // app.get('/', (req,res) => {
+    //     res.sendFile(path.join(__dirname, '../build/index.html'));
+    // });
+} else {
+    app.use(
+        cors({
+            origin: "http://localhost:3000",
+            credentials: true,
+        }),
+    );
+}
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(router);
 
-// Error handling, need next function for express to recognize this as an error handler
-/* eslint-disable  @typescript-eslint/no-unused-vars */
+if (process.env.NODE_ENV === "production") {
+    app.get('*', (req,res) => {
+        res.sendFile(path.join(__dirname, '../build/index.html'));
+    });
+}
+
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     console.error("Error: ", err.message);
     res.status(err.status || 500).json(err.message);
+    next();
 });
 
-const PORT: string | number = process.env.PORT || 4000;
-
-createAdmin()
-    .then(() => {
-        app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-    })
-    .catch((err: any) => {
-        console.log(err);
-    });
+const PORT: string | number = process.env.PORT || 80;
+//
+// createAdmin()
+//     .then(() => {
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+    // })
+    // .catch((err: any) => {
+    //     console.log(err);
+    // });

@@ -1,4 +1,5 @@
-version: '3.3'
+version: '3.9'
+
 services:
   db:
     platform: '${PLATFORM}'
@@ -21,6 +22,17 @@ services:
       # Where our data will be persisted
     volumes:
       - my-db:/var/lib/mysql
+  web:
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+    env_file:
+      - .env
 # Names our volume
 volumes:
   my-db:
