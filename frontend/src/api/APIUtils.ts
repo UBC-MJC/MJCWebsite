@@ -1,4 +1,4 @@
-const baseUrl: string = process.env.NODE_ENV === "production" ? "" : "http://localhost:4000";
+const baseUrl: string = process.env.NODE_ENV === "production" ? "/api" : "http://localhost:4000/api";
 
 const getAuthConfig = (authToken: string) => {
     return {

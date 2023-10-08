@@ -25,10 +25,6 @@ const app: Express = express();
 if (process.env.NODE_ENV === "production") {
     // Set static folder
     app.use(express.static(path.join(__dirname, '../build')));
-
-    // app.get('/', (req,res) => {
-    //     res.sendFile(path.join(__dirname, '../build/index.html'));
-    // });
 } else {
     app.use(
         cors({
@@ -41,10 +37,10 @@ if (process.env.NODE_ENV === "production") {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(router);
+app.use("/api", router);
 
 if (process.env.NODE_ENV === "production") {
-    app.get('*', (req,res) => {
+    app.get("*", (req,res) => {
         res.sendFile(path.join(__dirname, '../build/index.html'));
     });
 }
