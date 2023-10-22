@@ -1,4 +1,4 @@
-import { Player, Prisma, Wind } from "@prisma/client";
+import { JapaneseGame, Player, Prisma, Wind } from "@prisma/client";
 import HongKongGameService from "./hongKongGame.service";
 import JapaneseGameService from "./japaneseGame.service";
 import { findPlayerByUsernames } from "../player.service";
@@ -12,8 +12,7 @@ const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
         },
         rounds: {
             include: {
-                scores: true,
-                hand: true,
+                transactions: true,
             },
         },
     },

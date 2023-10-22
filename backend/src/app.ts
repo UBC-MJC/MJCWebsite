@@ -6,9 +6,9 @@ import router from "./routes";
 import path from "path";
 import { Player } from "@prisma/client";
 
-console.log("NODE_ENV:", process.env.NODE_ENV );
+console.log("NODE_ENV:", process.env.NODE_ENV);
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
     dotenv.config({ path: `${__dirname}/../../../.env.development` });
 }
 
@@ -24,7 +24,7 @@ const app: Express = express();
 
 if (process.env.NODE_ENV === "production") {
     // Set static folder
-    app.use(express.static(path.join(__dirname, '../build')));
+    app.use(express.static(path.join(__dirname, "../build")));
 } else {
     app.use(
         cors({
@@ -40,8 +40,8 @@ app.use(bodyParser.json());
 app.use("/api", router);
 
 if (process.env.NODE_ENV === "production") {
-    app.get("*", (req,res) => {
-        res.sendFile(path.join(__dirname, '../build/index.html'));
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(__dirname, "../build/index.html"));
     });
 }
 

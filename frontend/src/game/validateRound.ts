@@ -26,8 +26,8 @@ const validateJapanesePoints = (pointsValue: any): void => {
     if (typeof pointsValue.fu === "undefined") {
         throw new Error("Fu is required");
     }
-    if (typeof pointsValue.points === "undefined") {
-        throw new Error("Points are required");
+    if (typeof pointsValue.han === "undefined") {
+        throw new Error("Han is required");
     }
     if (typeof pointsValue.dora === "undefined") {
         throw new Error("Dora is required");

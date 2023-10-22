@@ -2,7 +2,6 @@ import { FullHongKongGame, FullJapaneseGame, windOrder } from "./game.util";
 import { Wind } from "@prisma/client";
 import { ruleVariantTable } from "./constants";
 
-
 type EloCalculatorInput = {
     playerId: string;
     score: number;
@@ -24,7 +23,8 @@ const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: str
 
     const result = scoreAfterPlacement.map((player) => {
         const eloDifference = fieldElo - player.elo;
-        const firstCalculation = (player.score - specificsTable.startingPoint) / specificsTable.divisor;
+        const firstCalculation =
+            (player.score - specificsTable.startingPoint) / specificsTable.divisor;
         const eloChange = (firstCalculation + eloDifference * impactFactor) * adjustment;
 
         return {

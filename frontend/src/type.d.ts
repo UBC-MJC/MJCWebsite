@@ -110,14 +110,14 @@ type JapaneseRound = {
     roundCount: number;
     roundNumber: number;
     roundWind: string;
-    hands: JapaneseHand[];
-    scores: JapaneseScore[];
+    transactions: JapaneseTransaction[];
 };
 
 type JapaneseHand = {
     id: string;
-    points: number;
+    han: number;
     fu: number;
+    honba: number;
     dora: number;
 };
 
@@ -127,3 +127,11 @@ type JapaneseScore = {
     riichi: boolean;
     playerId: string;
 };
+
+type JapaneseTransaction = {
+    id: string;
+    pointReceiverID: string;
+    pointGiverID: string;
+    amount: number;
+    hand?: JapaneseHand;
+}

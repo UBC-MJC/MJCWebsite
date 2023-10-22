@@ -1,5 +1,12 @@
 import prisma from "../../db";
-import { GameType } from "@prisma/client";
+import {
+    ActionType,
+    GameType,
+    JapaneseGame,
+    JapanesePoint, JapaneseRound,
+    JapaneseTransaction,
+    Wind,
+} from "@prisma/client";
 import {
     getDealerPlayerId,
     getWind,
@@ -55,8 +62,7 @@ class JapaneseGameService extends GameService {
                 },
                 rounds: {
                     include: {
-                        scores: true,
-                        hand: true,
+                        transactions: true,
                     },
                 },
             },
@@ -118,39 +124,25 @@ class JapaneseGameService extends GameService {
         });
     }
 
-    public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<void> {
-        const currentRoundInformation = getNextJapaneseRound(game);
-        const dealerId = getDealerPlayerId(game, currentRoundInformation.roundNumber);
-        const { scoresQuery, newRiichiStickTotal } = createJapaneseScoresQuery(
-            roundRequest,
-            currentRoundInformation,
-            dealerId,
-        );
 
-        const query: any = {
-            data: {
-                game: {
-                    connect: {
-                        id: game.id,
-                    },
-                },
-                roundCount: currentRoundInformation.roundCount,
-                roundNumber: currentRoundInformation.roundNumber,
-                roundWind: currentRoundInformation.roundWind,
-                bonus: currentRoundInformation.bonus,
-                riichiSticksOnTable: newRiichiStickTotal,
-                roundType: roundRequest.roundValue.type.value,
-                scores: {
-                    create: scoresQuery,
-                },
-            },
+    public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<void> {
+        /* we should already have all information in roundRequest
+        roundRequest will be a series of actions to apply here
+         */
+        const currentRoundInformation = getNextJapaneseRound(game);
+
+        const query: { data: any } = {
+            gameId: game.id,
+            roundCount: currentRoundInformation.roundCount,
+            roundNumber: currentRoundInformation.roundNumber,
+            roundWind: currentRoundInformation.roundWind,
+            bonus: currentRoundInformation.bonus,
+
+            riichiSticksOnTable: currentRoundInformation.riichiSticksOnTable,
+            pointStatus: currentRoundInformation.pointStatus,
         };
 
-        if (requiresHand(roundRequest.roundValue.type.value)) {
-            query.data.hand = {
-                create: createJapaneseHandQuery(roundRequest.pointsValue),
-            };
-        }
+        query.data.transactions = transformAll(roundRequest.transactions);
 
         try {
             await prisma.japaneseRound.create(query);
@@ -236,188 +228,247 @@ class JapaneseGameService extends GameService {
     }
 }
 
-const getFirstJapaneseRound = (): any => {
-    return {
-        roundCount: 1,
-        roundNumber: 1,
-        roundWind: "EAST",
-        bonus: 0,
-        riichiSticksOnTable: 0,
-    };
-};
+interface JapaneseRoundInformation {
+    roundCount: number,
+    roundNumber: number,
+    roundWind: Wind,
+    bonus: number,
+    riichiSticksOnTable: number,
+    pointStatus: JapanesePoint[],
+}
+
+export class JapaneseRoundClass {
+    public readonly globalSeating: JapanesePoint[]; // the dealer is on the round - 1 index
+    public readonly wind: Wind;
+    public readonly round: number;
+    public readonly honba: number;
+    public riichiSticks: number;
+    public readonly actions: JapaneseTransaction[];
+    public readonly localSeating: any;
+    private readonly dealerID: string;
+    public readonly count: number;
+
+    constructor(round: JapaneseRound) {
+        /**
+         * Represents a Round in a Riichi Game.
+         * @param seating a list representing the *initial* seating and the points.
+         * That is, if round = 3, then seating[3-1] is the dealer.
+         * @param wind the wind of the current. Can be East or South.
+         * @param round the current round. Between 1 and 4.
+         * @param honba the current honba. Can either be 0 (different win), honba of past round + 1 (dealer tenpai/ron)
+         * or honba of past round (Reshuffle, Chombo).
+         * @param riichiSticks the amount of riichi Sticks that are still on the table.
+         *
+         * Invariant: the total number of riichi sticks * 1000 + the total score of each player should add up to 100000
+         **/
+        this.globalSeating = round.pointStatus.copy();
+        this.count = round.roundCount;
+        this.wind = round.roundWind;
+        this.round = round.roundNumber;
+        this.honba = round.bonus;
+        this.riichiSticks = round.riichiSticksOnTable;
+        this.actions = round.transactions;
+        this.localSeating = {};
+        this.dealerID = this.globalSeating[this.round - 1].playerID;
+        this.initializeLocalSeating();
+    }
+
+    private initializeLocalSeating() {
+        const ids = [];
+
+        for (const person of this.globalSeating) {
+            ids.push(person.playerID);
+        }
+
+        while (ids[0] !== this.dealerID) {
+            ids.push(ids.shift());
+        }
+        for (const i in ids) {
+            // @ts-ignore
+            this.localSeating[ids[i]] = parseInt(i, 10);
+        }
+    }
+
+    public getPlayerLocalIndex(playerName: string): number {
+        return this.localSeating[playerName];
+    }
+
+    public getPlayerGlobalIndex(playerName: string): number {
+        return (this.localSeating[playerName] + this.round - 1) % 4;
+    }
+
+    public getScoreDeltas(): number[] {
+        /**
+         * Returns the situation of the next round in accordance to the actions performed.
+         * Should go through the list of actions and aggregate a final score delta.
+         */
+        const finalRoundChange = [0, 0, 0, 0];
+        for (const transaction of this.actions) {
+            finalRoundChange[this.getPlayerGlobalIndex(transaction.pointReceiverID)] +=
+                transaction.amount;
+            finalRoundChange[this.getPlayerGlobalIndex(transaction.pointGiverID)] -=
+                transaction.amount;
+        }
+        return finalRoundChange;
+    }
+
+    private getClosestWinner(loserLocalPos: number, winners: Set<string>) {
+        let [closestWinner] = winners;
+        for (const winnerName of winners) {
+            if (
+                (this.getPlayerLocalIndex(winnerName) - loserLocalPos) % 4 <
+                (this.getPlayerLocalIndex(closestWinner) - loserLocalPos) % 4
+            ) {
+                closestWinner = winnerName;
+            }
+        }
+        return closestWinner;
+    }
+
+    public getNextRound(): JapaneseRoundInformation {
+        for (const i in this.getScoreDeltas()) {
+            this.globalSeating[i].points += this.getScoreDeltas()[i];
+        }
+
+        this.distributeRemainingRiichiSticks();
+        // Four situations:
+        // Dealership retains, honba retains (chombo);
+        // Dealership passes, honba increases by 1;
+        // Dealership passes, honba set to 0;
+        // dealership retains, honba increases by 1 (renchan).
+        // Therefore, the situation will only depend on 1. if the dealership retains and 2. if the honba should increase
+        const dealershipRetains: boolean = this.dealershipRetains();
+        const newHonbaCount: number = this.getNewHonbaCount();
+        if (dealershipRetains) {
+            // TODO: Logic NOT correct
+            return {
+                pointStatus: this.globalSeating,
+                roundCount: this.count,
+                // globalSeating: this.globalSeating,
+                roundWind: this.wind,
+                roundNumber: this.round,
+                bonus: newHonbaCount,
+                riichiSticksOnTable: this.riichiSticks
+                };
+        } else {
+            return {
+                pointStatus: this.globalSeating,
+                roundCount: this.count,
+                roundWind: this.round === 4 ? getWind(windOrder.indexOf(this.wind) + 1) : this.wind,
+                roundNumber: (this.round + 1) % 4,
+                bonus: newHonbaCount,
+                riichiSticksOnTable: this.riichiSticks
+            };
+        }
+    }
+
+    private distributeRemainingRiichiSticks() {
+        const winners = new Set<string>();
+        const losers = new Set<string>();
+        for (const transaction of this.actions) {
+            if (
+                [
+                    ActionType.RON,
+                    ActionType.TSUMO,
+                    ActionType.SELF_DRAW_PAO,
+                    ActionType.DEAL_IN_PAO,
+                ].includes(transaction.actionType)
+            ) {
+                winners.add(transaction.pointReceiverID);
+                losers.add(transaction.pointGiverID);
+            }
+        }
+        if (winners.size > 1 && losers.size > 1) {
+            throw new Error("Input mismatch: must have only one winner or only one loser");
+        }
+        if (winners.size === 1) {
+            const [winner] = winners;
+            this.globalSeating[this.getPlayerGlobalIndex(winner)].points += this.riichiSticks * 1000;
+            this.riichiSticks = 0;
+        } else if (losers.size === 1) {
+            const [loser] = losers;
+            const loserLocalPos = this.getPlayerLocalIndex(loser);
+            const closestWinner = this.getClosestWinner(loserLocalPos, winners);
+            this.globalSeating[this.getPlayerGlobalIndex(closestWinner)].points +=
+                this.riichiSticks * 1000;
+            this.riichiSticks = 0;
+        }
+    }
+
+    private dealershipRetains() {
+        for (const transaction of this.actions) {
+            if (
+                [
+                    ActionType.RON,
+                    ActionType.TSUMO,
+                    ActionType.SELF_DRAW_PAO,
+                    ActionType.DEAL_IN_PAO,
+                ].includes(transaction.actionType) &&
+                transaction.pointReceiverID == this.dealerID
+            ) {
+                return true;
+            }
+            if (transaction.actionType === ActionType.CHOMBO) {
+                return true;
+            }
+            if (transaction.actionType === ActionType.NAGASHI_MANGAN) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private getNewHonbaCount() {
+        for (const transaction of this.actions) {
+            if (
+                [
+                    ActionType.RON,
+                    ActionType.TSUMO,
+                    ActionType.SELF_DRAW_PAO,
+                    ActionType.DEAL_IN_PAO,
+                ].includes(transaction.actionType) &&
+                transaction.pointReceiverID == this.dealerID
+            ) {
+                return this.honba + 1;
+            }
+            if (transaction.actionType === ActionType.CHOMBO) {
+                return this.honba;
+            }
+        }
+        return 0;
+    }
+}
+
+function transformAll(transactions: any[]): JapaneseTransaction[] {
+    return []; // stub
+}
 
 // CAREFUL the riichi sticks on table are just taken from prev round and need to be updated
 // TODO: breaks at north 4
-const getNextJapaneseRound = (game: FullJapaneseGame): any => {
+const getNextJapaneseRound = (game: FullJapaneseGame): JapaneseRoundInformation => {
     const rounds = game.rounds;
     if (rounds.length === 0) {
-        return getFirstJapaneseRound();
+        const pointStatus: JapanesePoint[] = [];
+        for (const playerIdx in game.players) {
+            const startingPoint: JapanesePoint = {
+                japaneseRoundId: "0",
+                playerID: game.players[playerIdx],
+                points: 25000,
+            }
+            pointStatus.push(startingPoint);
+        }
+        return {
+            roundCount: 1,
+            roundNumber: 1,
+            roundWind: Wind.EAST,
+            bonus: 0,
+            riichiSticksOnTable: 0,
+            pointStatus: pointStatus
+        };
     }
 
     const lastRound = rounds[rounds.length - 1];
-
-    const lastRoundWind = lastRound.roundWind;
-    const lastRoundNumber = lastRound.roundNumber;
-    const lastRoundCount = lastRound.roundCount;
-    const lastBonus = lastRound.bonus;
-
-    const lastDealerId = getDealerPlayerId(game, lastRoundNumber);
-    const lastDealerScore = lastRound.scores.find((score) => score.playerId === lastDealerId);
-    const lastRiichiSticks = lastRound.riichiSticksOnTable;
-
-    if (
-        lastDealerScore!.scoreChange > 0 ||
-        lastDealerScore!.riichi ||
-        lastRound.roundType === "RESHUFFLE"
-    ) {
-        return {
-            roundCount: lastRoundCount + 1,
-            roundNumber: lastRoundNumber,
-            roundWind: lastRoundWind,
-            bonus: lastBonus + 1,
-            riichiSticksOnTable: lastRiichiSticks,
-        };
-    }
-
-    if (lastRound.roundType === "DECK_OUT") {
-        return {
-            roundCount: lastRoundCount + 1,
-            roundNumber: lastRoundNumber === 4 ? 1 : lastRoundNumber + 1,
-            roundWind:
-                lastRoundNumber === 4
-                    ? getWind(windOrder.indexOf(lastRoundWind) + 1)
-                    : lastRoundWind,
-            bonus: lastBonus + 1,
-            riichiSticksOnTable: lastRiichiSticks,
-        };
-    }
-
-    return {
-        roundCount: lastRoundCount + 1,
-        roundNumber: lastRoundNumber === 4 ? 1 : lastRoundNumber + 1,
-        roundWind:
-            lastRoundNumber === 4 ? getWind(windOrder.indexOf(lastRoundWind) + 1) : lastRoundWind,
-        bonus: 0,
-        riichiSticksOnTable: lastRiichiSticks,
-    };
-};
-
-const createJapaneseScoresQuery = (
-    round: any,
-    currentRoundInformation: any,
-    dealerId: string,
-): any => {
-    const roundType = round.roundValue.type.value;
-    const playerActions = round.roundValue.playerActions;
-    const hand = round.pointsValue;
-    const { honba, riichiSticksOnTable } = currentRoundInformation;
-
-    let winnerId: string | undefined = undefined;
-    let loserId: string | undefined = undefined;
-    let paoId: string | undefined = undefined;
-    let currentRiichiSticks = riichiSticksOnTable;
-
-    const playerScores: any = {};
-    for (const playerId in playerActions) {
-        playerScores[playerId] = {
-            scoreChange: 0,
-            riichi: false,
-        };
-
-        if (playerActions[playerId].includes("Winner")) {
-            winnerId = playerId;
-        }
-
-        if (playerActions[playerId].includes("Loser")) {
-            loserId = playerId;
-        }
-
-        if (playerActions[playerId].includes("Pao Player")) {
-            paoId = playerId;
-        }
-
-        if (playerActions[playerId].includes("Riichis")) {
-            playerScores[playerId].riichi = true;
-            playerScores[playerId].scoreChange -= RIICHI_STICK_SCORE;
-            currentRiichiSticks++;
-        }
-    }
-
-    switch (roundType) {
-        case "DEAL_IN":
-            updateJapaneseDealIn(
-                playerScores,
-                winnerId!,
-                loserId!,
-                dealerId,
-                hand,
-                honba,
-                currentRiichiSticks,
-            );
-            break;
-        case "SELF_DRAW":
-            updateJapaneseSelfDraw(
-                playerScores,
-                winnerId!,
-                dealerId,
-                hand,
-                honba,
-                currentRiichiSticks,
-            );
-            break;
-        case "DECK_OUT":
-            updateJapaneseDeckOut(playerScores, playerActions);
-            break;
-        case "MISTAKE":
-            updateJapaneseMistake(playerScores, loserId!);
-            break;
-        case "RESHUFFLE":
-            break;
-        case "DEAL_IN_PAO":
-            updateJapaneseDealInPao(
-                playerScores,
-                winnerId!,
-                loserId!,
-                paoId!,
-                dealerId,
-                hand,
-                honba,
-                currentRiichiSticks,
-            );
-            break;
-        case "SELF_DRAW_PAO":
-            updateJapaneseSelfDrawPao(
-                playerScores,
-                winnerId!,
-                paoId!,
-                dealerId,
-                hand,
-                honba,
-                currentRiichiSticks,
-            );
-            break;
-        default:
-            throw new Error("Invalid round type: " + roundType);
-    }
-
-    const scoresQuery: any[] = [];
-    for (const playerId in playerScores) {
-        scoresQuery.push({
-            player: {
-                connect: {
-                    id: playerId,
-                },
-            },
-            scoreChange: playerScores[playerId].scoreChange,
-            riichi: playerScores[playerId].riichi,
-        });
-    }
-
-    if (roundType !== "RESHUFFLE" && roundType !== "DECK_OUT") {
-        currentRiichiSticks = 0;
-    }
-
-    return { scoresQuery, newRiichiStickTotal: currentRiichiSticks };
+    return new JapaneseRoundClass(lastRound).getNextRound();
 };
 
 function calculateHandValueWithMultiplier(multiplier: number, fu: number, points: number) {
@@ -452,7 +503,8 @@ const updateJapaneseDealIn = (
     const handValue = calculateHandValueWithMultiplier(multiplier, fu, points);
 
     // Add everything together to finalize total
-    playerScores[winnerId].scoreChange += handValue + bonusPoints + riichiSticks * RIICHI_STICK_SCORE;
+    playerScores[winnerId].scoreChange +=
+        handValue + bonusPoints + riichiSticks * RIICHI_STICK_SCORE;
     playerScores[loserId].scoreChange -= handValue + bonusPoints;
 };
 
@@ -474,19 +526,21 @@ const updateJapaneseSelfDraw = (
         throw RangeError("Invalid points/fu combination");
     }
 
-    const singleBasePoint = calculateHandValueWithMultiplier(1, points, fu)
-    const doubleBasePoint = calculateHandValueWithMultiplier(2, points, fu)
+    const singleBasePoint = calculateHandValueWithMultiplier(1, points, fu);
+    const doubleBasePoint = calculateHandValueWithMultiplier(2, points, fu);
 
     // calculate score changes for everyone except winner and dealer
     if (dealerId === winnerId) {
-        playerScores[winnerId].scoreChange += doubleBasePoint * 3 + bonusPoints + riichiSticks * RIICHI_STICK_SCORE;
+        playerScores[winnerId].scoreChange +=
+            doubleBasePoint * 3 + bonusPoints + riichiSticks * RIICHI_STICK_SCORE;
         for (const playerId in playerScores) {
             if (playerId !== winnerId) {
                 playerScores[playerId].scoreChange -= doubleBasePoint + individualBonusPayout;
             }
         }
     } else {
-        playerScores[winnerId].scoreChange += singleBasePoint * 2 + doubleBasePoint + bonusPoints + riichiSticks * RIICHI_STICK_SCORE;
+        playerScores[winnerId].scoreChange +=
+            singleBasePoint * 2 + doubleBasePoint + bonusPoints + riichiSticks * RIICHI_STICK_SCORE;
         for (const playerId in playerScores) {
             if (playerId !== winnerId && playerId !== dealerId) {
                 playerScores[playerId].scoreChange -= singleBasePoint + individualBonusPayout;
@@ -553,8 +607,10 @@ const updateJapaneseDealInPao = (
     const multiplier = winnerId !== dealerId ? 4 : 6;
     const handValue = manganValue(points) * multiplier;
 
-    playerScores[winnerId].scoreChange += handValue + bonusPoints + riichiSticks * RIICHI_STICK_SCORE;
-    playerScores[loserId].scoreChange -= handValue / 2 + bonusPoints + riichiSticks * RIICHI_STICK_SCORE;
+    playerScores[winnerId].scoreChange +=
+        handValue + bonusPoints + riichiSticks * RIICHI_STICK_SCORE;
+    playerScores[loserId].scoreChange -=
+        handValue / 2 + bonusPoints + riichiSticks * RIICHI_STICK_SCORE;
     playerScores[paoId].scoreChange -= handValue / 2;
 };
 
@@ -577,7 +633,8 @@ const updateJapaneseSelfDrawPao = (
     const multiplier = winnerId !== dealerId ? 4 : 6;
     const handValue = manganValue(points) * multiplier;
 
-    playerScores[winnerId].scoreChange += handValue + bonusPoints + riichiSticks * RIICHI_STICK_SCORE;
+    playerScores[winnerId].scoreChange +=
+        handValue + bonusPoints + riichiSticks * RIICHI_STICK_SCORE;
     playerScores[paoId].scoreChange -= handValue + bonusPoints;
 };
 
@@ -587,7 +644,7 @@ const updateJapaneseSelfDrawPao = (
  * @returns {number} representing number of base points as the result of a certain point threshold,
  *                   must be greater than mangan minimum points
  */
-const manganValue = (points: number) => {
+function manganValue(points) {
     let multiplier = 0;
     switch (true) {
         case points === 5:
@@ -620,13 +677,14 @@ const manganValue = (points: number) => {
             break;
     }
     return MANGAN_BASE_POINT * multiplier;
-};
+}
 
 const createJapaneseHandQuery = (pointsValue: any): any => {
     return {
         points: pointsValue.points,
         fu: pointsValue.fu,
         dora: pointsValue.dora,
+        honba: pointsValue.honba,
     };
 };
 

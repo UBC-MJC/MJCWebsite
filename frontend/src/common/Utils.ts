@@ -132,7 +132,7 @@ const getGameTypeString = (gameType: "jp" | "hk"): string => {
     return "";
 };
 
-const findPlayerScore = (scores: JapaneseScore[], playerId: string): JapaneseScore => {
+const findPlayerScore = (transactions: JapaneseScore[], playerId: string): JapaneseScore => {
     const score = scores.find((score) => score.playerId === playerId);
     if (typeof score === "undefined") {
         throw new Error(`Could not find player score for player ${playerId}`);

@@ -48,24 +48,36 @@ enum Wind {
     NORTH
 }
 
+enum ActionType {
+    RON
+    TSUMO
+    CHOMBO
+    TENPAI
+    DEAL_IN_PAO
+    SELF_DRAW_PAO
+    NAGASHI_MANGAN
+}
+
 model Player {
-    id                    String               @id @default(cuid())
-    email                 String               @unique
-    username              String               @unique
-    firstName             String
-    lastName              String
-    password              String
-    admin                 Boolean              @default(false)
-    japaneseQualified     Boolean              @default(false)
-    hongKongQualified     Boolean              @default(false)
-    legacyDisplayGame     Boolean              @default(false)
-    createdAt             DateTime             @default(now())
-    japaneseGames         JapanesePlayerGame[]
-    japaneseScores        JapaneseScore[]
-    japaneseGamesRecorded JapaneseGame[]
-    hongKongGames         HongKongPlayerGame[]
-    hongKongScores        HongKongScore[]
-    hongKongGamesRecorded HongKongGame[]
+    id                            String                @id @default(cuid())
+    email                         String                @unique
+    username                      String                @unique
+    firstName                     String
+    lastName                      String
+    password                      String
+    admin                         Boolean               @default(false)
+    japaneseQualified             Boolean               @default(false)
+    hongKongQualified             Boolean               @default(false)
+    legacyDisplayGame             Boolean               @default(false)
+    createdAt                     DateTime              @default(now())
+    japaneseGames                 JapanesePlayerGame[]
+    japaneseReceivingTransactions JapaneseTransaction[] @relation("Receives")
+    japaneseGivingTransactions    JapaneseTransaction[] @relation("Gives")
+    japaneseGamesRecorded         JapaneseGame[]
+    hongKongGames                 HongKongPlayerGame[]
+    hongKongScores                HongKongScore[]
+    hongKongGamesRecorded         HongKongGame[]
+    JapanesePoint                 JapanesePoint[]
 }
 
 model JapanesePlayerGame {
@@ -114,37 +126,49 @@ model JapaneseGame {
 }
 
 model JapaneseRound {
-    id                  String            @id @default(cuid())
+    id                  String                @id @default(cuid())
     roundCount          Int
     roundWind           Wind
     roundNumber         Int
     bonus               Int
-    riichiSticksOnTable Int
-    roundType           JapaneseRoundType
-    game                JapaneseGame      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+    pointStatus         JapanesePoint[] // list of size 4 representing the points that each player has
+    transactions        JapaneseTransaction[] // The transaction that happens DURING the round
+    riichiSticksOnTable Int // The riichi sticks AT THE START of the game
+    game                JapaneseGame          @relation(fields: [gameId], references: [id], onDelete: Cascade)
     gameId              Int
-    scores              JapaneseScore[]
-    hand                JapaneseHand[]
 }
 
-model JapaneseScore {
-    id          String        @id @default(cuid())
-    scoreChange Int
-    riichi      Boolean
-    round       JapaneseRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
-    player      Player        @relation(fields: [playerId], references: [id])
-    playerId    String
-    roundId     String
+model JapanesePoint {
+    id              String        @id @default(cuid())
+    round           JapaneseRound @relation(fields: [japaneseRoundId], references: [id])
+    japaneseRoundId String
+    player          Player        @relation(fields: [playerID], references: [id])
+    playerID        String
+    points          Int
+}
+
+model JapaneseTransaction {
+    id              String        @id @default(cuid())
+    round           JapaneseRound @relation(fields: [roundID], references: [id], onDelete: Cascade)
+    roundID         String
+    actionType      ActionType
+    pointReceiver   Player        @relation("Receives", fields: [pointReceiverID], references: [id])
+    pointReceiverID String
+    pointGiver      Player        @relation("Gives", fields: [pointGiverID], references: [id])
+    pointGiverID    String
+    hand            JapaneseHand? @relation(fields: [japaneseHandId], references: [id])
+    japaneseHandId  String?
+    amount          Int
 }
 
 model JapaneseHand {
-    id          String        @id @default(cuid())
-    points      Int
-    fu          Int
-    dora        Int
-    description String?
-    round       JapaneseRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
-    roundId     String
+    id                  String                @id @default(cuid())
+    fu                  Int
+    han                 Int
+    honba               Int
+    dora                Int
+    description         String?
+    JapaneseTransaction JapaneseTransaction[]
 }
 
 model HongKongGame {
