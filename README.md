@@ -23,7 +23,7 @@ of npm, Node.js and so on.
    working after installing, check the hardware compatibility and make sure Virtualization is enabled 
    in Firmware (may require dockerBIOS setting, be careful). The key services to check are Docker Engine and Docker Compose.
 4. Clone the repository
-5. Create a .env file in the backend directory and format it as follows:
+5. Create a .env file in the root directory and format it as follows:
 
 ```bash
 NODE_ENV="development"
@@ -37,7 +37,7 @@ DATABASE_NAME="mahjong"
 DATABASE_USER="mahjonguser"
 DATABASE_PASSWORD="{PASSWORD}"
 
-DATABASE_URL="mysql://mahjonguser:{PASSWORD}@db:3306/mahjong?schema=public"
+DATABASE_URL="mysql://root:{PASSWORD}@localhost:3306/mahjong?schema=public"
 
 ACCESS_TOKEN_SECRET="{SECRET}"
 ```
@@ -45,10 +45,10 @@ ACCESS_TOKEN_SECRET="{SECRET}"
 Replace all instances of `{PASSWORD}` with any string and replace `{SECRET}` with some random 32 character long string. Don't forget the quotation marks.
 
 6. Install some version of `cmake` (Should be bundled in with some basic stuff)
-7. Run `make build` in the backend directory. This will create docker images for all the services being used. Run `make up` to start live development, with all changes being immediately updated. Run `make down` or stop Docker Desktop to close ths services.
+7. Run `make build` in the root directory. This will create docker images for all the services being used. Run `make up` to start live development, with all changes being immediately updated. Run `make down` or stop Docker Desktop to close ths services.
 The command `make build` is only needed once, unless the Dockerfiles are changed or `node_modules` is updated (meaning if anything is npm installed).
 8. If it is the first time running the website, you need to create the database tables. To do so, run `npx prisma db push` in the backend directory. 
-9. Open [http://localhost:4000](http://localhost:4000) to view the website. 
+9. Open [http://localhost:3000](http://localhost:3000) to view the website. 
 10. To get admin permissions, first register with any account. Then install a command line mysql client and run `mysql -u root -p -h 127.0.0.1`, entering the password you specified in the dotenv file. Then run `UPDATE Player SET Admin = 1 WHERE id = {YOUR ID};` where `{YOUR ID}` is the id of the user you want to give admin permissions to.
 
 ### Docker shenanigans

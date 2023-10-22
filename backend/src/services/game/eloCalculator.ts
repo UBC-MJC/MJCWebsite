@@ -1,8 +1,7 @@
 import { FullHongKongGame, FullJapaneseGame, windOrder } from "./game.util";
 import { Wind } from "@prisma/client";
+import { ruleVariantTable } from "./constants";
 
-const JAPANESE_ADJUSTMENT = [55000, 25000, -5000, -75000];
-const HONG_KONG_SCORE_ADJUSTMENT = [450, 150, -150, -450];
 
 type EloCalculatorInput = {
     playerId: string;
@@ -17,15 +16,15 @@ const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: str
         fieldElo += player.elo;
     });
     fieldElo = fieldElo / 4;
-
+    const specificsTable = ruleVariantTable[gameVariant];
     const scoreAfterPlacement = addPlacementAdjustment(playerInformation, gameVariant);
 
-    const adjustment = 0.35;
-    const impactFactor = 0.03;
+    const adjustment = specificsTable.adjustmentFactor;
+    const impactFactor = specificsTable.eloImpactFactor;
 
     const result = scoreAfterPlacement.map((player) => {
         const eloDifference = fieldElo - player.elo;
-        const firstCalculation = (player.score - 25000) / 1000;
+        const firstCalculation = (player.score - specificsTable.startingPoint) / specificsTable.divisor;
         const eloChange = (firstCalculation + eloDifference * impactFactor) * adjustment;
 
         return {
@@ -39,14 +38,7 @@ const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: str
 };
 
 const addPlacementAdjustment = (playerInformation: EloCalculatorInput[], gameVariant: string) => {
-    let placingAdjustments: number[];
-    if (gameVariant === "jp") {
-        placingAdjustments = JAPANESE_ADJUSTMENT;
-    } else if (gameVariant === "hk") {
-        placingAdjustments = HONG_KONG_SCORE_ADJUSTMENT;
-    } else {
-        throw new Error("Invalid game variant");
-    }
+    const placingAdjustments = ruleVariantTable[gameVariant].scoreAdjustments;
 
     const sortedPlayers = playerInformation.sort((a, b) => {
         if (a.score === b.score) {
