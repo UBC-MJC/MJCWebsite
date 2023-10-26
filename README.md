@@ -37,7 +37,7 @@ DATABASE_NAME="mahjong"
 DATABASE_USER="mahjonguser"
 DATABASE_PASSWORD="{PASSWORD}"
 
-DATABASE_URL="mysql://mahjonguser:{PASSWORD}@db:3306/mahjong?schema=public"
+DATABASE_URL="mysql://mahjonguser:{PASSWORD}@localhost:3306/mahjong?schema=public"
 
 ACCESS_TOKEN_SECRET="{SECRET}"
 ```

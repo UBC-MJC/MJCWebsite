@@ -4,9 +4,10 @@ import {
     getDealerPlayerId,
     getWind,
     requiresHand,
-    windOrder,
+    WIND_ORDER,
     FullJapaneseGame,
     getPlayerScores,
+    createEloCalculatorInputs,
 } from "./game.util";
 import GameService from "./game.service";
 import { getAllPlayerElos } from "../leaderboard.service";
@@ -71,24 +72,13 @@ class JapaneseGameService extends GameService {
 
     // TODO: replace getAllPlayerElos call, not all elos are needed
     public async submitGame(game: FullJapaneseGame): Promise<void> {
-        const playerScores = getPlayerScores(game);
+        const playerScores = getPlayerScores("jp", game);
         const eloList = await getAllPlayerElos("jp", game.seasonId);
-
-        const eloCalculatorInput: EloCalculatorInput[] = game.players.map((player) => {
-            let elo = 1500;
-            const eloObject = eloList.find((x) => x.playerId === player.player.id);
-            if (typeof eloObject !== "undefined") {
-                elo += eloObject.elo;
-            }
-
-            return {
-                playerId: player.player.id,
-                elo: elo,
-                score: playerScores[player.player.id],
-                wind: player.wind,
-            };
-        });
-
+        const eloCalculatorInput: EloCalculatorInput[] = createEloCalculatorInputs(
+            game.players,
+            playerScores,
+            eloList,
+        );
         const calculatedElos = getEloChanges(eloCalculatorInput, "jp");
 
         await prisma.$transaction(
@@ -191,7 +181,7 @@ class JapaneseGameService extends GameService {
         game: FullJapaneseGame,
         nextRound: any = getNextJapaneseRound(game),
     ): boolean {
-        const playerScores = getPlayerScores(game);
+        const playerScores = getPlayerScores("jp", game);
         const allPositive = Object.values(playerScores).every((score: number) => score >= 0);
 
         if (!allPositive) {
@@ -283,7 +273,7 @@ const getNextJapaneseRound = (game: FullJapaneseGame): any => {
             roundNumber: lastRoundNumber === 4 ? 1 : lastRoundNumber + 1,
             roundWind:
                 lastRoundNumber === 4
-                    ? getWind(windOrder.indexOf(lastRoundWind) + 1)
+                    ? getWind(WIND_ORDER.indexOf(lastRoundWind) + 1)
                     : lastRoundWind,
             bonus: lastBonus + 1,
             riichiSticksOnTable: lastRiichiSticks,
@@ -294,7 +284,7 @@ const getNextJapaneseRound = (game: FullJapaneseGame): any => {
         roundCount: lastRoundCount + 1,
         roundNumber: lastRoundNumber === 4 ? 1 : lastRoundNumber + 1,
         roundWind:
-            lastRoundNumber === 4 ? getWind(windOrder.indexOf(lastRoundWind) + 1) : lastRoundWind,
+            lastRoundNumber === 4 ? getWind(WIND_ORDER.indexOf(lastRoundWind) + 1) : lastRoundWind,
         bonus: 0,
         riichiSticksOnTable: lastRiichiSticks,
     };

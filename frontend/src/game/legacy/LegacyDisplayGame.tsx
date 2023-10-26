@@ -5,6 +5,7 @@ import LegacyRoundInput from "./LegacyRoundInput";
 import LegacyPointsInput from "./LegacyPointsInput";
 import { getLegacyRoundLabels, getPointWheels } from "../../common/Utils";
 import LegacyJapaneseGameTable from "./LegacyJapaneseGameTable";
+import LegacyHongKongGameTable from "./LegacyHongKongGameTable";
 
 export type LegacyDisplayGameProps = {
     gameVariant: GameVariant;
@@ -91,12 +92,12 @@ const LegacyDisplayGame: FC<LegacyDisplayGameProps> = ({
                 />
             );
         } else if (gameVariant === "hk") {
-            // return (
-            //     <LegacyHongKongGameTable
-            //         rounds={game.rounds}
-            //         players={players}
-            //     />
-            // )
+            return (
+                <LegacyHongKongGameTable
+                    rounds={game.rounds}
+                    players={players}
+                />
+            )
         }
     };
 

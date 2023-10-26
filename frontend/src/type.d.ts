@@ -127,3 +127,24 @@ type JapaneseScore = {
     riichi: boolean;
     playerId: string;
 };
+
+type HongKongRound = {
+    id: string;
+    bonus: number;
+    roundCount: number;
+    roundNumber: number;
+    roundWind: string;
+    hands: HongKongHand[];
+    scores: HongKongScore[];
+};
+
+type HongKongHand = {
+    id: string;
+    points: number;
+};
+
+type HongKongScore = {
+    id: string;
+    scoreChange: number;
+    playerId: string;
+};

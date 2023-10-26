@@ -1,4 +1,4 @@
-import { FullHongKongGame, FullJapaneseGame, windOrder } from "./game.util";
+import { GAME_CONSTANTS, WIND_ORDER } from "./game.util";
 import { Wind } from "@prisma/client";
 
 const JAPANESE_ADJUSTMENT = [70000, 35000, 0, -105000];
@@ -11,11 +11,8 @@ type EloCalculatorInput = {
     wind: Wind;
 };
 
-const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: string) => {
-    let fieldElo = 0.0;
-    playerInformation.forEach((player) => {
-        fieldElo += player.elo;
-    });
+const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: "jp" | "hk") => {
+    let fieldElo = playerInformation.reduce((sum, player) => sum + player.elo, 0);
     fieldElo = fieldElo / 4;
 
     const scoreAfterPlacement = addPlacementAdjustment(playerInformation, gameVariant);
@@ -25,7 +22,9 @@ const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: str
 
     const result = scoreAfterPlacement.map((player) => {
         const eloDifference = fieldElo - player.elo;
-        const firstCalculation = (player.score - 25000) / 1000;
+        const firstCalculation =
+            (player.score - GAME_CONSTANTS[gameVariant].STARTING_SCORE) /
+            GAME_CONSTANTS[gameVariant].DIVIDING_CONSTANT;
         const eloChange = firstCalculation * correlation + eloDifference / k_factor;
 
         return {
@@ -50,7 +49,7 @@ const addPlacementAdjustment = (playerInformation: EloCalculatorInput[], gameVar
 
     const sortedPlayers = playerInformation.sort((a, b) => {
         if (a.score === b.score) {
-            return windOrder.indexOf(a.wind) - windOrder.indexOf(b.wind);
+            return WIND_ORDER.indexOf(a.wind) - WIND_ORDER.indexOf(b.wind);
         }
         return a.score < b.score ? 1 : -1;
     });

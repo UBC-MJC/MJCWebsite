@@ -2,6 +2,7 @@ import { Player, Prisma, Wind } from "@prisma/client";
 import HongKongGameService from "./hongKongGame.service";
 import JapaneseGameService from "./japaneseGame.service";
 import { findPlayerByUsernames } from "../player.service";
+import { EloCalculatorInput } from "./eloCalculator";
 
 const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
     include: {
@@ -39,6 +40,8 @@ const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
 
 type FullHongKongGame = Prisma.HongKongGameGetPayload<typeof fullHongKongGame>;
 
+type GameVariant = "jp" | "hk";
+
 const getGameService = (gameVariant: string): any => {
     switch (gameVariant) {
         case "jp":
@@ -49,6 +52,19 @@ const getGameService = (gameVariant: string): any => {
             throw new Error("Invalid game variant");
     }
 };
+
+const WIND_ORDER: Wind[] = ["EAST", "SOUTH", "WEST", "NORTH"];
+
+const GAME_CONSTANTS = {
+    jp: {
+        STARTING_SCORE: 25000,
+        DIVIDING_CONSTANT: 1000,
+    },
+    hk: {
+        STARTING_SCORE: 750,
+        DIVIDING_CONSTANT: 16,
+    },
+} as const;
 
 // Throws error if the player list contains duplicates
 const checkPlayerListUnique = (playerNameList: string[]): void => {
@@ -88,14 +104,12 @@ const generatePlayerQuery = async (
     });
 };
 
-const windOrder: Wind[] = ["EAST", "SOUTH", "WEST", "NORTH"];
-
 const getWind = (index: number): Wind => {
     if (index < 0 || index > 3) {
         throw new Error("Invalid wind index");
     }
 
-    return windOrder[index];
+    return WIND_ORDER[index];
 };
 
 const getDealerPlayerId = (
@@ -110,14 +124,15 @@ const requiresHand = (roundType: string): boolean => {
         roundType === "SELF_DRAW" ||
         roundType === "DEAL_IN" ||
         roundType === "DEAL_IN_PAO" ||
-        roundType === "SELF_DRAW_PAO"
+        roundType === "SELF_DRAW_PAO" ||
+        roundType === "PAO"
     );
 };
 
-const getPlayerScores = (game: FullJapaneseGame | FullHongKongGame) => {
+const getPlayerScores = (gameVariant: GameVariant, game: FullJapaneseGame | FullHongKongGame) => {
     const result: { [key: string]: number } = {};
     game.players.forEach((player) => {
-        result[player.player.id] = 25000;
+        result[player.player.id] = GAME_CONSTANTS[gameVariant].STARTING_SCORE;
     });
 
     game.rounds.forEach((round) => {
@@ -129,6 +144,27 @@ const getPlayerScores = (game: FullJapaneseGame | FullHongKongGame) => {
     return result;
 };
 
+const createEloCalculatorInputs = (
+    players: { player: Player; wind: Wind }[],
+    playerScores: { [p: string]: number },
+    eloList: any[],
+): EloCalculatorInput[] => {
+    return players.map((player) => {
+        let elo = 1500;
+        const eloObject = eloList.find((x) => x.playerId === player.player.id);
+        if (typeof eloObject !== "undefined") {
+            elo += eloObject.elo;
+        }
+
+        return {
+            playerId: player.player.id,
+            elo: elo,
+            score: playerScores[player.player.id],
+            wind: player.wind,
+        };
+    });
+};
+
 export {
     getGameService,
     checkPlayerGameEligibility,
@@ -138,8 +174,11 @@ export {
     getDealerPlayerId,
     requiresHand,
     getPlayerScores,
-    windOrder,
+    createEloCalculatorInputs,
+    GAME_CONSTANTS,
+    WIND_ORDER,
     Wind,
     FullJapaneseGame,
     FullHongKongGame,
+    GameVariant,
 };

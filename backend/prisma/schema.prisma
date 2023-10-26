@@ -7,11 +7,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-enum GameVariant {
-    JAPANESE
-    HONG_KONG
-}
-
 enum GameType {
     RANKED
     PLAY_OFF

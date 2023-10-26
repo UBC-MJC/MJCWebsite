@@ -123,7 +123,7 @@ const validateGameVariant = (gameVariant: string | undefined): gameVariant is Ga
     return typeof gameVariant !== "undefined" && (gameVariant === "jp" || gameVariant === "hk");
 };
 
-const getGameTypeString = (gameType: "jp" | "hk"): string => {
+const getGameTypeString = (gameType: GameVariant): string => {
     if (gameType === "jp") {
         return "Japanese";
     } else if (gameType === "hk") {
@@ -132,7 +132,11 @@ const getGameTypeString = (gameType: "jp" | "hk"): string => {
     return "";
 };
 
-const findPlayerScore = (scores: JapaneseScore[], playerId: string): JapaneseScore => {
+type Score = {
+    playerId: string;
+    [key: string]: any;
+}
+const findPlayerScore = (scores: Score[], playerId: string): Score => {
     const score = scores.find((score) => score.playerId === playerId);
     if (typeof score === "undefined") {
         throw new Error(`Could not find player score for player ${playerId}`);
