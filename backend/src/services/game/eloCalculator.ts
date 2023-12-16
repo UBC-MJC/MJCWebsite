@@ -30,7 +30,6 @@ const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: "jp
         return {
             playerId: player.playerId,
             eloChange: eloChange,
-            position: player.position,
         };
     });
 
@@ -59,7 +58,6 @@ const addPlacementAdjustment = (playerInformation: EloCalculatorInput[], gameVar
             playerId: player.playerId,
             elo: player.elo,
             score: player.score + placingAdjustments[index],
-            position: index + 1,
         };
     });
 };

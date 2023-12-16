@@ -13,14 +13,29 @@ const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
         },
         rounds: {
             include: {
-                scores: true,
-                hand: true,
+                transactions: {
+                    include: {
+                        hand: true,
+                    },
+                },
             },
         },
     },
 });
 
 type FullJapaneseGame = Prisma.JapaneseGameGetPayload<typeof fullJapaneseGame>;
+
+const fullJapaneseRound = Prisma.validator<Prisma.JapaneseRoundDefaultArgs>()({
+    include: {
+        transactions: {
+            include: {
+                hand: true,
+            },
+        },
+    },
+});
+
+type FullJapaneseRound = Prisma.JapaneseRoundGetPayload<typeof fullJapaneseRound>;
 
 const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
     include: {
@@ -31,8 +46,11 @@ const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
         },
         rounds: {
             include: {
-                scores: true,
-                hand: true,
+                transactions: {
+                    include: {
+                        hand: true,
+                    },
+                },
             },
         },
     },
@@ -136,8 +154,9 @@ const getPlayerScores = (gameVariant: GameVariant, game: FullJapaneseGame | Full
     });
 
     game.rounds.forEach((round) => {
-        round.scores.forEach((score) => {
-            result[score.playerId] += score.scoreChange;
+        round.transactions.forEach((transaction) => {
+            result[transaction.payerId] -= transaction.amount;
+            result[transaction.payeeId] += transaction.amount;
         });
     });
 
@@ -179,6 +198,7 @@ export {
     WIND_ORDER,
     Wind,
     FullJapaneseGame,
+    FullJapaneseRound,
     FullHongKongGame,
     GameVariant,
 };

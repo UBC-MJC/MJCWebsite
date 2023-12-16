@@ -27,7 +27,7 @@ class HongKongGameService extends GameService {
                         id: seasonId,
                     },
                 },
-                gameType: gameType,
+                type: gameType,
                 status: "IN_PROGRESS",
                 recordedBy: {
                     connect: {
@@ -54,8 +54,11 @@ class HongKongGameService extends GameService {
                 },
                 rounds: {
                     include: {
-                        scores: true,
-                        hand: true,
+                        transactions: {
+                            include: {
+                                hand: true,
+                            },
+                        },
                     },
                 },
             },
@@ -88,7 +91,6 @@ class HongKongGameService extends GameService {
                     },
                     data: {
                         eloChange: elo.eloChange,
-                        position: elo.position,
                     },
                 });
             }),
@@ -154,7 +156,7 @@ class HongKongGameService extends GameService {
 
         return {
             id: game.id,
-            gameType: game.gameType,
+            type: game.type,
             status: game.status,
             recordedById: game.recordedById,
             players: game.players.map((player) => {
@@ -198,32 +200,31 @@ const getNextHongKongRound = (game: FullHongKongGame): any => {
     const lastRoundWind = lastRound.roundWind;
     const lastRoundNumber = lastRound.roundNumber;
     const lastRoundCount = lastRound.roundCount;
-    const lastBonus = lastRound.bonus;
+    // const lastBonus = lastRound.bonus;
 
-    const lastDealerId = getDealerPlayerId(game, lastRoundNumber);
-    const lastDealerScore = lastRound.scores.find((score) => score.playerId === lastDealerId);
-
-    if (lastDealerScore!.scoreChange > 0) {
-        return {
-            roundCount: lastRoundCount + 1,
-            roundNumber: lastRoundNumber,
-            roundWind: lastRoundWind,
-            bonus: lastBonus + 1,
-        };
-    }
+    // const lastDealerId = getDealerPlayerId(game, lastRoundNumber);
+    // const lastDealerScore = lastRound.scores.find((score) => score.playerId === lastDealerId);
+    //
+    // if (lastDealerScore!.scoreChange > 0) {
+    //     return {
+    //         roundCount: lastRoundCount + 1,
+    //         roundNumber: lastRoundNumber,
+    //         roundWind: lastRoundWind,
+    //     };
+    // }
 
     // TODO: get acutal rules
-    if (lastRound.roundType === "DECK_OUT") {
-        return {
-            roundCount: lastRoundCount + 1,
-            roundNumber: lastRoundNumber === 4 ? 1 : lastRoundNumber + 1,
-            roundWind:
-                lastRoundNumber === 4
-                    ? getWind(WIND_ORDER.indexOf(lastRoundWind) + 1)
-                    : lastRoundWind,
-            bonus: lastBonus + 1,
-        };
-    }
+    // if (lastRound.roundType === "DECK_OUT") {
+    //     return {
+    //         roundCount: lastRoundCount + 1,
+    //         roundNumber: lastRoundNumber === 4 ? 1 : lastRoundNumber + 1,
+    //         roundWind:
+    //             lastRoundNumber === 4
+    //                 ? getWind(WIND_ORDER.indexOf(lastRoundWind) + 1)
+    //                 : lastRoundWind,
+    //         bonus: lastBonus + 1,
+    //     };
+    // }
 
     let roundWind;
     if (lastRoundNumber === 4 && lastRoundWind === "NORTH") {
@@ -238,7 +239,6 @@ const getNextHongKongRound = (game: FullHongKongGame): any => {
         roundCount: lastRoundCount + 1,
         roundNumber: lastRoundNumber === 4 ? 1 : lastRoundNumber + 1,
         roundWind: roundWind,
-        bonus: 0,
     };
 };
 
