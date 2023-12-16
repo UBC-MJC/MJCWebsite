@@ -13,25 +13,12 @@ enum GameType {
     TOURNEY
 }
 
-enum JapaneseRoundType {
-    WIN
-    DECK_OUT
-    RESHUFFLE
-    MISTAKE
-}
-
 enum JapaneseTransactionType {
     DEAL_IN
     SELF_DRAW
     TENPAI
     MISTAKE
     PAO
-}
-
-enum HongKongRoundType {
-    WIN
-    DECK_OUT
-    MISTAKE
 }
 
 enum HongKongTransactionType {
@@ -121,7 +108,6 @@ model JapaneseRound {
     roundNumber         Int
     bonus               Int
     riichiSticksOnTable Int
-    type                JapaneseRoundType
     game                JapaneseGame          @relation(fields: [gameId], references: [id], onDelete: Cascade)
     gameId              Int
     trueEastRiichi      Boolean               @default(false)
@@ -164,7 +150,6 @@ model HongKongRound {
     roundCount   Int
     roundWind    Wind
     roundNumber  Int
-    type         HongKongRoundType
     game         HongKongGame          @relation(fields: [gameId], references: [id], onDelete: Cascade)
     gameId       Int
     transactions HongKongTransaction[]
