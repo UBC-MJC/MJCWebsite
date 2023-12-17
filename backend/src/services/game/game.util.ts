@@ -128,13 +128,13 @@ const getDealerPlayerId = (
 const getPropertyFromIndex = (index: number) => {
     switch (index) {
         case 0:
-            return "trueEastScoreChange";
+            return "player0ScoreChange";
         case 1:
-            return "trueSouthScoreChange";
+            return "player1ScoreChange";
         case 2:
-            return "trueWestScoreChange";
+            return "player2ScoreChange";
         case 3:
-            return "trueNorthScoreChange";
+            return "player3ScoreChange";
         default:
             throw new Error("Invalid index");
     }

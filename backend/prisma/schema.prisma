@@ -110,25 +110,25 @@ model JapaneseRound {
     riichiSticksOnTable Int
     game                JapaneseGame          @relation(fields: [gameId], references: [id], onDelete: Cascade)
     gameId              Int
-    trueEastRiichi      Boolean               @default(false)
-    trueSouthRiichi     Boolean               @default(false)
-    trueWestRiichi      Boolean               @default(false)
-    trueNorthRiichi     Boolean               @default(false)
+    player0Riichi       Boolean               @default(false)
+    player1Riichi       Boolean               @default(false)
+    player2Riichi       Boolean               @default(false)
+    player3Riichi       Boolean               @default(false)
     transactions        JapaneseTransaction[]
 }
 
 model JapaneseTransaction {
-    id                   String                  @id @default(cuid())
-    type                 JapaneseTransactionType
-    trueEastScoreChange  Int                     @default(0)
-    trueSouthScoreChange Int                     @default(0)
-    trueWestScoreChange  Int                     @default(0)
-    trueNorthScoreChange Int                     @default(0)
-    han                  Int?
-    fu                   Int?
-    dora                 Int?
-    round                JapaneseRound           @relation(fields: [roundId], references: [id], onDelete: Cascade)
-    roundId              String
+    id                 String                  @id @default(cuid())
+    type               JapaneseTransactionType
+    player0ScoreChange Int                     @default(0)
+    player1ScoreChange Int                     @default(0)
+    player2ScoreChange Int                     @default(0)
+    player3ScoreChange Int                     @default(0)
+    han                Int?
+    fu                 Int?
+    dora               Int?
+    round              JapaneseRound           @relation(fields: [roundId], references: [id], onDelete: Cascade)
+    roundId            String
 }
 
 model HongKongGame {
@@ -156,13 +156,13 @@ model HongKongRound {
 }
 
 model HongKongTransaction {
-    id                   String                  @id @default(cuid())
-    type                 HongKongTransactionType
-    trueEastScoreChange  Int                     @default(0)
-    trueSouthScoreChange Int                     @default(0)
-    trueWestScoreChange  Int                     @default(0)
-    trueNorthScoreChange Int                     @default(0)
-    points               Int?
-    round                HongKongRound           @relation(fields: [roundId], references: [id], onDelete: Cascade)
-    roundId              String
+    id                 String                  @id @default(cuid())
+    type               HongKongTransactionType
+    player0ScoreChange Int                     @default(0)
+    player1ScoreChange Int                     @default(0)
+    player2ScoreChange Int                     @default(0)
+    player3ScoreChange Int                     @default(0)
+    points             Int?
+    round              HongKongRound           @relation(fields: [roundId], references: [id], onDelete: Cascade)
+    roundId            String
 }

@@ -295,10 +295,10 @@ const getJapanesePlayersCurrentScore = (game: FullJapaneseGame): number[] => {
     const result = [0, 0, 0, 0];
     game.rounds.forEach((round) => {
         round.transactions.forEach((transaction) => {
-            result[0] += transaction.trueEastScoreChange;
-            result[1] += transaction.trueSouthScoreChange;
-            result[2] += transaction.trueWestScoreChange;
-            result[3] += transaction.trueNorthScoreChange;
+            result[0] += transaction.player0ScoreChange;
+            result[1] += transaction.player1ScoreChange;
+            result[2] += transaction.player2ScoreChange;
+            result[3] += transaction.player3ScoreChange;
         });
     });
 
