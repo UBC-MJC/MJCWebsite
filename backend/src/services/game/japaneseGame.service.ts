@@ -121,10 +121,10 @@ class JapaneseGameService extends GameService {
                     },
                 },
                 ...currentRound,
-                trueEastRiichi: createRound.trueEastRiichi,
-                trueSouthRiichi: createRound.trueSouthRiichi,
-                trueWestRiichi: createRound.trueWestRiichi,
-                trueNorthRiichi: createRound.trueNorthRiichi,
+                trueEastRiichi: createRound.player0Riichi,
+                trueSouthRiichi: createRound.player1Riichi,
+                trueWestRiichi: createRound.player2Riichi,
+                trueNorthRiichi: createRound.player3Riichi,
                 transactions: {
                     create: createRound.transactions,
                 }

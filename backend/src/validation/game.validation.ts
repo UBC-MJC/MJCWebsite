@@ -24,10 +24,10 @@ const createJapaneseRoundSchema = object({
             dora: number().optional()
         }),
     ).min(0).required(),
-    trueEastRiichi: boolean().required(),
-    trueSouthRiichi: boolean().required(),
-    trueWestRiichi: boolean().required(),
-    trueNorthRiichi: boolean().required(),
+    player0Riichi: boolean().required(),
+    player1Riichi: boolean().required(),
+    player2Riichi: boolean().required(),
+    player3Riichi: boolean().required(),
 });
 
 type CreateJapaneseRoundType = InferType<typeof createJapaneseRoundSchema>;
