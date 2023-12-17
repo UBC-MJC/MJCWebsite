@@ -6,8 +6,8 @@ import {
     requiresHand,
     WIND_ORDER,
     FullJapaneseGame,
-    getPlayerScores,
-    createEloCalculatorInputs, FullJapaneseRound
+    createEloCalculatorInputs,
+    FullJapaneseRound, getPropertyFromIndex
 } from "./game.util";
 import GameService from "./game.service";
 import { getAllPlayerElos } from "../leaderboard.service";
@@ -57,12 +57,7 @@ class JapaneseGameService extends GameService {
                 },
                 rounds: {
                     include: {
-                        transactions: {
-                            include: {
-                                hand: true,
-                            },
-                        },
-                        riichis: true,
+                        transactions: true
                     },
                 },
             },
@@ -77,9 +72,9 @@ class JapaneseGameService extends GameService {
         });
     }
 
-    // TODO: replace getAllPlayerElos call, not all elos are needed 
+    // TODO: replace getAllPlayerElos call, not all elos are needed
     public async submitGame(game: FullJapaneseGame): Promise<void> {
-        const playerScores = getPlayerScores("jp", game);
+        const playerScores = getJapanesePlayersCurrentScore(game);
         const eloList = await getAllPlayerElos("jp", game.seasonId);
         const eloCalculatorInput: EloCalculatorInput[] = createEloCalculatorInputs(
             game.players,
@@ -114,18 +109,9 @@ class JapaneseGameService extends GameService {
 
     public async createRound(game: FullJapaneseGame, createRoundRequest: any): Promise<void> {
         validateCreateJapaneseRound(createRoundRequest, game);
+        const createRound = createRoundRequest as CreateJapaneseRoundType;
 
         const currentRound = getNextJapaneseRound(game);
-        const transactionsQuery = createJapaneseTransactionsQuery(createRoundRequest as CreateJapaneseRoundType);
-        const riichisQuery = createRoundRequest.riichis.map((playerId: string) => {
-            return {
-                player: {
-                    connect: {
-                        id: playerId,
-                    },
-                },
-            };
-        });
 
         const query: any = {
             data: {
@@ -135,11 +121,12 @@ class JapaneseGameService extends GameService {
                     },
                 },
                 ...currentRound,
+                trueEastRiichi: createRound.trueEastRiichi,
+                trueSouthRiichi: createRound.trueSouthRiichi,
+                trueWestRiichi: createRound.trueWestRiichi,
+                trueNorthRiichi: createRound.trueNorthRiichi,
                 transactions: {
-                    create: transactionsQuery,
-                },
-                riichis: {
-                    create: riichisQuery,
+                    create: createRound.transactions,
                 }
             },
         };
@@ -185,7 +172,7 @@ class JapaneseGameService extends GameService {
         game: FullJapaneseGame,
         nextRound: any = getNextJapaneseRound(game),
     ): boolean {
-        const playerScores = getPlayerScores("jp", game);
+        const playerScores = getJapanesePlayersCurrentScore(game);
         const allPositive = Object.values(playerScores).every((score: number) => score >= 0);
 
         if (!allPositive) {
@@ -204,8 +191,9 @@ class JapaneseGameService extends GameService {
 
                 // check if dealer has most points
                 let dealerHasMostPoints = true;
-                for (const playerId in playerScores) {
-                    if (playerId !== dealerId && playerScores[playerId] >= playerScores[dealerId]) {
+                const dealerIndex = lastRound.roundNumber;
+                for (let i = 0; i < 4; i++) {
+                    if (i !== dealerIndex && playerScores[i] > playerScores[dealerIndex]) {
                         dealerHasMostPoints = false;
                         break;
                     }
@@ -247,8 +235,7 @@ const getNextJapaneseRound = (game: FullJapaneseGame): PartialJapaneseRound => {
 
     const previousRound: FullJapaneseRound = game.rounds[game.rounds.length - 1];
 
-    const lastDealerId = getDealerPlayerId(game, previousRound.roundNumber);
-    const dealerRepeat = isDealerRepeat(previousRound, lastDealerId);
+    const dealerRepeat = isDealerRepeat(previousRound);
     const previousRoundDeckedOut = roundDeckedOut(previousRound);
 
     if (dealerRepeat && previousRoundDeckedOut) {
@@ -287,8 +274,8 @@ const getNextJapaneseRound = (game: FullJapaneseGame): PartialJapaneseRound => {
     };
 };
 
-const isDealerRepeat = (round: FullJapaneseRound, dealerId: string): boolean => {
-    return round.transactions.some((transaction) => transaction.payeeId === dealerId);
+const isDealerRepeat = (round: FullJapaneseRound): boolean => {
+    return round.transactions.some((transaction) => transaction[getPropertyFromIndex(round.roundNumber - 1)] > 0);
 }
 
 const roundDeckedOut = (round: FullJapaneseRound): boolean => {
@@ -303,32 +290,20 @@ const getNextRoundWind = (wind: Wind, roundNumber: number): Wind => {
     }
 }
 
-const createJapaneseTransactionsQuery = (
-    createRoundRequest: CreateJapaneseRoundType,
-): any => {
-
-    const transactionsQuery = createRoundRequest.transactions.map((transaction) => {
-        return {
-            type: transaction.type,
-            amount: transaction.amount,
-            payer: {
-                connect: {
-                    id: transaction.payer,
-                },
-            },
-            payee: {
-                connect: {
-                    id: transaction.payee,
-                },
-            },
-            hand: {
-                create: createRoundRequest.hands[transaction.handIndex!],
-            }
-        };
+// TODO: add riichi sticks to score
+const getJapanesePlayersCurrentScore = (game: FullJapaneseGame): number[] => {
+    const result = [0, 0, 0, 0];
+    game.rounds.forEach((round) => {
+        round.transactions.forEach((transaction) => {
+            result[0] += transaction.trueEastScoreChange;
+            result[1] += transaction.trueSouthScoreChange;
+            result[2] += transaction.trueWestScoreChange;
+            result[3] += transaction.trueNorthScoreChange;
+        });
     });
 
-    return transactionsQuery;
-
+    return result;
+}
     // const roundType = round.roundValue.type.value;
     // const playerActions = round.roundValue.playerActions;
     // const hand = round.pointsValue;
@@ -440,8 +415,6 @@ const createJapaneseTransactionsQuery = (
     // }
     //
     // return { scoresQuery, newRiichiStickTotal: currentRiichiSticks };
-};
-
 // const updateJapaneseDealIn = (
 //     playerScores: any,
 //     winnerId: string,

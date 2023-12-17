@@ -3,12 +3,11 @@ import { GameType } from "@prisma/client";
 import GameService from "./game.service";
 import {
     createEloCalculatorInputs,
-    FullHongKongGame,
+    FullHongKongGame, FullJapaneseGame,
     getDealerPlayerId,
-    getPlayerScores,
     getWind,
     requiresHand,
-    WIND_ORDER,
+    WIND_ORDER
 } from "./game.util";
 import { getAllPlayerElos } from "../leaderboard.service";
 import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
@@ -54,11 +53,7 @@ class HongKongGameService extends GameService {
                 },
                 rounds: {
                     include: {
-                        transactions: {
-                            include: {
-                                hand: true,
-                            },
-                        },
+                        transactions: true,
                     },
                 },
             },
@@ -74,7 +69,7 @@ class HongKongGameService extends GameService {
     }
 
     public async submitGame(game: FullHongKongGame): Promise<void> {
-        const playerScores = getPlayerScores("hk", game);
+        const playerScores = getHongKongPlayersCurrentScore(game);
         const eloList = await getAllPlayerElos("hk", game.seasonId);
         const eloCalculatorInput: EloCalculatorInput[] = createEloCalculatorInputs(
             game.players,
@@ -178,6 +173,20 @@ class HongKongGameService extends GameService {
     ): boolean {
         return nextRound.roundWind === "END";
     }
+}
+
+const getHongKongPlayersCurrentScore = (game: FullHongKongGame): number[] => {
+    const result = [0, 0, 0, 0];
+    game.rounds.forEach((round) => {
+        round.transactions.forEach((transaction) => {
+            result[0] += transaction.trueEastScoreChange;
+            result[1] += transaction.trueSouthScoreChange;
+            result[2] += transaction.trueWestScoreChange;
+            result[3] += transaction.trueNorthScoreChange;
+        });
+    });
+
+    return result;
 }
 
 const getFirstHongKongRound = (): any => {

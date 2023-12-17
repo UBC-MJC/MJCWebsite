@@ -13,11 +13,7 @@ const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
         },
         rounds: {
             include: {
-                transactions: {
-                    include: {
-                        hand: true,
-                    },
-                },
+                transactions: true,
             },
         },
     },
@@ -27,11 +23,7 @@ type FullJapaneseGame = Prisma.JapaneseGameGetPayload<typeof fullJapaneseGame>;
 
 const fullJapaneseRound = Prisma.validator<Prisma.JapaneseRoundDefaultArgs>()({
     include: {
-        transactions: {
-            include: {
-                hand: true,
-            },
-        },
+        transactions: true,
     },
 });
 
@@ -46,11 +38,7 @@ const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
         },
         rounds: {
             include: {
-                transactions: {
-                    include: {
-                        hand: true,
-                    },
-                },
+                transactions: true,
             },
         },
     },
@@ -137,6 +125,21 @@ const getDealerPlayerId = (
     return game.players.find((player) => player.wind === getWind(roundNumber - 1))!.player.id;
 };
 
+const getPropertyFromIndex = (index: number) => {
+    switch (index) {
+        case 0:
+            return "trueEastScoreChange";
+        case 1:
+            return "trueSouthScoreChange";
+        case 2:
+            return "trueWestScoreChange";
+        case 3:
+            return "trueNorthScoreChange";
+        default:
+            throw new Error("Invalid index");
+    }
+}
+
 const requiresHand = (roundType: string): boolean => {
     return (
         roundType === "SELF_DRAW" ||
@@ -147,25 +150,9 @@ const requiresHand = (roundType: string): boolean => {
     );
 };
 
-const getPlayerScores = (gameVariant: GameVariant, game: FullJapaneseGame | FullHongKongGame) => {
-    const result: { [key: string]: number } = {};
-    game.players.forEach((player) => {
-        result[player.player.id] = GAME_CONSTANTS[gameVariant].STARTING_SCORE;
-    });
-
-    game.rounds.forEach((round) => {
-        round.transactions.forEach((transaction) => {
-            result[transaction.payerId] -= transaction.amount;
-            result[transaction.payeeId] += transaction.amount;
-        });
-    });
-
-    return result;
-};
-
 const createEloCalculatorInputs = (
     players: { player: Player; wind: Wind }[],
-    playerScores: { [p: string]: number },
+    playerScores: number[],
     eloList: any[],
 ): EloCalculatorInput[] => {
     return players.map((player) => {
@@ -178,7 +165,7 @@ const createEloCalculatorInputs = (
         return {
             playerId: player.player.id,
             elo: elo,
-            score: playerScores[player.player.id],
+            score: playerScores[WIND_ORDER.indexOf(player.wind)],
             wind: player.wind,
         };
     });
@@ -192,8 +179,8 @@ export {
     getWind,
     getDealerPlayerId,
     requiresHand,
-    getPlayerScores,
     createEloCalculatorInputs,
+    getPropertyFromIndex,
     GAME_CONSTANTS,
     WIND_ORDER,
     Wind,
