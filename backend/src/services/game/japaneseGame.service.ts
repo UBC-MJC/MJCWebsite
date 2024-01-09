@@ -3,7 +3,6 @@ import { GameType, Wind } from "@prisma/client";
 import {
     getDealerPlayerId,
     getWind,
-    requiresHand,
     WIND_ORDER,
     FullJapaneseGame,
     createEloCalculatorInputs,
@@ -14,7 +13,7 @@ import { getAllPlayerElos } from "../leaderboard.service";
 import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
 import { CreateJapaneseRoundType, validateCreateJapaneseRound } from "../../validation/game.validation";
 
-type PartialJapaneseRound = Pick<FullJapaneseRound, "roundCount" | "roundNumber" | "roundWind" | "bonus" | "riichiSticksOnTable">;
+type PartialJapaneseRound = Pick<FullJapaneseRound, "roundCount" | "roundNumber" | "roundWind" | "bonus"> & { startRiichiStickCount: number };
 
 class JapaneseGameService extends GameService {
     public createGame(
@@ -121,10 +120,10 @@ class JapaneseGameService extends GameService {
                     },
                 },
                 ...currentRound,
-                trueEastRiichi: createRound.player0Riichi,
-                trueSouthRiichi: createRound.player1Riichi,
-                trueWestRiichi: createRound.player2Riichi,
-                trueNorthRiichi: createRound.player3Riichi,
+                player0Riichi: createRound.player0Riichi,
+                player1Riichi: createRound.player1Riichi,
+                player2Riichi: createRound.player2Riichi,
+                player3Riichi: createRound.player3Riichi,
                 transactions: {
                     create: createRound.transactions,
                 }
@@ -222,7 +221,7 @@ const getFirstJapaneseRound = (): PartialJapaneseRound => {
         roundNumber: 1,
         roundWind: "EAST",
         bonus: 0,
-        riichiSticksOnTable: 0,
+        startRiichiStickCount: 0,
     };
 };
 
@@ -243,6 +242,7 @@ const getNextJapaneseRound = (game: FullJapaneseGame): PartialJapaneseRound => {
             ...previousRound,
             roundCount: previousRound.roundCount + 1,
             bonus: previousRound.bonus + 1,
+            startRiichiStickCount: previousRound.endRiichiStickCount
         };
     }
 
@@ -251,7 +251,7 @@ const getNextJapaneseRound = (game: FullJapaneseGame): PartialJapaneseRound => {
             ...previousRound,
             roundCount: previousRound.roundCount + 1,
             bonus: previousRound.bonus + 1,
-            riichiSticksOnTable: 0,
+            startRiichiStickCount: 0,
         };
     }
 
@@ -262,6 +262,7 @@ const getNextJapaneseRound = (game: FullJapaneseGame): PartialJapaneseRound => {
             roundNumber: (previousRound.roundNumber % 4) + 1,
             roundWind: getNextRoundWind(previousRound.roundWind, previousRound.roundNumber),
             bonus: previousRound.bonus + 1,
+            startRiichiStickCount: previousRound.endRiichiStickCount
         };
     }
 
@@ -270,7 +271,7 @@ const getNextJapaneseRound = (game: FullJapaneseGame): PartialJapaneseRound => {
         roundNumber: (previousRound.roundNumber % 4) + 1,
         roundWind: getNextRoundWind(previousRound.roundWind, previousRound.roundNumber),
         bonus: 0,
-        riichiSticksOnTable: 0,
+        startRiichiStickCount: 0,
     };
 };
 
@@ -307,12 +308,12 @@ const getJapanesePlayersCurrentScore = (game: FullJapaneseGame): number[] => {
     // const roundType = round.roundValue.type.value;
     // const playerActions = round.roundValue.playerActions;
     // const hand = round.pointsValue;
-    // const { bonus, riichiSticksOnTable } = currentRound;
+    // const { bonus, endRiichiStickCount } = currentRound;
     //
     // let winnerId: string | undefined = undefined;
     // let loserId: string | undefined = undefined;
     // let paoId: string | undefined = undefined;
-    // let currentRiichiSticks = riichiSticksOnTable;
+    // let currentRiichiSticks = endRiichiStickCount;
     //
     // const playerScores: any = {};
     // for (const playerId in playerActions) {

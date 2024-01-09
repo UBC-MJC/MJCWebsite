@@ -31,13 +31,13 @@ NODE_ENV="development"
 PORT=4000
 
 DATABASE_DIALECT="mysql"
-DATABASE_HOST="localhost"
+DATABASE_HOST="db"
 DATABASE_PORT=3306
 DATABASE_NAME="mahjong"
 DATABASE_USER="mahjonguser"
 DATABASE_PASSWORD="{PASSWORD}"
 
-DATABASE_URL="mysql://mahjonguser:{PASSWORD}@localhost:3306/mahjong?schema=public"
+DATABASE_URL="mysql://root:{PASSWORD}@db:3306/mahjong?schema=public"
 
 ACCESS_TOKEN_SECRET="{SECRET}"
 ```

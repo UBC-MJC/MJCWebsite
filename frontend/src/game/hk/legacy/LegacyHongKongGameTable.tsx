@@ -7,19 +7,19 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { Table as BTable } from "react-bootstrap";
-import { findPlayerScore, mapWindToCharacter } from "../../common/Utils";
+import { findPlayerScoreDelta, mapWindToCharacter } from "../../../common/Utils";
 
 type LegacyGameTableProps = {
-    rounds: JapaneseRound[];
+    rounds: HongKongRound[];
     players: GamePlayer[];
 };
 
-const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {
-    const columnHelper = createColumnHelper<JapaneseRound>();
+const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {
+    const columnHelper = createColumnHelper<HongKongRound>();
 
-    const roundColumns: ColumnDef<JapaneseRound, any>[] = [
+    const roundColumns: ColumnDef<HongKongRound, any>[] = [
         columnHelper.accessor(
-            (row) => `${mapWindToCharacter(row.roundWind)} ${row.roundNumber} B${row.bonus}`,
+            (row) => `${mapWindToCharacter(row.roundWind)} ${row.roundNumber}`,
             {
                 id: "round",
                 header: "Round",
@@ -27,7 +27,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
         columnHelper.accessor(
             (row) => {
-                return findPlayerScore(row.scores, players[0].id).scoreChange;
+                return findPlayerScoreDelta(row.transactions, 0);
             },
             {
                 id: "eastScore",
@@ -36,7 +36,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
         columnHelper.accessor(
             (row) => {
-                return findPlayerScore(row.scores, players[1].id).scoreChange;
+                return findPlayerScoreDelta(row.transactions, 1);
             },
             {
                 id: "southScore",
@@ -45,7 +45,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
         columnHelper.accessor(
             (row) => {
-                return findPlayerScore(row.scores, players[2].id).scoreChange;
+                return findPlayerScoreDelta(row.transactions, 2);
             },
             {
                 id: "westScore",
@@ -54,7 +54,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
         columnHelper.accessor(
             (row) => {
-                return findPlayerScore(row.scores, players[3].id).scoreChange;
+                return findPlayerScoreDelta(row.transactions, 3);
             },
             {
                 id: "northScore",
@@ -63,14 +63,14 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
     ];
 
-    const getCurrentScoreRow = (rounds: JapaneseRound[]) => {
-        const startingScore = 25000;
+    const getCurrentScoreRow = (rounds: HongKongRound[]) => {
+        const startingScore = 750;
 
         return [
             "Score",
-            ...players.map((player) => {
+            ...players.map((player, idx) => {
                 return rounds.reduce((total, round) => {
-                    return total + findPlayerScore(round.scores, player.id).scoreChange;
+                    return total + findPlayerScoreDelta(round.transactions, idx);;
                 }, startingScore);
             }),
         ];
@@ -123,4 +123,4 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
     );
 };
 
-export default LegacyJapaneseGameTable;
+export default LegacyHongKongGameTable;

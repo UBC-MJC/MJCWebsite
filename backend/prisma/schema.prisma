@@ -107,7 +107,7 @@ model JapaneseRound {
     roundWind           Wind
     roundNumber         Int
     bonus               Int
-    riichiSticksOnTable Int
+    endRiichiStickCount Int
     game                JapaneseGame          @relation(fields: [gameId], references: [id], onDelete: Cascade)
     gameId              Int
     player0Riichi       Boolean               @default(false)
@@ -127,6 +127,7 @@ model JapaneseTransaction {
     han                Int?
     fu                 Int?
     dora               Int?
+    paoPlayerIndex     Int?
     round              JapaneseRound           @relation(fields: [roundId], references: [id], onDelete: Cascade)
     roundId            String
 }

@@ -3,7 +3,6 @@ import {
     getLegacyRoundLabels,
     hongKongRoundLabels,
     japaneseRoundLabels,
-    multiselectLabels,
 } from "../../common/Utils";
 import { Col, Container, Row, ToggleButton } from "react-bootstrap";
 import RoundInputFigure from "./RoundInputFigure";

@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { getPointWheels } from "../../common/Utils";
+import { japanesePointsWheel } from "../../common/Utils";
 import CustomizedWheelPicker from "./CustomizedWheelPicker";
 import { PickerData } from "react-simple-wheel-picker";
 
@@ -17,7 +17,7 @@ const NewPointsInput: FC<PointsInputProps> = ({ gameVariant, onChange }) => {
 
     return (
         <div className="d-flex justify-content-center mt-4 wheel-picker-container">
-            {getPointWheels(gameVariant).map((wheel, idx) => (
+            {japanesePointsWheel.map((wheel, idx) => (
                 <div key={wheel.label}>
                     <h5>{wheel.label}</h5>
                     <CustomizedWheelPicker

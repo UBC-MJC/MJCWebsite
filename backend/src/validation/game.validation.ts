@@ -15,10 +15,10 @@ const createJapaneseRoundSchema = object({
     transactions: array().of(
         object({
             type: mixed<JapaneseTransactionType>().oneOf(["DEAL_IN", "SELF_DRAW", "TENPAI", "MISTAKE", "PAO"]).required(),
-            trueEastScoreChange: number().required(),
-            trueSouthScoreChange: number().required(),
-            trueWestScoreChange: number().required(),
-            trueNorthScoreChange: number().required(),
+            player0ScoreChange: number().required(),
+            player1ScoreChange: number().required(),
+            player2ScoreChange: number().required(),
+            player3ScoreChange: number().required(),
             fu: number().optional(),
             points:number().optional(),
             dora: number().optional()

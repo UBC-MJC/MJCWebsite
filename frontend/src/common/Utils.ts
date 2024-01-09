@@ -28,7 +28,7 @@ const japaneseDora: PickerData[] = Array.from({ length: 37 }, (_, k) => {
 
 const japanesePointsWheel = [
     { label: "Fu", value: "fu", data: japaneseFu },
-    { label: "Points", value: "points", data: japanesePoints },
+    { label: "Han", value: "han", data: japanesePoints },
     { label: "Dora", value: "dora", data: japaneseDora },
 ];
 
@@ -40,15 +40,6 @@ const hongKongPoints: PickerData[] = Array.from({ length: 11 }, (_, k) => {
 });
 
 const hongKongPointsWheel = [{ label: "Points", value: "points", data: hongKongPoints }];
-
-const getPointWheels = (gameVariant: GameVariant) => {
-    switch (gameVariant) {
-        case "jp":
-            return japanesePointsWheel;
-        case "hk":
-            return hongKongPointsWheel;
-    }
-};
 
 const japaneseRoundLabels = [
     { name: "Round Winner", value: "win" },
@@ -105,8 +96,6 @@ const getLegacyRoundLabels = (gameVariant: GameVariant) => {
     }
 };
 
-const multiselectLabels = ["Riichis", "Tenpais"];
-
 const windOrder = ["EAST", "SOUTH", "WEST", "NORTH"];
 
 const windComparison = (wind1: string, wind2: string, playerWind?: string): number => {
@@ -136,12 +125,21 @@ type Score = {
     playerId: string;
     [key: string]: any;
 }
-const findPlayerScore = (scores: Score[], playerId: string): Score => {
-    const score = scores.find((score) => score.playerId === playerId);
-    if (typeof score === "undefined") {
-        throw new Error(`Could not find player score for player ${playerId}`);
-    }
-    return score;
+const findPlayerScoreDelta = (transactions: JapaneseTransaction[], playerIndex: number): number => {
+    return transactions.reduce((acc, transaction) => {
+        let delta = 0;
+        if (playerIndex === 0) {
+            delta = transaction.player0ScoreChange;
+        } else if (playerIndex === 1) {
+            delta = transaction.player1ScoreChange;
+        } else if (playerIndex === 2) {
+            delta = transaction.player2ScoreChange;
+        } else if (playerIndex === 3) {
+            delta = transaction.player3ScoreChange;
+        }
+
+        return acc + delta
+    }, 0);
 };
 
 const mapWindToCharacter = (wind: string): string => {
@@ -165,16 +163,14 @@ export {
     hongKongPoints,
     japanesePointsWheel,
     hongKongPointsWheel,
-    getPointWheels,
     japaneseRoundLabels,
     hongKongRoundLabels,
     legacyJapaneseRoundLabels,
     legacyHongKongRoundLabels,
     getLegacyRoundLabels,
-    multiselectLabels,
     windComparison,
     getGameTypeString,
     validateGameVariant,
-    findPlayerScore,
+    findPlayerScoreDelta,
     mapWindToCharacter,
 };
