@@ -139,8 +139,8 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                                 index={idx}
                                 name={button.name}
                                 value={button.value}
-                                checked={roundType === button.value}
-                                onChange={(value) => roundTypeOnChange(value)}
+                                checked={roundType.toString() === button.value}
+                                onChange={(value) => roundTypeOnChange(value as unknown as HongKongRoundType)}
                             />
                         </Col>
                     ))}

@@ -125,7 +125,7 @@ const getDealerPlayerId = (
     return game.players.find((player) => player.wind === getWind(roundNumber - 1))!.player.id;
 };
 
-const getPropertyFromIndex = (index: number) => {
+const getPlayerScoreWithIndex = (index: number) => {
     switch (index) {
         case 0:
             return "player0ScoreChange";
@@ -139,6 +139,22 @@ const getPropertyFromIndex = (index: number) => {
             throw new Error("Invalid index");
     }
 }
+
+const getPlayerTenpaiStatusWithIndex = (index: number) => {
+    switch (index) {
+        case 0:
+            return "player0Tenpai";
+        case 1:
+            return "player1Tenpai";
+        case 2:
+            return "player2Tenpai";
+        case 3:
+            return "player3Tenpai";
+        default:
+            throw new Error("Invalid index");
+    }
+}
+
 
 const requiresHand = (roundType: string): boolean => {
     return (
@@ -180,7 +196,8 @@ export {
     getDealerPlayerId,
     requiresHand,
     createEloCalculatorInputs,
-    getPropertyFromIndex,
+    getPlayerScoreWithIndex,
+    getPlayerTenpaiStatusWithIndex,
     GAME_CONSTANTS,
     WIND_ORDER,
     Wind,

@@ -1,14 +1,14 @@
 import { ToggleButton } from "react-bootstrap";
 
-type ListToggleButtonProps<T extends string> = {
+type ListToggleButtonProps = {
     index: number;
     name: string;
-    value: T;
+    value: string;
     checked: boolean;
-    onChange: (value: T) => void;
+    onChange: (value: string) => void;
 };
 
-const ListToggleButton = <T extends string,>({ index, name, value, checked, onChange }: ListToggleButtonProps<T>) => {
+const ListToggleButton = ({ index, name, value, checked, onChange }: ListToggleButtonProps) => {
     return (
         <ToggleButton
             id={`radio-${index}`}

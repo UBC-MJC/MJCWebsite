@@ -25,9 +25,9 @@ enum JapaneseRoundType {
     SELF_DRAW = "SELF_DRAW",
     DECK_OUT = "DECK_OUT",
     RESHUFFLE = "RESHUFFLE",
-    MISTAKE = "MISTAKE",
     DEAL_IN_PAO = "DEAL_IN_PAO",
     SELF_DRAW_PAO = "SELF_DRAW_PAO",
+    NAGASHI_MANGAN = "NAGASHI_MANGAN",
 }
 
 export type JapaneseActions = {
@@ -48,7 +48,6 @@ const JP_ROUND_TYPE_BUTTONS: JapaneseRoundTypeButtons = [
     { name: "Self Draw", value: JapaneseRoundType.SELF_DRAW},
     { name: "Deck Out", value: JapaneseRoundType.DECK_OUT},
     { name: "Reshuffle", value: JapaneseRoundType.RESHUFFLE},
-    { name: "Mistake", value: JapaneseRoundType.MISTAKE},
     {
         name: "Deal In Pao",
         value: JapaneseRoundType.DEAL_IN_PAO,

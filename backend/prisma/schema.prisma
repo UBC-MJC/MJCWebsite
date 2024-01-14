@@ -16,9 +16,10 @@ enum GameType {
 enum JapaneseTransactionType {
     DEAL_IN
     SELF_DRAW
-    TENPAI
-    MISTAKE
-    PAO
+    DEAL_IN_PAO
+    SELF_DRAW_PAO
+    NAGASHI_MANGAN
+    INROUND_RYUUKYOKU
 }
 
 enum HongKongTransactionType {
@@ -102,19 +103,24 @@ model JapaneseGame {
 }
 
 model JapaneseRound {
-    id                  String                @id @default(cuid())
-    roundCount          Int
-    roundWind           Wind
-    roundNumber         Int
-    bonus               Int
-    endRiichiStickCount Int
-    game                JapaneseGame          @relation(fields: [gameId], references: [id], onDelete: Cascade)
-    gameId              Int
-    player0Riichi       Boolean               @default(false)
-    player1Riichi       Boolean               @default(false)
-    player2Riichi       Boolean               @default(false)
-    player3Riichi       Boolean               @default(false)
-    transactions        JapaneseTransaction[]
+    id                    String                @id @default(cuid())
+    roundCount            Int
+    roundWind             Wind
+    roundNumber           Int
+    bonus                 Int
+    startRiichiStickCount Int
+    endRiichiStickCount   Int
+    game                  JapaneseGame          @relation(fields: [gameId], references: [id], onDelete: Cascade)
+    gameId                Int
+    player0Riichi         Boolean               @default(false)
+    player1Riichi         Boolean               @default(false)
+    player2Riichi         Boolean               @default(false)
+    player3Riichi         Boolean               @default(false)
+    player0Tenpai         Boolean               @default(false)
+    player1Tenpai         Boolean               @default(false)
+    player2Tenpai         Boolean               @default(false)
+    player3Tenpai         Boolean               @default(false)
+    transactions          JapaneseTransaction[]
 }
 
 model JapaneseTransaction {

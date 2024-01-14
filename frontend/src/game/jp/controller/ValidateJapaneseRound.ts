@@ -29,11 +29,6 @@ const validateCreateJapaneseRound = (
                 }
             });
             break;
-        case JapaneseRoundType.MISTAKE:
-            if (roundActions.LOSER === undefined) {
-                throw new Error("Mistake must have a loser");
-            }
-            break;
         case JapaneseRoundType.RESHUFFLE:
             break;
         case JapaneseRoundType.DEAL_IN_PAO:

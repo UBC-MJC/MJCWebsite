@@ -58,9 +58,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 newRoundActions.WINNER = prevWinner;
                 newRoundActions.PAO = prevPao;
                 break;
-            case JapaneseRoundType.MISTAKE:
-                newRoundActions.LOSER = prevLoser;
-                break;
             case JapaneseRoundType.DECK_OUT:
                 setTenpaiList([]);
                 break;
@@ -125,6 +122,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     const submitRound = async () => {
         validateCreateJapaneseRound(roundType, roundActions, tenpaiList, riichiList, hand, hasSecondHand, secondHand);
         const roundRequest = createJapaneseRoundRequest(roundType, roundActions, tenpaiList, riichiList, hand, hasSecondHand, secondHand, game.currentRound!);
+        console.log(roundRequest);
         await handleSubmitRound(roundRequest);
     }
 
@@ -145,16 +143,12 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     [JapaneseLabel.WINNER, [roundActions.WINNER]],
                 ];
                 break;
-            case JapaneseRoundType.MISTAKE:
-                labels = [
-                    [JapaneseLabel.LOSER, [roundActions.LOSER]],
-                ];
-                break;
             case JapaneseRoundType.DECK_OUT:
                 labels = [
                     [JapaneseLabel.TENPAI, tenpaiList],
                 ];
                 break;
+
         }
 
         if (hasSecondHand) {
@@ -175,7 +169,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                                 name={button.name}
                                 value={button.value}
                                 checked={roundType === button.value}
-                                onChange={(value) => roundTypeOnChange(value)}
+                                onChange={(value) => roundTypeOnChange(value as unknown as JapaneseRoundType)}
                             />
                         </Col>
                     ))}

@@ -14,7 +14,8 @@ type CreateGameType = InferType<typeof createGameSchema>;
 const createJapaneseRoundSchema = object({
     transactions: array().of(
         object({
-            type: mixed<JapaneseTransactionType>().oneOf(["DEAL_IN", "SELF_DRAW", "TENPAI", "MISTAKE", "PAO"]).required(),
+            // type: mixed<JapaneseTransactionType>().oneOf(["DEAL_IN", "SELF_DRAW", "DEAL_IN_PAO", "SELF_DRAW_PAO", "NAGASHI_MANGAN", "INROUND_RYUUKYOKU"]).required(),
+            type: string().required(),
             player0ScoreChange: number().required(),
             player1ScoreChange: number().required(),
             player2ScoreChange: number().required(),
@@ -28,6 +29,8 @@ const createJapaneseRoundSchema = object({
     player1Riichi: boolean().required(),
     player2Riichi: boolean().required(),
     player3Riichi: boolean().required(),
+    startRiichiStickCount: number().required(),
+    endRiichiStickCount: number().required(),
 });
 
 type CreateJapaneseRoundType = InferType<typeof createJapaneseRoundSchema>;

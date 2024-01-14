@@ -94,6 +94,7 @@ type JapaneseRound = {
     roundWind: string;
     roundCount: number;
     bonus: number;
+    startRiichiStickCount: number;
     endRiichiStickCount: number;
     player0Riichi: boolean;
     player1Riichi: boolean;
@@ -102,11 +103,11 @@ type JapaneseRound = {
     transactions: JapaneseTransaction[];
 };
 
-type PartialJapaneseRound = Pick<JapaneseRound, "roundCount" | "roundNumber" | "roundWind" | "bonus"> & { startRiichiStickCount: number };
+type PartialJapaneseRound = Pick<JapaneseRound, "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount">;
 
 type JapaneseTransaction = {
     id: string;
-    type: JapaneseTransactionType;
+    type: string;
     player0ScoreChange: number;
     player1ScoreChange: number;
     player2ScoreChange: number;
@@ -117,7 +118,7 @@ type JapaneseTransaction = {
     paoPlayerIndex?: number;
 };
 
-type JapaneseTransactionType = "DEAL_IN" | "SELF_DRAW" | "TENPAI" | "MISTAKE" | "PAO";
+type JapaneseTransactionType = "DEAL_IN" | "SELF_DRAW" | "DEAL_IN_PAO" | "SELF_DRAW_PAO" | "NAGASHI_MANGAN" | "INROUND_RYUUKYOKU";
 
 type RoundType = {
     name: string;

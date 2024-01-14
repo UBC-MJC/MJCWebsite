@@ -1,7 +1,7 @@
 import {ActionType, getEmptyScoreDelta, NUM_PLAYERS, Transaction} from "./Types";
 import {range} from "./Range";
 
-function containingAny(transactions: Transaction[], actionType: ActionType): Transaction | null {
+export function containingAny(transactions: Transaction[], actionType: ActionType): Transaction | null {
     for (const transaction of transactions) {
         if (transaction.actionType === actionType) {
             return transaction;
@@ -11,6 +11,9 @@ function containingAny(transactions: Transaction[], actionType: ActionType): Tra
 }
 
 export function transformTransactions(transactions: Transaction[], honba: number) {
+    if (transactions.length === 0) {
+        return [];
+    }
     const transaction: Transaction = determineHonbaTransaction(transactions);
     const newTransaction: Transaction = addHonba(transaction, honba);
     for (const index of range(NUM_PLAYERS)) {
@@ -37,7 +40,7 @@ export function findHeadbumpWinner(transactions: Transaction[]) {
             }
         }
     }
-    const loser = losers.values().next().value; // should only have one real loser
+    const [loser] = losers; // should only have one real loser
     return getClosestWinner(loser, winners);
 }
 
@@ -50,6 +53,11 @@ function determineHonbaTransaction(transactions: Transaction[]) {
         return potentialTsumo;
     }
     const headbumpWinner = findHeadbumpWinner(transactions);
+    for (const transaction of transactions) {
+        if (transaction.scoreDeltas[headbumpWinner] > 0 && transaction.actionType !== ActionType.DEAL_IN_PAO) {
+            return transaction;
+        }
+    }
     for (const transaction of transactions) {
         if (transaction.scoreDeltas[headbumpWinner] > 0) {
             return transaction;
@@ -79,16 +87,15 @@ export function addHonba(transaction: Transaction, honbaCount: number) {
     if (transaction.hand) {
         newTransaction.hand = transaction.hand;
     }
-    if (transaction.paoTarget) {
+    if (transaction.paoTarget !== undefined) {
         newTransaction.paoTarget = transaction.paoTarget;
     }
     for (const index of range(NUM_PLAYERS)) {
         newTransaction.scoreDeltas[index] = transaction.scoreDeltas[index];
     }
     switch (newTransaction.actionType) {
-        case ActionType.CHOMBO:
         case ActionType.NAGASHI_MANGAN:
-        case ActionType.TENPAI:
+        case ActionType.INROUND_RYUUKYOKU:
             break;
         case ActionType.TSUMO:
             for (const index of range(NUM_PLAYERS)) {
@@ -117,51 +124,12 @@ export function addHonba(transaction: Transaction, honbaCount: number) {
 }
 
 function getClosestWinner(loserLocalPos: number, winners: Set<number>) {
-    // code below triggers typescript error
-
-    // let [closestWinnerIndex] = winners;
-    // for (const winnerIndex of winners) {
-    //     if ((winnerIndex - loserLocalPos) % NUM_PLAYERS < (closestWinnerIndex - loserLocalPos) % NUM_PLAYERS) {
-    //         closestWinnerIndex = winnerIndex;
-    //     }
-    // }
-    // return closestWinnerIndex;
-    return -1;
-}
-
-export function dealershipRetains(transactions: Transaction[], dealerIndex: number) {
-    for (const transaction of transactions) {
-        if (
-            [ActionType.RON, ActionType.TSUMO, ActionType.SELF_DRAW_PAO, ActionType.DEAL_IN_PAO].includes(
-                transaction.actionType
-            ) &&
-            transaction.scoreDeltas[dealerIndex] > 0
-        ) {
-            return true;
-        }
-        if (transaction.actionType === ActionType.CHOMBO) {
-            return true;
-        }
-        if (transaction.actionType === ActionType.NAGASHI_MANGAN) {
-            return true;
+    let [closestWinnerIndex] = winners;
+    for (const winnerIndex of winners) {
+        if ((winnerIndex - loserLocalPos) % NUM_PLAYERS < (closestWinnerIndex - loserLocalPos) % NUM_PLAYERS) {
+            closestWinnerIndex = winnerIndex;
         }
     }
-    return false;
+    return closestWinnerIndex;
 }
 
-export function getNewHonbaCount(dealerIndex: number, transactions: Transaction[], honba: number) {
-    for (const transaction of transactions) {
-        if (
-            [ActionType.RON, ActionType.TSUMO, ActionType.SELF_DRAW_PAO, ActionType.DEAL_IN_PAO].includes(
-                transaction.actionType
-            ) &&
-            transaction.scoreDeltas[dealerIndex] > 0
-        ) {
-            return honba + 1;
-        }
-        if (transaction.actionType === ActionType.CHOMBO) {
-            return honba;
-        }
-    }
-    return 0;
-}
