@@ -1,5 +1,5 @@
-import { object, string, mixed, InferType, array, number, boolean } from "yup";
-import { GameType, JapaneseTransactionType } from "@prisma/client";
+import { array, InferType, mixed, number, object, string } from "yup";
+import { GameType, JapaneseTransactionType, Wind } from "@prisma/client";
 import { FullJapaneseGame } from "../services/game/game.util";
 
 const createGameSchema = object({
@@ -11,29 +11,34 @@ const createGameSchema = object({
 
 type CreateGameType = InferType<typeof createGameSchema>;
 
-const createJapaneseRoundSchema = object({
-    transactions: array().of(
-        object({
-            // type: mixed<JapaneseTransactionType>().oneOf(["DEAL_IN", "SELF_DRAW", "DEAL_IN_PAO", "SELF_DRAW_PAO", "NAGASHI_MANGAN", "INROUND_RYUUKYOKU"]).required(),
-            type: string().required(),
-            player0ScoreChange: number().required(),
-            player1ScoreChange: number().required(),
-            player2ScoreChange: number().required(),
-            player3ScoreChange: number().required(),
-            fu: number().optional(),
-            points:number().optional(),
-            dora: number().optional()
-        }),
-    ).min(0).required(),
-    player0Riichi: boolean().required(),
-    player1Riichi: boolean().required(),
-    player2Riichi: boolean().required(),
-    player3Riichi: boolean().required(),
-    startRiichiStickCount: number().required(),
-    endRiichiStickCount: number().required(),
+const JapaneseTransactionSchema = object({
+    // type: mixed<JapaneseTransactionType>().oneOf(["DEAL_IN", "SELF_DRAW", "DEAL_IN_PAO", "SELF_DRAW_PAO", "NAGASHI_MANGAN", "INROUND_RYUUKYOKU"]).required(),
+    transactionType: mixed<JapaneseTransactionType>().required(),
+    scoreDeltas: array().of(number().defined()).length(4).required(),
+    paoPlayerIndex: number().optional(),
+    hand: object({
+        fu: number().required(),
+        points: number().required(),
+        dora: number().required()
+    }).optional()
 });
 
-type CreateJapaneseRoundType = InferType<typeof createJapaneseRoundSchema>;
+const ConcludedJapaneseRoundSchema = object({
+    roundCount: number().required(),
+    roundWind: mixed<Wind>().required(),
+    roundNumber: number().required(),
+    bonus: number().required(),
+    startRiichiStickCount: number().required(),
+    endRiichiStickCount: number().required(),
+    riichis: array().of(number().defined()).required(),
+    tenpais: array().of(number().defined()).required(),
+    transactions: array().of(
+        JapaneseTransactionSchema
+    ).min(0).required()
+});
+
+type ConcludedJapaneseRoundT = InferType<typeof ConcludedJapaneseRoundSchema>;
+type JapaneseTransactionT = InferType<typeof JapaneseTransactionSchema>;
 
 const validateCreateRound = (round: any, game: any, gameVariant: string): void => {
     if (!round) {
@@ -52,7 +57,7 @@ const validateCreateRound = (round: any, game: any, gameVariant: string): void =
 
 const validateCreateJapaneseRound = (round: any, game: FullJapaneseGame): void => {
     try {
-        createJapaneseRoundSchema.validateSync(round);
+        ConcludedJapaneseRoundSchema.validateSync(round);
     } catch (errors: any) {
         throw new Error("Invalid create Japanese round: " + errors);
     }
@@ -60,4 +65,11 @@ const validateCreateJapaneseRound = (round: any, game: FullJapaneseGame): void =
 
 const validateCreateHongKongRound = (round: any, game: any): void => {};
 
-export { createGameSchema, CreateGameType, validateCreateRound, CreateJapaneseRoundType, validateCreateJapaneseRound };
+export {
+    createGameSchema,
+    CreateGameType,
+    validateCreateRound,
+    ConcludedJapaneseRoundT,
+    JapaneseTransactionT,
+    validateCreateJapaneseRound
+};

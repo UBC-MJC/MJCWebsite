@@ -2,12 +2,12 @@ import { FC, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import LegacyHongKongGameTable from "./LegacyHongKongGameTable";
 import {
-    HongKongActions,
-    HongKongLabel,
-    HongKongRoundType,
     HK_LABEL_MAP,
     HK_ROUND_TYPE_BUTTONS,
-    HK_UNDEFINED_HAND
+    HK_UNDEFINED_HAND,
+    HongKongActions,
+    HongKongLabel,
+    HongKongRoundType
 } from "../../common/constants";
 import ListToggleButton from "../../common/RoundTypeButtonList";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
@@ -55,9 +55,6 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
             case HongKongRoundType.SELF_DRAW_PAO:
                 newRoundActions.WINNER = prevWinner;
                 newRoundActions.PAO = prevPao;
-                break;
-            case HongKongRoundType.MISTAKE:
-                newRoundActions.LOSER = prevLoser;
                 break;
             case HongKongRoundType.DECK_OUT:
                 break;
@@ -111,11 +108,6 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
             case HongKongRoundType.SELF_DRAW_PAO:
                 labels = [
                     [HongKongLabel.WINNER, [roundActions.WINNER]],
-                ];
-                break;
-            case HongKongRoundType.MISTAKE:
-                labels = [
-                    [HongKongLabel.LOSER, [roundActions.LOSER]],
                 ];
                 break;
             case HongKongRoundType.DECK_OUT:

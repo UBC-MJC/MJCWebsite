@@ -124,45 +124,12 @@ const getDealerPlayerId = (
 ): string => {
     return game.players.find((player) => player.wind === getWind(roundNumber - 1))!.player.id;
 };
-
-const getPlayerScoreWithIndex = (index: number) => {
-    switch (index) {
-        case 0:
-            return "player0ScoreChange";
-        case 1:
-            return "player1ScoreChange";
-        case 2:
-            return "player2ScoreChange";
-        case 3:
-            return "player3ScoreChange";
-        default:
-            throw new Error("Invalid index");
-    }
-}
-
-const getPlayerTenpaiStatusWithIndex = (index: number) => {
-    switch (index) {
-        case 0:
-            return "player0Tenpai";
-        case 1:
-            return "player1Tenpai";
-        case 2:
-            return "player2Tenpai";
-        case 3:
-            return "player3Tenpai";
-        default:
-            throw new Error("Invalid index");
-    }
-}
-
-
 const requiresHand = (roundType: string): boolean => {
     return (
         roundType === "SELF_DRAW" ||
         roundType === "DEAL_IN" ||
         roundType === "DEAL_IN_PAO" ||
-        roundType === "SELF_DRAW_PAO" ||
-        roundType === "PAO"
+        roundType === "SELF_DRAW_PAO"
     );
 };
 
@@ -196,8 +163,6 @@ export {
     getDealerPlayerId,
     requiresHand,
     createEloCalculatorInputs,
-    getPlayerScoreWithIndex,
-    getPlayerTenpaiStatusWithIndex,
     GAME_CONSTANTS,
     WIND_ORDER,
     Wind,

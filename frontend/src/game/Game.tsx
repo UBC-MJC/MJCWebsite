@@ -1,13 +1,7 @@
 import { FC, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AxiosError } from "axios";
-import {
-    addRoundAPI,
-    deleteGameAPI,
-    deleteRoundAPI,
-    getGameAPI,
-    submitGameAPI,
-} from "../api/GameAPI";
+import { addRoundAPI, deleteGameAPI, deleteRoundAPI, getGameAPI, submitGameAPI } from "../api/GameAPI";
 import { AuthContext } from "../common/AuthContext";
 import { getGameTypeString, validateGameVariant, windComparison } from "../common/Utils";
 import alert from "../common/AlertDialog";
@@ -212,11 +206,7 @@ const Game: FC = () => {
                 {game.gameType} {getGameTypeString(variant)} Game
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game)}
             </h1>
-            {legacyToggle() ? (
-                getLegacyDisplayGame(game)
-            ) : (
-                getLegacyDisplayGame(game)
-            )}
+            {getLegacyDisplayGame(game)}
             {isRecording(game) && (
                 <Container>
                     <Row>

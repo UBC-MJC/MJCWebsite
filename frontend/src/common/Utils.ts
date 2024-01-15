@@ -125,21 +125,8 @@ type Score = {
     playerId: string;
     [key: string]: any;
 }
-const findPlayerScoreDelta = (transactions: JapaneseTransaction[], playerIndex: number): number => {
-    return transactions.reduce((acc, transaction) => {
-        let delta = 0;
-        if (playerIndex === 0) {
-            delta = transaction.player0ScoreChange;
-        } else if (playerIndex === 1) {
-            delta = transaction.player1ScoreChange;
-        } else if (playerIndex === 2) {
-            delta = transaction.player2ScoreChange;
-        } else if (playerIndex === 3) {
-            delta = transaction.player3ScoreChange;
-        }
-
-        return acc + delta
-    }, 0);
+const findPlayerScoreDelta = (transactions: any[], playerIndex: number): number => {
+    return 0;
 };
 
 const mapWindToCharacter = (wind: string): string => {

@@ -25,7 +25,6 @@ enum JapaneseTransactionType {
 enum HongKongTransactionType {
     DEAL_IN
     SELF_DRAW
-    MISTAKE
     PAO
 }
 
@@ -125,7 +124,7 @@ model JapaneseRound {
 
 model JapaneseTransaction {
     id                 String                  @id @default(cuid())
-    type               JapaneseTransactionType
+    transactionType    JapaneseTransactionType
     player0ScoreChange Int                     @default(0)
     player1ScoreChange Int                     @default(0)
     player2ScoreChange Int                     @default(0)
@@ -164,7 +163,7 @@ model HongKongRound {
 
 model HongKongTransaction {
     id                 String                  @id @default(cuid())
-    type               HongKongTransactionType
+    transactionType    HongKongTransactionType
     player0ScoreChange Int                     @default(0)
     player1ScoreChange Int                     @default(0)
     player2ScoreChange Int                     @default(0)

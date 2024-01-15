@@ -88,38 +88,6 @@ type Game = {
     currentRound?: PartialJapaneseRound;
 };
 
-type JapaneseRound = {
-    id: string;
-    roundNumber: number;
-    roundWind: string;
-    roundCount: number;
-    bonus: number;
-    startRiichiStickCount: number;
-    endRiichiStickCount: number;
-    player0Riichi: boolean;
-    player1Riichi: boolean;
-    player2Riichi: boolean;
-    player3Riichi: boolean;
-    transactions: JapaneseTransaction[];
-};
-
-type PartialJapaneseRound = Pick<JapaneseRound, "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount">;
-
-type JapaneseTransaction = {
-    id: string;
-    type: string;
-    player0ScoreChange: number;
-    player1ScoreChange: number;
-    player2ScoreChange: number;
-    player3ScoreChange: number;
-    han?: number;
-    fu?: number;
-    dora?: number;
-    paoPlayerIndex?: number;
-};
-
-type JapaneseTransactionType = "DEAL_IN" | "SELF_DRAW" | "DEAL_IN_PAO" | "SELF_DRAW_PAO" | "NAGASHI_MANGAN" | "INROUND_RYUUKYOKU";
-
 type RoundType = {
     name: string;
     value: string;
@@ -135,11 +103,44 @@ type RoundValue = {
     playerActions: PlayerActions;
 };
 
+enum JapaneseTransactionType {
+    DEAL_IN = "DEAL_IN",
+    SELF_DRAW = "SELF_DRAW",
+    DEAL_IN_PAO = "DEAL_IN_PAO",
+    SELF_DRAW_PAO = "SELF_DRAW_PAO",
+    NAGASHI_MANGAN = "NAGASHI_MANGAN",
+    INROUND_RYUUKYOKU = "INROUND_RYUUKYOKU"
+}
+
+type JapaneseRound = {
+    id: string;
+    roundNumber: number;
+    roundWind: string;
+    roundCount: number;
+    bonus: number;
+    startRiichiStickCount: number;
+    endRiichiStickCount: number;
+    riichis: number[];
+    tenpais: number[];
+    transactions: JapaneseTransaction[];
+};
+
+type PartialJapaneseRound = Pick<JapaneseRound, "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount">;
+
+type JapaneseTransaction = {
+    id?: string;
+    transactionType: JapaneseTransactionType;
+    scoreDeltas: number[];
+    hand?: JapaneseHandInput;
+    paoPlayerIndex?: number;
+};
+
 type JapaneseHandInput = {
     han: number;
     fu: number;
     dora: number;
 };
+
 
 type HongKongRound = {
     id: string;
@@ -152,16 +153,19 @@ type HongKongRound = {
 type PartialHongKongRound = Pick<HongKongRound, "roundCount" | "roundNumber" | "roundWind">;
 
 type HongKongTransaction = {
-    id: string;
-    type: HongKongTransactionType;
-    player0ScoreChange: number;
-    player1ScoreChange: number;
-    player2ScoreChange: number;
-    player3ScoreChange: number;
-    points?: number;
+    id?: string;
+    transactionType: HongKongTransactionType;
+    scoreDeltas: number[];
+    points?: HongKongHandInput;
     paoPlayerIndex?: number;
 };
 
 type HongKongHandInput = number
 
-type HongKongTransactionType = "DEAL_IN" | "SELF_DRAW" | "MISTAKE" | "PAO";
+enum HongKongTransactionType {
+    DEAL_IN = "DEAL_IN",
+    SELF_DRAW = "SELF_DRAW",
+    DEAL_IN_PAO = "DEAL_IN_PAO",
+    SELF_DRAW_PAO = "SELF_DRAW_PAO",
+    RESHUFFLE = "RESHUFFLE"
+}

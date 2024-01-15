@@ -84,7 +84,6 @@ enum HongKongRoundType {
     SELF_DRAW = "SELF_DRAW",
     DECK_OUT = "DECK_OUT",
     RESHUFFLE = "RESHUFFLE",
-    MISTAKE = "MISTAKE",
     DEAL_IN_PAO = "DEAL_IN_PAO",
     SELF_DRAW_PAO = "SELF_DRAW_PAO",
 }
@@ -105,9 +104,7 @@ const HK_ROUND_TYPE_BUTTONS: HongKongRoundTypeButtons = [
         value: HongKongRoundType.DEAL_IN,
     },
     { name: "Self Draw", value: HongKongRoundType.SELF_DRAW},
-    { name: "Deck Out", value: HongKongRoundType.DECK_OUT},
     { name: "Reshuffle", value: HongKongRoundType.RESHUFFLE},
-    { name: "Mistake", value: HongKongRoundType.MISTAKE},
     {
         name: "Deal In Pao",
         value: HongKongRoundType.DEAL_IN_PAO,
