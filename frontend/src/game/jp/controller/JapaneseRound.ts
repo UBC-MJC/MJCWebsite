@@ -150,12 +150,10 @@ const addPaoSelfDraw = (winnerIndex: number, paoPlayerIndex: number, dealerIndex
 }
 
 function getFinalRiichiSticks(transactions: JapaneseTransaction[], startingRiichiSticks: number, riichis: number[]): number {
+    const winningTransactions: JapaneseTransactionType[] = [JapaneseTransactionType.DEAL_IN, JapaneseTransactionType.SELF_DRAW, JapaneseTransactionType.SELF_DRAW_PAO, JapaneseTransactionType.DEAL_IN_PAO];
+
     for (const transaction of transactions) {
-        if (
-            [JapaneseTransactionType.DEAL_IN, JapaneseTransactionType.SELF_DRAW, JapaneseTransactionType.SELF_DRAW_PAO, JapaneseTransactionType.DEAL_IN_PAO].includes(
-                transaction.transactionType
-            )
-        ) {
+        if (winningTransactions.includes(transaction.transactionType)) {
             return 0;
         }
     }

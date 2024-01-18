@@ -34,7 +34,7 @@ const createHongKongRoundRequest = (
     return result;
 };
 
-function calculateHandValue(multiplier: number, point: number) {
+const calculateHandValue = (multiplier: number, point: number): number => {
     if (point % 2 === 0) {
         return Math.pow(2, (point / 2 + 2)) * multiplier;
     }
