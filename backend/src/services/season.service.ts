@@ -1,24 +1,24 @@
-import { Season } from "@prisma/client";
+import {Player, Prisma, Season} from "@prisma/client";
 import prisma from "../db";
 
 const getCurrentSeason = async (): Promise<Season> => {
-    const season = await prisma.season.findFirst({
+    const seasons: Season[] = await prisma.season.findMany({
         orderBy: {
-            endDate: "desc",
+            endDate: Prisma.SortOrder.desc,
         },
     });
 
-    if (!season || season.endDate < new Date()) {
+    if (seasons.length === 0 || seasons[0].endDate < new Date()) {
         throw new Error("No season in progress");
     }
 
-    return season;
+    return seasons[0];
 };
 
 const findAllSeasons = async (): Promise<Season[]> => {
     return prisma.season.findMany({
         orderBy: {
-            startDate: "desc",
+            startDate: Prisma.SortOrder.desc,
         },
     });
 };

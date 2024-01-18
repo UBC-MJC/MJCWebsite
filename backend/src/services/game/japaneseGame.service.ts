@@ -333,7 +333,6 @@ function generateTenpaiScoreDeltas(tenpais: number[]) {
     }
     return scoreDeltas;
 }
-//
 
 export function containingAny(transactions: JapaneseTransactionT[], transactionType: JapaneseTransactionType): JapaneseTransactionT | null {
     for (const transaction of transactions) {
@@ -392,7 +391,6 @@ export function generateOverallScoreDelta(concludedRound: ConcludedJapaneseRound
 
 const getJapanesePlayersCurrentScore = (game: FullJapaneseGame): number[] => {
     return game.rounds.reduce<number[]>((result, current) => addScoreDeltas(result, generateOverallScoreDelta(transformDBJapaneseRound(current))), getEmptyScoreDelta());
-    ;
 }
 
 function transformTransaction(transaction: JapaneseTransactionT): any {
