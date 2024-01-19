@@ -163,15 +163,7 @@ class HongKongGameService extends GameService {
             }),
             rounds: game.rounds,
             currentRound: nextRound,
-            gameOver: this.isGameOver(game, nextRound),
         };
-    }
-
-    public isGameOver(
-        game: FullHongKongGame,
-        nextRound: any = getNextHongKongRound(game),
-    ): boolean {
-        return nextRound.roundWind === "END";
     }
 }
 

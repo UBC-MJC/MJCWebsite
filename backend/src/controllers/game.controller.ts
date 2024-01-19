@@ -116,8 +116,6 @@ const submitGameHandler = async (
             return next(createError.BadRequest("Game is not in progress"));
         } else if (game.recordedById !== req.player.id) {
             return next(createError.Forbidden("You are not the recorder of this game"));
-        } else if (!gameService.isGameOver(game)) {
-            return next(createError.BadRequest("Game is not over yet"));
         }
 
         await gameService.submitGame(game);
@@ -151,8 +149,6 @@ const createRoundHandler = async (
 
         if (game.recordedById !== req.player.id) {
             return next(createError.Forbidden("You are not the recorder of this game"));
-        } else if (gameService.isGameOver(game)) {
-            return next(createError.BadRequest("Game is already over"));
         }
 
         await gameService.createRound(game, roundRequest);

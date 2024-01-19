@@ -7,15 +7,21 @@ import {
     JapaneseRoundType,
     JP_LABEL_MAP,
     JP_ROUND_TYPE_BUTTONS,
-    JP_UNDEFINED_HAND,
+    JP_UNDEFINED_HAND, Wind,
 } from "../../common/constants";
 import ListToggleButton from "../../common/RoundTypeButtonList";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
 import { japanesePointsWheel } from "../../../common/Utils";
 import DropdownInput from "../../common/DropdownInput";
 import { LegacyGameProps } from "../../Game";
-import { createJapaneseRoundRequest } from "../controller/JapaneseRound";
+import {
+    addScoreDeltas,
+    createJapaneseRoundRequest,
+    generateOverallScoreDelta,
+    isGameEnd
+} from "../controller/JapaneseRound";
 import { validateCreateJapaneseRound } from "../controller/ValidateJapaneseRound";
+import {getStartingScore} from "../controller/Types";
 
 const LegacyJapaneseGame: FC<LegacyGameProps> = ({
    enableRecording,
@@ -31,7 +37,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     const [tenpaiList, setTenpaiList] = useState<number[]>([]);
     const [riichiList, setRiichiList] = useState<number[]>([]);
 
-    const gameOver = typeof game.currentRound === "undefined";
+    const gameOver = isGameEnd(game.currentRound!, game.rounds as JapaneseRound[]);
 
     const roundTypeOnChange = (type: JapaneseRoundType) => {
         const prevWinner = roundActions.WINNER;
@@ -99,13 +105,13 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         }
     }
 
-    const handOnChange = (label: string, value: any) => {
+    const handOnChange = (label: string, value: number) => {
         if (label !== "han" && label !== "fu" && label !== "dora") {
             return;
         }
 
         const newHand: JapaneseHandInput = { ...hand };
-        newHand[label] = value;
+        newHand[label] = +value;
         setHand(newHand);
     }
 

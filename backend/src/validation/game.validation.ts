@@ -18,9 +18,9 @@ const JapaneseTransactionSchema = object({
     paoPlayerIndex: number().optional(),
     hand: object({
         fu: number().required(),
-        points: number().required(),
+        han: number().required(),
         dora: number().required()
-    }).optional()
+    }).optional().nullable()
 });
 
 const ConcludedJapaneseRoundSchema = object({
@@ -58,6 +58,10 @@ const validateCreateRound = (round: any, game: any, gameVariant: string): void =
 const validateCreateJapaneseRound = (round: any, game: FullJapaneseGame): void => {
     try {
         ConcludedJapaneseRoundSchema.validateSync(round);
+
+        round.transactions.forEach((transaction: JapaneseTransactionT) => {
+            JapaneseTransactionSchema.validateSync(transaction);
+        });
     } catch (errors: any) {
         throw new Error("Invalid create Japanese round: " + errors);
     }

@@ -48,13 +48,13 @@ function determineHonbaTransaction(transactions: JapaneseTransaction[]) {
     if (transactions.length === 1) {
         return transactions[0];
     }
-    const potentialTsumo = containingAny(transactions, JapaneseTransactionType.SELF_DRAW);
+    const potentialTsumo = containingAny(transactions, "SELF_DRAW");
     if (potentialTsumo) {
         return potentialTsumo;
     }
     const headbumpWinner = findHeadbumpWinner(transactions);
     for (const transaction of transactions) {
-        if (transaction.scoreDeltas[headbumpWinner] > 0 && transaction.transactionType !== JapaneseTransactionType.DEAL_IN_PAO) {
+        if (transaction.scoreDeltas[headbumpWinner] > 0 && transaction.transactionType !== "DEAL_IN_PAO") {
             return transaction;
         }
     }
@@ -94,10 +94,10 @@ export function addHonba(transaction: JapaneseTransaction, honbaCount: number) {
         newTransaction.scoreDeltas[index] = transaction.scoreDeltas[index];
     }
     switch (newTransaction.transactionType) {
-        case JapaneseTransactionType.NAGASHI_MANGAN:
-        case JapaneseTransactionType.INROUND_RYUUKYOKU:
+        case "NAGASHI_MANGAN":
+        case "INROUND_RYUUKYOKU":
             break;
-        case JapaneseTransactionType.SELF_DRAW:
+        case "SELF_DRAW":
             for (const index of range(NUM_PLAYERS)) {
                 if (newTransaction.scoreDeltas[index] > 0) {
                     newTransaction.scoreDeltas[index] += 300 * honbaCount;
@@ -106,11 +106,11 @@ export function addHonba(transaction: JapaneseTransaction, honbaCount: number) {
                 }
             }
             break;
-        case JapaneseTransactionType.DEAL_IN:
-        case JapaneseTransactionType.DEAL_IN_PAO:
+        case "DEAL_IN":
+        case "DEAL_IN_PAO":
             handleDealIn(newTransaction, honbaCount);
             break;
-        case JapaneseTransactionType.SELF_DRAW_PAO:
+        case "SELF_DRAW_PAO":
             for (const index of range(NUM_PLAYERS)) {
                 if (newTransaction.scoreDeltas[index] > 0) {
                     newTransaction.scoreDeltas[index] += 300 * honbaCount;

@@ -134,6 +134,7 @@ class JapaneseGameService extends GameService {
         } catch (err) {
             console.error("Error adding japanese round: ", err);
             console.error("Query: ", query);
+            throw err;
         }
     }
 
@@ -162,55 +163,7 @@ class JapaneseGameService extends GameService {
             }),
             rounds: game.rounds.map((round) => transformDBJapaneseRound(round)),
             currentRound: nextRound,
-            gameOver: this.isGameOver(game, nextRound),
         };
-    }
-
-    public isGameOver(
-        game: FullJapaneseGame,
-        nextRound: any = getNextJapaneseRound(game),
-    ): boolean {
-        const playerScores = getJapanesePlayersCurrentScore(game);
-        const allPositive = Object.values(playerScores).every((score: number) => score >= 0);
-
-        if (!allPositive) {
-            // end game if player has negative score
-            return true;
-        } else if (
-            nextRound.roundWind === "EAST" ||
-            (nextRound.roundWind === "SOUTH" && nextRound.roundNumber < 4)
-        ) {
-            return false;
-        } else if (nextRound.roundWind === "SOUTH" && nextRound.roundNumber === 4) {
-            const lastRound = game.rounds[game.rounds.length - 1];
-            if (lastRound.roundWind === "SOUTH" && lastRound.roundNumber === 4) {
-                // end game if we are in south 4 because dealer won and dealer has most points
-                const dealerId = getDealerPlayerId(game, 4);
-
-                // check if dealer has most points
-                let dealerHasMostPoints = true;
-                const dealerIndex = lastRound.roundNumber;
-                for (let i = 0; i < 4; i++) {
-                    if (i !== dealerIndex && playerScores[i] > playerScores[dealerIndex]) {
-                        dealerHasMostPoints = false;
-                        break;
-                    }
-                }
-
-                return dealerHasMostPoints;
-            } else {
-                // don't end game because we are in south 4 from south 3
-                return false;
-            }
-        } else {
-            // we are in west/north round, end game if someone has more than 30000 points
-            for (const playerId in playerScores) {
-                if (playerScores[playerId] >= 30000) {
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 }
 

@@ -13,7 +13,6 @@ abstract class GameService {
     abstract createRound(game: any, roundRequest: any): Promise<void>;
     abstract deleteRound(id: string): Promise<void>;
     abstract mapGameObject(game: any): any;
-    abstract isGameOver(game: any): boolean;
 }
 
 export default GameService;

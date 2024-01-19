@@ -103,15 +103,6 @@ type RoundValue = {
     playerActions: PlayerActions;
 };
 
-enum JapaneseTransactionType {
-    DEAL_IN = "DEAL_IN",
-    SELF_DRAW = "SELF_DRAW",
-    DEAL_IN_PAO = "DEAL_IN_PAO",
-    SELF_DRAW_PAO = "SELF_DRAW_PAO",
-    NAGASHI_MANGAN = "NAGASHI_MANGAN",
-    INROUND_RYUUKYOKU = "INROUND_RYUUKYOKU"
-}
-
 type JapaneseRound = {
     id: string;
     roundNumber: number;
@@ -134,6 +125,8 @@ type JapaneseTransaction = {
     hand?: JapaneseHandInput;
     paoPlayerIndex?: number;
 };
+
+type JapaneseTransactionType = "DEAL_IN" | "SELF_DRAW" | "DEAL_IN_PAO" | "SELF_DRAW_PAO" | "NAGASHI_MANGAN" | "INROUND_RYUUKYOKU";
 
 type JapaneseHandInput = {
     han: number;
