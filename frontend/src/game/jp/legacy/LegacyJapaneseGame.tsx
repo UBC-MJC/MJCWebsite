@@ -21,6 +21,7 @@ import {
     generateOverallScoreDelta,
 } from "../controller/JapaneseRound";
 import { validateCreateJapaneseRound } from "../controller/ValidateJapaneseRound";
+import alert from "../../../common/AlertDialog";
 import {getStartingScore} from "../controller/Types";
 
 const LegacyJapaneseGame: FC<LegacyGameProps> = ({
@@ -126,7 +127,12 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     }
 
     const submitRound = async () => {
-        validateCreateJapaneseRound(roundType, roundActions, tenpaiList, riichiList, hand, hasSecondHand, secondHand);
+        try {
+            validateCreateJapaneseRound(roundType, roundActions, tenpaiList, riichiList, hand, hasSecondHand, secondHand);
+        } catch (e: any) {
+            await alert(e.message);
+            return;
+        }
         const roundRequest = createJapaneseRoundRequest(roundType, roundActions, tenpaiList, riichiList, hand, hasSecondHand, secondHand, game.currentRound!);
         console.log(roundRequest);
         await handleSubmitRound(roundRequest);
