@@ -188,7 +188,7 @@ export function generateOverallScoreDelta(concludedGame: JapaneseRound) {
     return addScoreDeltas(reduceScoreDeltas(concludedGame.transactions), riichiDeltas);
 }
 
-const isGameEnd = (newRound: PartialJapaneseRound, concludedRounds: JapaneseRound[]): boolean => {
+const isJapaneseGameEnd = (newRound: PartialJapaneseRound, concludedRounds: JapaneseRound[]): boolean => {
     if (newRound.roundWind === Wind.NORTH) {
         // ends at north regardless of what happens
         return true;
@@ -218,5 +218,5 @@ const isGameEnd = (newRound: PartialJapaneseRound, concludedRounds: JapaneseRoun
 export {
     createJapaneseRoundRequest,
     getFinalRiichiSticks,
-    addDealIn, addSelfDraw, addNagashiMangan, addPaoDealIn, addPaoSelfDraw, isGameEnd
+    addDealIn, addSelfDraw, addNagashiMangan, addPaoDealIn, addPaoSelfDraw, isJapaneseGameEnd
 }

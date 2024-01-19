@@ -1,4 +1,6 @@
 import { NUM_PLAYERS } from "../jp/controller/Types";
+import {isJapaneseGameEnd} from "../jp/controller/JapaneseRound";
+import {isHongKongGameEnd} from "../hk/controller/HongKongRound";
 
 enum Wind {
     EAST = "EAST",
@@ -124,6 +126,16 @@ const HK_LABEL_MAP: {[key in HongKongLabel]: string} = {
 
 const HK_UNDEFINED_HAND: HongKongHandInput = -1;
 
+const isGameEnd = (game: Game, variant: GameVariant): boolean => {
+    if (variant === "jp") {
+        return isJapaneseGameEnd(game.currentRound as PartialJapaneseRound, game.rounds as JapaneseRound[]);
+    } else if (variant === "hk") {
+        return isHongKongGameEnd(game.currentRound, game.rounds as HongKongRound[]);
+    } else {
+        return false;
+    }
+}
+
 export {
     Wind,
     getNextWind,
@@ -136,5 +148,6 @@ export {
     HongKongRoundType,
     HK_ROUND_TYPE_BUTTONS,
     HK_LABEL_MAP,
-    HK_UNDEFINED_HAND
+    HK_UNDEFINED_HAND,
+    isGameEnd
 }

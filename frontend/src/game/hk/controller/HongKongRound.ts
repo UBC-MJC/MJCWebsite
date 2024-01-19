@@ -103,6 +103,11 @@ const addPaoSelfDraw = (winnerIndex: number, paoPlayerIndex: number, hand: HongK
     };
 };
 
+const isHongKongGameEnd = (currentRound: any, rounds: HongKongRound[]): boolean => {
+    return false; // TODO: finish this
+}
+
 export {
-    createHongKongRoundRequest
+    createHongKongRoundRequest,
+    isHongKongGameEnd
 };

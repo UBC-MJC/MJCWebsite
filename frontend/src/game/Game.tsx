@@ -9,6 +9,7 @@ import confirmDialog from "../common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
 import { Button, Col, Container, Row } from "react-bootstrap";
+import {isGameEnd} from "./common/constants";
 
 const Game: FC = () => {
     const { id, variant } = useParams();
@@ -232,7 +233,7 @@ const Game: FC = () => {
                             <Button
                                 variant="success"
                                 className="mb-2 w-100"
-                                disabled={game.currentRound !== undefined}
+                                disabled={!isGameEnd(game, variant)}
                                 onClick={() => handleSubmitGame()}
                             >
                                 Submit Game

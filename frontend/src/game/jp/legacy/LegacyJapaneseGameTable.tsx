@@ -7,17 +7,21 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { Table as BTable } from "react-bootstrap";
-import { findPlayerScoreDelta, mapWindToCharacter } from "../../../common/Utils";
+import { mapWindToCharacter } from "../../../common/Utils";
+import {addScoreDeltas, generateOverallScoreDelta} from "../controller/JapaneseRound";
+import {getStartingScore} from "../controller/Types";
 
 type LegacyGameTableProps = {
-    rounds: JapaneseRound[];
+    rounds: ModifiedJapaneseRound[];
     players: GamePlayer[];
 };
 
-const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {
-    const columnHelper = createColumnHelper<JapaneseRound>();
+export type ModifiedJapaneseRound = JapaneseRound & { scoreDeltas: number[] };
 
-    const roundColumns: ColumnDef<JapaneseRound, any>[] = [
+const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {
+    const columnHelper = createColumnHelper<ModifiedJapaneseRound>();
+
+    const roundColumns: ColumnDef<ModifiedJapaneseRound, any>[] = [
         columnHelper.accessor(
             (row) => `${mapWindToCharacter(row.roundWind)} ${row.roundNumber} B${row.bonus}`,
             {
@@ -27,7 +31,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
         columnHelper.accessor(
             (row) => {
-                return findPlayerScoreDelta(row.transactions, 0);
+                return row.scoreDeltas[0];
             },
             {
                 id: "eastScore",
@@ -36,7 +40,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
         columnHelper.accessor(
             (row) => {
-                return findPlayerScoreDelta(row.transactions, 1);
+                return row.scoreDeltas[1];
             },
             {
                 id: "southScore",
@@ -45,7 +49,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
         columnHelper.accessor(
             (row) => {
-                return findPlayerScoreDelta(row.transactions, 2);
+                return row.scoreDeltas[2];
             },
             {
                 id: "westScore",
@@ -54,7 +58,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
         columnHelper.accessor(
             (row) => {
-                return findPlayerScoreDelta(row.transactions, 3);
+                return row.scoreDeltas[3];
             },
             {
                 id: "northScore",
@@ -64,15 +68,12 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
     ];
 
     const getCurrentScoreRow = (rounds: JapaneseRound[]) => {
-        const startingScore = 25000;
-
         return [
             "Score",
-            ...players.map((_, idx) => {
-                return rounds.reduce((total, round) => {
-                    return total + findPlayerScoreDelta(round.transactions, idx);
-                }, startingScore);
-            }),
+            ...rounds.reduce<number[]>(
+                (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
+                getStartingScore()
+            )
         ];
     };
 

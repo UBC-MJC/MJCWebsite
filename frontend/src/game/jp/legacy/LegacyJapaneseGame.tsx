@@ -1,7 +1,8 @@
 import { FC, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import LegacyJapaneseGameTable from "./LegacyJapaneseGameTable";
+import LegacyJapaneseGameTable, {ModifiedJapaneseRound} from "./LegacyJapaneseGameTable";
 import {
+    isGameEnd,
     JapaneseActions,
     JapaneseLabel,
     JapaneseRoundType,
@@ -18,7 +19,6 @@ import {
     addScoreDeltas,
     createJapaneseRoundRequest,
     generateOverallScoreDelta,
-    isGameEnd
 } from "../controller/JapaneseRound";
 import { validateCreateJapaneseRound } from "../controller/ValidateJapaneseRound";
 import {getStartingScore} from "../controller/Types";
@@ -37,7 +37,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     const [tenpaiList, setTenpaiList] = useState<number[]>([]);
     const [riichiList, setRiichiList] = useState<number[]>([]);
 
-    const gameOver = isGameEnd(game.currentRound!, game.rounds as JapaneseRound[]);
+    const gameOver = isGameEnd(game, "jp");
 
     const roundTypeOnChange = (type: JapaneseRoundType) => {
         const prevWinner = roundActions.WINNER;
@@ -266,13 +266,22 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         );
     };
 
+    const mapRoundsToModifiedRounds = (rounds: JapaneseRound[]): ModifiedJapaneseRound[] => {
+        return rounds.map((round) => {
+            return {
+                ...round,
+                scoreDeltas: generateOverallScoreDelta(round),
+            };
+        });
+    }
+
     return (
         <Container>
             {enableRecording && !gameOver && (
                 getRecordingInterface()
             )}
             <LegacyJapaneseGameTable
-                rounds={game.rounds as JapaneseRound[]}
+                rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
                 players={players}
             />
         </Container>
