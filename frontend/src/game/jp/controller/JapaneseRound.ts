@@ -1,8 +1,15 @@
 import { calculateHandValue, MANGAN_BASE_POINT } from "./Points";
-import { getEmptyScoreDelta, getStartingScore, NUM_PLAYERS } from "./Types";
-import { JapaneseTransactionType, Wind } from "../../common/constants";
+import {
+    getEmptyScoreDelta,
+    getJapaneseStartingScore,
+    JapaneseTransactionType,
+    NUM_PLAYERS,
+    RETURNING_POINT,
+    Wind,
+} from "../../common/constants";
 import { findHeadbumpWinner, transformTransactions } from "./HonbaProcessing";
-import { range } from "./Range";
+
+import { range } from "../../../common/Utils";
 
 const createJapaneseRoundRequest = (
     currentRound: PartialJapaneseRound,
@@ -202,14 +209,14 @@ const isJapaneseGameEnd = (
     }
     const totalScore = concludedRounds.reduce<number[]>(
         (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
-        getStartingScore(),
+        getJapaneseStartingScore(),
     );
     let exceedsHanten = false;
     for (const score of totalScore) {
         if (score < 0) {
             return true;
         }
-        if (score >= 30000) {
+        if (score >= RETURNING_POINT) {
             exceedsHanten = true;
         }
     }

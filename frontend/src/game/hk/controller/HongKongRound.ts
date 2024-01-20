@@ -1,6 +1,12 @@
-import { HongKongActions, HongKongTransactionType, Wind } from "../../common/constants";
-import { getEmptyScoreDelta, NUM_PLAYERS } from "../../jp/controller/Types";
-import { range } from "../../jp/controller/Range";
+import {
+    getEmptyScoreDelta,
+    HongKongActions,
+    HongKongTransactionType,
+    NUM_PLAYERS,
+    Wind,
+} from "../../common/constants";
+
+import { range } from "../../../common/Utils";
 
 const createHongKongRoundRequest = (
     roundType: HongKongTransactionType,

@@ -96,6 +96,10 @@ const mapWindToCharacter = (wind: string): string => {
     }
 };
 
+const range = (end: number): number[] => {
+    return Array.from({ length: end }, (_, i) => i);
+};
+
 export {
     japanesePoints,
     japaneseFu,
@@ -109,4 +113,5 @@ export {
     getGameTypeString,
     validateGameVariant,
     mapWindToCharacter,
+    range,
 };

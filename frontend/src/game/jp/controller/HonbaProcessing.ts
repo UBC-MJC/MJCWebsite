@@ -1,5 +1,5 @@
-import { getEmptyScoreDelta, NUM_PLAYERS } from "./Types";
-import { range } from "./Range";
+import { getEmptyScoreDelta, JapaneseTransactionType, NUM_PLAYERS } from "../../common/constants";
+import { range } from "../../../common/Utils";
 
 export function containingAny(
     transactions: JapaneseTransaction[],
@@ -51,7 +51,7 @@ function determineHonbaTransaction(transactions: JapaneseTransaction[]) {
     if (transactions.length === 1) {
         return transactions[0];
     }
-    const potentialTsumo = containingAny(transactions, "SELF_DRAW");
+    const potentialTsumo = containingAny(transactions, JapaneseTransactionType.SELF_DRAW);
     if (potentialTsumo) {
         return potentialTsumo;
     }
@@ -59,7 +59,7 @@ function determineHonbaTransaction(transactions: JapaneseTransaction[]) {
     for (const transaction of transactions) {
         if (
             transaction.scoreDeltas[headbumpWinner] > 0 &&
-            transaction.transactionType !== "DEAL_IN_PAO"
+            transaction.transactionType !== JapaneseTransactionType.DEAL_IN_PAO
         ) {
             return transaction;
         }
@@ -103,10 +103,10 @@ export function addHonba(transaction: JapaneseTransaction, honbaCount: number) {
         newTransaction.scoreDeltas[index] = transaction.scoreDeltas[index];
     }
     switch (newTransaction.transactionType) {
-        case "NAGASHI_MANGAN":
-        case "INROUND_RYUUKYOKU":
+        case JapaneseTransactionType.NAGASHI_MANGAN:
+        case JapaneseTransactionType.INROUND_RYUUKYOKU:
             break;
-        case "SELF_DRAW":
+        case JapaneseTransactionType.SELF_DRAW:
             for (const index of range(NUM_PLAYERS)) {
                 if (newTransaction.scoreDeltas[index] > 0) {
                     newTransaction.scoreDeltas[index] += 300 * honbaCount;
@@ -115,11 +115,11 @@ export function addHonba(transaction: JapaneseTransaction, honbaCount: number) {
                 }
             }
             break;
-        case "DEAL_IN":
-        case "DEAL_IN_PAO":
+        case JapaneseTransactionType.DEAL_IN:
+        case JapaneseTransactionType.DEAL_IN_PAO:
             handleDealIn(newTransaction, honbaCount);
             break;
-        case "SELF_DRAW_PAO":
+        case JapaneseTransactionType.SELF_DRAW_PAO:
             for (const index of range(NUM_PLAYERS)) {
                 if (newTransaction.scoreDeltas[index] > 0) {
                     newTransaction.scoreDeltas[index] += 300 * honbaCount;
