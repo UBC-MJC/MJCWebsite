@@ -27,26 +27,6 @@ export function transformTransactions(transactions: JapaneseTransaction[], honba
     return transactions;
 }
 
-export function findHeadbumpWinner(transactions: JapaneseTransaction[]) {
-    const winners = new Set<number>();
-    const losers = new Set<number>();
-    for (const transaction of transactions) {
-        for (let index = 0; index < transaction.scoreDeltas.length; index++) {
-            if (transaction.paoPlayerIndex !== undefined && transaction.paoPlayerIndex === index) {
-                // is pao target
-                continue;
-            }
-            if (transaction.scoreDeltas[index] < 0) {
-                losers.add(index);
-            } else if (transaction.scoreDeltas[index] > 0) {
-                winners.add(index);
-            }
-        }
-    }
-    const [loser] = losers; // should only have one real loser
-    return getClosestWinner(loser, winners);
-}
-
 function determineHonbaTransaction(transactions: JapaneseTransaction[]) {
     if (transactions.length === 1) {
         return transactions[0];
@@ -130,6 +110,25 @@ export function addHonba(transaction: JapaneseTransaction, honbaCount: number) {
             break;
     }
     return newTransaction;
+}
+export function findHeadbumpWinner(transactions: JapaneseTransaction[]) {
+    const winners = new Set<number>();
+    const losers = new Set<number>();
+    for (const transaction of transactions) {
+        for (let index = 0; index < transaction.scoreDeltas.length; index++) {
+            if (transaction.paoPlayerIndex !== undefined && transaction.paoPlayerIndex === index) {
+                // is pao target
+                continue;
+            }
+            if (transaction.scoreDeltas[index] < 0) {
+                losers.add(index);
+            } else if (transaction.scoreDeltas[index] > 0) {
+                winners.add(index);
+            }
+        }
+    }
+    const [loser] = losers; // should only have one real loser
+    return getClosestWinner(loser, winners);
 }
 
 function getClosestWinner(loserLocalPos: number, winners: Set<number>) {

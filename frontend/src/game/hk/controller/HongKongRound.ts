@@ -1,5 +1,6 @@
 import {
     getEmptyScoreDelta,
+    getHongKongStartingScore,
     HongKongActions,
     HongKongTransactionType,
     NUM_PLAYERS,
@@ -128,17 +129,13 @@ export function generateOverallScoreDelta(concludedGame: HongKongRound) {
     return addScoreDeltas(reduceScoreDeltas(concludedGame.transactions), getEmptyScoreDelta());
 }
 
-export function getStartingScore() {
-    return [750, 750, 750, 750];
-}
-
 const isHongKongGameEnd = (
     currentRound: PartialHongKongRound,
     rounds: HongKongRound[],
 ): boolean => {
     const totalScore = rounds.reduce<number[]>(
         (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
-        getStartingScore(),
+        getHongKongStartingScore(),
     );
     for (const score of totalScore) {
         if (score < 0) {

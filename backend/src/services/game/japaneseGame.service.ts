@@ -11,6 +11,7 @@ import {
     NUM_PLAYERS,
     range,
     reduceScoreDeltas,
+    RIICHI_STICK_VALUE,
 } from "./game.util";
 import GameService from "./game.service";
 import { getAllPlayerElos } from "../leaderboard.service";
@@ -325,7 +326,7 @@ export function generateOverallScoreDelta(concludedRound: ConcludedJapaneseRound
         getEmptyScoreDelta(),
     );
     for (const id of concludedRound.riichis) {
-        rawScoreDeltas[id] -= 1000;
+        rawScoreDeltas[id] -= RIICHI_STICK_VALUE;
     }
     if (containingAny(concludedRound.transactions, JapaneseTransactionType.NAGASHI_MANGAN)) {
         return rawScoreDeltas;
@@ -337,7 +338,8 @@ export function generateOverallScoreDelta(concludedRound: ConcludedJapaneseRound
     const headbumpWinner = findHeadbumpWinner(concludedRound.transactions);
     if (concludedRound.endRiichiStickCount === 0) {
         riichiDeltas[headbumpWinner] +=
-            (concludedRound.startRiichiStickCount + concludedRound.riichis.length) * 1000;
+            (concludedRound.startRiichiStickCount + concludedRound.riichis.length) *
+            RIICHI_STICK_VALUE;
     }
     return riichiDeltas;
 }
@@ -352,7 +354,7 @@ const getJapaneseGameFinalScore = (game: FullJapaneseGame): number[] => {
     const maxScore = Math.max(...rawScore);
     for (const index of range(NUM_PLAYERS)) {
         if (rawScore[index] === maxScore) {
-            rawScore[index] += finalRiichiStick * 1000; // added to the first player with the max score
+            rawScore[index] += finalRiichiStick * RIICHI_STICK_VALUE; // added to the first player with the max score
             break;
         }
     }

@@ -4,7 +4,8 @@ import {
     getJapaneseStartingScore,
     JapaneseTransactionType,
     NUM_PLAYERS,
-    RETURNING_POINT,
+    JAPANESE_RETURNING_POINT,
+    RIICHI_STICK_VALUE,
     Wind,
 } from "../../common/constants";
 import { findHeadbumpWinner, transformTransactions } from "./HonbaProcessing";
@@ -125,7 +126,7 @@ const addPaoDealIn = (
     scoreDeltas[paoPlayerIndex] = -calculateHandValue(multiplier / 2, hand);
     scoreDeltas[winnerIndex] += calculateHandValue(multiplier, hand);
     return {
-        transactionType: "DEAL_IN_PAO",
+        transactionType: JapaneseTransactionType.DEAL_IN_PAO,
         hand: hand,
         paoPlayerIndex: paoPlayerIndex,
         scoreDeltas: scoreDeltas,
@@ -189,12 +190,13 @@ function reduceScoreDeltas(transactions: Transaction[]): number[] {
 export function generateOverallScoreDelta(concludedGame: JapaneseRound) {
     const riichiDeltas = getEmptyScoreDelta();
     for (const id of concludedGame.riichis) {
-        riichiDeltas[id] -= 1000;
+        riichiDeltas[id] -= RIICHI_STICK_VALUE;
     }
     const headbumpWinner = findHeadbumpWinner(concludedGame.transactions);
     if (concludedGame.endRiichiStickCount === 0) {
         riichiDeltas[headbumpWinner] +=
-            (concludedGame.startRiichiStickCount + concludedGame.riichis.length) * 1000;
+            (concludedGame.startRiichiStickCount + concludedGame.riichis.length) *
+            RIICHI_STICK_VALUE;
     }
     return addScoreDeltas(reduceScoreDeltas(concludedGame.transactions), riichiDeltas);
 }
@@ -216,7 +218,7 @@ const isJapaneseGameEnd = (
         if (score < 0) {
             return true;
         }
-        if (score >= RETURNING_POINT) {
+        if (score >= JAPANESE_RETURNING_POINT) {
             exceedsHanten = true;
         }
     }

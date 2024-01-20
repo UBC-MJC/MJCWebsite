@@ -83,6 +83,8 @@ const GAME_CONSTANTS = {
 
 export const NUM_PLAYERS = 4;
 
+export const RIICHI_STICK_VALUE = 1000;
+
 // Throws error if the player list contains duplicates
 const checkPlayerListUnique = (playerNameList: string[]): void => {
     if (new Set(playerNameList).size !== playerNameList.length) {

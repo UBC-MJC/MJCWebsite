@@ -154,6 +154,14 @@ export function getJapaneseStartingScore(): number[] {
     return Array(NUM_PLAYERS).fill(JAPANESE_STARTING_POINT);
 }
 
+export function getHongKongStartingScore(): number[] {
+    return Array(NUM_PLAYERS).fill(HONGKONG_STARTING_POINT);
+}
+
 export const NUM_PLAYERS = 4;
 export const JAPANESE_STARTING_POINT = 25000;
-export const RETURNING_POINT = 30000; // kaeshi, genten
+export const JAPANESE_RETURNING_POINT = 30000; // kaeshi, genten
+
+export const RIICHI_STICK_VALUE = 1000;
+
+export const HONGKONG_STARTING_POINT = 750;

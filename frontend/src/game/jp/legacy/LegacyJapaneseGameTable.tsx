@@ -9,7 +9,6 @@ import {
 import { Table as BTable } from "react-bootstrap";
 import { mapWindToCharacter } from "../../../common/Utils";
 import { addScoreDeltas, generateOverallScoreDelta } from "../controller/JapaneseRound";
-
 import { getJapaneseStartingScore } from "../../common/constants";
 
 type LegacyGameTableProps = {
