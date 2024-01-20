@@ -1,56 +1,22 @@
 import { calculateHandValue, MANGAN_BASE_POINT } from "./Points";
-import {getEmptyScoreDelta, getStartingScore, NUM_PLAYERS} from "./Types";
-import {JapaneseActions, JapaneseRoundType, Wind} from "../../common/constants";
-import {findHeadbumpWinner, transformTransactions} from "./HonbaProcessing";
-import {range} from "./Range";
+import { getEmptyScoreDelta, getStartingScore, NUM_PLAYERS } from "./Types";
+import { Wind } from "../../common/constants";
+import { findHeadbumpWinner, transformTransactions } from "./HonbaProcessing";
+import { range } from "./Range";
 
 const createJapaneseRoundRequest = (
-    roundType: JapaneseRoundType,
-    roundActions: JapaneseActions,
-    tenpaiList: number[],
-    riichiList: number[],
-    hand: JapaneseHandInput,
-    hasSecondHand: boolean,
-    secondHand: JapaneseHandInput,
     currentRound: PartialJapaneseRound,
-) => {
-    const result: any = {
+    transactions: JapaneseTransaction[],
+    tenpaiList: number[],
+    riichiList: number[]
+): JapaneseRound => {
+    return {
         ...currentRound,
         riichis: riichiList,
-        tenpais: tenpaiList
+        tenpais: tenpaiList,
+        transactions: transformTransactions(transactions, currentRound.bonus),
+        endRiichiStickCount: getFinalRiichiSticks(transactions, currentRound.startRiichiStickCount, riichiList)
     };
-
-    const dealerIndex = currentRound.roundNumber - 1;
-    const transactions: JapaneseTransaction[] = [];
-    switch (roundType) {
-        case JapaneseRoundType.DEAL_IN:
-            transactions.push(addDealIn(roundActions.WINNER!, roundActions.LOSER!, dealerIndex, hand));
-            break;
-        case JapaneseRoundType.SELF_DRAW:
-            transactions.push(addSelfDraw(roundActions.WINNER!, dealerIndex, hand));
-            break;
-        case JapaneseRoundType.DECK_OUT:
-            break;
-        case JapaneseRoundType.RESHUFFLE:
-            transactions.push(addInRoundRyuukyoku());
-            break;
-        case JapaneseRoundType.DEAL_IN_PAO:
-            transactions.push(addPaoDealIn(roundActions.WINNER!, roundActions.LOSER!, roundActions.PAO!, dealerIndex, hand));
-            break;
-        case JapaneseRoundType.SELF_DRAW_PAO:
-            transactions.push(addPaoSelfDraw(roundActions.WINNER!, roundActions.PAO!, dealerIndex, hand));
-            break;
-        case JapaneseRoundType.NAGASHI_MANGAN:
-            transactions.push(addNagashiMangan(roundActions.WINNER!, dealerIndex))
-            break;
-    }
-
-    if (hasSecondHand) {
-        transactions.push(addDealIn(roundActions.WINNER_2!, roundActions.LOSER!, dealerIndex, secondHand));
-    }
-    result.transactions = transformTransactions(transactions, currentRound.bonus);
-    result.endRiichiStickCount = getFinalRiichiSticks(transactions, currentRound.startRiichiStickCount, riichiList);
-    return result;
 };
 
 const getDealInMultiplier = (personIndex: number, dealerIndex: number): number => {
@@ -99,7 +65,7 @@ const addSelfDraw = (winnerIndex: number, dealerIndex: number, hand: JapaneseHan
     };
 }
 
-function addInRoundRyuukyoku(): JapaneseTransaction {
+const addInRoundRyuukyoku = (): JapaneseTransaction => {
     return {
         transactionType: "INROUND_RYUUKYOKU",
         scoreDeltas: getEmptyScoreDelta(),
@@ -169,7 +135,7 @@ export function addScoreDeltas(scoreDelta1: number[], scoreDelta2: number[]): nu
     return finalScoreDelta;
 }
 
-function reduceScoreDeltas(transactions: JapaneseTransaction[]): number[] {
+function reduceScoreDeltas(transactions: Transaction[]): number[] {
     return transactions.reduce<number[]>(
         (result, current) => addScoreDeltas(result, current.scoreDeltas),
         getEmptyScoreDelta()
@@ -218,5 +184,5 @@ const isJapaneseGameEnd = (newRound: PartialJapaneseRound, concludedRounds: Japa
 export {
     createJapaneseRoundRequest,
     getFinalRiichiSticks,
-    addDealIn, addSelfDraw, addNagashiMangan, addPaoDealIn, addPaoSelfDraw, isJapaneseGameEnd
+    addDealIn, addSelfDraw, addNagashiMangan, addPaoDealIn, addPaoSelfDraw, addInRoundRyuukyoku, isJapaneseGameEnd
 }

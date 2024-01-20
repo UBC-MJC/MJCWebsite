@@ -25,7 +25,8 @@ enum JapaneseTransactionType {
 enum HongKongTransactionType {
     DEAL_IN
     SELF_DRAW
-    PAO
+    DEAL_IN_PAO
+    SELF_DRAW_PAO
 }
 
 enum GameStatus {
@@ -168,7 +169,7 @@ model HongKongTransaction {
     player1ScoreChange Int                     @default(0)
     player2ScoreChange Int                     @default(0)
     player3ScoreChange Int                     @default(0)
-    points             Int?
+    hand               Int?
     round              HongKongRound           @relation(fields: [roundId], references: [id], onDelete: Cascade)
     roundId            String
 }

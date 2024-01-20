@@ -1,12 +1,20 @@
 import prisma from "../../db";
-import { GameType, JapaneseTransaction, JapaneseTransactionType, Wind } from "@prisma/client";
 import {
+    GameType,
+    JapaneseTransaction,
+    JapaneseTransactionType,
+} from "@prisma/client";
+import {
+    addScoreDeltas,
+    containingAny,
     createEloCalculatorInputs,
     FullJapaneseGame,
     FullJapaneseRound,
-    getDealerPlayerId,
-    getWind,
-    WIND_ORDER
+    getEmptyScoreDelta,
+    getNextRoundWind,
+    NUM_PLAYERS,
+    range,
+    reduceScoreDeltas,
 } from "./game.util";
 import GameService from "./game.service";
 import { getAllPlayerElos } from "../leaderboard.service";
@@ -14,10 +22,13 @@ import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
 import {
     ConcludedJapaneseRoundT,
     JapaneseTransactionT,
-    validateCreateJapaneseRound
+    validateCreateJapaneseRound,
 } from "../../validation/game.validation";
 
-type PartialJapaneseRound = Pick<FullJapaneseRound, "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount">;
+type PartialJapaneseRound = Pick<
+    FullJapaneseRound,
+    "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount"
+>;
 
 class JapaneseGameService extends GameService {
     public createGame(
@@ -60,7 +71,7 @@ class JapaneseGameService extends GameService {
                 },
                 rounds: {
                     include: {
-                        transactions: true
+                        transactions: true,
                     },
                 },
             },
@@ -90,7 +101,9 @@ class JapaneseGameService extends GameService {
             calculatedElos.map((eloObject) => {
                 return prisma.japanesePlayerGame.update({
                     where: {
-                        id: game.players.find((player) => player.player.id === eloObject.playerId)!.id,
+                        id: game.players.find(
+                            (player) => player.player.id === eloObject.playerId,
+                        )!.id,
                     },
                     data: {
                         eloChange: eloObject.eloChange,
@@ -110,10 +123,12 @@ class JapaneseGameService extends GameService {
         });
     }
 
-
-    public async createRound(game: FullJapaneseGame, createRoundRequest: any): Promise<void> {
-        validateCreateJapaneseRound(createRoundRequest, game);
-        const concludedRound = createRoundRequest as ConcludedJapaneseRoundT;
+    public async createRound(
+        game: FullJapaneseGame,
+        roundRequest: any,
+    ): Promise<void> {
+        validateCreateJapaneseRound(roundRequest, game);
+        const concludedRound = roundRequest as ConcludedJapaneseRoundT;
 
         const query: any = {
             data: {
@@ -124,8 +139,10 @@ class JapaneseGameService extends GameService {
                 },
                 ...transformConcludedRound(concludedRound),
                 transactions: {
-                    create: concludedRound.transactions.map((transaction) => transformTransaction(transaction))
-                }
+                    create: concludedRound.transactions.map((transaction) =>
+                        transformTransaction(transaction),
+                    ),
+                },
             },
         };
 
@@ -177,25 +194,39 @@ const getFirstJapaneseRound = (): PartialJapaneseRound => {
     };
 };
 
-export function dealershipRetains(transactions: JapaneseTransactionT[], tenpais: number[], dealerIndex: number) {
+export function dealershipRetains(
+    transactions: JapaneseTransactionT[],
+    tenpais: number[],
+    dealerIndex: number,
+) {
     for (const transaction of transactions) {
-        if (transaction.transactionType !== JapaneseTransactionType.NAGASHI_MANGAN && transaction.scoreDeltas[dealerIndex] > 0) {
+        if (
+            transaction.transactionType !== JapaneseTransactionType.NAGASHI_MANGAN &&
+            transaction.scoreDeltas[dealerIndex] > 0
+        ) {
             return true;
         }
-        if (transaction.transactionType === JapaneseTransactionType.INROUND_RYUUKYOKU) {
+        if (
+            transaction.transactionType === JapaneseTransactionType.INROUND_RYUUKYOKU
+        ) {
             return true;
         }
     }
     return tenpais.includes(dealerIndex);
 }
 
-export function getNewHonbaCount(transactions: JapaneseTransactionT[], dealerIndex: number, honba: number) {
+export function getNewHonbaCount(
+    transactions: JapaneseTransactionT[],
+    dealerIndex: number,
+    honba: number,
+) {
     if (transactions.length === 0) {
         return honba + 1;
     }
     for (const transaction of transactions) {
         if (
-            transaction.transactionType === JapaneseTransactionType.INROUND_RYUUKYOKU ||
+            transaction.transactionType ===
+            JapaneseTransactionType.INROUND_RYUUKYOKU ||
             transaction.transactionType === JapaneseTransactionType.NAGASHI_MANGAN
         ) {
             return honba + 1;
@@ -215,13 +246,21 @@ const getNextJapaneseRound = (game: FullJapaneseGame): PartialJapaneseRound => {
         return getFirstJapaneseRound();
     }
 
-    const previousRound: ConcludedJapaneseRoundT = transformDBJapaneseRound(game.rounds[game.rounds.length - 1]);
+    const previousRound: ConcludedJapaneseRoundT = transformDBJapaneseRound(
+        game.rounds[game.rounds.length - 1],
+    );
     const newHonbaCount = getNewHonbaCount(
         previousRound.transactions,
         previousRound.roundNumber - 1,
-        previousRound.bonus
+        previousRound.bonus,
     );
-    if (dealershipRetains(previousRound.transactions, previousRound.tenpais, previousRound.roundNumber - 1)) {
+    if (
+        dealershipRetains(
+            previousRound.transactions,
+            previousRound.tenpais,
+            previousRound.roundNumber - 1,
+        )
+    ) {
         return {
             roundCount: previousRound.roundCount + 1,
             bonus: newHonbaCount,
@@ -233,7 +272,8 @@ const getNextJapaneseRound = (game: FullJapaneseGame): PartialJapaneseRound => {
     return {
         roundCount: previousRound.roundCount + 1,
         bonus: newHonbaCount,
-        roundNumber: previousRound.roundNumber === 4 ? 1 : previousRound.roundNumber + 1,
+        roundNumber:
+            previousRound.roundNumber === 4 ? 1 : previousRound.roundNumber + 1,
         roundWind:
             previousRound.roundNumber === 4
                 ? getNextRoundWind(previousRound.roundWind)
@@ -241,36 +281,6 @@ const getNextJapaneseRound = (game: FullJapaneseGame): PartialJapaneseRound => {
         startRiichiStickCount: previousRound.endRiichiStickCount,
     };
 };
-
-const getNextRoundWind = (wind: Wind): Wind => {
-    return getWind(WIND_ORDER.indexOf(wind) + 1);
-}
-
-function range(end: number) {
-    return Array.from({ length: end }, (_, i) => i);
-}
-
-const NUM_PLAYERS = 4;
-
-export function getEmptyScoreDelta(): number[] {
-    return Array(NUM_PLAYERS).fill(0);
-}
-
-function addScoreDeltas(scoreDelta1: number[], scoreDelta2: number[]): number[] {
-    const finalScoreDelta = getEmptyScoreDelta();
-    for (const index of range(NUM_PLAYERS)) {
-        finalScoreDelta[index] += scoreDelta1[index] + scoreDelta2[index];
-    }
-    return finalScoreDelta;
-}
-
-
-function reduceScoreDeltas(transactions: JapaneseTransactionT[]): number[] {
-    return transactions.reduce<number[]>(
-        (result, current) => addScoreDeltas(result, current.scoreDeltas),
-        getEmptyScoreDelta()
-    );
-}
 
 function generateTenpaiScoreDeltas(tenpais: number[]) {
     const scoreDeltas = getEmptyScoreDelta();
@@ -287,21 +297,15 @@ function generateTenpaiScoreDeltas(tenpais: number[]) {
     return scoreDeltas;
 }
 
-export function containingAny(transactions: JapaneseTransactionT[], transactionType: JapaneseTransactionType): JapaneseTransactionT | null {
-    for (const transaction of transactions) {
-        if (transaction.transactionType === transactionType) {
-            return transaction;
-        }
-    }
-    return null;
-}
-
 function findHeadbumpWinner(transactions: JapaneseTransactionT[]) {
     const winners = new Set<number>();
     const losers = new Set<number>();
     for (const transaction of transactions) {
         for (let index = 0; index < transaction.scoreDeltas.length; index++) {
-            if (transaction.paoPlayerIndex !== undefined && transaction.paoPlayerIndex === index) {
+            if (
+                transaction.paoPlayerIndex !== undefined &&
+                transaction.paoPlayerIndex === index
+            ) {
                 // is pao target
                 continue;
             }
@@ -319,32 +323,57 @@ function findHeadbumpWinner(transactions: JapaneseTransactionT[]) {
 function getClosestWinner(loserLocalPos: number, winners: Set<number>) {
     let [closestWinnerIndex] = winners;
     for (const winnerIndex of winners) {
-        if ((winnerIndex - loserLocalPos) % NUM_PLAYERS < (closestWinnerIndex - loserLocalPos) % NUM_PLAYERS) {
+        if (
+            (winnerIndex - loserLocalPos) % NUM_PLAYERS <
+            (closestWinnerIndex - loserLocalPos) % NUM_PLAYERS
+        ) {
             closestWinnerIndex = winnerIndex;
         }
     }
     return closestWinnerIndex;
 }
 
-export function generateOverallScoreDelta(concludedRound: ConcludedJapaneseRoundT) {
-    const rawScoreDeltas = addScoreDeltas(reduceScoreDeltas(concludedRound.transactions), getEmptyScoreDelta());
+export function generateOverallScoreDelta(
+    concludedRound: ConcludedJapaneseRoundT,
+) {
+    const rawScoreDeltas = addScoreDeltas(
+        reduceScoreDeltas(concludedRound.transactions),
+        getEmptyScoreDelta(),
+    );
     for (const id of concludedRound.riichis) {
         rawScoreDeltas[id] -= 1000;
     }
-    if (containingAny(concludedRound.transactions, JapaneseTransactionType.NAGASHI_MANGAN)) {
+    if (
+        containingAny(
+            concludedRound.transactions,
+            JapaneseTransactionType.NAGASHI_MANGAN,
+        )
+    ) {
         return rawScoreDeltas;
     }
-    const riichiDeltas = addScoreDeltas(generateTenpaiScoreDeltas(concludedRound.tenpais), rawScoreDeltas);
+    const riichiDeltas = addScoreDeltas(
+        generateTenpaiScoreDeltas(concludedRound.tenpais),
+        rawScoreDeltas,
+    );
     const headbumpWinner = findHeadbumpWinner(concludedRound.transactions);
     if (concludedRound.endRiichiStickCount === 0) {
-        riichiDeltas[headbumpWinner] += (concludedRound.startRiichiStickCount + concludedRound.riichis.length) * 1000;
+        riichiDeltas[headbumpWinner] +=
+            (concludedRound.startRiichiStickCount + concludedRound.riichis.length) *
+            1000;
     }
     return riichiDeltas;
 }
 
 const getJapanesePlayersCurrentScore = (game: FullJapaneseGame): number[] => {
-    return game.rounds.reduce<number[]>((result, current) => addScoreDeltas(result, generateOverallScoreDelta(transformDBJapaneseRound(current))), getEmptyScoreDelta());
-}
+    return game.rounds.reduce<number[]>(
+        (result, current) =>
+            addScoreDeltas(
+                result,
+                generateOverallScoreDelta(transformDBJapaneseRound(current)),
+            ),
+        getEmptyScoreDelta(),
+    );
+};
 
 function transformTransaction(transaction: JapaneseTransactionT): any {
     return {
@@ -354,31 +383,38 @@ function transformTransaction(transaction: JapaneseTransactionT): any {
         player1ScoreChange: transaction.scoreDeltas[1],
         player2ScoreChange: transaction.scoreDeltas[2],
         player3ScoreChange: transaction.scoreDeltas[3],
-        transactionType: transaction.transactionType.toString()
+        transactionType: transaction.transactionType.toString(),
     };
 }
 
-function transformDBTransaction(dbTransaction: JapaneseTransaction): JapaneseTransactionT {
-    const scoreDeltas = [dbTransaction.player0ScoreChange, dbTransaction.player1ScoreChange, dbTransaction.player2ScoreChange, dbTransaction.player3ScoreChange];
+function transformDBTransaction(
+    dbTransaction: JapaneseTransaction,
+): JapaneseTransactionT {
+    const scoreDeltas = [
+        dbTransaction.player0ScoreChange,
+        dbTransaction.player1ScoreChange,
+        dbTransaction.player2ScoreChange,
+        dbTransaction.player3ScoreChange,
+    ];
     let result: any = {
         scoreDeltas: scoreDeltas,
-        transactionType: dbTransaction.transactionType
+        transactionType: dbTransaction.transactionType,
     };
     if (dbTransaction.han !== null) {
         const hand = {
             han: dbTransaction.han,
             fu: dbTransaction.fu,
-            dora: dbTransaction.dora
+            dora: dbTransaction.dora,
         };
         result = {
             ...result,
-            hand: hand
+            hand: hand,
         };
     }
     if (dbTransaction.paoPlayerIndex !== null) {
         result = {
             ...result,
-            paoPlayerIndex: dbTransaction.paoPlayerIndex
+            paoPlayerIndex: dbTransaction.paoPlayerIndex,
         };
     }
     return result as JapaneseTransactionT;
@@ -399,11 +435,13 @@ function transformConcludedRound(concludedRound: ConcludedJapaneseRoundT): any {
         player0Tenpai: concludedRound.tenpais.includes(0),
         player1Tenpai: concludedRound.tenpais.includes(1),
         player2Tenpai: concludedRound.tenpais.includes(2),
-        player3Tenpai: concludedRound.tenpais.includes(3)
+        player3Tenpai: concludedRound.tenpais.includes(3),
     };
 }
 
-function transformDBJapaneseRound(dbJapaneseRound: FullJapaneseRound): ConcludedJapaneseRoundT {
+function transformDBJapaneseRound(
+    dbJapaneseRound: FullJapaneseRound,
+): ConcludedJapaneseRoundT {
     const riichis = [];
     const tenpais = [];
     if (dbJapaneseRound.player0Riichi) {
@@ -439,7 +477,9 @@ function transformDBJapaneseRound(dbJapaneseRound: FullJapaneseRound): Concluded
         endRiichiStickCount: dbJapaneseRound.endRiichiStickCount,
         riichis: riichis,
         tenpais: tenpais,
-        transactions: dbJapaneseRound.transactions.map((dbTransaction) => transformDBTransaction(dbTransaction))
+        transactions: dbJapaneseRound.transactions.map((dbTransaction) =>
+            transformDBTransaction(dbTransaction),
+        ),
     };
 }
 

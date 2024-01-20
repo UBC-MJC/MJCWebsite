@@ -25,15 +25,11 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
 }) => {
     const [roundType, setRoundType] = useState<HongKongRoundType>(HongKongRoundType.DEAL_IN);
     const [roundActions, setRoundActions] = useState<HongKongActions>({});
-    const [hasSecondHand, setHasSecondHand] = useState<boolean>(false);
     const [hand, setHand] = useState<HongKongHandInput>(HK_UNDEFINED_HAND);
-    const [secondHand, setSecondHand] = useState<HongKongHandInput>(HK_UNDEFINED_HAND);
-
     const gameOver = typeof game.currentRound === "undefined";
 
     const roundTypeOnChange = (type: HongKongRoundType) => {
         const prevWinner = roundActions.WINNER;
-        const prevWinner2 = roundActions.WINNER_2;
         const prevLoser = roundActions.LOSER;
         const prevPao = roundActions.PAO;
 
@@ -60,14 +56,8 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                 break;
         }
 
-        if (hasSecondHand) {
-            newRoundActions.WINNER_2 = prevWinner2;
-        }
-
         setRoundActions(newRoundActions);
         setRoundType(type);
-        setSecondHand(HK_UNDEFINED_HAND);
-
         if (!showPointInput()) {
             setHand(HK_UNDEFINED_HAND);
         }
@@ -83,13 +73,9 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
         setHand(value);
     }
 
-    const secondHandOnChange = (value: number) => {
-        setSecondHand(value);
-    }
-
     const submitRound = async () => {
-        validateCreateHongKongRound(roundType, roundActions, hand, hasSecondHand, secondHand);
-        const roundRequest = createHongKongRoundRequest(roundType, roundActions, hand, hasSecondHand, secondHand, game.currentRound!);
+        validateCreateHongKongRound(roundType, roundActions, hand);
+        const roundRequest = createHongKongRoundRequest(roundType, roundActions, hand, game.currentRound!);
         await handleSubmitRound(roundRequest);
     }
 
@@ -114,10 +100,6 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                 break;
         }
 
-        if (hasSecondHand) {
-            labels.push([HongKongLabel.WINNER_2, [roundActions.WINNER_2]]);
-        }
-
         return labels;
     }
 
@@ -137,16 +119,6 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                         </Col>
                     ))}
                 </Row>
-                {showPointInput() && (
-                    <Col xs sm={3} className="mx-auto">
-                        <Form>
-                            <Form.Switch
-                                label="Double Deal In"
-                                onChange={(e) => setHasSecondHand(e.target.checked)}
-                            />
-                        </Form>
-                    </Col>
-                )}
                 {getHongKongLabels().map(([label, labelPlayerIds], idx) => (
                     <Row key={label} className="my-4">
                         <Col>
@@ -195,19 +167,6 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                         />
                     ))}
                 </Row>
-                {hasSecondHand && (
-                    <Row>
-                        <h5>Second Hand:</h5>
-                        {hongKongPointsWheel.map((wheel, idx) => (
-                            <DropdownInput
-                                key={wheel.label}
-                                label={wheel.label}
-                                data={wheel.data}
-                                onChange={(value) => secondHandOnChange(value)}
-                            />
-                        ))}
-                    </Row>
-                )}
             </>
         );
     };

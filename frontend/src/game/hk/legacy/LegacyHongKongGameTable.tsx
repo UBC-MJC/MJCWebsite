@@ -7,19 +7,32 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { Table as BTable } from "react-bootstrap";
-import { findPlayerScoreDelta, mapWindToCharacter } from "../../../common/Utils";
-
+import { mapWindToCharacter } from "../../../common/Utils";
+import { addScoreDeltas } from "../../jp/controller/JapaneseRound";
+import { generateOverallScoreDelta, getStartingScore } from "../controller/HongKongRound";
 type LegacyGameTableProps = {
     rounds: HongKongRound[];
     players: GamePlayer[];
 };
 
+export type ModifiedJapaneseRound = HongKongRound & { scoreDeltas: number[] };
+
+const getCurrentScoreRow = (rounds: HongKongRound[]) => {
+    return [
+        "Score",
+        ...rounds.reduce<number[]>(
+            (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
+            getStartingScore()
+        )
+    ];
+};
+
 const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {
     const columnHelper = createColumnHelper<HongKongRound>();
 
-    const roundColumns: ColumnDef<HongKongRound, any>[] = [
+    const roundColumns: ColumnDef<ModifiedJapaneseRound, any>[] = [
         columnHelper.accessor(
-            (row) => `${mapWindToCharacter(row.roundWind)} ${row.roundNumber}`,
+            (row) => `${mapWindToCharacter(row.roundWind)} ${row.roundNumber} B${row.bonus}`,
             {
                 id: "round",
                 header: "Round",
@@ -27,7 +40,7 @@ const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
         columnHelper.accessor(
             (row) => {
-                return findPlayerScoreDelta(row.transactions, 0);
+                return row.scoreDeltas[0];
             },
             {
                 id: "eastScore",
@@ -36,7 +49,7 @@ const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
         columnHelper.accessor(
             (row) => {
-                return findPlayerScoreDelta(row.transactions, 1);
+                return row.scoreDeltas[1];
             },
             {
                 id: "southScore",
@@ -45,7 +58,7 @@ const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
         columnHelper.accessor(
             (row) => {
-                return findPlayerScoreDelta(row.transactions, 2);
+                return row.scoreDeltas[2];
             },
             {
                 id: "westScore",
@@ -54,7 +67,7 @@ const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
         columnHelper.accessor(
             (row) => {
-                return findPlayerScoreDelta(row.transactions, 3);
+                return row.scoreDeltas[3];
             },
             {
                 id: "northScore",
@@ -63,24 +76,11 @@ const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
     ];
 
-    const getCurrentScoreRow = (rounds: HongKongRound[]) => {
-        const startingScore = 750;
-
-        return [
-            "Score",
-            ...players.map((player, idx) => {
-                return rounds.reduce((total, round) => {
-                    return total + findPlayerScoreDelta(round.transactions, idx);;
-                }, startingScore);
-            }),
-        ];
-    };
-
     const table = useReactTable({
         data: rounds,
         columns: roundColumns,
         getCoreRowModel: getCoreRowModel(),
-        getRowId: (row) => row.id,
+        getRowId: (row) => row.id!,
     });
 
     return (

@@ -1,16 +1,21 @@
 import prisma from "../../db";
-import { GameType } from "@prisma/client";
+import { GameType, HongKongTransaction } from "@prisma/client";
 import GameService from "./game.service";
 import {
+    addScoreDeltas,
     createEloCalculatorInputs,
-    FullHongKongGame, FullJapaneseGame,
-    getDealerPlayerId,
-    getWind,
-    requiresHand,
-    WIND_ORDER
+    FullHongKongGame,
+    getEmptyScoreDelta,
+    getNextRoundWind, reduceScoreDeltas
 } from "./game.util";
 import { getAllPlayerElos } from "../leaderboard.service";
 import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
+import {
+    ConcludedHongKongRoundT,
+    HongKongTransactionT,
+    validateCreateHongKongRound,
+} from "../../validation/game.validation";
+import { HongKongRound } from ".prisma/client";
 
 class HongKongGameService extends GameService {
     public createGame(
@@ -82,7 +87,9 @@ class HongKongGameService extends GameService {
             calculatedElos.map((elo) => {
                 return prisma.hongKongPlayerGame.update({
                     where: {
-                        id: game.players.find((player) => player.player.id === elo.playerId)!.id,
+                        id: game.players.find(
+                            (player) => player.player.id === elo.playerId,
+                        )!.id,
                     },
                     data: {
                         eloChange: elo.eloChange,
@@ -102,9 +109,12 @@ class HongKongGameService extends GameService {
         });
     }
 
-    public async createRound(game: FullHongKongGame, roundRequest: any): Promise<void> {
-        const currentRoundInformation = getNextHongKongRound(game);
-        const { scoresQuery } = createHongKongScoresQuery(roundRequest, currentRoundInformation);
+    public async createRound(
+        game: FullHongKongGame,
+        roundRequest: any,
+    ): Promise<void> {
+        validateCreateHongKongRound(roundRequest, game);
+        const concludedRound = roundRequest as ConcludedHongKongRoundT;
 
         const query: any = {
             data: {
@@ -113,22 +123,16 @@ class HongKongGameService extends GameService {
                         id: game.id,
                     },
                 },
-                roundCount: currentRoundInformation.roundCount,
-                roundNumber: currentRoundInformation.roundNumber,
-                roundWind: currentRoundInformation.roundWind,
-                bonus: currentRoundInformation.bonus,
-                roundType: roundRequest.roundValue.type.value,
-                scores: {
-                    create: scoresQuery,
+                roundCount: concludedRound.roundCount,
+                roundWind: concludedRound.roundWind,
+                roundNumber: concludedRound.roundNumber,
+                transactions: {
+                    create: concludedRound.transactions.map((transaction) =>
+                        transformTransaction(transaction),
+                    ),
                 },
             },
         };
-
-        if (requiresHand(roundRequest.roundValue.type.value)) {
-            query.data.hand = {
-                create: createHongKongHandQuery(roundRequest.pointsValue),
-            };
-        }
 
         try {
             await prisma.hongKongRound.create(query);
@@ -166,20 +170,21 @@ class HongKongGameService extends GameService {
         };
     }
 }
+export function generateOverallScoreDelta(concludedGame: ConcludedHongKongRoundT) {
+    return addScoreDeltas(reduceScoreDeltas(concludedGame.transactions), getEmptyScoreDelta());
+}
+
 
 const getHongKongPlayersCurrentScore = (game: FullHongKongGame): number[] => {
-    const result = [0, 0, 0, 0];
-    game.rounds.forEach((round) => {
-        round.transactions.forEach((transaction) => {
-            result[0] += transaction.player0ScoreChange;
-            result[1] += transaction.player1ScoreChange;
-            result[2] += transaction.player2ScoreChange;
-            result[3] += transaction.player3ScoreChange;
-        });
-    });
-
-    return result;
-}
+    return game.rounds.reduce<number[]>(
+        (result, current) =>
+            addScoreDeltas(
+                result,
+                generateOverallScoreDelta(transformDBHongKongRound(current)),
+            ),
+        getEmptyScoreDelta(),
+    );
+};
 
 const getFirstHongKongRound = (): any => {
     return {
@@ -190,284 +195,88 @@ const getFirstHongKongRound = (): any => {
     };
 };
 
+const dealershipRetains = (
+    transactions: HongKongTransactionT[],
+    dealerIndex: number,
+): boolean => {
+    for (const transaction of transactions) {
+        if (transaction.scoreDeltas[dealerIndex] > 0) {
+            return true;
+        }
+    }
+    return false;
+};
+
 const getNextHongKongRound = (game: FullHongKongGame): any => {
-    const rounds = game.rounds;
-    if (rounds.length === 0) {
+    if (game.rounds.length === 0) {
         return getFirstHongKongRound();
     }
-
-    const lastRound = rounds[rounds.length - 1];
-
-    const lastRoundWind = lastRound.roundWind;
-    const lastRoundNumber = lastRound.roundNumber;
-    const lastRoundCount = lastRound.roundCount;
-    // const lastBonus = lastRound.bonus;
-
-    // const lastDealerId = getDealerPlayerId(game, lastRoundNumber);
-    // const lastDealerScore = lastRound.scores.find((score) => score.playerId === lastDealerId);
-    //
-    // if (lastDealerScore!.scoreChange > 0) {
-    //     return {
-    //         roundCount: lastRoundCount + 1,
-    //         roundNumber: lastRoundNumber,
-    //         roundWind: lastRoundWind,
-    //     };
-    // }
-
-    // TODO: get acutal rules
-    // if (lastRound.roundType === "DECK_OUT") {
-    //     return {
-    //         roundCount: lastRoundCount + 1,
-    //         roundNumber: lastRoundNumber === 4 ? 1 : lastRoundNumber + 1,
-    //         roundWind:
-    //             lastRoundNumber === 4
-    //                 ? getWind(WIND_ORDER.indexOf(lastRoundWind) + 1)
-    //                 : lastRoundWind,
-    //         bonus: lastBonus + 1,
-    //     };
-    // }
-
-    let roundWind;
-    if (lastRoundNumber === 4 && lastRoundWind === "NORTH") {
-        roundWind = "END";
-    } else if (lastRoundNumber === 4) {
-        roundWind = getWind(WIND_ORDER.indexOf(lastRoundWind) + 1);
-    } else {
-        roundWind = lastRoundWind;
+    const previousRound: ConcludedHongKongRoundT = transformDBHongKongRound(
+        game.rounds[game.rounds.length - 1],
+    );
+    if (
+        dealershipRetains(previousRound.transactions, previousRound.roundNumber - 1)
+    ) {
+        return {
+            roundCount: previousRound.roundCount + 1,
+            roundNumber: previousRound.roundNumber,
+            roundWind: previousRound.roundWind,
+        };
     }
-
     return {
-        roundCount: lastRoundCount + 1,
-        roundNumber: lastRoundNumber === 4 ? 1 : lastRoundNumber + 1,
-        roundWind: roundWind,
+        roundCount: previousRound.roundCount + 1,
+        roundNumber:
+            previousRound.roundNumber === 4 ? 1 : previousRound.roundNumber + 1,
+        roundWind:
+            previousRound.roundNumber === 4
+                ? getNextRoundWind(previousRound.roundWind)
+                : previousRound.roundWind,
     };
 };
 
-const createHongKongScoresQuery = (round: any, currentRoundInformation: any): any => {
-    const roundType = round.roundValue.type.value;
-    const playerActions = round.roundValue.playerActions;
-    const hand = round.pointsValue;
-    const { bonus } = currentRoundInformation;
-
-    let winnerId: string | undefined = undefined;
-    let loserId: string | undefined = undefined;
-    let paoId: string | undefined = undefined;
-
-    const playerScores: any = {};
-    for (const playerId in playerActions) {
-        playerScores[playerId] = 0;
-
-        if (playerActions[playerId].includes("Winner")) {
-            winnerId = playerId;
-        }
-
-        if (playerActions[playerId].includes("Loser")) {
-            loserId = playerId;
-        }
-
-        if (playerActions[playerId].includes("Pao Player")) {
-            paoId = playerId;
-        }
-    }
-
-    switch (roundType) {
-        case "DEAL_IN":
-            updateHongKongDealIn(playerScores, winnerId!, loserId!, hand, bonus);
-            break;
-        case "SELF_DRAW":
-            updateHongKongSelfDraw(playerScores, winnerId!, hand, bonus);
-            break;
-        case "DECK_OUT":
-            break;
-        case "MISTAKE":
-            updateHongKongMistake(playerScores, loserId!);
-            break;
-        case "PAO":
-            updateHongKongPao(playerScores, winnerId!, paoId!, hand, bonus);
-            break;
-        default:
-            throw new Error("Invalid round type: " + roundType);
-    }
-
-    const scoresQuery: any[] = [];
-    for (const playerId in playerScores) {
-        scoresQuery.push({
-            player: {
-                connect: {
-                    id: playerId,
-                },
-            },
-            scoreChange: playerScores[playerId].scoreChange,
-        });
-    }
-
-    return scoresQuery;
-};
-
-const createHongKongHandQuery = (pointsValue: any): any => {
+function transformTransaction(transaction: HongKongTransactionT): any {
     return {
-        points: pointsValue.points,
+        hand: transaction.hand,
+        player0ScoreChange: transaction.scoreDeltas[0],
+        player1ScoreChange: transaction.scoreDeltas[1],
+        player2ScoreChange: transaction.scoreDeltas[2],
+        player3ScoreChange: transaction.scoreDeltas[3],
+        transactionType: transaction.transactionType.toString(),
     };
-};
+}
 
-const updateHongKongDealIn = (
-    playerScores: any,
-    winnerId: string,
-    loserId: string,
-    hand: any,
-    bonus: number,
-) => {
-    const { points } = hand;
-    let scoreChange;
-    switch (points) {
-        case 3:
-            scoreChange = 16;
-            break;
-        case 4:
-            scoreChange = 32;
-            break;
-        case 5:
-            scoreChange = 48;
-            break;
-        case 6:
-            scoreChange = 64;
-            break;
-        case 7:
-            scoreChange = 96;
-            break;
-        case 8:
-            scoreChange = 128;
-            break;
-        case 9:
-            scoreChange = 192;
-            break;
-        case 10:
-            scoreChange = 256;
-            break;
-        case 11:
-            scoreChange = 384;
-            break;
-        case 12:
-            scoreChange = 512;
-            break;
-        case 13:
-            scoreChange = 768;
-            break;
-        default:
-            throw new Error("Invalid Hong Kong hand points: " + points);
+function transformDBTransaction(
+    dbTransaction: HongKongTransaction,
+): HongKongTransactionT {
+    const scoreDeltas = [
+        dbTransaction.player0ScoreChange,
+        dbTransaction.player1ScoreChange,
+        dbTransaction.player2ScoreChange,
+        dbTransaction.player3ScoreChange,
+    ];
+    let result: any = {
+        scoreDeltas: scoreDeltas,
+        transactionType: dbTransaction.transactionType,
+    };
+    if (dbTransaction.hand !== null) {
+        result = {
+            ...result,
+            hand: dbTransaction.hand,
+        };
     }
-
-    playerScores[winnerId] += scoreChange;
-    playerScores[loserId] -= scoreChange;
-};
-
-const updateHongKongSelfDraw = (playerScores: any, winnerId: string, hand: any, bonus: number) => {
-    const { points } = hand;
-    let scoreChange;
-    switch (points) {
-        case 3:
-            scoreChange = 8;
-            break;
-        case 4:
-            scoreChange = 16;
-            break;
-        case 5:
-            scoreChange = 24;
-            break;
-        case 6:
-            scoreChange = 32;
-            break;
-        case 7:
-            scoreChange = 48;
-            break;
-        case 8:
-            scoreChange = 64;
-            break;
-        case 9:
-            scoreChange = 96;
-            break;
-        case 10:
-            scoreChange = 128;
-            break;
-        case 11:
-            scoreChange = 192;
-            break;
-        case 12:
-            scoreChange = 256;
-            break;
-        case 13:
-            scoreChange = 384;
-            break;
-        default:
-            throw new Error("Invalid Hong Kong hand points: " + points);
-    }
-
-    for (const playerId in playerScores) {
-        if (playerId === winnerId) {
-            playerScores[playerId] += scoreChange * 3;
-        }
-        playerScores[playerId] -= scoreChange;
-    }
-};
-
-const updateHongKongMistake = (playerScores: any, loserId: string) => {
-    for (const playerId in playerScores) {
-        if (playerId === loserId) {
-            playerScores[playerId] += 200;
-        }
-        playerScores[playerId] -= 600;
-    }
-};
-
-const updateHongKongPao = (
-    playerScores: any,
-    winnerId: string,
-    paoId: string,
-    hand: any,
-    bonus: number,
-) => {
-    const { points } = hand;
-    let scoreChange;
-    switch (points) {
-        case 3:
-            scoreChange = 24;
-            break;
-        case 4:
-            scoreChange = 48;
-            break;
-        case 5:
-            scoreChange = 72;
-            break;
-        case 6:
-            scoreChange = 96;
-            break;
-        case 7:
-            scoreChange = 144;
-            break;
-        case 8:
-            scoreChange = 192;
-            break;
-        case 9:
-            scoreChange = 288;
-            break;
-        case 10:
-            scoreChange = 384;
-            break;
-        case 11:
-            scoreChange = 576;
-            break;
-        case 12:
-            scoreChange = 768;
-            break;
-        case 13:
-            scoreChange = 1152;
-            break;
-        default:
-            throw new Error("Invalid Hong Kong hand points: " + points);
-    }
-
-    playerScores[winnerId] += scoreChange;
-    playerScores[paoId] -= scoreChange;
-};
+    return result as HongKongTransactionT;
+}
+function transformDBHongKongRound(
+    dbHongKongRound: HongKongRound,
+): ConcludedHongKongRoundT {
+    return {
+        roundCount: dbHongKongRound.roundCount,
+        roundWind: dbHongKongRound.roundWind,
+        roundNumber: dbHongKongRound.roundNumber,
+        transactions: dbHongKongRound.transactions.map((dbTransaction: HongKongTransaction) =>
+            transformDBTransaction(dbTransaction),
+        ),
+    };
+}
 
 export default HongKongGameService;

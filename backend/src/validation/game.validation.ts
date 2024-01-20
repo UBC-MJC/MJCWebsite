@@ -1,5 +1,5 @@
 import { array, InferType, mixed, number, object, string } from "yup";
-import { GameType, JapaneseTransactionType, Wind } from "@prisma/client";
+import { GameType, HongKongTransactionType, JapaneseTransactionType, Wind } from "@prisma/client";
 import { FullJapaneseGame } from "../services/game/game.util";
 
 const createGameSchema = object({
@@ -12,7 +12,6 @@ const createGameSchema = object({
 type CreateGameType = InferType<typeof createGameSchema>;
 
 const JapaneseTransactionSchema = object({
-    // type: mixed<JapaneseTransactionType>().oneOf(["DEAL_IN", "SELF_DRAW", "DEAL_IN_PAO", "SELF_DRAW_PAO", "NAGASHI_MANGAN", "INROUND_RYUUKYOKU"]).required(),
     transactionType: mixed<JapaneseTransactionType>().required(),
     scoreDeltas: array().of(number().defined()).length(4).required(),
     paoPlayerIndex: number().optional(),
@@ -37,8 +36,27 @@ const ConcludedJapaneseRoundSchema = object({
     ).min(0).required()
 });
 
+const HongKongTransactionSchema = object({
+    transactionType: mixed<HongKongTransactionType>().required(),
+    scoreDeltas: array().of(number().defined()).length(4).required(),
+    hand: number().optional()
+});
+
+const ConcludedHongKongRoundSchema = object({
+    roundCount: number().required(),
+    roundWind: mixed<Wind>().required(),
+    roundNumber: number().required(),
+    transactions: array().of(
+        HongKongTransactionSchema
+    ).min(0).required()
+});
+
 type ConcludedJapaneseRoundT = InferType<typeof ConcludedJapaneseRoundSchema>;
 type JapaneseTransactionT = InferType<typeof JapaneseTransactionSchema>;
+type ConcludedHongKongRoundT = InferType<typeof ConcludedHongKongRoundSchema>;
+type HongKongTransactionT = InferType<typeof HongKongTransactionSchema>;
+
+type Transaction = JapaneseTransactionT | HongKongTransactionT;
 
 const validateCreateRound = (round: any, game: any, gameVariant: string): void => {
     if (!round) {
@@ -58,7 +76,6 @@ const validateCreateRound = (round: any, game: any, gameVariant: string): void =
 const validateCreateJapaneseRound = (round: any, game: FullJapaneseGame): void => {
     try {
         ConcludedJapaneseRoundSchema.validateSync(round);
-
         round.transactions.forEach((transaction: JapaneseTransactionT) => {
             JapaneseTransactionSchema.validateSync(transaction);
         });
@@ -67,7 +84,16 @@ const validateCreateJapaneseRound = (round: any, game: FullJapaneseGame): void =
     }
 };
 
-const validateCreateHongKongRound = (round: any, game: any): void => {};
+const validateCreateHongKongRound = (round: any, game: any): void => {
+    try {
+        ConcludedHongKongRoundSchema.validateSync(round);
+        round.transactions.forEach((transaction: HongKongTransactionT) => {
+            HongKongTransactionSchema.validateSync(transaction);
+        });
+    } catch (errors: any) {
+        throw new Error("Invalid create Hong Kong round: " + errors);
+    }
+};
 
 export {
     createGameSchema,
@@ -75,5 +101,9 @@ export {
     validateCreateRound,
     ConcludedJapaneseRoundT,
     JapaneseTransactionT,
-    validateCreateJapaneseRound
+    ConcludedHongKongRoundT,
+    HongKongTransactionT,
+    validateCreateJapaneseRound,
+    validateCreateHongKongRound,
+    Transaction
 };

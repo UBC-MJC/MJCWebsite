@@ -4,8 +4,6 @@ const validateCreateHongKongRound =(
     roundType: HongKongRoundType,
     roundActions: HongKongActions,
     hand: HongKongHandInput,
-    hasSecondHand: boolean,
-    secondHand: HongKongHandInput,
 ) => {
     return true;
 }

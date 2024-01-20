@@ -18,6 +18,16 @@ type LegacyGameTableProps = {
 
 export type ModifiedJapaneseRound = JapaneseRound & { scoreDeltas: number[] };
 
+const getCurrentScoreRow = (rounds: JapaneseRound[]) => {
+    return [
+        "Score",
+        ...rounds.reduce<number[]>(
+            (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
+            getStartingScore()
+        )
+    ];
+};
+
 const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {
     const columnHelper = createColumnHelper<ModifiedJapaneseRound>();
 
@@ -67,21 +77,11 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         ),
     ];
 
-    const getCurrentScoreRow = (rounds: JapaneseRound[]) => {
-        return [
-            "Score",
-            ...rounds.reduce<number[]>(
-                (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
-                getStartingScore()
-            )
-        ];
-    };
-
     const table = useReactTable({
         data: rounds,
         columns: roundColumns,
         getCoreRowModel: getCoreRowModel(),
-        getRowId: (row) => row.id,
+        getRowId: (row) => row.id!,
     });
 
     return (

@@ -1,4 +1,3 @@
-import { NUM_PLAYERS } from "../jp/controller/Types";
 import {isJapaneseGameEnd} from "../jp/controller/JapaneseRound";
 import {isHongKongGameEnd} from "../hk/controller/HongKongRound";
 
@@ -8,15 +7,8 @@ enum Wind {
     WEST = "WEST",
     NORTH = "NORTH",
 }
-
-const windOrder = [Wind.EAST, Wind.SOUTH, Wind.WEST, Wind.NORTH];
-const getNextWind = (index: number): Wind => {
-    return windOrder[(index % NUM_PLAYERS) + 1];
-};
-
 enum JapaneseLabel {
     WINNER = "WINNER",
-    WINNER_2 = "WINNER_2",
     LOSER = "LOSER",
     TENPAI = "TENPAI",
     PAO = "PAO",
@@ -62,7 +54,6 @@ const JP_ROUND_TYPE_BUTTONS: JapaneseRoundTypeButtons = [
 
 const JP_LABEL_MAP: {[key in JapaneseLabel]: string} = {
     WINNER: "Winner",
-    WINNER_2: "Second Winner",
     LOSER: "Loser",
     TENPAI: "Tenpai",
     PAO: "Pao Player",
@@ -76,7 +67,6 @@ const JP_UNDEFINED_HAND: JapaneseHandInput = {
 
 enum HongKongLabel {
     WINNER = "WINNER",
-    WINNER_2 = "WINNER_2",
     LOSER = "LOSER",
     PAO = "PAO",
 }
@@ -85,7 +75,6 @@ enum HongKongRoundType {
     DEAL_IN = "DEAL_IN",
     SELF_DRAW = "SELF_DRAW",
     DECK_OUT = "DECK_OUT",
-    RESHUFFLE = "RESHUFFLE",
     DEAL_IN_PAO = "DEAL_IN_PAO",
     SELF_DRAW_PAO = "SELF_DRAW_PAO",
 }
@@ -106,20 +95,18 @@ const HK_ROUND_TYPE_BUTTONS: HongKongRoundTypeButtons = [
         value: HongKongRoundType.DEAL_IN,
     },
     { name: "Self Draw", value: HongKongRoundType.SELF_DRAW},
-    { name: "Reshuffle", value: HongKongRoundType.RESHUFFLE},
     {
         name: "Deal In Pao",
         value: HongKongRoundType.DEAL_IN_PAO,
     },
     {
-        name: "Tsumo Pao",
+        name: "Self Draw Pao",
         value: HongKongRoundType.SELF_DRAW_PAO,
     },
 ]
 
 const HK_LABEL_MAP: {[key in HongKongLabel]: string} = {
     WINNER: "Winner",
-    WINNER_2: "Second Winner",
     LOSER: "Loser",
     PAO: "Pao Player",
 }
@@ -130,7 +117,7 @@ const isGameEnd = (game: Game, variant: GameVariant): boolean => {
     if (variant === "jp") {
         return isJapaneseGameEnd(game.currentRound as PartialJapaneseRound, game.rounds as JapaneseRound[]);
     } else if (variant === "hk") {
-        return isHongKongGameEnd(game.currentRound, game.rounds as HongKongRound[]);
+        return isHongKongGameEnd(game.currentRound as PartialHongKongRound, game.rounds as HongKongRound[]);
     } else {
         return false;
     }
@@ -138,7 +125,6 @@ const isGameEnd = (game: Game, variant: GameVariant): boolean => {
 
 export {
     Wind,
-    getNextWind,
     JapaneseLabel,
     JapaneseRoundType,
     JP_ROUND_TYPE_BUTTONS,

@@ -104,7 +104,7 @@ type RoundValue = {
 };
 
 type JapaneseRound = {
-    id: string;
+    id?: string;
     roundNumber: number;
     roundWind: string;
     roundCount: number;
@@ -125,6 +125,8 @@ type JapaneseTransaction = {
     hand?: JapaneseHandInput;
     paoPlayerIndex?: number;
 };
+
+type Transaction = JapaneseTransaction | HongKongTransaction
 
 type JapaneseTransactionType = "DEAL_IN" | "SELF_DRAW" | "DEAL_IN_PAO" | "SELF_DRAW_PAO" | "NAGASHI_MANGAN" | "INROUND_RYUUKYOKU";
 
@@ -149,7 +151,7 @@ type HongKongTransaction = {
     id?: string;
     transactionType: HongKongTransactionType;
     scoreDeltas: number[];
-    points?: HongKongHandInput;
+    hand?: HongKongHandInput;
     paoPlayerIndex?: number;
 };
 

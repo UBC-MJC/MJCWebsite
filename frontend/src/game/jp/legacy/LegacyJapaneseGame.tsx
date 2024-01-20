@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import LegacyJapaneseGameTable, {ModifiedJapaneseRound} from "./LegacyJapaneseGameTable";
+import { Button, Col, Container, Row } from "react-bootstrap";
+import LegacyJapaneseGameTable, { ModifiedJapaneseRound } from "./LegacyJapaneseGameTable";
 import {
     isGameEnd,
     JapaneseActions,
@@ -8,7 +8,7 @@ import {
     JapaneseRoundType,
     JP_LABEL_MAP,
     JP_ROUND_TYPE_BUTTONS,
-    JP_UNDEFINED_HAND, Wind,
+    JP_UNDEFINED_HAND
 } from "../../common/constants";
 import ListToggleButton from "../../common/RoundTypeButtonList";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
@@ -16,13 +16,13 @@ import { japanesePointsWheel } from "../../../common/Utils";
 import DropdownInput from "../../common/DropdownInput";
 import { LegacyGameProps } from "../../Game";
 import {
-    addScoreDeltas,
+    addDealIn, addInRoundRyuukyoku, addNagashiMangan, addPaoDealIn, addPaoSelfDraw,
+    addSelfDraw,
     createJapaneseRoundRequest,
-    generateOverallScoreDelta,
+    generateOverallScoreDelta
 } from "../controller/JapaneseRound";
 import { validateCreateJapaneseRound } from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
-import {getStartingScore} from "../controller/Types";
 
 const LegacyJapaneseGame: FC<LegacyGameProps> = ({
    enableRecording,
@@ -32,17 +32,14 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
 }) => {
     const [roundType, setRoundType] = useState<JapaneseRoundType>(JapaneseRoundType.DEAL_IN);
     const [roundActions, setRoundActions] = useState<JapaneseActions>({});
-    const [hasSecondHand, setHasSecondHand] = useState<boolean>(false);
     const [hand, setHand] = useState<JapaneseHandInput>(JP_UNDEFINED_HAND);
-    const [secondHand, setSecondHand] = useState<JapaneseHandInput>(JP_UNDEFINED_HAND);
     const [tenpaiList, setTenpaiList] = useState<number[]>([]);
     const [riichiList, setRiichiList] = useState<number[]>([]);
-
+    const [transactions, setTransactions] = useState<JapaneseTransaction[]>([]);
     const gameOver = isGameEnd(game, "jp");
 
     const roundTypeOnChange = (type: JapaneseRoundType) => {
         const prevWinner = roundActions.WINNER;
-        const prevWinner2 = roundActions.WINNER_2;
         const prevLoser = roundActions.LOSER;
         const prevPao = roundActions.PAO;
 
@@ -69,14 +66,8 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 setTenpaiList([]);
                 break;
         }
-
-        if (hasSecondHand) {
-            newRoundActions.WINNER_2 = prevWinner2;
-        }
-
         setRoundActions(newRoundActions);
         setRoundType(type);
-        setSecondHand(JP_UNDEFINED_HAND);
 
         if (!showPointInput()) {
             setHand(JP_UNDEFINED_HAND);
@@ -116,24 +107,39 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         setHand(newHand);
     }
 
-    const secondHandOnChange = (label: string, value: any) => {
-        if (label !== "han" && label !== "fu" && label !== "dora") {
-            return;
-        }
-
-        const newSecondHand: JapaneseHandInput = { ...secondHand };
-        newSecondHand[label] = value;
-        setSecondHand(newSecondHand);
-    }
-
     const submitRound = async () => {
         try {
-            validateCreateJapaneseRound(roundType, roundActions, tenpaiList, riichiList, hand, hasSecondHand, secondHand);
+            const dealerIndex = game.currentRound?.roundNumber!-1
+            switch (roundType) {
+                case JapaneseRoundType.DEAL_IN:
+                    setTransactions([addDealIn(roundActions.WINNER!, roundActions.LOSER!, dealerIndex, hand)]);
+                    break;
+                case JapaneseRoundType.SELF_DRAW:
+                    setTransactions([addSelfDraw(roundActions.WINNER!, dealerIndex, hand)]);
+                    break;
+                case JapaneseRoundType.DECK_OUT:
+                    break;
+                case JapaneseRoundType.RESHUFFLE:
+                    setTransactions([addInRoundRyuukyoku()]);
+                    break;
+                case JapaneseRoundType.DEAL_IN_PAO:
+                    setTransactions([addPaoDealIn(roundActions.WINNER!, roundActions.LOSER!, roundActions.PAO!, dealerIndex, hand)]);
+                    break;
+                case JapaneseRoundType.SELF_DRAW_PAO:
+                    setTransactions([addPaoSelfDraw(roundActions.WINNER!, roundActions.PAO!, dealerIndex, hand)]);
+                    break;
+                case JapaneseRoundType.NAGASHI_MANGAN:
+                    setTransactions([addNagashiMangan(roundActions.WINNER!, dealerIndex)])
+                    break;
+            }
+            validateCreateJapaneseRound(tenpaiList, riichiList, transactions);
         } catch (e: any) {
             await alert(e.message);
+            setTransactions([]);
             return;
         }
-        const roundRequest = createJapaneseRoundRequest(roundType, roundActions, tenpaiList, riichiList, hand, hasSecondHand, secondHand, game.currentRound!);
+        const roundRequest: JapaneseRound = createJapaneseRoundRequest(game.currentRound!, transactions, tenpaiList, riichiList);
+
         console.log(roundRequest);
         await handleSubmitRound(roundRequest);
     }
@@ -160,13 +166,12 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     [JapaneseLabel.TENPAI, tenpaiList],
                 ];
                 break;
-
+            case JapaneseRoundType.NAGASHI_MANGAN:
+                labels = [
+                    [JapaneseLabel.WINNER, [roundActions.WINNER]],
+                    [JapaneseLabel.TENPAI, tenpaiList]
+                ]
         }
-
-        if (hasSecondHand) {
-            labels.push([JapaneseLabel.WINNER_2, [roundActions.WINNER_2]]);
-        }
-
         return labels;
     }
 
@@ -186,16 +191,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         </Col>
                     ))}
                 </Row>
-                {showPointInput() && (
-                    <Col xs sm={3} className="mx-auto">
-                        <Form>
-                            <Form.Switch
-                                label="Double Deal In"
-                                onChange={(e) => setHasSecondHand(e.target.checked)}
-                            />
-                        </Form>
-                    </Col>
-                )}
                 {getJapaneseLabels().map(([label, labelPlayerIds], idx) => (
                     <Row key={label} className="my-4">
                         <Col>
@@ -255,19 +250,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         />
                     ))}
                 </Row>
-                {hasSecondHand && (
-                    <Row>
-                        <h5>Second Hand:</h5>
-                        {japanesePointsWheel.map((wheel, idx) => (
-                            <DropdownInput
-                                key={wheel.label}
-                                label={wheel.label}
-                                data={wheel.data}
-                                onChange={(value) => secondHandOnChange(wheel.value, value)}
-                            />
-                        ))}
-                    </Row>
-                )}
             </>
         );
     };

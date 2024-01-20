@@ -1,8 +1,12 @@
-import { Player, Prisma, Wind } from "@prisma/client";
+import { JapaneseTransactionType, Player, Prisma, Wind } from "@prisma/client";
 import HongKongGameService from "./hongKongGame.service";
 import JapaneseGameService from "./japaneseGame.service";
 import { findPlayerByUsernames } from "../player.service";
 import { EloCalculatorInput } from "./eloCalculator";
+import {
+    JapaneseTransactionT,
+    Transaction,
+} from "../../validation/game.validation";
 
 const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
     include: {
@@ -27,7 +31,9 @@ const fullJapaneseRound = Prisma.validator<Prisma.JapaneseRoundDefaultArgs>()({
     },
 });
 
-type FullJapaneseRound = Prisma.JapaneseRoundGetPayload<typeof fullJapaneseRound>;
+type FullJapaneseRound = Prisma.JapaneseRoundGetPayload<
+    typeof fullJapaneseRound
+>;
 
 const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
     include: {
@@ -72,6 +78,8 @@ const GAME_CONSTANTS = {
     },
 } as const;
 
+export const NUM_PLAYERS = 4;
+
 // Throws error if the player list contains duplicates
 const checkPlayerListUnique = (playerNameList: string[]): void => {
     if (new Set(playerNameList).size !== playerNameList.length) {
@@ -80,7 +88,10 @@ const checkPlayerListUnique = (playerNameList: string[]): void => {
 };
 
 // Throws error if the player is not eligible for the game type
-const checkPlayerGameEligibility = (gameVariant: string, player: Player): void => {
+const checkPlayerGameEligibility = (
+    gameVariant: string,
+    player: Player,
+): void => {
     if (gameVariant === "jp" && player.japaneseQualified) {
         return;
     } else if (gameVariant === "hk" && player.hongKongQualified) {
@@ -96,7 +107,9 @@ const generatePlayerQuery = async (
 ): Promise<any[]> => {
     checkPlayerListUnique(originalPlayerNames);
     const playerList = await findPlayerByUsernames(originalPlayerNames);
-    playerList.forEach((player) => checkPlayerGameEligibility(gameVariant, player));
+    playerList.forEach((player) =>
+        checkPlayerGameEligibility(gameVariant, player),
+    );
 
     return playerList.map((player: Player) => {
         return {
@@ -109,30 +122,6 @@ const generatePlayerQuery = async (
         };
     });
 };
-
-const getWind = (index: number): Wind => {
-    if (index < 0 || index > 3) {
-        throw new Error("Invalid wind index");
-    }
-
-    return WIND_ORDER[index];
-};
-
-const getDealerPlayerId = (
-    game: FullJapaneseGame | FullHongKongGame,
-    roundNumber: number,
-): string => {
-    return game.players.find((player) => player.wind === getWind(roundNumber - 1))!.player.id;
-};
-const requiresHand = (roundType: string): boolean => {
-    return (
-        roundType === "SELF_DRAW" ||
-        roundType === "DEAL_IN" ||
-        roundType === "DEAL_IN_PAO" ||
-        roundType === "SELF_DRAW_PAO"
-    );
-};
-
 const createEloCalculatorInputs = (
     players: { player: Player; wind: Wind }[],
     playerScores: number[],
@@ -154,15 +143,63 @@ const createEloCalculatorInputs = (
     });
 };
 
+export function range(end: number) {
+    return Array.from({ length: end }, (_, i) => i);
+}
+
+export function getEmptyScoreDelta(): number[] {
+    return Array(NUM_PLAYERS).fill(0);
+}
+
+export function addScoreDeltas(
+    scoreDelta1: number[],
+    scoreDelta2: number[],
+): number[] {
+    const finalScoreDelta = getEmptyScoreDelta();
+    for (const index of range(NUM_PLAYERS)) {
+        finalScoreDelta[index] += scoreDelta1[index] + scoreDelta2[index];
+    }
+    return finalScoreDelta;
+}
+
+export function reduceScoreDeltas(transactions: Transaction[]): number[] {
+    return transactions.reduce<number[]>(
+        (result, current) => addScoreDeltas(result, current.scoreDeltas),
+        getEmptyScoreDelta(),
+    );
+}
+
+const getWind = (index: number): Wind => {
+    if (index < 0 || index > 3) {
+        throw new Error("Invalid wind index");
+    }
+
+    return WIND_ORDER[index];
+};
+
+export const getNextRoundWind = (wind: Wind): Wind => {
+    return getWind((WIND_ORDER.indexOf(wind) + 1) % NUM_PLAYERS);
+};
+
+export function containingAny(
+    transactions: JapaneseTransactionT[],
+    transactionType: JapaneseTransactionType,
+): JapaneseTransactionT | null {
+    for (const transaction of transactions) {
+        if (transaction.transactionType === transactionType) {
+            return transaction;
+        }
+    }
+    return null;
+}
+
 export {
     getGameService,
     checkPlayerGameEligibility,
     checkPlayerListUnique,
     generatePlayerQuery,
-    getWind,
-    getDealerPlayerId,
-    requiresHand,
     createEloCalculatorInputs,
+    getWind,
     GAME_CONSTANTS,
     WIND_ORDER,
     Wind,
