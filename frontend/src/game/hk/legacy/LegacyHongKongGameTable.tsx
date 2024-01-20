@@ -11,33 +11,30 @@ import { mapWindToCharacter } from "../../../common/Utils";
 import { addScoreDeltas } from "../../jp/controller/JapaneseRound";
 import { generateOverallScoreDelta, getStartingScore } from "../controller/HongKongRound";
 type LegacyGameTableProps = {
-    rounds: HongKongRound[];
+    rounds: ModifiedHongKongRound[];
     players: GamePlayer[];
 };
 
-export type ModifiedJapaneseRound = HongKongRound & { scoreDeltas: number[] };
+export type ModifiedHongKongRound = HongKongRound & { scoreDeltas: number[] };
 
-const getCurrentScoreRow = (rounds: HongKongRound[]) => {
+const getCurrentScoreRow = (rounds: ModifiedHongKongRound[]) => {
     return [
         "Score",
         ...rounds.reduce<number[]>(
             (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
-            getStartingScore()
-        )
+            getStartingScore(),
+        ),
     ];
 };
 
 const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {
-    const columnHelper = createColumnHelper<HongKongRound>();
+    const columnHelper = createColumnHelper<ModifiedHongKongRound>();
 
-    const roundColumns: ColumnDef<ModifiedJapaneseRound, any>[] = [
-        columnHelper.accessor(
-            (row) => `${mapWindToCharacter(row.roundWind)} ${row.roundNumber} B${row.bonus}`,
-            {
-                id: "round",
-                header: "Round",
-            },
-        ),
+    const roundColumns: ColumnDef<ModifiedHongKongRound, any>[] = [
+        columnHelper.accessor((row) => `${mapWindToCharacter(row.roundWind)} ${row.roundNumber}`, {
+            id: "round",
+            header: "Round",
+        }),
         columnHelper.accessor(
             (row) => {
                 return row.scoreDeltas[0];

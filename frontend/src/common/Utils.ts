@@ -57,45 +57,6 @@ const hongKongRoundLabels = [
     { name: "Pao", value: "pao" },
 ];
 
-const legacyJapaneseRoundLabels: RoundType[] = [
-    {
-        name: "Deal In",
-        value: "DEAL_IN",
-        selectors: ["Winner", "Loser", "Riichis"],
-    },
-    { name: "Self Draw", value: "SELF_DRAW", selectors: ["Winner", "Riichis"] },
-    { name: "Deck Out", value: "DECK_OUT", selectors: ["Tenpais", "Riichis"] },
-    { name: "Reshuffle", value: "RESHUFFLE", selectors: ["Riichis"] },
-    { name: "Mistake", value: "MISTAKE", selectors: ["Loser", "Riichis"] },
-    {
-        name: "Deal In Pao",
-        value: "DEAL_IN_PAO",
-        selectors: ["Winner", "Loser", "Pao Player", "Riichis"],
-    },
-    {
-        name: "Tsumo Pao",
-        value: "SELF_DRAW_PAO",
-        selectors: ["Winner", "Pao Player", "Riichis"],
-    },
-];
-
-const legacyHongKongRoundLabels: RoundType[] = [
-    { name: "Deal In", value: "DEAL_IN", selectors: ["Winner", "Loser"] },
-    { name: "Self Draw", value: "SELF_DRAW", selectors: ["Winner"] },
-    { name: "Deck Out", value: "DECK_OUT", selectors: [] },
-    { name: "Mistake", value: "MISTAKE", selectors: ["Loser"] },
-    { name: "Pao", value: "PAO", selectors: ["Winner", "Pao Player"] },
-];
-
-const getLegacyRoundLabels = (gameVariant: GameVariant) => {
-    switch (gameVariant) {
-        case "jp":
-            return legacyJapaneseRoundLabels;
-        case "hk":
-            return legacyHongKongRoundLabels;
-    }
-};
-
 const windOrder = ["EAST", "SOUTH", "WEST", "NORTH"];
 
 const windComparison = (wind1: string, wind2: string, playerWind?: string): number => {
@@ -121,14 +82,6 @@ const getGameTypeString = (gameType: GameVariant): string => {
     return "";
 };
 
-type Score = {
-    playerId: string;
-    [key: string]: any;
-}
-const findPlayerScoreDelta = (transactions: any[], playerIndex: number): number => {
-    return 0;
-};
-
 const mapWindToCharacter = (wind: string): string => {
     if (wind === "EAST") {
         return "東";
@@ -152,12 +105,8 @@ export {
     hongKongPointsWheel,
     japaneseRoundLabels,
     hongKongRoundLabels,
-    legacyJapaneseRoundLabels,
-    legacyHongKongRoundLabels,
-    getLegacyRoundLabels,
     windComparison,
     getGameTypeString,
     validateGameVariant,
-    findPlayerScoreDelta,
     mapWindToCharacter,
 };

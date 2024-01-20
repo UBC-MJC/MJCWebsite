@@ -18,9 +18,7 @@ const DropdownInput: FC<DropdownInputProps> = ({ label, data, onChange }) => {
                     isSearchable
                     placeholder={"Select " + label}
                     getOptionValue={(selectOptions) => selectOptions.label}
-                    onChange={(selectedOption) =>
-                        onChange(selectedOption!.label)
-                    }
+                    onChange={(selectedOption) => onChange(selectedOption!.label)}
                 />
             </div>
         </div>

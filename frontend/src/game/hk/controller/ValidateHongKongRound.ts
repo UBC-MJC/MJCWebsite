@@ -1,13 +1,5 @@
-import { HongKongActions, HongKongRoundType } from "../../common/constants";
-
-const validateCreateHongKongRound =(
-    roundType: HongKongRoundType,
-    roundActions: HongKongActions,
-    hand: HongKongHandInput,
-) => {
+const validateCreateHongKongRound = (transactions: HongKongTransaction[]) => {
     return true;
-}
+};
 
-export {
-    validateCreateHongKongRound,
-}
+export { validateCreateHongKongRound };

@@ -116,7 +116,10 @@ type JapaneseRound = {
     transactions: JapaneseTransaction[];
 };
 
-type PartialJapaneseRound = Pick<JapaneseRound, "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount">;
+type PartialJapaneseRound = Pick<
+    JapaneseRound,
+    "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount"
+>;
 
 type JapaneseTransaction = {
     id?: string;
@@ -126,16 +129,21 @@ type JapaneseTransaction = {
     paoPlayerIndex?: number;
 };
 
-type Transaction = JapaneseTransaction | HongKongTransaction
+type Transaction = JapaneseTransaction | HongKongTransaction;
 
-type JapaneseTransactionType = "DEAL_IN" | "SELF_DRAW" | "DEAL_IN_PAO" | "SELF_DRAW_PAO" | "NAGASHI_MANGAN" | "INROUND_RYUUKYOKU";
+type JapaneseTransactionType =
+    | "DEAL_IN"
+    | "SELF_DRAW"
+    | "DEAL_IN_PAO"
+    | "SELF_DRAW_PAO"
+    | "NAGASHI_MANGAN"
+    | "INROUND_RYUUKYOKU";
 
 type JapaneseHandInput = {
     han: number;
     fu: number;
     dora: number;
 };
-
 
 type HongKongRound = {
     id: string;
@@ -155,12 +163,11 @@ type HongKongTransaction = {
     paoPlayerIndex?: number;
 };
 
-type HongKongHandInput = number
+type HongKongHandInput = number;
 
-enum HongKongTransactionType {
-    DEAL_IN = "DEAL_IN",
-    SELF_DRAW = "SELF_DRAW",
-    DEAL_IN_PAO = "DEAL_IN_PAO",
-    SELF_DRAW_PAO = "SELF_DRAW_PAO",
-    RESHUFFLE = "RESHUFFLE"
-}
+type HongKongTransactionType =
+    | "DEAL_IN"
+    | "SELF_DRAW"
+    | "DEAL_IN_PAO"
+    | "SELF_DRAW_PAO"
+    | "RESHUFFLE";

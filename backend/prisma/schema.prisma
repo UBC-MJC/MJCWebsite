@@ -157,9 +157,9 @@ model HongKongRound {
     roundCount   Int
     roundWind    Wind
     roundNumber  Int
+    transactions HongKongTransaction[]
     game         HongKongGame          @relation(fields: [gameId], references: [id], onDelete: Cascade)
     gameId       Int
-    transactions HongKongTransaction[]
 }
 
 model HongKongTransaction {

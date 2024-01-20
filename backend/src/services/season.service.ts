@@ -1,4 +1,4 @@
-import {Player, Prisma, Season} from "@prisma/client";
+import { Player, Prisma, Season } from "@prisma/client";
 import prisma from "../db";
 
 const getCurrentSeason = async (): Promise<Season> => {

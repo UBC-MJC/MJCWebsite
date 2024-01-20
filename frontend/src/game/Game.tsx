@@ -1,7 +1,13 @@
 import { FC, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AxiosError } from "axios";
-import { addRoundAPI, deleteGameAPI, deleteRoundAPI, getGameAPI, submitGameAPI } from "../api/GameAPI";
+import {
+    addRoundAPI,
+    deleteGameAPI,
+    deleteRoundAPI,
+    getGameAPI,
+    submitGameAPI,
+} from "../api/GameAPI";
 import { AuthContext } from "../common/AuthContext";
 import { getGameTypeString, validateGameVariant, windComparison } from "../common/Utils";
 import alert from "../common/AlertDialog";
@@ -9,7 +15,7 @@ import confirmDialog from "../common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import {isGameEnd} from "./common/constants";
+import { isGameEnd } from "./common/constants";
 
 const Game: FC = () => {
     const { id, variant } = useParams();
@@ -133,15 +139,6 @@ const Game: FC = () => {
 
         return orderedPlayers as GamePlayer[];
     };
-
-    const legacyToggle = (): boolean => {
-        if (typeof player === "undefined") {
-            return true;
-        }
-
-        return player.legacyDisplayGame;
-    };
-
     const isRecording = (game: Game): boolean => {
         return (
             typeof player !== "undefined" &&
@@ -179,7 +176,7 @@ const Game: FC = () => {
                 />
             );
         }
-    }
+    };
 
     if (isNaN(gameId)) {
         return (

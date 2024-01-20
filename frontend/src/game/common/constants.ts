@@ -1,5 +1,5 @@
-import {isJapaneseGameEnd} from "../jp/controller/JapaneseRound";
-import {isHongKongGameEnd} from "../hk/controller/HongKongRound";
+import { isJapaneseGameEnd } from "../jp/controller/JapaneseRound";
+import { isHongKongGameEnd } from "../hk/controller/HongKongRound";
 
 enum Wind {
     EAST = "EAST",
@@ -14,56 +14,59 @@ enum JapaneseLabel {
     PAO = "PAO",
 }
 
-enum JapaneseRoundType {
+enum JapaneseTransactionType {
     DEAL_IN = "DEAL_IN",
     SELF_DRAW = "SELF_DRAW",
-    DECK_OUT = "DECK_OUT",
-    RESHUFFLE = "RESHUFFLE",
     DEAL_IN_PAO = "DEAL_IN_PAO",
     SELF_DRAW_PAO = "SELF_DRAW_PAO",
     NAGASHI_MANGAN = "NAGASHI_MANGAN",
+    INROUND_RYUUKYOKU = "INROUND_RYUUKYOKU",
+    DECK_OUT = "DECK_OUT", // not a transaction; here for convenience
 }
 
 export type JapaneseActions = {
     [key in JapaneseLabel]?: number;
-}
+};
 
-type JapaneseRoundTypeButtons = {
+type JapaneseTransactionTypeButtons = {
     name: string;
-    value: JapaneseRoundType;
+    value: JapaneseTransactionType;
 }[];
 
-
-const JP_ROUND_TYPE_BUTTONS: JapaneseRoundTypeButtons = [
+const JP_TRANSACTION_TYPE_BUTTONS: JapaneseTransactionTypeButtons = [
     {
         name: "Deal In",
-        value: JapaneseRoundType.DEAL_IN,
+        value: JapaneseTransactionType.DEAL_IN,
     },
-    { name: "Self Draw", value: JapaneseRoundType.SELF_DRAW},
-    { name: "Deck Out", value: JapaneseRoundType.DECK_OUT},
-    { name: "Reshuffle", value: JapaneseRoundType.RESHUFFLE},
+    { name: "Self Draw", value: JapaneseTransactionType.SELF_DRAW },
     {
         name: "Deal In Pao",
-        value: JapaneseRoundType.DEAL_IN_PAO,
+        value: JapaneseTransactionType.DEAL_IN_PAO,
     },
     {
         name: "Tsumo Pao",
-        value: JapaneseRoundType.SELF_DRAW_PAO,
+        value: JapaneseTransactionType.SELF_DRAW_PAO,
     },
-]
+    {
+        name: "Nagashi Mangan",
+        value: JapaneseTransactionType.NAGASHI_MANGAN,
+    },
+    { name: "Reshuffle", value: JapaneseTransactionType.INROUND_RYUUKYOKU },
+    { name: "Deck Out", value: JapaneseTransactionType.DECK_OUT },
+];
 
-const JP_LABEL_MAP: {[key in JapaneseLabel]: string} = {
+const JP_LABEL_MAP: { [key in JapaneseLabel]: string } = {
     WINNER: "Winner",
     LOSER: "Loser",
     TENPAI: "Tenpai",
     PAO: "Pao Player",
-}
+};
 
 const JP_UNDEFINED_HAND: JapaneseHandInput = {
     han: -1,
     fu: -1,
-    dora: -1,
-}
+    dora: 0,
+};
 
 enum HongKongLabel {
     WINNER = "WINNER",
@@ -71,69 +74,74 @@ enum HongKongLabel {
     PAO = "PAO",
 }
 
-enum HongKongRoundType {
+enum HongKongTransactionType {
     DEAL_IN = "DEAL_IN",
     SELF_DRAW = "SELF_DRAW",
-    DECK_OUT = "DECK_OUT",
     DEAL_IN_PAO = "DEAL_IN_PAO",
     SELF_DRAW_PAO = "SELF_DRAW_PAO",
+    DECK_OUT = "DECK_OUT", // not a transaction
 }
 
 export type HongKongActions = {
     [key in HongKongLabel]?: number;
-}
+};
 
-type HongKongRoundTypeButtons = {
+type HongKongTransactionTypeButtons = {
     name: string;
-    value: HongKongRoundType;
+    value: HongKongTransactionType;
 }[];
 
-
-const HK_ROUND_TYPE_BUTTONS: HongKongRoundTypeButtons = [
+const HK_TRANSACTION_TYPE_BUTTONS: HongKongTransactionTypeButtons = [
     {
         name: "Deal In",
-        value: HongKongRoundType.DEAL_IN,
+        value: HongKongTransactionType.DEAL_IN,
     },
-    { name: "Self Draw", value: HongKongRoundType.SELF_DRAW},
+    { name: "Self Draw", value: HongKongTransactionType.SELF_DRAW },
     {
         name: "Deal In Pao",
-        value: HongKongRoundType.DEAL_IN_PAO,
+        value: HongKongTransactionType.DEAL_IN_PAO,
     },
     {
         name: "Self Draw Pao",
-        value: HongKongRoundType.SELF_DRAW_PAO,
+        value: HongKongTransactionType.SELF_DRAW_PAO,
     },
-]
+];
 
-const HK_LABEL_MAP: {[key in HongKongLabel]: string} = {
+const HK_LABEL_MAP: { [key in HongKongLabel]: string } = {
     WINNER: "Winner",
     LOSER: "Loser",
     PAO: "Pao Player",
-}
+};
 
 const HK_UNDEFINED_HAND: HongKongHandInput = -1;
 
 const isGameEnd = (game: Game, variant: GameVariant): boolean => {
     if (variant === "jp") {
-        return isJapaneseGameEnd(game.currentRound as PartialJapaneseRound, game.rounds as JapaneseRound[]);
+        return isJapaneseGameEnd(
+            game.currentRound as PartialJapaneseRound,
+            game.rounds as JapaneseRound[],
+        );
     } else if (variant === "hk") {
-        return isHongKongGameEnd(game.currentRound as PartialHongKongRound, game.rounds as HongKongRound[]);
+        return isHongKongGameEnd(
+            game.currentRound as PartialHongKongRound,
+            game.rounds as HongKongRound[],
+        );
     } else {
         return false;
     }
-}
+};
 
 export {
     Wind,
     JapaneseLabel,
-    JapaneseRoundType,
-    JP_ROUND_TYPE_BUTTONS,
+    JapaneseTransactionType,
+    JP_TRANSACTION_TYPE_BUTTONS,
     JP_LABEL_MAP,
     JP_UNDEFINED_HAND,
     HongKongLabel,
-    HongKongRoundType,
-    HK_ROUND_TYPE_BUTTONS,
+    HongKongTransactionType,
+    HK_TRANSACTION_TYPE_BUTTONS,
     HK_LABEL_MAP,
     HK_UNDEFINED_HAND,
-    isGameEnd
-}
+    isGameEnd,
+};

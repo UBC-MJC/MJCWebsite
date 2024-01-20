@@ -1,12 +1,14 @@
 import prisma from "../../db";
-import { GameType, HongKongTransaction } from "@prisma/client";
+import { GameStatus, GameType, HongKongTransaction } from "@prisma/client";
 import GameService from "./game.service";
 import {
     addScoreDeltas,
     createEloCalculatorInputs,
     FullHongKongGame,
+    FullHongKongRound,
     getEmptyScoreDelta,
-    getNextRoundWind, reduceScoreDeltas
+    getNextRoundWind,
+    reduceScoreDeltas,
 } from "./game.util";
 import { getAllPlayerElos } from "../leaderboard.service";
 import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
@@ -15,7 +17,6 @@ import {
     HongKongTransactionT,
     validateCreateHongKongRound,
 } from "../../validation/game.validation";
-import { HongKongRound } from ".prisma/client";
 
 class HongKongGameService extends GameService {
     public createGame(
@@ -32,7 +33,7 @@ class HongKongGameService extends GameService {
                     },
                 },
                 type: gameType,
-                status: "IN_PROGRESS",
+                status: GameStatus.IN_PROGRESS,
                 recordedBy: {
                     connect: {
                         id: recorderId,
@@ -87,9 +88,7 @@ class HongKongGameService extends GameService {
             calculatedElos.map((elo) => {
                 return prisma.hongKongPlayerGame.update({
                     where: {
-                        id: game.players.find(
-                            (player) => player.player.id === elo.playerId,
-                        )!.id,
+                        id: game.players.find((player) => player.player.id === elo.playerId)!.id,
                     },
                     data: {
                         eloChange: elo.eloChange,
@@ -103,16 +102,13 @@ class HongKongGameService extends GameService {
                 id: game.id,
             },
             data: {
-                status: "FINISHED",
+                status: GameStatus.FINISHED,
                 endedAt: new Date(),
             },
         });
     }
 
-    public async createRound(
-        game: FullHongKongGame,
-        roundRequest: any,
-    ): Promise<void> {
+    public async createRound(game: FullHongKongGame, roundRequest: any): Promise<void> {
         validateCreateHongKongRound(roundRequest, game);
         const concludedRound = roundRequest as ConcludedHongKongRoundT;
 
@@ -165,7 +161,7 @@ class HongKongGameService extends GameService {
                     trueWind: player.wind,
                 };
             }),
-            rounds: game.rounds,
+            rounds: game.rounds.map((round) => transformDBHongKongRound(round)),
             currentRound: nextRound,
         };
     }
@@ -174,14 +170,10 @@ export function generateOverallScoreDelta(concludedGame: ConcludedHongKongRoundT
     return addScoreDeltas(reduceScoreDeltas(concludedGame.transactions), getEmptyScoreDelta());
 }
 
-
 const getHongKongPlayersCurrentScore = (game: FullHongKongGame): number[] => {
     return game.rounds.reduce<number[]>(
         (result, current) =>
-            addScoreDeltas(
-                result,
-                generateOverallScoreDelta(transformDBHongKongRound(current)),
-            ),
+            addScoreDeltas(result, generateOverallScoreDelta(transformDBHongKongRound(current))),
         getEmptyScoreDelta(),
     );
 };
@@ -195,10 +187,7 @@ const getFirstHongKongRound = (): any => {
     };
 };
 
-const dealershipRetains = (
-    transactions: HongKongTransactionT[],
-    dealerIndex: number,
-): boolean => {
+const dealershipRetains = (transactions: HongKongTransactionT[], dealerIndex: number): boolean => {
     for (const transaction of transactions) {
         if (transaction.scoreDeltas[dealerIndex] > 0) {
             return true;
@@ -214,9 +203,7 @@ const getNextHongKongRound = (game: FullHongKongGame): any => {
     const previousRound: ConcludedHongKongRoundT = transformDBHongKongRound(
         game.rounds[game.rounds.length - 1],
     );
-    if (
-        dealershipRetains(previousRound.transactions, previousRound.roundNumber - 1)
-    ) {
+    if (dealershipRetains(previousRound.transactions, previousRound.roundNumber - 1)) {
         return {
             roundCount: previousRound.roundCount + 1,
             roundNumber: previousRound.roundNumber,
@@ -225,8 +212,7 @@ const getNextHongKongRound = (game: FullHongKongGame): any => {
     }
     return {
         roundCount: previousRound.roundCount + 1,
-        roundNumber:
-            previousRound.roundNumber === 4 ? 1 : previousRound.roundNumber + 1,
+        roundNumber: previousRound.roundNumber === 4 ? 1 : previousRound.roundNumber + 1,
         roundWind:
             previousRound.roundNumber === 4
                 ? getNextRoundWind(previousRound.roundWind)
@@ -245,9 +231,7 @@ function transformTransaction(transaction: HongKongTransactionT): any {
     };
 }
 
-function transformDBTransaction(
-    dbTransaction: HongKongTransaction,
-): HongKongTransactionT {
+function transformDBTransaction(dbTransaction: HongKongTransaction): HongKongTransactionT {
     const scoreDeltas = [
         dbTransaction.player0ScoreChange,
         dbTransaction.player1ScoreChange,
@@ -266,9 +250,7 @@ function transformDBTransaction(
     }
     return result as HongKongTransactionT;
 }
-function transformDBHongKongRound(
-    dbHongKongRound: HongKongRound,
-): ConcludedHongKongRoundT {
+function transformDBHongKongRound(dbHongKongRound: FullHongKongRound): ConcludedHongKongRoundT {
     return {
         roundCount: dbHongKongRound.roundCount,
         roundWind: dbHongKongRound.roundWind,

@@ -38,7 +38,7 @@ const validateCreateJapaneseRound = (
     //         checkHand(hand);
     //         break;
     // }
-}
+};
 
 const checkHand = (hand: JapaneseHandInput): void => {
     if (hand.han === -1 || hand.fu === -1) {
@@ -48,8 +48,6 @@ const checkHand = (hand: JapaneseHandInput): void => {
     if (hand.dora === -1) {
         throw new Error("Hand must have dora");
     }
-}
+};
 
-export {
-    validateCreateJapaneseRound,
-}
+export { validateCreateJapaneseRound };

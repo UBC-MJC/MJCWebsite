@@ -16,10 +16,10 @@ const JapaneseTransactionSchema = object({
     scoreDeltas: array().of(number().defined()).length(4).required(),
     paoPlayerIndex: number().optional(),
     hand: object({
-        fu: number().required(),
-        han: number().required(),
-        dora: number().required()
-    }).optional().nullable()
+        fu: number(),
+        han: number(),
+        dora: number(),
+    }).optional(),
 });
 
 const ConcludedJapaneseRoundSchema = object({
@@ -31,24 +31,20 @@ const ConcludedJapaneseRoundSchema = object({
     endRiichiStickCount: number().required(),
     riichis: array().of(number().defined()).required(),
     tenpais: array().of(number().defined()).required(),
-    transactions: array().of(
-        JapaneseTransactionSchema
-    ).min(0).required()
+    transactions: array().of(JapaneseTransactionSchema).min(0).required(),
 });
 
 const HongKongTransactionSchema = object({
     transactionType: mixed<HongKongTransactionType>().required(),
     scoreDeltas: array().of(number().defined()).length(4).required(),
-    hand: number().optional()
+    hand: number().optional(),
 });
 
 const ConcludedHongKongRoundSchema = object({
     roundCount: number().required(),
     roundWind: mixed<Wind>().required(),
     roundNumber: number().required(),
-    transactions: array().of(
-        HongKongTransactionSchema
-    ).min(0).required()
+    transactions: array().of(HongKongTransactionSchema).min(0).required(),
 });
 
 type ConcludedJapaneseRoundT = InferType<typeof ConcludedJapaneseRoundSchema>;
@@ -74,14 +70,10 @@ const validateCreateRound = (round: any, game: any, gameVariant: string): void =
 };
 
 const validateCreateJapaneseRound = (round: any, game: FullJapaneseGame): void => {
-    try {
-        ConcludedJapaneseRoundSchema.validateSync(round);
-        round.transactions.forEach((transaction: JapaneseTransactionT) => {
-            JapaneseTransactionSchema.validateSync(transaction);
-        });
-    } catch (errors: any) {
-        throw new Error("Invalid create Japanese round: " + errors);
-    }
+    round.transactions.forEach((transaction: JapaneseTransactionT) => {
+        JapaneseTransactionSchema.validateSync(transaction);
+    });
+    ConcludedJapaneseRoundSchema.validateSync(round);
 };
 
 const validateCreateHongKongRound = (round: any, game: any): void => {
@@ -105,5 +97,5 @@ export {
     HongKongTransactionT,
     validateCreateJapaneseRound,
     validateCreateHongKongRound,
-    Transaction
+    Transaction,
 };

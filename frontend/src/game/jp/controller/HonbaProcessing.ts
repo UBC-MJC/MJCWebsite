@@ -1,7 +1,10 @@
 import { getEmptyScoreDelta, NUM_PLAYERS } from "./Types";
 import { range } from "./Range";
 
-export function containingAny(transactions: JapaneseTransaction[], transactionType: JapaneseTransactionType): JapaneseTransaction | null {
+export function containingAny(
+    transactions: JapaneseTransaction[],
+    transactionType: JapaneseTransactionType,
+): JapaneseTransaction | null {
     for (const transaction of transactions) {
         if (transaction.transactionType === transactionType) {
             return transaction;
@@ -54,7 +57,10 @@ function determineHonbaTransaction(transactions: JapaneseTransaction[]) {
     }
     const headbumpWinner = findHeadbumpWinner(transactions);
     for (const transaction of transactions) {
-        if (transaction.scoreDeltas[headbumpWinner] > 0 && transaction.transactionType !== "DEAL_IN_PAO") {
+        if (
+            transaction.scoreDeltas[headbumpWinner] > 0 &&
+            transaction.transactionType !== "DEAL_IN_PAO"
+        ) {
             return transaction;
         }
     }
@@ -68,7 +74,10 @@ function determineHonbaTransaction(transactions: JapaneseTransaction[]) {
 
 function handleDealIn(newTransaction: JapaneseTransaction, honbaCount: number) {
     for (const index of range(NUM_PLAYERS)) {
-        if (newTransaction.paoPlayerIndex !== undefined && newTransaction.paoPlayerIndex === index) {
+        if (
+            newTransaction.paoPlayerIndex !== undefined &&
+            newTransaction.paoPlayerIndex === index
+        ) {
             continue;
         }
         if (newTransaction.scoreDeltas[index] > 0) {
@@ -126,10 +135,12 @@ export function addHonba(transaction: JapaneseTransaction, honbaCount: number) {
 function getClosestWinner(loserLocalPos: number, winners: Set<number>) {
     let [closestWinnerIndex] = winners;
     for (const winnerIndex of winners) {
-        if ((winnerIndex - loserLocalPos) % NUM_PLAYERS < (closestWinnerIndex - loserLocalPos) % NUM_PLAYERS) {
+        if (
+            (winnerIndex - loserLocalPos) % NUM_PLAYERS <
+            (closestWinnerIndex - loserLocalPos) % NUM_PLAYERS
+        ) {
             closestWinnerIndex = winnerIndex;
         }
     }
     return closestWinnerIndex;
 }
-

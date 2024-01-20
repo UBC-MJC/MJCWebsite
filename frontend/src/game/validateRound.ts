@@ -1,4 +1,3 @@
-
 const validateRound = (
     roundValue: RoundValue,
     pointsValue: any,
@@ -49,7 +48,6 @@ const validateHongKongRound = (roundValue: RoundValue): void => {
 
 const validateRoundSelectors = (roundValue: RoundValue): void => {
     roundValue.type.selectors.forEach((selector: string) => {
-
         for (const key in roundValue.playerActions) {
             if (roundValue.playerActions[key].includes(selector)) {
                 return;

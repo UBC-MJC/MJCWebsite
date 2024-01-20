@@ -1,9 +1,5 @@
 import prisma from "../../db";
-import {
-    GameType,
-    JapaneseTransaction,
-    JapaneseTransactionType,
-} from "@prisma/client";
+import { GameStatus, GameType, JapaneseTransaction, JapaneseTransactionType } from "@prisma/client";
 import {
     addScoreDeltas,
     containingAny,
@@ -45,7 +41,7 @@ class JapaneseGameService extends GameService {
                     },
                 },
                 type: gameType,
-                status: "IN_PROGRESS",
+                status: GameStatus.IN_PROGRESS,
                 recordedBy: {
                     connect: {
                         id: recorderId,
@@ -88,7 +84,8 @@ class JapaneseGameService extends GameService {
 
     // TODO: replace getAllPlayerElos call, not all elos are needed
     public async submitGame(game: FullJapaneseGame): Promise<void> {
-        const playerScores = getJapanesePlayersCurrentScore(game);
+        const playerScores = getJapaneseGameFinalScore(game);
+
         const eloList = await getAllPlayerElos("jp", game.seasonId);
         const eloCalculatorInput: EloCalculatorInput[] = createEloCalculatorInputs(
             game.players,
@@ -101,9 +98,8 @@ class JapaneseGameService extends GameService {
             calculatedElos.map((eloObject) => {
                 return prisma.japanesePlayerGame.update({
                     where: {
-                        id: game.players.find(
-                            (player) => player.player.id === eloObject.playerId,
-                        )!.id,
+                        id: game.players.find((player) => player.player.id === eloObject.playerId)!
+                            .id,
                     },
                     data: {
                         eloChange: eloObject.eloChange,
@@ -117,16 +113,13 @@ class JapaneseGameService extends GameService {
                 id: game.id,
             },
             data: {
-                status: "FINISHED",
+                status: GameStatus.FINISHED,
                 endedAt: new Date(),
             },
         });
     }
 
-    public async createRound(
-        game: FullJapaneseGame,
-        roundRequest: any,
-    ): Promise<void> {
+    public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<void> {
         validateCreateJapaneseRound(roundRequest, game);
         const concludedRound = roundRequest as ConcludedJapaneseRoundT;
 
@@ -206,9 +199,7 @@ export function dealershipRetains(
         ) {
             return true;
         }
-        if (
-            transaction.transactionType === JapaneseTransactionType.INROUND_RYUUKYOKU
-        ) {
+        if (transaction.transactionType === JapaneseTransactionType.INROUND_RYUUKYOKU) {
             return true;
         }
     }
@@ -225,8 +216,7 @@ export function getNewHonbaCount(
     }
     for (const transaction of transactions) {
         if (
-            transaction.transactionType ===
-            JapaneseTransactionType.INROUND_RYUUKYOKU ||
+            transaction.transactionType === JapaneseTransactionType.INROUND_RYUUKYOKU ||
             transaction.transactionType === JapaneseTransactionType.NAGASHI_MANGAN
         ) {
             return honba + 1;
@@ -272,8 +262,7 @@ const getNextJapaneseRound = (game: FullJapaneseGame): PartialJapaneseRound => {
     return {
         roundCount: previousRound.roundCount + 1,
         bonus: newHonbaCount,
-        roundNumber:
-            previousRound.roundNumber === 4 ? 1 : previousRound.roundNumber + 1,
+        roundNumber: previousRound.roundNumber === 4 ? 1 : previousRound.roundNumber + 1,
         roundWind:
             previousRound.roundNumber === 4
                 ? getNextRoundWind(previousRound.roundWind)
@@ -302,10 +291,7 @@ function findHeadbumpWinner(transactions: JapaneseTransactionT[]) {
     const losers = new Set<number>();
     for (const transaction of transactions) {
         for (let index = 0; index < transaction.scoreDeltas.length; index++) {
-            if (
-                transaction.paoPlayerIndex !== undefined &&
-                transaction.paoPlayerIndex === index
-            ) {
+            if (transaction.paoPlayerIndex !== undefined && transaction.paoPlayerIndex === index) {
                 // is pao target
                 continue;
             }
@@ -333,9 +319,7 @@ function getClosestWinner(loserLocalPos: number, winners: Set<number>) {
     return closestWinnerIndex;
 }
 
-export function generateOverallScoreDelta(
-    concludedRound: ConcludedJapaneseRoundT,
-) {
+export function generateOverallScoreDelta(concludedRound: ConcludedJapaneseRoundT) {
     const rawScoreDeltas = addScoreDeltas(
         reduceScoreDeltas(concludedRound.transactions),
         getEmptyScoreDelta(),
@@ -343,12 +327,7 @@ export function generateOverallScoreDelta(
     for (const id of concludedRound.riichis) {
         rawScoreDeltas[id] -= 1000;
     }
-    if (
-        containingAny(
-            concludedRound.transactions,
-            JapaneseTransactionType.NAGASHI_MANGAN,
-        )
-    ) {
+    if (containingAny(concludedRound.transactions, JapaneseTransactionType.NAGASHI_MANGAN)) {
         return rawScoreDeltas;
     }
     const riichiDeltas = addScoreDeltas(
@@ -358,21 +337,26 @@ export function generateOverallScoreDelta(
     const headbumpWinner = findHeadbumpWinner(concludedRound.transactions);
     if (concludedRound.endRiichiStickCount === 0) {
         riichiDeltas[headbumpWinner] +=
-            (concludedRound.startRiichiStickCount + concludedRound.riichis.length) *
-            1000;
+            (concludedRound.startRiichiStickCount + concludedRound.riichis.length) * 1000;
     }
     return riichiDeltas;
 }
 
-const getJapanesePlayersCurrentScore = (game: FullJapaneseGame): number[] => {
-    return game.rounds.reduce<number[]>(
-        (result, current) =>
-            addScoreDeltas(
-                result,
-                generateOverallScoreDelta(transformDBJapaneseRound(current)),
-            ),
+const getJapaneseGameFinalScore = (game: FullJapaneseGame): number[] => {
+    const rounds = game.rounds.map((round) => transformDBJapaneseRound(round));
+    const rawScore = rounds.reduce<number[]>(
+        (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
         getEmptyScoreDelta(),
     );
+    const finalRiichiStick = rounds[rounds.length - 1].endRiichiStickCount;
+    const maxScore = Math.max(...rawScore);
+    for (const index of range(NUM_PLAYERS)) {
+        if (rawScore[index] === maxScore) {
+            rawScore[index] += finalRiichiStick * 1000; // added to the first player with the max score
+            break;
+        }
+    }
+    return rawScore;
 };
 
 function transformTransaction(transaction: JapaneseTransactionT): any {
@@ -387,9 +371,7 @@ function transformTransaction(transaction: JapaneseTransactionT): any {
     };
 }
 
-function transformDBTransaction(
-    dbTransaction: JapaneseTransaction,
-): JapaneseTransactionT {
+function transformDBTransaction(dbTransaction: JapaneseTransaction): JapaneseTransactionT {
     const scoreDeltas = [
         dbTransaction.player0ScoreChange,
         dbTransaction.player1ScoreChange,
@@ -439,9 +421,7 @@ function transformConcludedRound(concludedRound: ConcludedJapaneseRoundT): any {
     };
 }
 
-function transformDBJapaneseRound(
-    dbJapaneseRound: FullJapaneseRound,
-): ConcludedJapaneseRoundT {
+function transformDBJapaneseRound(dbJapaneseRound: FullJapaneseRound): ConcludedJapaneseRoundT {
     const riichis = [];
     const tenpais = [];
     if (dbJapaneseRound.player0Riichi) {

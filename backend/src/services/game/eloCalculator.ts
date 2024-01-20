@@ -1,8 +1,8 @@
 import { GAME_CONSTANTS, WIND_ORDER } from "./game.util";
 import { Wind } from "@prisma/client";
 
-const JAPANESE_ADJUSTMENT = [70000, 35000, 0, -105000];
-const HONG_KONG_SCORE_ADJUSTMENT = [450, 150, -150, -450];
+const JAPANESE_ADJUSTMENT = [55000, 25000, -5000, -75000];
+const HONG_KONG_SCORE_ADJUSTMENT = [100, 0, 0, -100];
 
 type EloCalculatorInput = {
     playerId: string;
@@ -17,23 +17,21 @@ const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: "jp
 
     const scoreAfterPlacement = addPlacementAdjustment(playerInformation, gameVariant);
 
-    const correlation = 0.25;
-    const k_factor = 240;
+    const magnitude = 0.35;
+    const eloSignificance = 0.03;
 
-    const result = scoreAfterPlacement.map((player) => {
-        const eloDifference = fieldElo - player.elo;
-        const firstCalculation =
+    return scoreAfterPlacement.map((player) => {
+        const rawScore =
             (player.score - GAME_CONSTANTS[gameVariant].STARTING_SCORE) /
             GAME_CONSTANTS[gameVariant].DIVIDING_CONSTANT;
-        const eloChange = firstCalculation * correlation + eloDifference / k_factor;
+        const eloDifference = fieldElo - player.elo;
+        const eloChange = magnitude * (rawScore + eloSignificance * eloDifference);
 
         return {
             playerId: player.playerId,
             eloChange: eloChange,
         };
     });
-
-    return result;
 };
 
 const addPlacementAdjustment = (playerInformation: EloCalculatorInput[], gameVariant: string) => {

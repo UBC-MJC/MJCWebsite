@@ -3,10 +3,7 @@ import HongKongGameService from "./hongKongGame.service";
 import JapaneseGameService from "./japaneseGame.service";
 import { findPlayerByUsernames } from "../player.service";
 import { EloCalculatorInput } from "./eloCalculator";
-import {
-    JapaneseTransactionT,
-    Transaction,
-} from "../../validation/game.validation";
+import { JapaneseTransactionT, Transaction } from "../../validation/game.validation";
 
 const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
     include: {
@@ -31,9 +28,7 @@ const fullJapaneseRound = Prisma.validator<Prisma.JapaneseRoundDefaultArgs>()({
     },
 });
 
-type FullJapaneseRound = Prisma.JapaneseRoundGetPayload<
-    typeof fullJapaneseRound
->;
+type FullJapaneseRound = Prisma.JapaneseRoundGetPayload<typeof fullJapaneseRound>;
 
 const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
     include: {
@@ -51,6 +46,14 @@ const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
 });
 
 type FullHongKongGame = Prisma.HongKongGameGetPayload<typeof fullHongKongGame>;
+
+const fullHongKongRound = Prisma.validator<Prisma.HongKongRoundDefaultArgs>()({
+    include: {
+        transactions: true,
+    },
+});
+
+type FullHongKongRound = Prisma.HongKongRoundGetPayload<typeof fullHongKongRound>;
 
 type GameVariant = "jp" | "hk";
 
@@ -74,7 +77,7 @@ const GAME_CONSTANTS = {
     },
     hk: {
         STARTING_SCORE: 750,
-        DIVIDING_CONSTANT: 16,
+        DIVIDING_CONSTANT: 30,
     },
 } as const;
 
@@ -88,10 +91,7 @@ const checkPlayerListUnique = (playerNameList: string[]): void => {
 };
 
 // Throws error if the player is not eligible for the game type
-const checkPlayerGameEligibility = (
-    gameVariant: string,
-    player: Player,
-): void => {
+const checkPlayerGameEligibility = (gameVariant: string, player: Player): void => {
     if (gameVariant === "jp" && player.japaneseQualified) {
         return;
     } else if (gameVariant === "hk" && player.hongKongQualified) {
@@ -107,9 +107,7 @@ const generatePlayerQuery = async (
 ): Promise<any[]> => {
     checkPlayerListUnique(originalPlayerNames);
     const playerList = await findPlayerByUsernames(originalPlayerNames);
-    playerList.forEach((player) =>
-        checkPlayerGameEligibility(gameVariant, player),
-    );
+    playerList.forEach((player) => checkPlayerGameEligibility(gameVariant, player));
 
     return playerList.map((player: Player) => {
         return {
@@ -151,10 +149,7 @@ export function getEmptyScoreDelta(): number[] {
     return Array(NUM_PLAYERS).fill(0);
 }
 
-export function addScoreDeltas(
-    scoreDelta1: number[],
-    scoreDelta2: number[],
-): number[] {
+export function addScoreDeltas(scoreDelta1: number[], scoreDelta2: number[]): number[] {
     const finalScoreDelta = getEmptyScoreDelta();
     for (const index of range(NUM_PLAYERS)) {
         finalScoreDelta[index] += scoreDelta1[index] + scoreDelta2[index];
@@ -206,5 +201,6 @@ export {
     FullJapaneseGame,
     FullJapaneseRound,
     FullHongKongGame,
+    FullHongKongRound,
     GameVariant,
 };

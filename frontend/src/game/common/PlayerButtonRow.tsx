@@ -8,7 +8,12 @@ type PlayerButtonRow<T extends string> = {
     onChange: (playerIndex: number, label: T) => void;
 };
 
-const PlayerButtonRow = <T extends string,>({ players, label, labelPlayerIds, onChange }: PlayerButtonRow<T>) => {
+const PlayerButtonRow = <T extends string>({
+    players,
+    label,
+    labelPlayerIds,
+    onChange,
+}: PlayerButtonRow<T>) => {
     return (
         <>
             {players.map((player, idx) => (
@@ -35,6 +40,6 @@ const getToggleType = (label: string) => {
         return "checkbox";
     }
     return "radio";
-}
+};
 
 export default PlayerButtonRow;

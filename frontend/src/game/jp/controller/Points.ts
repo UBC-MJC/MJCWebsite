@@ -45,4 +45,4 @@ function calculateHandValue(multiplier: number, hand: JapaneseHandInput) {
     return handValue > manganPayout ? manganPayout : handValue;
 }
 
-export {calculateHandValue}
+export { calculateHandValue };
