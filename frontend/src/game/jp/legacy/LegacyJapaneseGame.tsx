@@ -1,12 +1,13 @@
 import { FC, useState } from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import LegacyJapaneseGameTable, { ModifiedJapaneseRound } from "./LegacyJapaneseGameTable";
 import {
+    DeckOutType,
     isGameEnd,
     JapaneseActions,
     JapaneseLabel,
     JapaneseTransactionType,
-    JP_LABEL_MAP,
+    JP_LABEL_MAP, JP_SINGLE_ACTION_BUTTONS,
     JP_TRANSACTION_TYPE_BUTTONS,
     JP_UNDEFINED_HAND,
 } from "../../common/constants";
@@ -34,7 +35,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     game,
     handleSubmitRound,
 }) => {
-    const [transactionType, setTransactionType] = useState<JapaneseTransactionType>(
+    const [transactionType, setTransactionType] = useState<JapaneseTransactionType | DeckOutType>(
         JapaneseTransactionType.DEAL_IN,
     );
     const [roundActions, setRoundActions] = useState<JapaneseActions>({});
@@ -42,9 +43,11 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     const [tenpaiList, setTenpaiList] = useState<number[]>([]);
     const [riichiList, setRiichiList] = useState<number[]>([]);
     const [transactions, setTransactions] = useState<JapaneseTransaction[]>([]);
+    const [multipleHandInputMode, setMultipleHandInputMode] = useState<boolean>(false);
+
     const gameOver = isGameEnd(game, "jp");
 
-    const transactionTypeOnChange = (type: JapaneseTransactionType) => {
+    const transactionTypeOnChange = (type: JapaneseTransactionType | DeckOutType) => {
         const prevWinner = roundActions.WINNER;
         const prevLoser = roundActions.LOSER;
         const prevPao = roundActions.PAO;
@@ -68,7 +71,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 newRoundActions.WINNER = prevWinner;
                 newRoundActions.PAO = prevPao;
                 break;
-            case JapaneseTransactionType.DECK_OUT:
+            case DeckOutType.DECK_OUT:
                 setTenpaiList([]);
                 break;
             case JapaneseTransactionType.NAGASHI_MANGAN:
@@ -122,8 +125,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 return [addDealIn(roundActions.WINNER!, roundActions.LOSER!, dealerIndex, hand)];
             case JapaneseTransactionType.SELF_DRAW:
                 return [addSelfDraw(roundActions.WINNER!, dealerIndex, hand)];
-            case JapaneseTransactionType.DECK_OUT:
-                return [];
             case JapaneseTransactionType.INROUND_RYUUKYOKU:
                 return [addInRoundRyuukyoku()];
             case JapaneseTransactionType.DEAL_IN_PAO:
@@ -201,7 +202,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
             case JapaneseTransactionType.SELF_DRAW_PAO:
                 labels = [[JapaneseLabel.WINNER, [roundActions.WINNER]]];
                 break;
-            case JapaneseTransactionType.DECK_OUT:
+            case DeckOutType.DECK_OUT:
                 labels = [[JapaneseLabel.TENPAI, tenpaiList]];
                 break;
             case JapaneseTransactionType.NAGASHI_MANGAN:
@@ -213,24 +214,26 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         return labels;
     };
 
-    function getSubmitSingleTransactionRoundButton() {
-        return (
-            <Button
-                variant="primary"
-                className="mt-4 w-50"
-                disabled={gameOver || transactions.length > 0}
-                onClick={submitSingleTransactionRound}
-            >
-                Submit Round Directly
-            </Button>
-        );
+    function getActions() {
+        if (!multipleHandInputMode) {
+            return JP_SINGLE_ACTION_BUTTONS;
+        }
+        return JP_TRANSACTION_TYPE_BUTTONS;
     }
 
     const getRecordingInterface = () => {
         return (
             <>
+                <Col xs sm={3} className="mx-auto">
+                    <Form>
+                        <Form.Switch
+                            label="Multiple Transactions"
+                            onChange={(e) => setMultipleHandInputMode(e.target.checked)}
+                        />
+                    </Form>
+                </Col>
                 <Row className="gx-2">
-                    {JP_TRANSACTION_TYPE_BUTTONS.map((button, idx) => (
+                    {getActions().map((button, idx) => (
                         <Col key={idx} xs={4}>
                             <ListToggleButton
                                 index={idx}
@@ -239,13 +242,14 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                                 checked={transactionType === button.value}
                                 onChange={(value) =>
                                     transactionTypeOnChange(
-                                        value as unknown as JapaneseTransactionType,
+                                        value as unknown as JapaneseTransactionType | DeckOutType,
                                     )
                                 }
                             />
                         </Col>
                     ))}
                 </Row>
+
                 {getJapaneseLabels().map(([label, labelPlayerIds], idx) => (
                     <Row key={label} className="my-4">
                         <Col>
@@ -259,6 +263,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         </Col>
                     </Row>
                 ))}
+                {getPointsInput()}
                 <Row className="my-4">
                     <Col>
                         <h5>Riichis:</h5>
@@ -270,43 +275,55 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         />
                     </Col>
                 </Row>
-                {getPointsInput()}
-                {getSubmitSingleTransactionRoundButton()}
-                <Row></Row>
-                <Button
-                    variant="primary"
-                    className="mt-4 w-50"
-                    disabled={gameOver}
-                    onClick={addTransaction}
-                >
-                    Add Transaction
-                </Button>
                 {getTransactionMatters()}
             </>
         );
     };
     function getTransactionMatters() {
-        if (transactions.length === 0) {
-            return <></>;
+        if (!multipleHandInputMode) {
+            return <Button
+                variant="success"
+                className="mt-4 w-50"
+                disabled={gameOver}
+                onClick={submitSingleTransactionRound}
+            >
+                Submit Round
+            </Button>;
         }
         return (
             <>
+                <Row className={"gx-1"} >
+                    <Col>
+                        <Button
+                            variant="primary"
+                            className="mt-4 w-100"
+                            disabled={gameOver}
+                            onClick={addTransaction}
+                        >
+                            Add Transaction
+                        </Button>
+                    </Col>
+                    <Col>
+                        <Button
+                            variant="danger"
+                            className="mt-4 w-100"
+                            disabled={gameOver || transactions.length === 0}
+                            onClick={deleteLastTransaction}
+                        >
+                            Delete Last Transaction
+                        </Button>
+                    </Col>
+                </Row>
+
                 {getTransactionListRender()}
+
                 <Button
-                    variant="primary"
+                    variant="success"
                     className="mt-4 w-50"
-                    disabled={gameOver}
-                    onClick={deleteLastTransaction}
-                >
-                    Delete Last Transaction
-                </Button>
-                <Button
-                    variant="primary"
-                    className="mt-4 w-50"
-                    disabled={gameOver}
+                    disabled={gameOver || transactions.length === 0}
                     onClick={submitAllTransactionRound}
                 >
-                    Submit All
+                    Submit Round
                 </Button>
             </>
         );

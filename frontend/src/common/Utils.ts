@@ -75,7 +75,7 @@ const validateGameVariant = (gameVariant: string | undefined): gameVariant is Ga
 
 const getGameTypeString = (gameType: GameVariant): string => {
     if (gameType === "jp") {
-        return "Japanese";
+        return "Riichi";
     } else if (gameType === "hk") {
         return "Hong Kong";
     }

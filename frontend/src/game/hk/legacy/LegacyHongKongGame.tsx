@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import LegacyHongKongGameTable, { ModifiedHongKongRound } from "./LegacyHongKongGameTable";
 import {
     HK_LABEL_MAP,
@@ -16,7 +16,6 @@ import { hongKongPointsWheel } from "../../../common/Utils";
 import DropdownInput from "../../common/DropdownInput";
 import { LegacyGameProps } from "../../Game";
 import { createHongKongRoundRequest, generateOverallScoreDelta } from "../controller/HongKongRound";
-import { validateCreateHongKongRound } from "../controller/ValidateHongKongRound";
 
 const LegacyHongKongGame: FC<LegacyGameProps> = ({
     enableRecording,
@@ -77,7 +76,6 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
     };
 
     const submitRound = async () => {
-        validateCreateHongKongRound(transactionType, roundActions, hand);
         const roundRequest = createHongKongRoundRequest(
             transactionType,
             roundActions,

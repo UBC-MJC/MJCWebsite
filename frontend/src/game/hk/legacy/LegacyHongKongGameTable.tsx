@@ -9,7 +9,8 @@ import {
 import { Table as BTable } from "react-bootstrap";
 import { mapWindToCharacter } from "../../../common/Utils";
 import { addScoreDeltas } from "../../jp/controller/JapaneseRound";
-import { generateOverallScoreDelta, getStartingScore } from "../controller/HongKongRound";
+import { generateOverallScoreDelta } from "../controller/HongKongRound";
+import {getHongKongStartingScore} from "../../common/constants";
 type LegacyGameTableProps = {
     rounds: ModifiedHongKongRound[];
     players: GamePlayer[];
@@ -22,7 +23,7 @@ const getCurrentScoreRow = (rounds: ModifiedHongKongRound[]) => {
         "Score",
         ...rounds.reduce<number[]>(
             (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
-            getStartingScore(),
+            getHongKongStartingScore(),
         ),
     ];
 };
