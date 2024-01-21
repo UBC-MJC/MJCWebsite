@@ -1,21 +1,21 @@
 import { FC, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import LegacyHongKongGameTable from "./LegacyHongKongGameTable";
+import { Button, Col, Container, Row } from "react-bootstrap";
+import LegacyHongKongGameTable, { ModifiedHongKongRound } from "./LegacyHongKongGameTable";
 import {
+    HK_LABEL_MAP,
+    HK_TRANSACTION_TYPE_BUTTONS,
+    HK_UNDEFINED_HAND,
     HongKongActions,
     HongKongLabel,
-    HongKongRoundType,
-    HK_LABEL_MAP,
-    HK_ROUND_TYPE_BUTTONS,
-    HK_UNDEFINED_HAND
+    HongKongTransactionType,
+    isGameEnd,
 } from "../../common/constants";
-import ListToggleButton from "../../common/RoundTypeButtonList";
+import ListToggleButton from "../../common/TransactionTypeButtonList";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
 import { hongKongPointsWheel } from "../../../common/Utils";
 import DropdownInput from "../../common/DropdownInput";
 import { LegacyGameProps } from "../../Game";
-import { createHongKongRoundRequest } from "../controller/HongKongRound";
-import { validateCreateHongKongRound } from "../controller/ValidateHongKongRound";
+import { createHongKongRoundRequest, generateOverallScoreDelta } from "../controller/HongKongRound";
 
 const LegacyHongKongGame: FC<LegacyGameProps> = ({
     enableRecording,
@@ -23,54 +23,43 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
     game,
     handleSubmitRound,
 }) => {
-    const [roundType, setRoundType] = useState<HongKongRoundType>(HongKongRoundType.DEAL_IN);
+    const [transactionType, setTransactionType] = useState<HongKongTransactionType>(
+        HongKongTransactionType.DEAL_IN,
+    );
     const [roundActions, setRoundActions] = useState<HongKongActions>({});
-    const [hasSecondHand, setHasSecondHand] = useState<boolean>(false);
     const [hand, setHand] = useState<HongKongHandInput>(HK_UNDEFINED_HAND);
-    const [secondHand, setSecondHand] = useState<HongKongHandInput>(HK_UNDEFINED_HAND);
+    const gameOver = isGameEnd(game, "hk");
 
-    const gameOver = typeof game.currentRound === "undefined";
-
-    const roundTypeOnChange = (type: HongKongRoundType) => {
+    const transactionTypeOnChange = (type: HongKongTransactionType) => {
         const prevWinner = roundActions.WINNER;
-        const prevWinner2 = roundActions.WINNER_2;
         const prevLoser = roundActions.LOSER;
         const prevPao = roundActions.PAO;
 
         const newRoundActions: HongKongActions = {};
 
         switch (type) {
-            case HongKongRoundType.DEAL_IN:
+            case HongKongTransactionType.DEAL_IN:
                 newRoundActions.WINNER = prevWinner;
                 newRoundActions.LOSER = prevLoser;
                 break;
-            case HongKongRoundType.DEAL_IN_PAO:
+            case HongKongTransactionType.DEAL_IN_PAO:
                 newRoundActions.WINNER = prevWinner;
                 newRoundActions.LOSER = prevLoser;
                 newRoundActions.PAO = prevPao;
                 break;
-            case HongKongRoundType.SELF_DRAW:
+            case HongKongTransactionType.SELF_DRAW:
                 newRoundActions.WINNER = prevWinner;
                 break;
-            case HongKongRoundType.SELF_DRAW_PAO:
+            case HongKongTransactionType.SELF_DRAW_PAO:
                 newRoundActions.WINNER = prevWinner;
                 newRoundActions.PAO = prevPao;
                 break;
-            case HongKongRoundType.MISTAKE:
-                newRoundActions.LOSER = prevLoser;
+            case HongKongTransactionType.DECK_OUT:
                 break;
-            case HongKongRoundType.DECK_OUT:
-                break;
-        }
-
-        if (hasSecondHand) {
-            newRoundActions.WINNER_2 = prevWinner2;
         }
 
         setRoundActions(newRoundActions);
-        setRoundType(type);
-        setSecondHand(HK_UNDEFINED_HAND);
-
+        setTransactionType(type);
         if (!showPointInput()) {
             setHand(HK_UNDEFINED_HAND);
         }
@@ -83,78 +72,61 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
     };
 
     const handOnChange = (value: number) => {
-        setHand(value);
-    }
-
-    const secondHandOnChange = (value: number) => {
-        setSecondHand(value);
-    }
+        setHand(+value);
+    };
 
     const submitRound = async () => {
-        validateCreateHongKongRound(roundType, roundActions, hand, hasSecondHand, secondHand);
-        const roundRequest = createHongKongRoundRequest(roundType, roundActions, hand, hasSecondHand, secondHand, game.currentRound!);
+        const roundRequest = createHongKongRoundRequest(
+            transactionType,
+            roundActions,
+            hand,
+            game.currentRound!,
+        );
         await handleSubmitRound(roundRequest);
-    }
+    };
 
     const getHongKongLabels = () => {
         let labels: [HongKongLabel, (number | undefined)[]][] = [];
 
-        switch (roundType) {
-            case HongKongRoundType.DEAL_IN:
-            case HongKongRoundType.DEAL_IN_PAO:
+        switch (transactionType) {
+            case HongKongTransactionType.DEAL_IN:
+            case HongKongTransactionType.DEAL_IN_PAO:
                 labels = [
                     [HongKongLabel.WINNER, [roundActions.WINNER]],
                     [HongKongLabel.LOSER, [roundActions.LOSER]],
                 ];
                 break;
-            case HongKongRoundType.SELF_DRAW:
-            case HongKongRoundType.SELF_DRAW_PAO:
-                labels = [
-                    [HongKongLabel.WINNER, [roundActions.WINNER]],
-                ];
+            case HongKongTransactionType.SELF_DRAW:
+            case HongKongTransactionType.SELF_DRAW_PAO:
+                labels = [[HongKongLabel.WINNER, [roundActions.WINNER]]];
                 break;
-            case HongKongRoundType.MISTAKE:
-                labels = [
-                    [HongKongLabel.LOSER, [roundActions.LOSER]],
-                ];
+            case HongKongTransactionType.DECK_OUT:
                 break;
-            case HongKongRoundType.DECK_OUT:
-                break;
-        }
-
-        if (hasSecondHand) {
-            labels.push([HongKongLabel.WINNER_2, [roundActions.WINNER_2]]);
         }
 
         return labels;
-    }
+    };
 
     const getRecordingInterface = () => {
         return (
             <>
                 <Row className="gx-2">
-                    {HK_ROUND_TYPE_BUTTONS.map((button, idx) => (
+                    {HK_TRANSACTION_TYPE_BUTTONS.map((button, idx) => (
                         <Col key={idx} xs={4}>
                             <ListToggleButton
                                 index={idx}
                                 name={button.name}
                                 value={button.value}
-                                checked={roundType === button.value}
-                                onChange={(value) => roundTypeOnChange(value)}
+                                checked={transactionType.toString() === button.value}
+                                onChange={(value) =>
+                                    transactionTypeOnChange(
+                                        value as unknown as HongKongTransactionType,
+                                    )
+                                }
                             />
                         </Col>
                     ))}
                 </Row>
-                {showPointInput() && (
-                    <Col xs sm={3} className="mx-auto">
-                        <Form>
-                            <Form.Switch
-                                label="Double Deal In"
-                                onChange={(e) => setHasSecondHand(e.target.checked)}
-                            />
-                        </Form>
-                    </Col>
-                )}
                 {getHongKongLabels().map(([label, labelPlayerIds], idx) => (
                     <Row key={label} className="my-4">
                         <Col>
@@ -182,8 +154,17 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
     };
 
     const showPointInput = () => {
-        return typeof roundActions.WINNER !== "undefined"
-    }
+        return typeof roundActions.WINNER !== "undefined";
+    };
+
+    const mapRoundsToModifiedRounds = (rounds: HongKongRound[]): ModifiedHongKongRound[] => {
+        return rounds.map((round) => {
+            return {
+                ...round,
+                scoreDeltas: generateOverallScoreDelta(round),
+            };
+        });
+    };
 
     const getPointsInput = () => {
         if (!showPointInput()) {
@@ -203,30 +184,15 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                         />
                     ))}
                 </Row>
-                {hasSecondHand && (
-                    <Row>
-                        <h5>Second Hand:</h5>
-                        {hongKongPointsWheel.map((wheel, idx) => (
-                            <DropdownInput
-                                key={wheel.label}
-                                label={wheel.label}
-                                data={wheel.data}
-                                onChange={(value) => secondHandOnChange(value)}
-                            />
-                        ))}
-                    </Row>
-                )}
             </>
         );
     };
 
     return (
         <Container>
-            {enableRecording && !gameOver && (
-                getRecordingInterface()
-            )}
+            {enableRecording && !gameOver && getRecordingInterface()}
             <LegacyHongKongGameTable
-                rounds={game.rounds as HongKongRound[]}
+                rounds={mapRoundsToModifiedRounds(game.rounds as HongKongRound[])}
                 players={players}
             />
         </Container>

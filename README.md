@@ -47,9 +47,9 @@ Replace all instances of `{PASSWORD}` with any string and replace `{SECRET}` wit
 6. Install some version of `cmake` (Should be bundled in with some basic stuff)
 7. Run `make build` in the backend directory. This will create docker images for all the services being used. Run `make up` to start live development, with all changes being immediately updated. Run `make down` or stop Docker Desktop to close ths services.
 The command `make build` is only needed once, unless the Dockerfiles are changed or `node_modules` is updated (meaning if anything is npm installed).
-8. If it is the first time running the website, you need to create the database tables. To do so, run `npx prisma db push` in the backend directory. 
-9. Open [http://localhost:4000](http://localhost:4000) to view the website. 
-10. To get admin permissions, first register with any account. Then install a command line mysql client and run `mysql -u root -p -h 127.0.0.1`, entering the password you specified in the dotenv file. Then run `UPDATE Player SET Admin = 1 WHERE id = {YOUR ID};` where `{YOUR ID}` is the id of the user you want to give admin permissions to.
+8. If it is the first time running the website, you need to create the database tables. To do so, click into the backend docker container and go into the `exec` tab. In the terminal there, run the command `npx prisma db push`. 
+9. Open [http://localhost:3000](http://localhost:3000) to view the website. 
+10. To get admin permissions, first register with any account. Then go into `exec` for the db container from Docker Desktop and run `mysql -u root -p`, entering the password you specified in the dotenv file. Then run `UPDATE Player SET Admin = 1 WHERE id = {YOUR ID};` where `{YOUR ID}` is the id of the user you want to give admin permissions to.
 
 ### Docker shenanigans
 

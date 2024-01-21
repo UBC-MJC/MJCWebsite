@@ -15,6 +15,7 @@ import confirmDialog from "../common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
 import { Button, Col, Container, Row } from "react-bootstrap";
+import { isGameEnd } from "./common/constants";
 
 const Game: FC = () => {
     const { id, variant } = useParams();
@@ -138,15 +139,6 @@ const Game: FC = () => {
 
         return orderedPlayers as GamePlayer[];
     };
-
-    const legacyToggle = (): boolean => {
-        if (typeof player === "undefined") {
-            return true;
-        }
-
-        return player.legacyDisplayGame;
-    };
-
     const isRecording = (game: Game): boolean => {
         return (
             typeof player !== "undefined" &&
@@ -184,7 +176,7 @@ const Game: FC = () => {
                 />
             );
         }
-    }
+    };
 
     if (isNaN(gameId)) {
         return (
@@ -212,11 +204,7 @@ const Game: FC = () => {
                 {game.gameType} {getGameTypeString(variant)} Game
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game)}
             </h1>
-            {legacyToggle() ? (
-                getLegacyDisplayGame(game)
-            ) : (
-                getLegacyDisplayGame(game)
-            )}
+            {getLegacyDisplayGame(game)}
             {isRecording(game) && (
                 <Container>
                     <Row>
@@ -242,7 +230,7 @@ const Game: FC = () => {
                             <Button
                                 variant="success"
                                 className="mb-2 w-100"
-                                disabled={game.currentRound !== undefined}
+                                disabled={!isGameEnd(game, variant)}
                                 onClick={() => handleSubmitGame()}
                             >
                                 Submit Game

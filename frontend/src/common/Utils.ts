@@ -57,45 +57,6 @@ const hongKongRoundLabels = [
     { name: "Pao", value: "pao" },
 ];
 
-const legacyJapaneseRoundLabels: RoundType[] = [
-    {
-        name: "Deal In",
-        value: "DEAL_IN",
-        selectors: ["Winner", "Loser", "Riichis"],
-    },
-    { name: "Self Draw", value: "SELF_DRAW", selectors: ["Winner", "Riichis"] },
-    { name: "Deck Out", value: "DECK_OUT", selectors: ["Tenpais", "Riichis"] },
-    { name: "Reshuffle", value: "RESHUFFLE", selectors: ["Riichis"] },
-    { name: "Mistake", value: "MISTAKE", selectors: ["Loser", "Riichis"] },
-    {
-        name: "Deal In Pao",
-        value: "DEAL_IN_PAO",
-        selectors: ["Winner", "Loser", "Pao Player", "Riichis"],
-    },
-    {
-        name: "Tsumo Pao",
-        value: "SELF_DRAW_PAO",
-        selectors: ["Winner", "Pao Player", "Riichis"],
-    },
-];
-
-const legacyHongKongRoundLabels: RoundType[] = [
-    { name: "Deal In", value: "DEAL_IN", selectors: ["Winner", "Loser"] },
-    { name: "Self Draw", value: "SELF_DRAW", selectors: ["Winner"] },
-    { name: "Deck Out", value: "DECK_OUT", selectors: [] },
-    { name: "Mistake", value: "MISTAKE", selectors: ["Loser"] },
-    { name: "Pao", value: "PAO", selectors: ["Winner", "Pao Player"] },
-];
-
-const getLegacyRoundLabels = (gameVariant: GameVariant) => {
-    switch (gameVariant) {
-        case "jp":
-            return legacyJapaneseRoundLabels;
-        case "hk":
-            return legacyHongKongRoundLabels;
-    }
-};
-
 const windOrder = ["EAST", "SOUTH", "WEST", "NORTH"];
 
 const windComparison = (wind1: string, wind2: string, playerWind?: string): number => {
@@ -114,32 +75,11 @@ const validateGameVariant = (gameVariant: string | undefined): gameVariant is Ga
 
 const getGameTypeString = (gameType: GameVariant): string => {
     if (gameType === "jp") {
-        return "Japanese";
+        return "Riichi";
     } else if (gameType === "hk") {
         return "Hong Kong";
     }
     return "";
-};
-
-type Score = {
-    playerId: string;
-    [key: string]: any;
-}
-const findPlayerScoreDelta = (transactions: JapaneseTransaction[], playerIndex: number): number => {
-    return transactions.reduce((acc, transaction) => {
-        let delta = 0;
-        if (playerIndex === 0) {
-            delta = transaction.player0ScoreChange;
-        } else if (playerIndex === 1) {
-            delta = transaction.player1ScoreChange;
-        } else if (playerIndex === 2) {
-            delta = transaction.player2ScoreChange;
-        } else if (playerIndex === 3) {
-            delta = transaction.player3ScoreChange;
-        }
-
-        return acc + delta
-    }, 0);
 };
 
 const mapWindToCharacter = (wind: string): string => {
@@ -156,6 +96,10 @@ const mapWindToCharacter = (wind: string): string => {
     }
 };
 
+const range = (end: number): number[] => {
+    return Array.from({ length: end }, (_, i) => i);
+};
+
 export {
     japanesePoints,
     japaneseFu,
@@ -165,12 +109,9 @@ export {
     hongKongPointsWheel,
     japaneseRoundLabels,
     hongKongRoundLabels,
-    legacyJapaneseRoundLabels,
-    legacyHongKongRoundLabels,
-    getLegacyRoundLabels,
     windComparison,
     getGameTypeString,
     validateGameVariant,
-    findPlayerScoreDelta,
     mapWindToCharacter,
+    range,
 };

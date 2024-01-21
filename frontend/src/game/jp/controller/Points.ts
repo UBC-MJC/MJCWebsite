@@ -1,5 +1,3 @@
-import {Hand} from "./Types";
-
 export const MANGAN_BASE_POINT = 2000;
 const manganValue = (points: number) => {
     let multiplier = 0;
@@ -36,7 +34,7 @@ const manganValue = (points: number) => {
     return MANGAN_BASE_POINT * multiplier;
 };
 
-export function calculateHandValue(multiplier: number, hand: Hand) {
+function calculateHandValue(multiplier: number, hand: JapaneseHandInput) {
     const han = hand.han;
     const fu = hand.fu;
     if (han >= 5) {
@@ -46,3 +44,5 @@ export function calculateHandValue(multiplier: number, hand: Hand) {
     const handValue = Math.ceil((fu * Math.pow(2, 2 + han) * multiplier) / 100) * 100;
     return handValue > manganPayout ? manganPayout : handValue;
 }
+
+export { calculateHandValue };

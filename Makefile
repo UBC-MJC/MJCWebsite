@@ -11,3 +11,6 @@ down:
 	docker-compose -f docker-compose.dev.yml down
 down-prod:
 	docker-compose -f docker-compose.prod.yml down
+format:
+	npm --prefix ./backend run format
+	npm --prefix ./frontend run format

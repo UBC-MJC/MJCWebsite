@@ -1,9 +1,5 @@
 import { FC, useState } from "react";
-import {
-    getLegacyRoundLabels,
-    hongKongRoundLabels,
-    japaneseRoundLabels,
-} from "../../common/Utils";
+import { hongKongRoundLabels, japaneseRoundLabels } from "../../common/Utils";
 import { Col, Container, Row, ToggleButton } from "react-bootstrap";
 import RoundInputFigure from "./RoundInputFigure";
 

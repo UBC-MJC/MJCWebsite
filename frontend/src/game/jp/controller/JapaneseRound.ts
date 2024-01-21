@@ -1,60 +1,34 @@
 import { calculateHandValue, MANGAN_BASE_POINT } from "./Points";
-import { NUM_PLAYERS } from "./Types";
-import { JapaneseActions, JapaneseRoundType } from "../../common/constants";
-import { addHonba } from "./HonbaProcessing";
+import {
+    getEmptyScoreDelta,
+    getJapaneseStartingScore,
+    JapaneseTransactionType,
+    NUM_PLAYERS,
+    JAPANESE_RETURNING_POINT,
+    RIICHI_STICK_VALUE,
+    Wind,
+} from "../../common/constants";
+import { findHeadbumpWinner, transformTransactions } from "./HonbaProcessing";
 
-type JapaneseTransactionInput = Omit<JapaneseTransaction, "id">;
+import { range } from "../../../common/Utils";
 
 const createJapaneseRoundRequest = (
-    roundType: JapaneseRoundType,
-    roundActions: JapaneseActions,
+    currentRound: PartialJapaneseRound,
+    transactions: JapaneseTransaction[],
     tenpaiList: number[],
     riichiList: number[],
-    hand: JapaneseHandInput,
-    hasSecondHand: boolean,
-    secondHand: JapaneseHandInput,
-    currentRound: PartialJapaneseRound,
-) => {
-    const result: any = {
-        player0Riichi: riichiList.includes(0),
-        player1Riichi: riichiList.includes(1),
-        player2Riichi: riichiList.includes(2),
-        player3Riichi: riichiList.includes(3),
+): JapaneseRound => {
+    return {
+        ...currentRound,
+        riichis: riichiList,
+        tenpais: tenpaiList,
+        transactions: transformTransactions(transactions, currentRound.bonus),
+        endRiichiStickCount: getFinalRiichiSticks(
+            transactions,
+            currentRound.startRiichiStickCount,
+            riichiList,
+        ),
     };
-
-    const dealerIndex = currentRound.roundNumber - 1;
-    const transactions: JapaneseTransactionInput[] = [];
-    switch (roundType) {
-        case JapaneseRoundType.DEAL_IN:
-            transactions.push(addDealIn(roundActions.WINNER!, roundActions.LOSER!, dealerIndex, hand));
-            break;
-        case JapaneseRoundType.SELF_DRAW:
-            transactions.push(addSelfDraw(roundActions.WINNER!, dealerIndex, hand));
-            break;
-        case JapaneseRoundType.DECK_OUT:
-            transactions.push(addDeckOut(tenpaiList));
-            break;
-        case JapaneseRoundType.MISTAKE:
-            transactions.push(addMistake(roundActions.LOSER!));
-            break;
-        case JapaneseRoundType.RESHUFFLE:
-            break;
-        case JapaneseRoundType.DEAL_IN_PAO:
-            transactions.push(addPaoDealIn(roundActions.WINNER!, roundActions.LOSER!, roundActions.PAO!, dealerIndex, hand));
-            break;
-        case JapaneseRoundType.SELF_DRAW_PAO:
-            transactions.push(addPaoSelfDraw(roundActions.WINNER!, roundActions.PAO!, dealerIndex, hand));
-            break;
-    }
-
-    if (hasSecondHand) {
-        transactions.push(addDealIn(roundActions.WINNER_2!, roundActions.LOSER!, dealerIndex, secondHand));
-    }
-
-    result.transactions = transactions;
-    result.keepDealership = checkKeepDealership(roundType, roundActions, tenpaiList, dealerIndex);
-    result.endRiichiStickCount = getEndRiichiStickCount(roundType, roundActions, riichiList, currentRound.startRiichiStickCount);
-    return result;
 };
 
 const getDealInMultiplier = (personIndex: number, dealerIndex: number): number => {
@@ -62,30 +36,43 @@ const getDealInMultiplier = (personIndex: number, dealerIndex: number): number =
         return 6;
     }
     return 4;
-}
+};
 
-const getSelfDrawMultiplier = (personIndex: number, dealerIndex: number, isDealer: boolean): number => {
+const getSelfDrawMultiplier = (
+    personIndex: number,
+    dealerIndex: number,
+    isDealer: boolean,
+): number => {
     if (isDealer || personIndex === dealerIndex) {
         return 2;
     }
     return 1;
-}
+};
 
-const addDealIn = (winnerIndex: number, loserIndex: number, dealerIndex: number, hand: JapaneseHandInput): JapaneseTransactionInput => {
-    const scoreDeltas = [0, 0, 0, 0];
+const addDealIn = (
+    winnerIndex: number,
+    loserIndex: number,
+    dealerIndex: number,
+    hand: JapaneseHandInput,
+): JapaneseTransaction => {
+    const scoreDeltas = getEmptyScoreDelta();
     const multiplier = getDealInMultiplier(winnerIndex, dealerIndex);
     const handValue = calculateHandValue(multiplier, hand);
     scoreDeltas[winnerIndex] = handValue;
     scoreDeltas[loserIndex] = -handValue;
     return {
-        type: "DEAL_IN",
-        ...hand,
-        ...convertScoreDeltasToProperties(scoreDeltas),
+        transactionType: JapaneseTransactionType.DEAL_IN,
+        hand: hand,
+        scoreDeltas: scoreDeltas,
     };
-}
+};
 
-const addSelfDraw = (winnerIndex: number, dealerIndex: number, hand: JapaneseHandInput): JapaneseTransactionInput => {
-    const scoreDeltas = [0, 0, 0, 0];
+const addSelfDraw = (
+    winnerIndex: number,
+    dealerIndex: number,
+    hand: JapaneseHandInput,
+): JapaneseTransaction => {
+    const scoreDeltas = getEmptyScoreDelta();
     const isDealer = winnerIndex === dealerIndex;
     let totalScore = 0;
     for (let i = 0; i < NUM_PLAYERS; i++) {
@@ -97,57 +84,21 @@ const addSelfDraw = (winnerIndex: number, dealerIndex: number, hand: JapaneseHan
     }
     scoreDeltas[winnerIndex] = totalScore;
     return {
-        type: "SELF_DRAW",
-        ...hand,
-        ...convertScoreDeltasToProperties(scoreDeltas),
+        transactionType: JapaneseTransactionType.SELF_DRAW,
+        hand: hand,
+        scoreDeltas: scoreDeltas,
     };
-}
+};
 
-const addDeckOut = (tenpaiList: number[]): JapaneseTransactionInput => {
-    const tenpaiCount = tenpaiList.length;
-    let positiveScore = 0
-    let negativeScore = 0;
-    if (tenpaiCount === 1) {
-        positiveScore = 3000;
-        negativeScore = -1000;
-    } else if (tenpaiCount === 2) {
-        positiveScore = 1500;
-        negativeScore = -1500;
-    } else if (tenpaiCount === 3) {
-        positiveScore = 1000;
-        negativeScore = -3000;
-    }
-
-    const scoreDeltas = [0, 0, 0, 0];
-    for (let i = 0; i < NUM_PLAYERS; i++) {
-        if (tenpaiList.includes(i)) {
-            scoreDeltas[i] = positiveScore;
-        } else {
-            scoreDeltas[i] = negativeScore;
-        }
-    }
+const addInRoundRyuukyoku = (): JapaneseTransaction => {
     return {
-        type: "TENPAI",
-        ...convertScoreDeltasToProperties(scoreDeltas),
+        transactionType: JapaneseTransactionType.INROUND_RYUUKYOKU,
+        scoreDeltas: getEmptyScoreDelta(),
     };
-}
+};
 
-const addMistake = (chomboPlayerIndex: number): JapaneseTransactionInput => {
-    const scoreDeltas = [0, 0, 0, 0];
-    for (let i = 0; i < NUM_PLAYERS; i++) {
-        if (i !== chomboPlayerIndex) {
-            scoreDeltas[i] = 2 * MANGAN_BASE_POINT;
-            scoreDeltas[chomboPlayerIndex] -= 2 * MANGAN_BASE_POINT;
-        }
-    }
-    return {
-        type: "MISTAKE",
-        ...convertScoreDeltasToProperties(scoreDeltas),
-    };
-}
-
-const addNagashiMangan = (winnerIndex: number, dealerIndex: number): JapaneseTransactionInput => {
-    const scoreDeltas = [0, 0, 0, 0];
+const addNagashiMangan = (winnerIndex: number, dealerIndex: number): JapaneseTransaction => {
+    const scoreDeltas = getEmptyScoreDelta();
     const isDealer = winnerIndex === dealerIndex;
     for (let i = 0; i < NUM_PLAYERS; i++) {
         if (i !== winnerIndex) {
@@ -157,84 +108,137 @@ const addNagashiMangan = (winnerIndex: number, dealerIndex: number): JapaneseTra
         }
     }
     return {
-        type: "SELF_DRAW",
-        ...convertScoreDeltasToProperties(scoreDeltas),
+        transactionType: JapaneseTransactionType.NAGASHI_MANGAN,
+        scoreDeltas: scoreDeltas,
     };
-}
+};
 
-const addPaoDealIn = (winnerIndex: number, dealInPersonIndex: number, paoPersonIndex: number, dealerIndex: number, hand: JapaneseHandInput): JapaneseTransactionInput => {
-    const scoreDeltas = [0, 0, 0, 0];
+const addPaoDealIn = (
+    winnerIndex: number,
+    dealInPersonIndex: number,
+    paoPlayerIndex: number,
+    dealerIndex: number,
+    hand: JapaneseHandInput,
+): JapaneseTransaction => {
+    const scoreDeltas = getEmptyScoreDelta();
     const multiplier = getDealInMultiplier(winnerIndex, dealerIndex);
     scoreDeltas[dealInPersonIndex] = -calculateHandValue(multiplier / 2, hand);
-    scoreDeltas[paoPersonIndex] = -calculateHandValue(multiplier / 2, hand);
+    scoreDeltas[paoPlayerIndex] = -calculateHandValue(multiplier / 2, hand);
     scoreDeltas[winnerIndex] += calculateHandValue(multiplier, hand);
     return {
-        type: "PAO",
-        paoPlayerIndex: paoPersonIndex,
-        ...hand,
-        ...convertScoreDeltasToProperties(scoreDeltas),
+        transactionType: JapaneseTransactionType.DEAL_IN_PAO,
+        hand: hand,
+        paoPlayerIndex: paoPlayerIndex,
+        scoreDeltas: scoreDeltas,
     };
-}
+};
 
-const addPaoSelfDraw = (winnerIndex: number, paoPersonIndex: number, dealerIndex: number, hand: JapaneseHandInput): JapaneseTransactionInput => {
-    const scoreDeltas = [0, 0, 0, 0];
+const addPaoSelfDraw = (
+    winnerIndex: number,
+    paoPlayerIndex: number,
+    dealerIndex: number,
+    hand: JapaneseHandInput,
+): JapaneseTransaction => {
+    const scoreDeltas = getEmptyScoreDelta();
     const multiplier = getDealInMultiplier(winnerIndex, dealerIndex);
     const value = calculateHandValue(multiplier, hand);
-    scoreDeltas[paoPersonIndex] = -value;
+    scoreDeltas[paoPlayerIndex] = -value;
     scoreDeltas[winnerIndex] += value;
     return {
-        type: "PAO",
-        paoPlayerIndex: paoPersonIndex,
-        ...hand,
-        ...convertScoreDeltasToProperties(scoreDeltas),
+        transactionType: JapaneseTransactionType.SELF_DRAW_PAO,
+        hand: hand,
+        paoPlayerIndex: paoPlayerIndex,
+        scoreDeltas: scoreDeltas,
     };
+};
+
+function getFinalRiichiSticks(
+    transactions: JapaneseTransaction[],
+    startingRiichiSticks: number,
+    riichis: number[],
+): number {
+    const winningTransactions: JapaneseTransactionType[] = [
+        JapaneseTransactionType.DEAL_IN,
+        JapaneseTransactionType.SELF_DRAW,
+        JapaneseTransactionType.DEAL_IN_PAO,
+        JapaneseTransactionType.SELF_DRAW_PAO,
+    ];
+
+    for (const transaction of transactions) {
+        if (winningTransactions.includes(<JapaneseTransactionType>transaction.transactionType)) {
+            return 0;
+        }
+    }
+    return startingRiichiSticks + riichis.length;
 }
 
-const addScoreDeltas = (scoreDelta1: number[], scoreDelta2: number[]): number[] => {
-    const finalScoreDelta = [0, 0, 0, 0];
-    for (const i in finalScoreDelta) {
-        finalScoreDelta[i] += scoreDelta1[i] + scoreDelta2[i];
+export function addScoreDeltas(scoreDelta1: number[], scoreDelta2: number[]): number[] {
+    const finalScoreDelta = getEmptyScoreDelta();
+    for (const index of range(NUM_PLAYERS)) {
+        finalScoreDelta[index] += scoreDelta1[index] + scoreDelta2[index];
     }
     return finalScoreDelta;
 }
 
-const convertScoreDeltasToProperties = (scoreDeltas: number[]): any => {
-    return {
-        player0ScoreChange: scoreDeltas[0],
-        player1ScoreChange: scoreDeltas[1],
-        player2ScoreChange: scoreDeltas[2],
-        player3ScoreChange: scoreDeltas[3],
-    };
+function reduceScoreDeltas(transactions: Transaction[]): number[] {
+    return transactions.reduce<number[]>(
+        (result, current) => addScoreDeltas(result, current.scoreDeltas),
+        getEmptyScoreDelta(),
+    );
 }
 
-const checkKeepDealership = (roundType: JapaneseRoundType, roundActions: JapaneseActions, tenpaiList: number[], dealerIndex: number): boolean => {
-    if (roundType === JapaneseRoundType.DECK_OUT) {
-        return tenpaiList.includes(dealerIndex);
+export function generateOverallScoreDelta(concludedGame: JapaneseRound) {
+    const riichiDeltas = getEmptyScoreDelta();
+    for (const id of concludedGame.riichis) {
+        riichiDeltas[id] -= RIICHI_STICK_VALUE;
     }
-
-    if (roundType === JapaneseRoundType.MISTAKE) {
-        return true;
+    const headbumpWinner = findHeadbumpWinner(concludedGame.transactions);
+    if (concludedGame.endRiichiStickCount === 0) {
+        riichiDeltas[headbumpWinner] +=
+            (concludedGame.startRiichiStickCount + concludedGame.riichis.length) *
+            RIICHI_STICK_VALUE;
     }
-
-    if (roundActions.WINNER! === dealerIndex) {
-        return true;
-    }
-
-    if (typeof roundActions.WINNER_2 !== "undefined" && roundActions.WINNER_2 === dealerIndex) {
-        return true;
-    }
-
-    return false;
+    return addScoreDeltas(reduceScoreDeltas(concludedGame.transactions), riichiDeltas);
 }
 
-const getEndRiichiStickCount = (roundType: JapaneseRoundType, roundActions: JapaneseActions, riichiList: number[], startRiichiStickCount: number): number => {
-    if (roundType === JapaneseRoundType.DECK_OUT || roundType === JapaneseRoundType.RESHUFFLE || roundType === JapaneseRoundType.MISTAKE) {
-        return 0;
+const isJapaneseGameEnd = (
+    newRound: PartialJapaneseRound,
+    concludedRounds: JapaneseRound[],
+): boolean => {
+    if (newRound.roundWind === Wind.NORTH) {
+        // ends at north regardless of what happens
+        return true;
     }
-
-    return riichiList.length + startRiichiStickCount;
-}
+    const totalScore = concludedRounds.reduce<number[]>(
+        (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
+        getJapaneseStartingScore(),
+    );
+    let exceedsHanten = false;
+    for (const score of totalScore) {
+        if (score < 0) {
+            return true;
+        }
+        if (score >= JAPANESE_RETURNING_POINT) {
+            exceedsHanten = true;
+        }
+    }
+    if (!exceedsHanten) {
+        return false;
+    }
+    if (newRound.roundWind === Wind.EAST || newRound.roundWind === Wind.SOUTH) {
+        return false;
+    }
+    return true; // west, and one person's score exceeds 30k
+};
 
 export {
     createJapaneseRoundRequest,
-}
+    getFinalRiichiSticks,
+    addDealIn,
+    addSelfDraw,
+    addNagashiMangan,
+    addPaoDealIn,
+    addPaoSelfDraw,
+    addInRoundRyuukyoku,
+    isJapaneseGameEnd,
+};

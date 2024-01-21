@@ -1,8 +1,9 @@
-import { Player, Prisma, Wind } from "@prisma/client";
+import { JapaneseTransactionType, Player, Prisma, Wind } from "@prisma/client";
 import HongKongGameService from "./hongKongGame.service";
 import JapaneseGameService from "./japaneseGame.service";
 import { findPlayerByUsernames } from "../player.service";
 import { EloCalculatorInput } from "./eloCalculator";
+import { JapaneseTransactionT, Transaction } from "../../validation/game.validation";
 
 const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
     include: {
@@ -46,6 +47,14 @@ const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
 
 type FullHongKongGame = Prisma.HongKongGameGetPayload<typeof fullHongKongGame>;
 
+const fullHongKongRound = Prisma.validator<Prisma.HongKongRoundDefaultArgs>()({
+    include: {
+        transactions: true,
+    },
+});
+
+type FullHongKongRound = Prisma.HongKongRoundGetPayload<typeof fullHongKongRound>;
+
 type GameVariant = "jp" | "hk";
 
 const getGameService = (gameVariant: string): any => {
@@ -68,9 +77,13 @@ const GAME_CONSTANTS = {
     },
     hk: {
         STARTING_SCORE: 750,
-        DIVIDING_CONSTANT: 16,
+        DIVIDING_CONSTANT: 30,
     },
 } as const;
+
+export const NUM_PLAYERS = 4;
+
+export const RIICHI_STICK_VALUE = 1000;
 
 // Throws error if the player list contains duplicates
 const checkPlayerListUnique = (playerNameList: string[]): void => {
@@ -109,47 +122,6 @@ const generatePlayerQuery = async (
         };
     });
 };
-
-const getWind = (index: number): Wind => {
-    if (index < 0 || index > 3) {
-        throw new Error("Invalid wind index");
-    }
-
-    return WIND_ORDER[index];
-};
-
-const getDealerPlayerId = (
-    game: FullJapaneseGame | FullHongKongGame,
-    roundNumber: number,
-): string => {
-    return game.players.find((player) => player.wind === getWind(roundNumber - 1))!.player.id;
-};
-
-const getPropertyFromIndex = (index: number) => {
-    switch (index) {
-        case 0:
-            return "player0ScoreChange";
-        case 1:
-            return "player1ScoreChange";
-        case 2:
-            return "player2ScoreChange";
-        case 3:
-            return "player3ScoreChange";
-        default:
-            throw new Error("Invalid index");
-    }
-}
-
-const requiresHand = (roundType: string): boolean => {
-    return (
-        roundType === "SELF_DRAW" ||
-        roundType === "DEAL_IN" ||
-        roundType === "DEAL_IN_PAO" ||
-        roundType === "SELF_DRAW_PAO" ||
-        roundType === "PAO"
-    );
-};
-
 const createEloCalculatorInputs = (
     players: { player: Player; wind: Wind }[],
     playerScores: number[],
@@ -171,21 +143,66 @@ const createEloCalculatorInputs = (
     });
 };
 
+export function range(end: number) {
+    return Array.from({ length: end }, (_, i) => i);
+}
+
+export function getEmptyScoreDelta(): number[] {
+    return Array(NUM_PLAYERS).fill(0);
+}
+
+export function addScoreDeltas(scoreDelta1: number[], scoreDelta2: number[]): number[] {
+    const finalScoreDelta = getEmptyScoreDelta();
+    for (const index of range(NUM_PLAYERS)) {
+        finalScoreDelta[index] += scoreDelta1[index] + scoreDelta2[index];
+    }
+    return finalScoreDelta;
+}
+
+export function reduceScoreDeltas(transactions: Transaction[]): number[] {
+    return transactions.reduce<number[]>(
+        (result, current) => addScoreDeltas(result, current.scoreDeltas),
+        getEmptyScoreDelta(),
+    );
+}
+
+const getWind = (index: number): Wind => {
+    if (index < 0 || index > 3) {
+        throw new Error("Invalid wind index");
+    }
+
+    return WIND_ORDER[index];
+};
+
+export const getNextRoundWind = (wind: Wind): Wind => {
+    return getWind((WIND_ORDER.indexOf(wind) + 1) % NUM_PLAYERS);
+};
+
+export function containingAny(
+    transactions: JapaneseTransactionT[],
+    transactionType: JapaneseTransactionType,
+): JapaneseTransactionT | null {
+    for (const transaction of transactions) {
+        if (transaction.transactionType === transactionType) {
+            return transaction;
+        }
+    }
+    return null;
+}
+
 export {
     getGameService,
     checkPlayerGameEligibility,
     checkPlayerListUnique,
     generatePlayerQuery,
-    getWind,
-    getDealerPlayerId,
-    requiresHand,
     createEloCalculatorInputs,
-    getPropertyFromIndex,
+    getWind,
     GAME_CONSTANTS,
     WIND_ORDER,
     Wind,
     FullJapaneseGame,
     FullJapaneseRound,
     FullHongKongGame,
+    FullHongKongRound,
     GameVariant,
 };
