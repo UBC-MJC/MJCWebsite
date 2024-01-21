@@ -71,12 +71,10 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 newRoundActions.WINNER = prevWinner;
                 newRoundActions.PAO = prevPao;
                 break;
-            case DeckOutType.DECK_OUT:
-                setTenpaiList([]);
-                break;
             case JapaneseTransactionType.NAGASHI_MANGAN:
                 newRoundActions.WINNER = prevWinner;
-                setTenpaiList([]);
+                break;
+            case DeckOutType.DECK_OUT:
                 break;
         }
         setRoundActions(newRoundActions);
@@ -173,11 +171,13 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
             riichiList,
         );
         await handleSubmitRound(roundRequest);
+        setRiichiList([]);
+        setTenpaiList([]);
+        setTransactions([]);
     };
 
     const submitAllTransactionRound = async () => {
         await submitRound(transactions);
-        setTransactions([]);
     };
 
     const showPointInput = () => {
