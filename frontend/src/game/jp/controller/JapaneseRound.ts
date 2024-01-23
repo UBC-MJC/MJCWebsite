@@ -187,18 +187,25 @@ function reduceScoreDeltas(transactions: Transaction[]): number[] {
     );
 }
 
-export function generateOverallScoreDelta(concludedGame: JapaneseRound) {
+export function generateOverallScoreDelta(concludedRound: JapaneseRound) {
     const riichiDeltas = getEmptyScoreDelta();
-    for (const id of concludedGame.riichis) {
+    for (const id of concludedRound.riichis) {
         riichiDeltas[id] -= RIICHI_STICK_VALUE;
     }
-    const headbumpWinner = findHeadbumpWinner(concludedGame.transactions);
-    if (concludedGame.endRiichiStickCount === 0) {
+    const headbumpWinner = findHeadbumpWinner(concludedRound.transactions);
+    if (concludedRound.endRiichiStickCount === 0) {
         riichiDeltas[headbumpWinner] +=
-            (concludedGame.startRiichiStickCount + concludedGame.riichis.length) *
+            (concludedRound.startRiichiStickCount + concludedRound.riichis.length) *
             RIICHI_STICK_VALUE;
     }
-    return addScoreDeltas(reduceScoreDeltas(concludedGame.transactions), riichiDeltas);
+    return addScoreDeltas(reduceScoreDeltas(concludedRound.transactions), riichiDeltas);
+}
+
+export function generateCurrentScore(rounds: JapaneseRound[]) {
+    return rounds.reduce<number[]>(
+        (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
+        getJapaneseStartingScore(),
+    );
 }
 
 const isJapaneseGameEnd = (

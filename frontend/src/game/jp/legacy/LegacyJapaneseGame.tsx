@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import React, { FC, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import LegacyJapaneseGameTable, { ModifiedJapaneseRound } from "./LegacyJapaneseGameTable";
 import {
@@ -24,6 +24,7 @@ import {
     addPaoSelfDraw,
     addSelfDraw,
     createJapaneseRoundRequest,
+    generateCurrentScore,
     generateOverallScoreDelta,
 } from "../controller/JapaneseRound";
 import { validateCreateJapaneseRound } from "../controller/ValidateJapaneseRound";
@@ -172,6 +173,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         setRiichiList([]);
         setTenpaiList([]);
         setTransactions([]);
+        setRoundActions({});
     };
 
     const submitAllTransactionRound = async () => {
@@ -191,15 +193,26 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
 
         switch (transactionType) {
             case JapaneseTransactionType.DEAL_IN:
-            case JapaneseTransactionType.DEAL_IN_PAO:
                 labels = [
                     [JapaneseLabel.WINNER, [roundActions.WINNER]],
                     [JapaneseLabel.LOSER, [roundActions.LOSER]],
                 ];
                 break;
+            case JapaneseTransactionType.DEAL_IN_PAO:
+                labels = [
+                    [JapaneseLabel.WINNER, [roundActions.WINNER]],
+                    [JapaneseLabel.LOSER, [roundActions.LOSER]],
+                    [JapaneseLabel.PAO, [roundActions.PAO]],
+                ];
+                break;
             case JapaneseTransactionType.SELF_DRAW:
-            case JapaneseTransactionType.SELF_DRAW_PAO:
                 labels = [[JapaneseLabel.WINNER, [roundActions.WINNER]]];
+                break;
+            case JapaneseTransactionType.SELF_DRAW_PAO:
+                labels = [
+                    [JapaneseLabel.WINNER, [roundActions.WINNER]],
+                    [JapaneseLabel.PAO, [roundActions.PAO]],
+                ];
                 break;
             case JapaneseTransactionType.DECK_OUT:
                 labels = [[JapaneseLabel.TENPAI, tenpaiList]];
@@ -377,6 +390,14 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
                 players={players}
             />
+            <Row className={"my-4 position-sticky bottom-0 bg-light row-cols-4"}>
+                {generateCurrentScore(game.rounds as JapaneseRound[]).map((score, idx) => (
+                    <Col key={idx} className={"my-2"}>
+                        <div>{players[idx].username}</div>
+                        <h2>{score}</h2>
+                    </Col>
+                ))}
+            </Row>
         </Container>
     );
 };

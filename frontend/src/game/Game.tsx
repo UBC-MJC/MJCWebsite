@@ -204,7 +204,9 @@ const Game: FC = () => {
                 {game.gameType} {getGameTypeString(variant)} Game
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game)}
             </h1>
+
             {getLegacyDisplayGame(game)}
+
             {isRecording(game) && (
                 <Container>
                     <Row>

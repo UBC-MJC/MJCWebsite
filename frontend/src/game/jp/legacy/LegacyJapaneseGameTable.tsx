@@ -8,8 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { Table as BTable } from "react-bootstrap";
 import { mapWindToCharacter } from "../../../common/Utils";
-import { addScoreDeltas, generateOverallScoreDelta } from "../controller/JapaneseRound";
-import { getJapaneseStartingScore } from "../../common/constants";
+import { generateCurrentScore } from "../controller/JapaneseRound";
 
 type LegacyGameTableProps = {
     rounds: ModifiedJapaneseRound[];
@@ -19,13 +18,7 @@ type LegacyGameTableProps = {
 export type ModifiedJapaneseRound = JapaneseRound & { scoreDeltas: number[] };
 
 const getCurrentScoreRow = (rounds: JapaneseRound[]) => {
-    return [
-        "Score",
-        ...rounds.reduce<number[]>(
-            (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
-            getJapaneseStartingScore(),
-        ),
-    ];
+    return ["Score", ...generateCurrentScore(rounds)];
 };
 
 const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {
@@ -111,6 +104,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
                             ))}
                         </tr>
                     ))}
+
                     <tr className="footer-row" key="current-score">
                         {getCurrentScoreRow(rounds).map((value, idx) => (
                             <td className={idx === 0 ? "footer-label" : ""} key={idx}>
