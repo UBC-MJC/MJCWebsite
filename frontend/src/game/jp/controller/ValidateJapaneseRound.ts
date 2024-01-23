@@ -1,9 +1,11 @@
 const errInvalidHand = "Invalid hand";
-const errNoWinner = "Winner is required";
-const errNoLoser = "Loser is required";
-const errWinLoseSame = "Winner and loser must be different";
+const errNoWinner = "A winner is required";
+const errNoLoser = "A loser is required";
+const errWinLoseSame = "The winner cannot also be the loser";
 const errNoHan = "Han is required";
-const errNoFu = "han requires fu";
+const errNoFu = "Han requires Fu";
+const errRiichiNoTen = "Cannot declare riichi and not be tenpai";
+const errInvalidDora = "Dora must be fewer than Han";
 
 const validateCreateJapaneseRound = (
     tenpaiList: number[],
@@ -57,6 +59,16 @@ const validateCreateJapaneseRound = (
                 }
                 
                 checkHand(hand);
+
+                if (hand.fu === 20) {
+                    throw new Error(errInvalidHand);
+                }
+                if (hand.fu === 25) {
+                    if (hand.han < hand.dora + 2) {
+                        throw new Error(errInvalidHand);
+                    }
+                }
+
                 break;
 
             case "SELF_DRAW":
@@ -78,6 +90,16 @@ const validateCreateJapaneseRound = (
                 }
 
                 checkHand(hand);
+
+                if (hand.fu === 20 && hand.han === 1) {
+                    throw new Error(errInvalidHand);
+                }
+                if (hand.fu === 25) {
+                    if (hand.han < hand.dora + 3) {
+                        throw new Error(errInvalidHand);
+                    }
+                }
+
                 break;
 
             case "DEAL_IN_PAO":
@@ -109,7 +131,7 @@ const validateCreateJapaneseRound = (
 const checkRiichiTenpai = (tenpaiList: number[], riichiList: number[]): void => {
     riichiList.forEach((riichi) => {
         if (!tenpaiList.includes(riichi)) {
-            throw new Error("Riichi player must be tenpai");
+            throw new Error(errRiichiNoTen);
         }
     });
 };
@@ -122,6 +144,9 @@ const checkHand = (hand: JapaneseHandInput): void => {
         if (hand.fu == 10) {
             throw new Error(hand.han + errNoFu);
         }
+    }
+    if (hand.han <= hand.dora) {
+        throw new Error(errInvalidDora);
     }
 };
 
