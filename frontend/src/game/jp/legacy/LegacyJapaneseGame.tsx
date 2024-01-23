@@ -173,6 +173,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         setRiichiList([]);
         setTenpaiList([]);
         setTransactions([]);
+        setRoundActions({});
     };
 
     const submitAllTransactionRound = async () => {
