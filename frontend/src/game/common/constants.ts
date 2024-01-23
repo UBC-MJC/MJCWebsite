@@ -112,7 +112,7 @@ const HK_TRANSACTION_TYPE_BUTTONS: HongKongTransactionTypeButtons = [
     {
         name: "Deck Out",
         value: HongKongTransactionType.DECK_OUT,
-    }
+    },
 ];
 
 const HK_LABEL_MAP: { [key in HongKongLabel]: string } = {
