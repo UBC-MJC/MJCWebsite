@@ -21,10 +21,7 @@ enum JapaneseTransactionType {
     SELF_DRAW_PAO = "SELF_DRAW_PAO",
     NAGASHI_MANGAN = "NAGASHI_MANGAN",
     INROUND_RYUUKYOKU = "INROUND_RYUUKYOKU",
-}
-
-enum DeckOutType {
-    DECK_OUT = "DECK_OUT",
+    DECK_OUT = "DECK_OUT", // Not really a transaction; here for convenience's sake
 }
 
 export type JapaneseActions = {
@@ -33,7 +30,7 @@ export type JapaneseActions = {
 
 type JapaneseActionButtons = {
     name: string;
-    value: JapaneseTransactionType | DeckOutType;
+    value: JapaneseTransactionType;
 }[];
 
 const JP_TRANSACTION_TYPE_BUTTONS: JapaneseActionButtons = [
@@ -59,8 +56,8 @@ const JP_TRANSACTION_TYPE_BUTTONS: JapaneseActionButtons = [
 const JP_SINGLE_ACTION_BUTTONS: JapaneseActionButtons = [
     ...JP_TRANSACTION_TYPE_BUTTONS,
     { name: "Reshuffle", value: JapaneseTransactionType.INROUND_RYUUKYOKU },
-    { name: "Deck Out", value: DeckOutType.DECK_OUT }
-]
+    { name: "Deck Out", value: JapaneseTransactionType.DECK_OUT },
+];
 
 const JP_LABEL_MAP: { [key in JapaneseLabel]: string } = {
     WINNER: "Winner",
@@ -112,6 +109,10 @@ const HK_TRANSACTION_TYPE_BUTTONS: HongKongTransactionTypeButtons = [
         name: "Self Draw Pao",
         value: HongKongTransactionType.SELF_DRAW_PAO,
     },
+    {
+        name: "Deck Out",
+        value: HongKongTransactionType.DECK_OUT,
+    }
 ];
 
 const HK_LABEL_MAP: { [key in HongKongLabel]: string } = {
@@ -142,7 +143,6 @@ export {
     Wind,
     JapaneseLabel,
     JapaneseTransactionType,
-    DeckOutType,
     JP_TRANSACTION_TYPE_BUTTONS,
     JP_LABEL_MAP,
     JP_UNDEFINED_HAND,

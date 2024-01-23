@@ -10,7 +10,7 @@ import { Table as BTable } from "react-bootstrap";
 import { mapWindToCharacter } from "../../../common/Utils";
 import { addScoreDeltas } from "../../jp/controller/JapaneseRound";
 import { generateOverallScoreDelta } from "../controller/HongKongRound";
-import {getHongKongStartingScore} from "../../common/constants";
+import { getHongKongStartingScore } from "../../common/constants";
 type LegacyGameTableProps = {
     rounds: ModifiedHongKongRound[];
     players: GamePlayer[];

@@ -1,13 +1,13 @@
 import { FC, useState } from "react";
-import {Button, Col, Container, Form, Row} from "react-bootstrap";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import LegacyJapaneseGameTable, { ModifiedJapaneseRound } from "./LegacyJapaneseGameTable";
 import {
-    DeckOutType,
     isGameEnd,
     JapaneseActions,
     JapaneseLabel,
     JapaneseTransactionType,
-    JP_LABEL_MAP, JP_SINGLE_ACTION_BUTTONS,
+    JP_LABEL_MAP,
+    JP_SINGLE_ACTION_BUTTONS,
     JP_TRANSACTION_TYPE_BUTTONS,
     JP_UNDEFINED_HAND,
 } from "../../common/constants";
@@ -35,7 +35,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     game,
     handleSubmitRound,
 }) => {
-    const [transactionType, setTransactionType] = useState<JapaneseTransactionType | DeckOutType>(
+    const [transactionType, setTransactionType] = useState<JapaneseTransactionType>(
         JapaneseTransactionType.DEAL_IN,
     );
     const [roundActions, setRoundActions] = useState<JapaneseActions>({});
@@ -47,7 +47,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
 
     const gameOver = isGameEnd(game, "jp");
 
-    const transactionTypeOnChange = (type: JapaneseTransactionType | DeckOutType) => {
+    const transactionTypeOnChange = (type: JapaneseTransactionType) => {
         const prevWinner = roundActions.WINNER;
         const prevLoser = roundActions.LOSER;
         const prevPao = roundActions.PAO;
@@ -71,12 +71,8 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 newRoundActions.WINNER = prevWinner;
                 newRoundActions.PAO = prevPao;
                 break;
-            case DeckOutType.DECK_OUT:
-                setTenpaiList([]);
-                break;
             case JapaneseTransactionType.NAGASHI_MANGAN:
                 newRoundActions.WINNER = prevWinner;
-                setTenpaiList([]);
                 break;
         }
         setRoundActions(newRoundActions);
@@ -173,18 +169,21 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
             riichiList,
         );
         await handleSubmitRound(roundRequest);
+        setRiichiList([]);
+        setTenpaiList([]);
+        setTransactions([]);
     };
 
     const submitAllTransactionRound = async () => {
         await submitRound(transactions);
-        setTransactions([]);
     };
 
     const showPointInput = () => {
-        return (
-            typeof roundActions.WINNER !== "undefined" &&
-            transactionType !== JapaneseTransactionType.NAGASHI_MANGAN
-        );
+        return ![
+            JapaneseTransactionType.NAGASHI_MANGAN,
+            JapaneseTransactionType.INROUND_RYUUKYOKU,
+            JapaneseTransactionType.DECK_OUT,
+        ].includes(transactionType);
     };
 
     const getJapaneseLabels = () => {
@@ -202,7 +201,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
             case JapaneseTransactionType.SELF_DRAW_PAO:
                 labels = [[JapaneseLabel.WINNER, [roundActions.WINNER]]];
                 break;
-            case DeckOutType.DECK_OUT:
+            case JapaneseTransactionType.DECK_OUT:
                 labels = [[JapaneseLabel.TENPAI, tenpaiList]];
                 break;
             case JapaneseTransactionType.NAGASHI_MANGAN:
@@ -242,7 +241,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                                 checked={transactionType === button.value}
                                 onChange={(value) =>
                                     transactionTypeOnChange(
-                                        value as unknown as JapaneseTransactionType | DeckOutType,
+                                        value as unknown as JapaneseTransactionType,
                                     )
                                 }
                             />
@@ -281,18 +280,20 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     };
     function getTransactionMatters() {
         if (!multipleHandInputMode) {
-            return <Button
-                variant="success"
-                className="mt-4 w-50"
-                disabled={gameOver}
-                onClick={submitSingleTransactionRound}
-            >
-                Submit Round
-            </Button>;
+            return (
+                <Button
+                    variant="success"
+                    className="mt-4 w-50"
+                    disabled={gameOver}
+                    onClick={submitSingleTransactionRound}
+                >
+                    Submit Round
+                </Button>
+            );
         }
         return (
             <>
-                <Row className={"gx-1"} >
+                <Row className={"gx-1"}>
                     <Col>
                         <Button
                             variant="primary"
