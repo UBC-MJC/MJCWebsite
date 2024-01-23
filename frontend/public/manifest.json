@@ -1,6 +1,6 @@
 {
-  "short_name": "UBC Mahjong Club Website",
-  "name": "Official Site for UBC Mahjong Club",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",
