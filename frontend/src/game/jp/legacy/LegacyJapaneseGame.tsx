@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, Row, Image } from "react-bootstrap";
 import LegacyJapaneseGameTable, { ModifiedJapaneseRound } from "./LegacyJapaneseGameTable";
 import {
     isGameEnd,
@@ -29,6 +29,7 @@ import {
 } from "../controller/JapaneseRound";
 import { validateCreateJapaneseRound } from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
+import riichiStick from "../../../assets/riichiStick.png";
 
 const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     enableRecording,
@@ -383,6 +384,24 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         });
     };
 
+    function getFooter() {
+        return (
+            <Row className={"my-4 position-sticky bottom-0 bg-light row-cols-4 align-items-end"}>
+                {generateCurrentScore(game.rounds as JapaneseRound[]).map((score, idx) => (
+                    <Col key={idx} className={"my-2"}>
+                        <div>{players[idx].username}</div>
+                        <div>
+                            {riichiList.includes(idx) && (
+                                <Image src={riichiStick} className={"w-75"}></Image>
+                            )}
+                        </div>
+                        <h2>{score - Number(riichiList.includes(idx)) * 1000}</h2>
+                    </Col>
+                ))}
+            </Row>
+        );
+    }
+
     return (
         <Container>
             {enableRecording && !gameOver && getRecordingInterface()}
@@ -390,14 +409,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
                 players={players}
             />
-            <Row className={"my-4 position-sticky bottom-0 bg-light row-cols-4"}>
-                {generateCurrentScore(game.rounds as JapaneseRound[]).map((score, idx) => (
-                    <Col key={idx} className={"my-2"}>
-                        <div>{players[idx].username}</div>
-                        <h2>{score}</h2>
-                    </Col>
-                ))}
-            </Row>
+            {getFooter()}
         </Container>
     );
 };

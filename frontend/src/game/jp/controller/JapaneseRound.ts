@@ -8,7 +8,7 @@ import {
     RIICHI_STICK_VALUE,
     Wind,
 } from "../../common/constants";
-import { findHeadbumpWinner, transformTransactions } from "./HonbaProcessing";
+import { containingAny, findHeadbumpWinner, transformTransactions } from "./HonbaProcessing";
 
 import { range } from "../../../common/Utils";
 
@@ -187,18 +187,43 @@ function reduceScoreDeltas(transactions: Transaction[]): number[] {
     );
 }
 
-export function generateOverallScoreDelta(concludedRound: JapaneseRound) {
-    const riichiDeltas = getEmptyScoreDelta();
-    for (const id of concludedRound.riichis) {
-        riichiDeltas[id] -= RIICHI_STICK_VALUE;
+function generateTenpaiScoreDeltas(tenpais: number[]) {
+    const scoreDeltas = getEmptyScoreDelta();
+    if (tenpais.length === 0 || tenpais.length === NUM_PLAYERS) {
+        return scoreDeltas;
     }
+    for (const index of range(NUM_PLAYERS)) {
+        if (tenpais.includes(index)) {
+            scoreDeltas[index] = 3000 / tenpais.length;
+        } else {
+            scoreDeltas[index] = -3000 / (4 - tenpais.length);
+        }
+    }
+    return scoreDeltas;
+}
+
+export function generateOverallScoreDelta(concludedRound: JapaneseRound) {
+    const rawScoreDeltas = addScoreDeltas(
+        reduceScoreDeltas(concludedRound.transactions),
+        getEmptyScoreDelta(),
+    );
+    for (const id of concludedRound.riichis) {
+        rawScoreDeltas[id] -= RIICHI_STICK_VALUE;
+    }
+    if (containingAny(concludedRound.transactions, JapaneseTransactionType.NAGASHI_MANGAN)) {
+        return rawScoreDeltas;
+    }
+    const riichiDeltas = addScoreDeltas(
+        generateTenpaiScoreDeltas(concludedRound.tenpais),
+        rawScoreDeltas,
+    );
     const headbumpWinner = findHeadbumpWinner(concludedRound.transactions);
     if (concludedRound.endRiichiStickCount === 0) {
         riichiDeltas[headbumpWinner] +=
             (concludedRound.startRiichiStickCount + concludedRound.riichis.length) *
             RIICHI_STICK_VALUE;
     }
-    return addScoreDeltas(reduceScoreDeltas(concludedRound.transactions), riichiDeltas);
+    return riichiDeltas;
 }
 
 export function generateCurrentScore(rounds: JapaneseRound[]) {
