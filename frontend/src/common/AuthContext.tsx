@@ -1,10 +1,10 @@
-import {FC, ReactNode, useEffect} from "react";
+import { FC, ReactNode, useEffect } from "react";
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAPICall, registerAPICall } from "../api/AuthAPI";
-import {AxiosError, AxiosResponse} from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { getCurrentPlayer } from "../api/AccountAPI";
-import {getGameAPI} from "../api/GameAPI";
+import { getGameAPI } from "../api/GameAPI";
 
 type ChildProps = {
     children: ReactNode;

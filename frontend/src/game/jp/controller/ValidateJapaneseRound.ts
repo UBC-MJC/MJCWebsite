@@ -21,20 +21,18 @@ const validateCreateJapaneseRound = (
         const firstTransactionType = transactions[0].transactionType;
         let indexPrevWin = -1;
         let indexPrevLose = -1;
-    
+
         for (let i = 0; i < transactions.length; i++) {
-    
             const hand = transactions[i].hand;
             const scoreDeltas = transactions[i].scoreDeltas;
             const transactionType = transactions[i].transactionType;
             const indexPao = transactions[i].paoPlayerIndex;
-            
+
             let deltaSum = 0;
             let indexWin = -1;
             let indexLose = -1;
-            
+
             switch (firstTransactionType) {
-    
                 case "NAGASHI_MANGAN":
                     if (transactionType === "NAGASHI_MANGAN") {
                         for (let j = 0; j < scoreDeltas.length; j++) {
@@ -49,8 +47,8 @@ const validateCreateJapaneseRound = (
                     } else {
                         throw new Error(E_INVTRAN);
                     }
-                break;
-    
+                    break;
+
                 case "DEAL_IN":
                 case "DEAL_IN_PAO":
                     if (hand === undefined) {
@@ -77,7 +75,8 @@ const validateCreateJapaneseRound = (
                             }
                             throw new Error(E_NOLOSE);
                         }
-                        if (indexWin === -1 && indexLose === -1) { // nothing selected or winner and loser are same
+                        if (indexWin === -1 && indexLose === -1) {
+                            // nothing selected or winner and loser are same
                             if (hand.han === -2 && hand.fu === 10) {
                                 throw new Error("Winner, loser, and hand are required");
                             }
@@ -115,8 +114,8 @@ const validateCreateJapaneseRound = (
                     } else {
                         throw new Error(E_INVTRAN);
                     }
-                break;
-    
+                    break;
+
                 case "SELF_DRAW":
                 case "SELF_DRAW_PAO":
                     if (hand === undefined) {
@@ -162,13 +161,13 @@ const validateCreateJapaneseRound = (
                     } else {
                         throw new Error(E_INVTRAN);
                     }
-                break;
+                    break;
             }
         }
-    } else { // exhaustive draw
+    } else {
+        // exhaustive draw
         checkRiichiTenpai(tenpaiList, riichiList);
     }
-    
 };
 
 const checkRiichiTenpai = (tenpaiList: number[], riichiList: number[]): void => {
@@ -211,7 +210,7 @@ const checkWinnerConsistency = (indexWin: number, indexPrevWin: number): number 
         }
     }
     return indexPrevWin;
-}
+};
 
 const checkLoserConsistency = (indexLose: number, indexPrevLose: number): number => {
     if (indexLose != -1) {
@@ -222,6 +221,6 @@ const checkLoserConsistency = (indexLose: number, indexPrevLose: number): number
         }
     }
     return indexPrevLose;
-}
+};
 
 export { validateCreateJapaneseRound };
