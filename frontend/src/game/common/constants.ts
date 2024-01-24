@@ -67,8 +67,8 @@ const JP_LABEL_MAP: { [key in JapaneseLabel]: string } = {
 };
 
 const JP_UNDEFINED_HAND: JapaneseHandInput = {
-    han: -1,
-    fu: -1,
+    han: -2,
+    fu: 10,
     dora: 0,
 };
 

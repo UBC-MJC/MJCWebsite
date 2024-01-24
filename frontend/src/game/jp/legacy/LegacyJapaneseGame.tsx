@@ -27,7 +27,7 @@ import {
     generateCurrentScore,
     generateOverallScoreDelta,
 } from "../controller/JapaneseRound";
-import { validateCreateJapaneseRound } from "../controller/ValidateJapaneseRound";
+import { validateCreateTransaction, validateCreateJapaneseRound } from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
 import riichiStick from "../../../assets/riichiStick.png";
 
@@ -149,7 +149,13 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         await submitRound(transactionList);
     };
 
-    const addTransaction = () => {
+    const addTransaction = async () => {
+        try {
+            validateCreateTransaction(getTransactionList()[0]);
+        } catch (e: any) {
+            await alert(e.message);
+            return;
+        }
         setTransactions([...transactions, ...getTransactionList()]);
     };
 

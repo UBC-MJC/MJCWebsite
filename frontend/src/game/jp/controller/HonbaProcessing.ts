@@ -111,25 +111,60 @@ export function addHonba(transaction: JapaneseTransaction, honbaCount: number) {
     }
     return newTransaction;
 }
-export function findHeadbumpWinner(transactions: JapaneseTransaction[]) {
+
+export function findProminentPlayerRound(transaction: JapaneseTransaction) {
+    const roundWinners = new Set<number>();
+    const roundLosers = new Set<number>();
+    for (let index = 0; index < transaction.scoreDeltas.length; index++) {
+        if (transaction.paoPlayerIndex !== undefined && transaction.paoPlayerIndex === index) {
+            // is pao target
+            continue;
+        }
+        if (transaction.scoreDeltas[index] < 0) {
+            roundLosers.add(index);
+        } else if (transaction.scoreDeltas[index] > 0) {
+            roundWinners.add(index);
+        }
+    }
+    return {roundWinners, roundLosers};
+}
+
+export function findProminentPlayers(transactions: JapaneseTransaction[]) {
     const winners = new Set<number>();
     const losers = new Set<number>();
     for (const transaction of transactions) {
-        for (let index = 0; index < transaction.scoreDeltas.length; index++) {
-            if (transaction.paoPlayerIndex !== undefined && transaction.paoPlayerIndex === index) {
-                // is pao target
-                continue;
-            }
-            if (transaction.scoreDeltas[index] < 0) {
-                losers.add(index);
-            } else if (transaction.scoreDeltas[index] > 0) {
-                winners.add(index);
-            }
-        }
+        const {roundWinners, roundLosers} = findProminentPlayerRound(transaction);
+        roundWinners.forEach((index: number) => winners.add(index));
+        roundLosers.forEach((index: number) => losers.add(index));
     }
+    return {winners, losers};
+}
+
+export function findHeadbumpWinner(transactions: JapaneseTransaction[]) {
+    const {winners, losers} = findProminentPlayers(transactions);
     const [loser] = losers; // should only have one real loser
     return getClosestWinner(loser, winners);
 }
+
+// export function findHeadbumpWinner(transactions: JapaneseTransaction[]) {
+//     const winners = new Set<number>();
+//     const losers = new Set<number>();
+//     for (const transaction of transactions) {
+//         for (let index = 0; index < transaction.scoreDeltas.length; index++) {
+//             if (transaction.paoPlayerIndex !== undefined && transaction.paoPlayerIndex === index) {
+//                 // is pao target
+//                 continue;
+//             }
+//             if (transaction.scoreDeltas[index] < 0) {
+//                 losers.add(index);
+//             } else if (transaction.scoreDeltas[index] > 0) {
+//                 winners.add(index);
+//             }
+//         }
+//     }
+//     const [loser] = losers; // should only have one real loser
+//     return getClosestWinner(loser, winners);
+// }
 
 function getClosestWinner(loserLocalPos: number, winners: Set<number>) {
     let [closestWinnerIndex] = winners;

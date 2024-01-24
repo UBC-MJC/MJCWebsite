@@ -59,7 +59,7 @@ const addDealIn = (
     const multiplier = getDealInMultiplier(winnerIndex, dealerIndex);
     const handValue = calculateHandValue(multiplier, hand);
     scoreDeltas[winnerIndex] = handValue;
-    scoreDeltas[loserIndex] = -handValue;
+    scoreDeltas[loserIndex] -= handValue;
     return {
         transactionType: JapaneseTransactionType.DEAL_IN,
         hand: hand,
@@ -123,7 +123,7 @@ const addPaoDealIn = (
     const scoreDeltas = getEmptyScoreDelta();
     const multiplier = getDealInMultiplier(winnerIndex, dealerIndex);
     scoreDeltas[dealInPersonIndex] = -calculateHandValue(multiplier / 2, hand);
-    scoreDeltas[paoPlayerIndex] = -calculateHandValue(multiplier / 2, hand);
+    scoreDeltas[paoPlayerIndex] -= calculateHandValue(multiplier / 2, hand);
     scoreDeltas[winnerIndex] += calculateHandValue(multiplier, hand);
     return {
         transactionType: JapaneseTransactionType.DEAL_IN_PAO,
