@@ -7,7 +7,7 @@ const NavBar: FC = () => {
     const { player, logout } = useContext(AuthContext);
 
     return (
-        <Navbar bg="info" data-bs-theme="dark" expand="md">
+        <Navbar bg="info" expand="md">
             <Container fluid>
                 <Navbar.Brand as={Link} to="/">
                     <h3 className="m-0">UBC Mahjong Club</h3>
