@@ -1,3 +1,5 @@
+import { findProminentPlayerRound, findProminentPlayers } from "./HonbaProcessing";
+
 const E_NOWIN = "A winner is required";
 const E_NOLOSE = "A loser is required";
 const E_NOPAO = "A pao player is required";
@@ -11,6 +13,114 @@ const E_INVHAND = "Invalid hand";
 const E_INVTRAN = "Incompatible transactions";
 const E_MULWIN = "There should only be one winner";
 const E_MULLOSE = "There should only be one loser";
+const E_MULNAGM = "There should only be one nagashi mangan per player";
+
+const validateCreateTransaction = (transaction: JapaneseTransaction) => {
+    
+    const hand = transaction.hand;
+    const scoreDeltas = transaction.scoreDeltas;
+    const transactionType = transaction.transactionType;
+    const indexPao = transaction.paoPlayerIndex;
+
+    let deltaSum = 0;
+    const {roundWinners, roundLosers} = findProminentPlayerRound(transaction);
+    const [indexWin] = roundWinners;
+    const [indexLose] = roundLosers;
+
+    switch (transactionType) {
+        case "DEAL_IN":
+            if (hand === undefined) {
+                throw new Error(E_INVHAND); // never reaches this
+            }
+            
+            if (hand.han === -2) {
+                if (indexWin === undefined || indexLose === undefined) {
+                    throw new Error("Winner, loser, and hand are required");   
+                }
+            } else {
+                if (indexWin === undefined && indexLose === undefined) {
+                    throw new Error(E_WLSAME);
+                }
+                if (indexWin === undefined) {
+                    throw new Error(E_NOWIN);
+                }
+                if (indexLose === undefined) {
+                    throw new Error(E_NOLOSE);
+                }
+            }
+            checkHand(hand);
+            if (hand.fu === 20) {
+                throw new Error(E_INVHAND);
+            }
+            if (hand.fu === 25) {
+                if (hand.han < hand.dora + 2) {
+                    throw new Error(E_INVHAND);
+                }
+            }
+            break;
+        case "SELF_DRAW":
+            if (hand === undefined) {
+                throw new Error(E_INVHAND); // never reaches this
+            }
+            if (indexWin === undefined) {
+                throw new Error(E_NOWIN);
+            }
+            checkHand(hand);
+            if (hand.fu === 20 && hand.han === 1) {
+                throw new Error(E_INVHAND);
+            }
+            if (hand.fu === 25) {
+                if (hand.han < hand.dora + 3) {
+                    throw new Error(E_INVHAND);
+                }
+            }
+            break;
+        case "DEAL_IN_PAO":
+            if (hand === undefined) {
+                throw new Error(E_INVHAND); // never reaches this
+            }
+            for (let i = 0; i < scoreDeltas.length; i++) {
+                deltaSum += scoreDeltas[i];
+            }
+            if (deltaSum != 0) {
+                throw new Error("Winner, loser, pao player, and hand are required");
+            }
+            if (indexWin === undefined) {
+                throw new Error(E_WPSAME);
+            }
+            if (indexLose === undefined) {
+                throw new Error("Winner, loser, and pao player must be different");
+            }
+            if (indexPao === undefined) {
+                throw new Error(E_NOPAO);
+            }
+            checkPao(hand);
+            break;
+        case "SELF_DRAW_PAO":
+            if (hand === undefined) {
+                throw new Error(E_INVHAND); // never reaches this
+            }
+            if (indexWin === undefined) {
+                if (indexPao === undefined) {
+                    throw new Error("Winner, pao player, and hand are required");
+                } else if (scoreDeltas[indexPao] < 0) {
+                    throw new Error(E_NOWIN);
+                }
+                throw new Error(E_WPSAME);
+            } else if (indexPao === undefined) {
+                throw new Error(E_NOPAO);
+            }
+            checkPao(hand);
+            break;
+        case "NAGASHI_MANGAN":
+            if (indexWin === undefined) {
+                throw new Error(E_NOWIN);
+            }
+            break;
+        case "INROUND_RYUUKYOKU":
+            break;
+    }
+};
 
 const validateCreateJapaneseRound = (
     tenpaiList: number[],
@@ -18,151 +128,46 @@ const validateCreateJapaneseRound = (
     transactions: JapaneseTransaction[],
 ) => {
     if (transactions.length > 0) {
+        transactions.forEach((transaction) => {
+            validateCreateTransaction(transaction);
+        });
+        const {winners, losers} = findProminentPlayers(transactions);
         const firstTransactionType = transactions[0].transactionType;
-        let indexPrevWin = -1;
-        let indexPrevLose = -1;
 
-        for (let i = 0; i < transactions.length; i++) {
-            const hand = transactions[i].hand;
-            const scoreDeltas = transactions[i].scoreDeltas;
-            const transactionType = transactions[i].transactionType;
-            const indexPao = transactions[i].paoPlayerIndex;
-
-            let deltaSum = 0;
-            let indexWin = -1;
-            let indexLose = -1;
-
-            switch (firstTransactionType) {
-                case "NAGASHI_MANGAN":
-                    if (transactionType === "NAGASHI_MANGAN") {
-                        for (let j = 0; j < scoreDeltas.length; j++) {
-                            if (scoreDeltas[j] > 0) {
-                                indexWin = j;
-                            }
-                        }
-                        if (indexWin === -1) {
-                            throw new Error(E_NOWIN);
-                        }
-                        checkRiichiTenpai(tenpaiList, riichiList);
-                    } else {
+        switch (firstTransactionType) {
+            case "DEAL_IN":
+            case "DEAL_IN_PAO":
+                transactions.forEach((transaction) => {
+                    if (transaction.transactionType != "DEAL_IN" && transaction.transactionType != "DEAL_IN_PAO") {
                         throw new Error(E_INVTRAN);
                     }
-                    break;
-
-                case "DEAL_IN":
-                case "DEAL_IN_PAO":
-                    if (hand === undefined) {
-                        throw new Error(E_INVHAND); // never reaches this
-                    }
-                    if (transactionType === "DEAL_IN") {
-                        for (let j = 0; j < scoreDeltas.length; j++) {
-                            if (scoreDeltas[j] > 0) {
-                                indexWin = j;
-                            } else if (scoreDeltas[j] < 0) {
-                                indexLose = j;
-                            }
-                        }
-                        indexPrevLose = checkLoserConsistency(indexLose, indexPrevLose);
-                        if (indexWin === -1 && indexLose != -1) {
-                            if (hand.han === -2) {
-                                throw new Error("Winner, loser, and hand are required");
-                            }
-                            throw new Error(E_NOWIN);
-                        }
-                        if (indexWin != -1 && indexLose === -1) {
-                            if (hand.han === -2) {
-                                throw new Error("Winner, loser, and hand are required");
-                            }
-                            throw new Error(E_NOLOSE);
-                        }
-                        if (indexWin === -1 && indexLose === -1) {
-                            // nothing selected or winner and loser are same
-                            if (hand.han === -2 && hand.fu === 10) {
-                                throw new Error("Winner, loser, and hand are required");
-                            }
-                            throw new Error(E_WLSAME);
-                        }
-                        checkHand(hand);
-                        if (hand.fu === 20) {
-                            throw new Error(E_INVHAND);
-                        }
-                        if (hand.fu === 25) {
-                            if (hand.han < hand.dora + 2) {
-                                throw new Error(E_INVHAND);
-                            }
-                        }
-                    } else if (transactionType === "DEAL_IN_PAO") {
-                        for (let j = 0; j < scoreDeltas.length; j++) {
-                            if (scoreDeltas[j] > 0) {
-                                indexWin = j;
-                            } else if (scoreDeltas[j] < 0 && j != indexPao) {
-                                indexLose = j;
-                            }
-                            deltaSum += scoreDeltas[j];
-                        }
-                        indexPrevLose = checkLoserConsistency(indexLose, indexPrevLose);
-                        if (deltaSum != 0) {
-                            throw new Error("Winner, loser, pao player, and hand are required");
-                        }
-                        if (indexWin === indexPao) {
-                            throw new Error(E_WPSAME);
-                        }
-                        if (indexLose === -1) {
-                            throw new Error("Winner, loser, and pao player must be different");
-                        }
-                        checkPao(hand);
-                    } else {
+                });
+                if (losers.size > 1) {
+                    throw new Error(E_MULLOSE);
+                }
+                break;
+            case "SELF_DRAW":
+            case "SELF_DRAW_PAO":
+                transactions.forEach((transaction) => {
+                    if (transaction.transactionType != "SELF_DRAW" && transaction.transactionType != "SELF_DRAW_PAO") {
                         throw new Error(E_INVTRAN);
                     }
-                    break;
-
-                case "SELF_DRAW":
-                case "SELF_DRAW_PAO":
-                    if (hand === undefined) {
-                        throw new Error(E_INVHAND); // never reaches this
-                    }
-                    if (transactionType === "SELF_DRAW") {
-                        for (let j = 0; j < scoreDeltas.length; j++) {
-                            if (scoreDeltas[j] > 0) {
-                                indexWin = j;
-                            }
-                        }
-                        indexPrevWin = checkWinnerConsistency(indexWin, indexPrevWin);
-                        if (indexWin === -1) {
-                            throw new Error(E_NOWIN);
-                        }
-                        checkHand(hand);
-                        if (hand.fu === 20 && hand.han === 1) {
-                            throw new Error(E_INVHAND);
-                        }
-                        if (hand.fu === 25) {
-                            if (hand.han < hand.dora + 3) {
-                                throw new Error(E_INVHAND);
-                            }
-                        }
-                    } else if (transactionType === "SELF_DRAW_PAO") {
-                        for (let i = 0; i < scoreDeltas.length; i++) {
-                            if (scoreDeltas[i] > 0) {
-                                indexWin = i;
-                            }
-                        }
-                        indexPrevWin = checkWinnerConsistency(indexWin, indexPrevWin);
-                        if (indexWin === -1) {
-                            if (indexPao === undefined) {
-                                throw new Error("Winner, pao player, and hand are required");
-                            } else if (scoreDeltas[indexPao] < 0) {
-                                throw new Error(E_NOWIN);
-                            }
-                            throw new Error(E_WPSAME);
-                        } else if (indexPao === undefined) {
-                            throw new Error(E_NOPAO);
-                        }
-                        checkPao(hand);
-                    } else {
+                });
+                if (winners.size > 1) {
+                    throw new Error(E_MULWIN);
+                }
+                break;
+            case "NAGASHI_MANGAN":
+                if (winners.size !== transactions.length) {
+                    throw new Error(E_MULNAGM);
+                }
+                transactions.forEach((transaction) => {
+                    if (transaction.transactionType != "NAGASHI_MANGAN") {
                         throw new Error(E_INVTRAN);
                     }
-                    break;
-            }
+                    checkRiichiTenpai(tenpaiList, riichiList);
+                });
+                break;
         }
     } else {
         // exhaustive draw
@@ -201,26 +206,4 @@ const checkPao = (hand: JapaneseHandInput): void => {
     }
 };
 
-const checkWinnerConsistency = (indexWin: number, indexPrevWin: number): number => {
-    if (indexWin != -1) {
-        if (indexPrevWin === -1) {
-            return indexWin;
-        } else if (indexWin != indexPrevWin) {
-            throw new Error(E_MULWIN);
-        }
-    }
-    return indexPrevWin;
-};
-
-const checkLoserConsistency = (indexLose: number, indexPrevLose: number): number => {
-    if (indexLose != -1) {
-        if (indexPrevLose === -1) {
-            return indexLose;
-        } else if (indexLose != indexPrevLose) {
-            throw new Error(E_MULLOSE);
-        }
-    }
-    return indexPrevLose;
-};
-
-export { validateCreateJapaneseRound };
+export { validateCreateTransaction, validateCreateJapaneseRound };
