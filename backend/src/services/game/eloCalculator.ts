@@ -11,6 +11,7 @@ type EloCalculatorInput = {
     wind: Wind;
 };
 
+
 const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: "jp" | "hk") => {
     let fieldElo = playerInformation.reduce((sum, player) => sum + player.elo, 0);
     fieldElo = fieldElo / 4;
@@ -21,9 +22,7 @@ const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: "jp
     const eloSignificance = 0.03;
 
     return scoreAfterPlacement.map((player) => {
-        const rawScore =
-            (player.score - GAME_CONSTANTS[gameVariant].STARTING_SCORE) /
-            GAME_CONSTANTS[gameVariant].DIVIDING_CONSTANT;
+        const rawScore = player.score / GAME_CONSTANTS[gameVariant].DIVIDING_CONSTANT;
         const eloDifference = fieldElo - player.elo;
         const eloChange = magnitude * (rawScore + eloSignificance * eloDifference);
 
