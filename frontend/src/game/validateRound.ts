@@ -1,5 +1,3 @@
-import { multiselectLabels } from "../common/Utils";
-
 const validateRound = (
     roundValue: RoundValue,
     pointsValue: any,
@@ -50,10 +48,6 @@ const validateHongKongRound = (roundValue: RoundValue): void => {
 
 const validateRoundSelectors = (roundValue: RoundValue): void => {
     roundValue.type.selectors.forEach((selector: string) => {
-        if (multiselectLabels.includes(selector)) {
-            return;
-        }
-
         for (const key in roundValue.playerActions) {
             if (roundValue.playerActions[key].includes(selector)) {
                 return;

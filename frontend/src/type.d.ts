@@ -1,3 +1,19 @@
+type LeaderboardType = {
+    username: string;
+    elo: string;
+};
+
+type Setting = {
+    legacyDisplayGame: boolean;
+};
+
+type GamePlayer = {
+    id: string;
+    username: string;
+    trueWind: string;
+    score: number;
+};
+
 interface IGame {
     game_id: number;
     created_at: string;
@@ -68,9 +84,8 @@ type Game = {
     status: string;
     recordedById: string;
     players: any[];
-    rounds: any[];
-    currentRound: any;
-    gameOver: boolean;
+    rounds: (JapaneseRound | HongKongRound)[];
+    currentRound?: PartialJapaneseRound;
 };
 
 type RoundType = {
@@ -88,42 +103,71 @@ type RoundValue = {
     playerActions: PlayerActions;
 };
 
-type LeaderboardType = {
-    username: string;
-    elo: string;
-};
-
-type Setting = {
-    legacyDisplayGame: boolean;
-};
-
-type GamePlayer = {
-    id: string;
-    username: string;
-    trueWind: string;
-    score: number;
-};
-
 type JapaneseRound = {
-    id: string;
-    bonus: number;
-    roundCount: number;
+    id?: string;
     roundNumber: number;
     roundWind: string;
-    hands: JapaneseHand[];
-    scores: JapaneseScore[];
+    roundCount: number;
+    bonus: number;
+    startRiichiStickCount: number;
+    endRiichiStickCount: number;
+    riichis: number[];
+    tenpais: number[];
+    transactions: JapaneseTransaction[];
 };
 
-type JapaneseHand = {
-    id: string;
-    points: number;
+type PartialJapaneseRound = Pick<
+    JapaneseRound,
+    "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount"
+>;
+
+type JapaneseTransaction = {
+    id?: string;
+    transactionType: JapaneseTransactionType;
+    scoreDeltas: number[];
+    hand?: JapaneseHandInput;
+    paoPlayerIndex?: number;
+};
+
+type Transaction = JapaneseTransaction | HongKongTransaction;
+
+type JapaneseTransactionType =
+    | "DEAL_IN"
+    | "SELF_DRAW"
+    | "DEAL_IN_PAO"
+    | "SELF_DRAW_PAO"
+    | "NAGASHI_MANGAN"
+    | "INROUND_RYUUKYOKU";
+
+type JapaneseHandInput = {
+    han: number;
     fu: number;
     dora: number;
 };
 
-type JapaneseScore = {
+type HongKongRound = {
     id: string;
-    scoreChange: number;
-    riichi: boolean;
-    playerId: string;
+    roundNumber: number;
+    roundWind: string;
+    roundCount: number;
+    transactions: HongKongTransaction[];
 };
+
+type PartialHongKongRound = Pick<HongKongRound, "roundCount" | "roundNumber" | "roundWind">;
+
+type HongKongTransaction = {
+    id?: string;
+    transactionType: HongKongTransactionType;
+    scoreDeltas: number[];
+    hand?: HongKongHandInput;
+    paoPlayerIndex?: number;
+};
+
+type HongKongHandInput = number;
+
+type HongKongTransactionType =
+    | "DEAL_IN"
+    | "SELF_DRAW"
+    | "DEAL_IN_PAO"
+    | "SELF_DRAW_PAO"
+    | "RESHUFFLE";

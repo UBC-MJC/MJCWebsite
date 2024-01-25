@@ -28,7 +28,7 @@ const japaneseDora: PickerData[] = Array.from({ length: 37 }, (_, k) => {
 
 const japanesePointsWheel = [
     { label: "Fu", value: "fu", data: japaneseFu },
-    { label: "Points", value: "points", data: japanesePoints },
+    { label: "Han", value: "han", data: japanesePoints },
     { label: "Dora", value: "dora", data: japaneseDora },
 ];
 
@@ -40,15 +40,6 @@ const hongKongPoints: PickerData[] = Array.from({ length: 11 }, (_, k) => {
 });
 
 const hongKongPointsWheel = [{ label: "Points", value: "points", data: hongKongPoints }];
-
-const getPointWheels = (gameVariant: GameVariant) => {
-    switch (gameVariant) {
-        case "jp":
-            return japanesePointsWheel;
-        case "hk":
-            return hongKongPointsWheel;
-    }
-};
 
 const japaneseRoundLabels = [
     { name: "Round Winner", value: "win" },
@@ -66,47 +57,6 @@ const hongKongRoundLabels = [
     { name: "Pao", value: "pao" },
 ];
 
-const legacyJapaneseRoundLabels: RoundType[] = [
-    {
-        name: "Deal In",
-        value: "DEAL_IN",
-        selectors: ["Winner", "Loser", "Riichis"],
-    },
-    { name: "Self Draw", value: "SELF_DRAW", selectors: ["Winner", "Riichis"] },
-    { name: "Deck Out", value: "DECK_OUT", selectors: ["Tenpais", "Riichis"] },
-    { name: "Reshuffle", value: "RESHUFFLE", selectors: ["Riichis"] },
-    { name: "Mistake", value: "MISTAKE", selectors: ["Loser", "Riichis"] },
-    {
-        name: "Deal In Pao",
-        value: "DEAL_IN_PAO",
-        selectors: ["Winner", "Loser", "Pao Player", "Riichis"],
-    },
-    {
-        name: "Tsumo Pao",
-        value: "SELF_DRAW_PAO",
-        selectors: ["Winner", "Pao Player", "Riichis"],
-    },
-];
-
-const legacyHongKongRoundLabels: RoundType[] = [
-    { name: "Deal In", value: "DEAL_IN", selectors: ["Winner", "Loser"] },
-    { name: "Self Draw", value: "SELF_DRAW", selectors: ["Winner"] },
-    { name: "Deck Out", value: "DECK_OUT", selectors: [] },
-    { name: "Mistake", value: "MISTAKE", selectors: ["Loser"] },
-    { name: "Pao", value: "PAO", selectors: ["Winner", "Pao Player"] },
-];
-
-const getLegacyRoundLabels = (gameVariant: GameVariant) => {
-    switch (gameVariant) {
-        case "jp":
-            return legacyJapaneseRoundLabels;
-        case "hk":
-            return legacyHongKongRoundLabels;
-    }
-};
-
-const multiselectLabels = ["Riichis", "Tenpais"];
-
 const windOrder = ["EAST", "SOUTH", "WEST", "NORTH"];
 
 const windComparison = (wind1: string, wind2: string, playerWind?: string): number => {
@@ -123,21 +73,13 @@ const validateGameVariant = (gameVariant: string | undefined): gameVariant is Ga
     return typeof gameVariant !== "undefined" && (gameVariant === "jp" || gameVariant === "hk");
 };
 
-const getGameTypeString = (gameType: "jp" | "hk"): string => {
+const getGameTypeString = (gameType: GameVariant): string => {
     if (gameType === "jp") {
-        return "Japanese";
+        return "Riichi";
     } else if (gameType === "hk") {
         return "Hong Kong";
     }
     return "";
-};
-
-const findPlayerScore = (scores: JapaneseScore[], playerId: string): JapaneseScore => {
-    const score = scores.find((score) => score.playerId === playerId);
-    if (typeof score === "undefined") {
-        throw new Error(`Could not find player score for player ${playerId}`);
-    }
-    return score;
 };
 
 const mapWindToCharacter = (wind: string): string => {
@@ -154,6 +96,10 @@ const mapWindToCharacter = (wind: string): string => {
     }
 };
 
+const range = (end: number): number[] => {
+    return Array.from({ length: end }, (_, i) => i);
+};
+
 export {
     japanesePoints,
     japaneseFu,
@@ -161,16 +107,11 @@ export {
     hongKongPoints,
     japanesePointsWheel,
     hongKongPointsWheel,
-    getPointWheels,
     japaneseRoundLabels,
     hongKongRoundLabels,
-    legacyJapaneseRoundLabels,
-    legacyHongKongRoundLabels,
-    getLegacyRoundLabels,
-    multiselectLabels,
     windComparison,
     getGameTypeString,
     validateGameVariant,
-    findPlayerScore,
     mapWindToCharacter,
+    range,
 };

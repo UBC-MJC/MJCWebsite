@@ -1,7 +1,9 @@
-import { Player, Prisma, Wind } from "@prisma/client";
+import { JapaneseTransactionType, Player, Prisma, Wind } from "@prisma/client";
 import HongKongGameService from "./hongKongGame.service";
 import JapaneseGameService from "./japaneseGame.service";
 import { findPlayerByUsernames } from "../player.service";
+import { EloCalculatorInput } from "./eloCalculator";
+import { JapaneseTransactionT, Transaction } from "../../validation/game.validation";
 
 const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
     include: {
@@ -12,14 +14,21 @@ const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
         },
         rounds: {
             include: {
-                scores: true,
-                hand: true,
+                transactions: true,
             },
         },
     },
 });
 
 type FullJapaneseGame = Prisma.JapaneseGameGetPayload<typeof fullJapaneseGame>;
+
+const fullJapaneseRound = Prisma.validator<Prisma.JapaneseRoundDefaultArgs>()({
+    include: {
+        transactions: true,
+    },
+});
+
+type FullJapaneseRound = Prisma.JapaneseRoundGetPayload<typeof fullJapaneseRound>;
 
 const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
     include: {
@@ -30,14 +39,23 @@ const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
         },
         rounds: {
             include: {
-                scores: true,
-                hand: true,
+                transactions: true,
             },
         },
     },
 });
 
 type FullHongKongGame = Prisma.HongKongGameGetPayload<typeof fullHongKongGame>;
+
+const fullHongKongRound = Prisma.validator<Prisma.HongKongRoundDefaultArgs>()({
+    include: {
+        transactions: true,
+    },
+});
+
+type FullHongKongRound = Prisma.HongKongRoundGetPayload<typeof fullHongKongRound>;
+
+type GameVariant = "jp" | "hk";
 
 const getGameService = (gameVariant: string): any => {
     switch (gameVariant) {
@@ -49,6 +67,23 @@ const getGameService = (gameVariant: string): any => {
             throw new Error("Invalid game variant");
     }
 };
+
+const WIND_ORDER: Wind[] = ["EAST", "SOUTH", "WEST", "NORTH"];
+
+const GAME_CONSTANTS = {
+    jp: {
+        STARTING_SCORE: 25000,
+        DIVIDING_CONSTANT: 1000,
+    },
+    hk: {
+        STARTING_SCORE: 750,
+        DIVIDING_CONSTANT: 30,
+    },
+} as const;
+
+export const NUM_PLAYERS = 4;
+
+export const RIICHI_STICK_VALUE = 1000;
 
 // Throws error if the player list contains duplicates
 const checkPlayerListUnique = (playerNameList: string[]): void => {
@@ -75,10 +110,11 @@ const generatePlayerQuery = async (
     checkPlayerListUnique(originalPlayerNames);
     const playerList = await findPlayerByUsernames(originalPlayerNames);
     playerList.forEach((player) => checkPlayerGameEligibility(gameVariant, player));
-
-    return playerList.map((player: Player) => {
-        return {
-            wind: getWind(originalPlayerNames.indexOf(player.username)),
+    const result = Array.from({ length: 4 });
+    playerList.map((player: Player) => {
+        const originalIndex = originalPlayerNames.indexOf(player.username);
+        result[originalIndex] = {
+            wind: getWind(originalIndex),
             player: {
                 connect: {
                     id: player.id,
@@ -86,60 +122,89 @@ const generatePlayerQuery = async (
             },
         };
     });
+    return result;
+};
+const createEloCalculatorInputs = (
+    players: { player: Player; wind: Wind }[],
+    playerScores: number[],
+    eloList: any[],
+): EloCalculatorInput[] => {
+    return players.map((player) => {
+        let elo = 1500;
+        const eloObject = eloList.find((x) => x.playerId === player.player.id);
+        if (typeof eloObject !== "undefined") {
+            elo += eloObject.elo;
+        }
+
+        return {
+            playerId: player.player.id,
+            elo: elo,
+            score: playerScores[WIND_ORDER.indexOf(player.wind)],
+            wind: player.wind,
+        };
+    });
 };
 
-const windOrder: Wind[] = ["EAST", "SOUTH", "WEST", "NORTH"];
+export function range(end: number) {
+    return Array.from({ length: end }, (_, i) => i);
+}
+
+export function getEmptyScoreDelta(): number[] {
+    return Array(NUM_PLAYERS).fill(0);
+}
+
+export function addScoreDeltas(scoreDelta1: number[], scoreDelta2: number[]): number[] {
+    const finalScoreDelta = getEmptyScoreDelta();
+    for (const index of range(NUM_PLAYERS)) {
+        finalScoreDelta[index] += scoreDelta1[index] + scoreDelta2[index];
+    }
+    return finalScoreDelta;
+}
+
+export function reduceScoreDeltas(transactions: Transaction[]): number[] {
+    return transactions.reduce<number[]>(
+        (result, current) => addScoreDeltas(result, current.scoreDeltas),
+        getEmptyScoreDelta(),
+    );
+}
 
 const getWind = (index: number): Wind => {
     if (index < 0 || index > 3) {
         throw new Error("Invalid wind index");
     }
 
-    return windOrder[index];
+    return WIND_ORDER[index];
 };
 
-const getDealerPlayerId = (
-    game: FullJapaneseGame | FullHongKongGame,
-    roundNumber: number,
-): string => {
-    return game.players.find((player) => player.wind === getWind(roundNumber - 1))!.player.id;
+export const getNextRoundWind = (wind: Wind): Wind => {
+    return getWind((WIND_ORDER.indexOf(wind) + 1) % NUM_PLAYERS);
 };
 
-const requiresHand = (roundType: string): boolean => {
-    return (
-        roundType === "SELF_DRAW" ||
-        roundType === "DEAL_IN" ||
-        roundType === "DEAL_IN_PAO" ||
-        roundType === "SELF_DRAW_PAO"
-    );
-};
-
-const getPlayerScores = (game: FullJapaneseGame | FullHongKongGame) => {
-    const result: { [key: string]: number } = {};
-    game.players.forEach((player) => {
-        result[player.player.id] = 25000;
-    });
-
-    game.rounds.forEach((round) => {
-        round.scores.forEach((score) => {
-            result[score.playerId] += score.scoreChange;
-        });
-    });
-
-    return result;
-};
+export function containingAny(
+    transactions: JapaneseTransactionT[],
+    transactionType: JapaneseTransactionType,
+): JapaneseTransactionT | null {
+    for (const transaction of transactions) {
+        if (transaction.transactionType === transactionType) {
+            return transaction;
+        }
+    }
+    return null;
+}
 
 export {
     getGameService,
     checkPlayerGameEligibility,
     checkPlayerListUnique,
     generatePlayerQuery,
+    createEloCalculatorInputs,
     getWind,
-    getDealerPlayerId,
-    requiresHand,
-    getPlayerScores,
-    windOrder,
+    GAME_CONSTANTS,
+    WIND_ORDER,
     Wind,
     FullJapaneseGame,
+    FullJapaneseRound,
     FullHongKongGame,
+    FullHongKongRound,
+    GameVariant,
 };

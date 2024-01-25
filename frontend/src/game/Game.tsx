@@ -9,11 +9,13 @@ import {
     submitGameAPI,
 } from "../api/GameAPI";
 import { AuthContext } from "../common/AuthContext";
-import LegacyDisplayGame from "./legacy/LegacyDisplayGame";
 import { getGameTypeString, validateGameVariant, windComparison } from "../common/Utils";
-import validateRound from "./validateRound";
 import alert from "../common/AlertDialog";
 import confirmDialog from "../common/ConfirmationDialog";
+import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
+import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
+import { Button, Col, Container, Row } from "react-bootstrap";
+import { isGameEnd } from "./common/constants";
 
 const Game: FC = () => {
     const { id, variant } = useParams();
@@ -45,22 +47,8 @@ const Game: FC = () => {
             });
     }, [gameId, navigate]);
 
-    const handleSubmitRound = async (
-        roundValue: RoundValue,
-        pointsValue: any,
-        needPoints: boolean,
-    ) => {
-        try {
-            validateRound(roundValue, pointsValue, game!.gameVariant, needPoints);
-        } catch (e: any) {
-            await alert(`Error: ${e.message}`);
-            return;
-        }
-
-        addRoundAPI(player!.authToken, gameId, variant, {
-            roundValue,
-            pointsValue,
-        })
+    const handleSubmitRound = async (roundRequest: any) => {
+        addRoundAPI(player!.authToken, gameId, variant, roundRequest)
             .then((response) => {
                 console.log(response.data);
                 setGame(response.data);
@@ -132,34 +120,10 @@ const Game: FC = () => {
         if (!game) {
             return [];
         }
-
         const orderedPlayers = game.players.slice();
-
-        if (typeof player !== "undefined" && game.recordedById === player.id) {
-            const playerWind = game.players.find((testPlayer) => {
-                return testPlayer.id === player.id;
-            }).trueWind;
-
-            orderedPlayers.sort((a, b) => {
-                return windComparison(a.trueWind, b.trueWind, playerWind);
-            });
-        } else {
-            orderedPlayers.sort((a, b) => {
-                return windComparison(a.trueWind, b.trueWind);
-            });
-        }
 
         return orderedPlayers as GamePlayer[];
     };
-
-    const legacyToggle = (): boolean => {
-        if (typeof player === "undefined") {
-            return true;
-        }
-
-        return player.legacyDisplayGame;
-    };
-
     const isRecording = (game: Game): boolean => {
         return (
             typeof player !== "undefined" &&
@@ -169,8 +133,34 @@ const Game: FC = () => {
     };
 
     const gameRoundString = (game: Game) => {
+        if (typeof game.currentRound === "undefined") {
+            return "End of Game";
+        }
+
         const lastRound = game.currentRound;
         return `${lastRound.roundWind} ${lastRound.roundNumber} Bonus ${lastRound.bonus}`;
+    };
+
+    const getLegacyDisplayGame = (game: Game) => {
+        if (variant === "jp") {
+            return (
+                <LegacyJapaneseGame
+                    enableRecording={isRecording(game)}
+                    players={getOrderedPlayers()}
+                    game={game}
+                    handleSubmitRound={handleSubmitRound}
+                />
+            );
+        } else if (variant === "hk") {
+            return (
+                <LegacyHongKongGame
+                    enableRecording={isRecording(game)}
+                    players={getOrderedPlayers()}
+                    game={game}
+                    handleSubmitRound={handleSubmitRound}
+                />
+            );
+        }
     };
 
     if (isNaN(gameId)) {
@@ -199,31 +189,52 @@ const Game: FC = () => {
                 {game.gameType} {getGameTypeString(variant)} Game
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game)}
             </h1>
-            {legacyToggle() ? (
-                <LegacyDisplayGame
-                    gameVariant={variant}
-                    enableRecording={isRecording(game)}
-                    game={game}
-                    players={getOrderedPlayers()}
-                    handleSubmitRound={handleSubmitRound}
-                    handleDeleteRound={handleDeleteRound}
-                    handleSubmitGame={handleSubmitGame}
-                    handleDeleteGame={handleDeleteGame}
-                />
-            ) : (
-                <LegacyDisplayGame
-                    gameVariant={variant}
-                    enableRecording={isRecording(game)}
-                    game={game}
-                    players={getOrderedPlayers()}
-                    handleSubmitRound={handleSubmitRound}
-                    handleDeleteRound={handleDeleteRound}
-                    handleSubmitGame={handleSubmitGame}
-                    handleDeleteGame={handleDeleteGame}
-                />
+
+            {getLegacyDisplayGame(game)}
+
+            {isRecording(game) && (
+                <Container>
+                    <Row>
+                        <Col sm>
+                            <Button
+                                variant="danger"
+                                className="mb-2 w-100"
+                                onClick={() => handleDeleteRound()}
+                            >
+                                Delete last Hand
+                            </Button>
+                        </Col>
+                        <Col sm>
+                            <Button
+                                variant="danger"
+                                className="mb-2 w-100"
+                                onClick={() => handleDeleteGame()}
+                            >
+                                Delete Game
+                            </Button>
+                        </Col>
+                        <Col sm>
+                            <Button
+                                variant="success"
+                                className="mb-2 w-100"
+                                disabled={!isGameEnd(game, variant)}
+                                onClick={() => handleSubmitGame()}
+                            >
+                                Submit Game
+                            </Button>
+                        </Col>
+                    </Row>
+                </Container>
             )}
         </>
     );
+};
+
+export type LegacyGameProps = {
+    enableRecording: boolean;
+    players: GamePlayer[];
+    game: Game;
+    handleSubmitRound: (roundRequest: any) => Promise<void>;
 };
 
 export default Game;

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
-import { createGameSchema, validateRound } from "../validation/game.validation";
+import { createGameSchema, validateCreateRound } from "../validation/game.validation";
 import { getCurrentSeason } from "../services/season.service";
 import { generatePlayerQuery, getGameService } from "../services/game/game.util";
 import GameService from "../services/game/game.service";
@@ -46,7 +46,7 @@ const createGameHandler = async (
 
     try {
         const { players, gameType } = await createGameSchema.validate(req.body);
-
+        console.log(players.toString());
         const playersQuery = await generatePlayerQuery(gameVariant, players);
         const season = await getCurrentSeason();
 
@@ -116,8 +116,6 @@ const submitGameHandler = async (
             return next(createError.BadRequest("Game is not in progress"));
         } else if (game.recordedById !== req.player.id) {
             return next(createError.Forbidden("You are not the recorder of this game"));
-        } else if (!gameService.isGameOver(game)) {
-            return next(createError.BadRequest("Game is not over yet"));
         }
 
         await gameService.submitGame(game);
@@ -148,11 +146,9 @@ const createRoundHandler = async (
         } else if (game.status !== "IN_PROGRESS") {
             return next(createError.BadRequest("Game is not in progress"));
         }
-        validateRound(roundRequest, game, gameVariant);
+
         if (game.recordedById !== req.player.id) {
             return next(createError.Forbidden("You are not the recorder of this game"));
-        } else if (gameService.isGameOver(game)) {
-            return next(createError.BadRequest("Game is already over"));
         }
 
         await gameService.createRound(game, roundRequest);

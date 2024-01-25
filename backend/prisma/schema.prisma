@@ -7,33 +7,26 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-enum GameVariant {
-    JAPANESE
-    HONG_KONG
-}
-
 enum GameType {
     RANKED
     PLAY_OFF
     TOURNEY
 }
 
-enum JapaneseRoundType {
+enum JapaneseTransactionType {
     DEAL_IN
     SELF_DRAW
-    DECK_OUT
-    MISTAKE
-    RESHUFFLE
     DEAL_IN_PAO
     SELF_DRAW_PAO
+    NAGASHI_MANGAN
+    INROUND_RYUUKYOKU
 }
 
-enum HongKongRoundType {
+enum HongKongTransactionType {
     DEAL_IN
     SELF_DRAW
-    DECK_OUT
-    MISTAKE
-    PAO
+    DEAL_IN_PAO
+    SELF_DRAW_PAO
 }
 
 enum GameStatus {
@@ -61,10 +54,8 @@ model Player {
     legacyDisplayGame     Boolean              @default(false)
     createdAt             DateTime             @default(now())
     japaneseGames         JapanesePlayerGame[]
-    japaneseScores        JapaneseScore[]
     japaneseGamesRecorded JapaneseGame[]
     hongKongGames         HongKongPlayerGame[]
-    hongKongScores        HongKongScore[]
     hongKongGamesRecorded HongKongGame[]
 }
 
@@ -72,7 +63,6 @@ model JapanesePlayerGame {
     id        String        @id @default(cuid())
     wind      Wind
     eloChange Float?
-    position  Int?
     player    Player        @relation(fields: [playerId], references: [id])
     playerId  String
     game      JapaneseGame? @relation(fields: [gameId], references: [id])
@@ -83,7 +73,6 @@ model HongKongPlayerGame {
     id        String        @id @default(cuid())
     wind      Wind
     eloChange Float?
-    position  Int?
     player    Player        @relation(fields: [playerId], references: [id])
     playerId  String
     game      HongKongGame? @relation(fields: [gameId], references: [id])
@@ -104,7 +93,7 @@ model JapaneseGame {
     season       Season               @relation(fields: [seasonId], references: [id])
     seasonId     String
     status       GameStatus
-    gameType     GameType
+    type         GameType
     createdAt    DateTime             @default(now())
     endedAt      DateTime?
     recordedBy   Player               @relation(fields: [recordedById], references: [id])
@@ -114,37 +103,39 @@ model JapaneseGame {
 }
 
 model JapaneseRound {
-    id                  String            @id @default(cuid())
-    roundCount          Int
-    roundWind           Wind
-    roundNumber         Int
-    bonus               Int
-    riichiSticksOnTable Int
-    roundType           JapaneseRoundType
-    game                JapaneseGame      @relation(fields: [gameId], references: [id], onDelete: Cascade)
-    gameId              Int
-    scores              JapaneseScore[]
-    hand                JapaneseHand[]
+    id                    String                @id @default(cuid())
+    roundCount            Int
+    roundWind             Wind
+    roundNumber           Int
+    bonus                 Int
+    startRiichiStickCount Int
+    endRiichiStickCount   Int
+    game                  JapaneseGame          @relation(fields: [gameId], references: [id], onDelete: Cascade)
+    gameId                Int
+    player0Riichi         Boolean               @default(false)
+    player1Riichi         Boolean               @default(false)
+    player2Riichi         Boolean               @default(false)
+    player3Riichi         Boolean               @default(false)
+    player0Tenpai         Boolean               @default(false)
+    player1Tenpai         Boolean               @default(false)
+    player2Tenpai         Boolean               @default(false)
+    player3Tenpai         Boolean               @default(false)
+    transactions          JapaneseTransaction[]
 }
 
-model JapaneseScore {
-    id          String        @id @default(cuid())
-    scoreChange Int
-    riichi      Boolean
-    round       JapaneseRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
-    player      Player        @relation(fields: [playerId], references: [id])
-    playerId    String
-    roundId     String
-}
-
-model JapaneseHand {
-    id          String        @id @default(cuid())
-    points      Int
-    fu          Int
-    dora        Int
-    description String?
-    round       JapaneseRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
-    roundId     String
+model JapaneseTransaction {
+    id                 String                  @id @default(cuid())
+    transactionType    JapaneseTransactionType
+    player0ScoreChange Int                     @default(0)
+    player1ScoreChange Int                     @default(0)
+    player2ScoreChange Int                     @default(0)
+    player3ScoreChange Int                     @default(0)
+    han                Int?
+    fu                 Int?
+    dora               Int?
+    paoPlayerIndex     Int?
+    round              JapaneseRound           @relation(fields: [roundId], references: [id], onDelete: Cascade)
+    roundId            String
 }
 
 model HongKongGame {
@@ -152,7 +143,7 @@ model HongKongGame {
     season       Season               @relation(fields: [seasonId], references: [id])
     seasonId     String
     status       GameStatus
-    gameType     GameType
+    type         GameType
     createdAt    DateTime             @default(now())
     endedAt      DateTime?
     recordedBy   Player               @relation(fields: [recordedById], references: [id])
@@ -162,31 +153,23 @@ model HongKongGame {
 }
 
 model HongKongRound {
-    id          String            @id @default(cuid())
-    roundCount  Int
-    roundWind   Wind
-    roundNumber Int
-    bonus       Int
-    roundType   HongKongRoundType
-    game        HongKongGame      @relation(fields: [gameId], references: [id], onDelete: Cascade)
-    gameId      Int
-    scores      HongKongScore[]
-    hand        HongKongHand[]
+    id           String                @id @default(cuid())
+    roundCount   Int
+    roundWind    Wind
+    roundNumber  Int
+    transactions HongKongTransaction[]
+    game         HongKongGame          @relation(fields: [gameId], references: [id], onDelete: Cascade)
+    gameId       Int
 }
 
-model HongKongScore {
-    id          String        @id @default(cuid())
-    scoreChange Int
-    round       HongKongRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
-    player      Player        @relation(fields: [playerId], references: [id])
-    playerId    String
-    roundId     String
-}
-
-model HongKongHand {
-    id          String        @id @default(cuid())
-    points      Int
-    description String?
-    round       HongKongRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
-    roundId     String
+model HongKongTransaction {
+    id                 String                  @id @default(cuid())
+    transactionType    HongKongTransactionType
+    player0ScoreChange Int                     @default(0)
+    player1ScoreChange Int                     @default(0)
+    player2ScoreChange Int                     @default(0)
+    player3ScoreChange Int                     @default(0)
+    hand               Int?
+    round              HongKongRound           @relation(fields: [roundId], references: [id], onDelete: Cascade)
+    roundId            String
 }

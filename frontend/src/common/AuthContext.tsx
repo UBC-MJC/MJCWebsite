@@ -1,9 +1,10 @@
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useEffect } from "react";
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAPICall, registerAPICall } from "../api/AuthAPI";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { getCurrentPlayer } from "../api/AccountAPI";
+import { getGameAPI } from "../api/GameAPI";
 
 type ChildProps = {
     children: ReactNode;
@@ -29,6 +30,15 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
         }
         return undefined;
     });
+
+    useEffect(() => {
+        if (typeof player !== "undefined") {
+            getCurrentPlayer(player.authToken).then((newPlayer) => {
+                localStorage.setItem("player", JSON.stringify(newPlayer.data.player));
+                setPlayer(newPlayer.data.player);
+            });
+        }
+    }, []);
 
     const authLogin = async (loginData: LoginDataType) => {
         const apiResponse: AxiosResponse<PlayerAPIDataType> = await loginAPICall(loginData);
