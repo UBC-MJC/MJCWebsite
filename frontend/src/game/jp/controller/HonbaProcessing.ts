@@ -126,22 +126,22 @@ export function findProminentPlayerRound(transaction: JapaneseTransaction) {
             roundWinners.add(index);
         }
     }
-    return {roundWinners, roundLosers};
+    return { roundWinners, roundLosers };
 }
 
 export function findProminentPlayers(transactions: JapaneseTransaction[]) {
     const winners = new Set<number>();
     const losers = new Set<number>();
     for (const transaction of transactions) {
-        const {roundWinners, roundLosers} = findProminentPlayerRound(transaction);
+        const { roundWinners, roundLosers } = findProminentPlayerRound(transaction);
         roundWinners.forEach((index: number) => winners.add(index));
         roundLosers.forEach((index: number) => losers.add(index));
     }
-    return {winners, losers};
+    return { winners, losers };
 }
 
 export function findHeadbumpWinner(transactions: JapaneseTransaction[]) {
-    const {winners, losers} = findProminentPlayers(transactions);
+    const { winners, losers } = findProminentPlayers(transactions);
     const [loser] = losers; // should only have one real loser
     return getClosestWinner(loser, winners);
 }

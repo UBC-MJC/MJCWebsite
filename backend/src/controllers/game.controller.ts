@@ -46,7 +46,7 @@ const createGameHandler = async (
 
     try {
         const { players, gameType } = await createGameSchema.validate(req.body);
-
+        console.log(players.toString());
         const playersQuery = await generatePlayerQuery(gameVariant, players);
         const season = await getCurrentSeason();
 

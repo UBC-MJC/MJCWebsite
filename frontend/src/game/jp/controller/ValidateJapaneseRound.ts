@@ -16,14 +16,13 @@ const E_MULLOSE = "There should only be one loser";
 const E_MULNAGM = "There should only be one nagashi mangan per player";
 
 const validateCreateTransaction = (transaction: JapaneseTransaction) => {
-    
     const hand = transaction.hand;
     const scoreDeltas = transaction.scoreDeltas;
     const transactionType = transaction.transactionType;
     const indexPao = transaction.paoPlayerIndex;
 
     let deltaSum = 0;
-    const {roundWinners, roundLosers} = findProminentPlayerRound(transaction);
+    const { roundWinners, roundLosers } = findProminentPlayerRound(transaction);
     const [indexWin] = roundWinners;
     const [indexLose] = roundLosers;
 
@@ -32,10 +31,10 @@ const validateCreateTransaction = (transaction: JapaneseTransaction) => {
             if (hand === undefined) {
                 throw new Error(E_INVHAND); // never reaches this
             }
-            
+
             if (hand.han === -2) {
                 if (indexWin === undefined || indexLose === undefined) {
-                    throw new Error("Winner, loser, and hand are required");   
+                    throw new Error("Winner, loser, and hand are required");
                 }
             } else {
                 if (indexWin === undefined && indexLose === undefined) {
@@ -131,14 +130,17 @@ const validateCreateJapaneseRound = (
         transactions.forEach((transaction) => {
             validateCreateTransaction(transaction);
         });
-        const {winners, losers} = findProminentPlayers(transactions);
+        const { winners, losers } = findProminentPlayers(transactions);
         const firstTransactionType = transactions[0].transactionType;
 
         switch (firstTransactionType) {
             case "DEAL_IN":
             case "DEAL_IN_PAO":
                 transactions.forEach((transaction) => {
-                    if (transaction.transactionType != "DEAL_IN" && transaction.transactionType != "DEAL_IN_PAO") {
+                    if (
+                        transaction.transactionType != "DEAL_IN" &&
+                        transaction.transactionType != "DEAL_IN_PAO"
+                    ) {
                         throw new Error(E_INVTRAN);
                     }
                 });
@@ -149,7 +151,10 @@ const validateCreateJapaneseRound = (
             case "SELF_DRAW":
             case "SELF_DRAW_PAO":
                 transactions.forEach((transaction) => {
-                    if (transaction.transactionType != "SELF_DRAW" && transaction.transactionType != "SELF_DRAW_PAO") {
+                    if (
+                        transaction.transactionType != "SELF_DRAW" &&
+                        transaction.transactionType != "SELF_DRAW_PAO"
+                    ) {
                         throw new Error(E_INVTRAN);
                     }
                 });

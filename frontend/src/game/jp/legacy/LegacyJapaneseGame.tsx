@@ -27,7 +27,10 @@ import {
     generateCurrentScore,
     generateOverallScoreDelta,
 } from "../controller/JapaneseRound";
-import { validateCreateTransaction, validateCreateJapaneseRound } from "../controller/ValidateJapaneseRound";
+import {
+    validateCreateTransaction,
+    validateCreateJapaneseRound,
+} from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
 import riichiStick from "../../../assets/riichiStick.png";
 

@@ -120,22 +120,7 @@ const Game: FC = () => {
         if (!game) {
             return [];
         }
-
         const orderedPlayers = game.players.slice();
-
-        if (typeof player !== "undefined" && game.recordedById === player.id) {
-            const playerWind = game.players.find((testPlayer) => {
-                return testPlayer.id === player.id;
-            }).trueWind;
-
-            orderedPlayers.sort((a, b) => {
-                return windComparison(a.trueWind, b.trueWind, playerWind);
-            });
-        } else {
-            orderedPlayers.sort((a, b) => {
-                return windComparison(a.trueWind, b.trueWind);
-            });
-        }
 
         return orderedPlayers as GamePlayer[];
     };

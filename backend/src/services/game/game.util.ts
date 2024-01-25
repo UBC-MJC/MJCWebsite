@@ -110,10 +110,11 @@ const generatePlayerQuery = async (
     checkPlayerListUnique(originalPlayerNames);
     const playerList = await findPlayerByUsernames(originalPlayerNames);
     playerList.forEach((player) => checkPlayerGameEligibility(gameVariant, player));
-
-    return playerList.map((player: Player) => {
-        return {
-            wind: getWind(originalPlayerNames.indexOf(player.username)),
+    const result = Array.from({ length: 4 });
+    playerList.map((player: Player) => {
+        const originalIndex = originalPlayerNames.indexOf(player.username);
+        result[originalIndex] = {
+            wind: getWind(originalIndex),
             player: {
                 connect: {
                     id: player.id,
@@ -121,6 +122,7 @@ const generatePlayerQuery = async (
             },
         };
     });
+    return result;
 };
 const createEloCalculatorInputs = (
     players: { player: Player; wind: Wind }[],
