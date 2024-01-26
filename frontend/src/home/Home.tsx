@@ -7,9 +7,9 @@ const Home: FC = () => {
         <div>
             <h1>Home</h1>
             <Image src={logo} className={"w-50"}></Image>
-            <p>Club room location: The Nest 3206B</p>
+            <p>Club room location: Room 3206B, The Nest</p>
             <p>The University of British Columbia, Vancouver, BC</p>
-            <p>Instagram: ubcmahjongclub </p>
+            <p>Instagram: <a href={"https://www.instagram.com/ubcmahjongclub"}>ubcmahjongclub</a></p>
             <p>Email: ubcmahjongclub@gmail.com </p>
             <p>
                 <a href={"https://www.discord.gg/Qd39mbxqcw"}>Join our discord channel</a> for

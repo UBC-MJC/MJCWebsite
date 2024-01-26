@@ -122,7 +122,6 @@ type PartialJapaneseRound = Pick<
 >;
 
 type JapaneseTransaction = {
-    id?: string;
     transactionType: JapaneseTransactionType;
     scoreDeltas: number[];
     hand?: JapaneseHandInput;
