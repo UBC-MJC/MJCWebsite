@@ -104,7 +104,6 @@ type RoundValue = {
 };
 
 type JapaneseRound = {
-    id?: string;
     roundNumber: number;
     roundWind: string;
     roundCount: number;
