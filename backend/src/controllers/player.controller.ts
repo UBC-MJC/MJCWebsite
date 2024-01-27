@@ -84,6 +84,7 @@ const getPlayerLeaderboardHandler = async (
         const playerElos = await getAllPlayerElos(gameVariant, season.id);
         playerElos.forEach((playerElo) => {
             playerElo.elo = Number(playerElo.elo) + 1500;
+            playerElo.gameCount = Number(playerElo.gameCount);
         });
 
         res.json({ players: playerElos });

@@ -1,6 +1,7 @@
 type LeaderboardType = {
     username: string;
     elo: string;
+    gameCount: string;
 };
 
 type Setting = {

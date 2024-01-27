@@ -60,6 +60,7 @@ const Leaderboard: FC<GameTypeProp> = ({ gameVariant }) => {
                         <th>#</th>
                         <th>Player</th>
                         <th>ELO</th>
+                        <th>Games</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,6 +70,7 @@ const Leaderboard: FC<GameTypeProp> = ({ gameVariant }) => {
                                 <td>{index + 1}</td>
                                 <td>{player.username}</td>
                                 <td>{player.elo}</td>
+                                <td>{player.gameCount}</td>
                             </tr>
                         );
                     })}
