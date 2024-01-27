@@ -257,7 +257,7 @@ const isJapaneseGameEnd = (
     if (!exceedsHanten) {
         return false;
     }
-    if (isAllLastDealerRepeat(newRound, concludedRounds) && isDealerFirst(totalScore)) {
+    if (isAllLastDealerRepeat(newRound, concludedRounds) && isDealerFirst(totalScore) && totalScore[totalScore.length - 1] >= JAPANESE_RETURNING_POINT) {
         return true;
     }
     if (newRound.roundWind === Wind.EAST || newRound.roundWind === Wind.SOUTH) {
