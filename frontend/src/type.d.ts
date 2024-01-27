@@ -158,7 +158,6 @@ type HongKongTransaction = {
     transactionType: HongKongTransactionType;
     scoreDeltas: number[];
     hand?: HongKongHandInput;
-    paoPlayerIndex?: number;
 };
 
 type HongKongHandInput = number;

@@ -7,7 +7,7 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { Table as BTable } from "react-bootstrap";
-import {mapChineseNumerals, mapWindToCharacter} from "../../../common/Utils";
+import { mapChineseNumerals, mapWindToCharacter } from "../../../common/Utils";
 import { generateCurrentScore } from "../controller/JapaneseRound";
 
 type LegacyGameTableProps = {
@@ -29,13 +29,10 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
     const columnHelper = createColumnHelper<ModifiedJapaneseRound>();
 
     const roundColumns: ColumnDef<ModifiedJapaneseRound, any>[] = [
-        columnHelper.accessor(
-            (row) => getRowString(row),
-            {
-                id: "round",
-                header: "Round",
-            },
-        ),
+        columnHelper.accessor((row) => getRowString(row), {
+            id: "round",
+            header: "Round",
+        }),
         columnHelper.accessor(
             (row) => {
                 return row.scoreDeltas[0];

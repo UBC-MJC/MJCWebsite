@@ -99,7 +99,7 @@ const mapWindToCharacter = (wind: string): string => {
 const mapChineseNumerals = (num: number): string => {
     const table = ["零", "一", "二", "三", "四"];
     return table[num];
-}
+};
 
 const range = (end: number): number[] => {
     return Array.from({ length: end }, (_, i) => i);

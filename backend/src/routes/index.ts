@@ -16,6 +16,7 @@ import {
     deleteLastRoundHandler,
     deleteGameHandler,
     submitGameHandler,
+    getCurrentGamesHandler,
 } from "../controllers/game.controller";
 import {
     getPlayersHandler,
@@ -36,6 +37,7 @@ router.post("/login", loginHandler);
 
 router.get("/games/:gameVariant", isAuthenticated, getGamesHandler);
 router.post("/games/:gameVariant", isAuthenticated, createGameHandler);
+router.get("/games/:gameVariant/current", getCurrentGamesHandler);
 router.get("/games/:gameVariant/:id", getGameHandler);
 router.post("/games/:gameVariant/:id", isAuthenticated, submitGameHandler);
 router.delete("/games/:gameVariant/:id", isAuthenticated, deleteGameHandler);

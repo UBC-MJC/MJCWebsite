@@ -11,7 +11,6 @@ type EloCalculatorInput = {
     wind: Wind;
 };
 
-
 const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: "jp" | "hk") => {
     let fieldElo = playerInformation.reduce((sum, player) => sum + player.elo, 0);
     fieldElo = fieldElo / 4;

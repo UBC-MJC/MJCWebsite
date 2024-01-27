@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
-import { createGameSchema, validateCreateRound } from "../validation/game.validation";
+import { createGameSchema } from "../validation/game.validation";
 import { getCurrentSeason } from "../services/season.service";
 import { generatePlayerQuery, getGameService } from "../services/game/game.util";
 import GameService from "../services/game/game.service";
@@ -33,6 +33,22 @@ const getGameHandler = async (req: Request, res: Response, next: NextFunction): 
         res.status(200).json(result);
     } catch (error: any) {
         console.error("Error in getGameHandler:", error);
+        next(createError.InternalServerError(error.message));
+    }
+};
+
+const getCurrentGamesHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    const gameVariant = req.params.gameVariant;
+    const gameService: GameService = getGameService(gameVariant);
+    try {
+        const currentGames = await gameService.getCurrentGames();
+        res.status(200).json(currentGames.map((game) => gameService.mapGameObject(game)));
+    } catch (error: any) {
+        console.error("Error in getCurrentGamesHandler:", error);
         next(createError.InternalServerError(error.message));
     }
 };
@@ -197,6 +213,7 @@ export {
     getGamesHandler,
     getGameHandler,
     createGameHandler,
+    getCurrentGamesHandler,
     deleteGameHandler,
     submitGameHandler,
     createRoundHandler,
