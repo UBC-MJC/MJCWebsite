@@ -257,11 +257,39 @@ const isJapaneseGameEnd = (
     if (!exceedsHanten) {
         return false;
     }
+    if (isAllLastDealerRepeat(newRound, concludedRounds) && isDealerFirst(totalScore)) {
+        return true;
+    }
     if (newRound.roundWind === Wind.EAST || newRound.roundWind === Wind.SOUTH) {
         return false;
     }
     return true; // west, and one person's score exceeds 30k
 };
+
+const isAllLastDealerRepeat = (newRound: PartialJapaneseRound, concludedRounds: JapaneseRound[]): boolean => {
+    if (newRound.roundWind !== Wind.SOUTH || newRound.roundNumber !== 4) {
+        // must be on south 4
+        return false;
+    }
+
+    const previousRound = concludedRounds[concludedRounds.length - 1];
+
+    if (previousRound.roundWind !== Wind.SOUTH || previousRound.roundNumber !== 4) {
+        // round that just ended must be south 4 for dealer repeat to be possible
+        return false;
+    }
+
+    return true;
+}
+
+const isDealerFirst = (totalScores: number[]): boolean => {
+    for (let i = 0; i < totalScores.length - 1; i++) {
+        if (totalScores[i] > totalScores[totalScores.length - 1]) {
+            return false;
+        }
+    }
+    return true;
+}
 
 export {
     createJapaneseRoundRequest,
