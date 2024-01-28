@@ -262,9 +262,13 @@ const isJapaneseGameEnd = (
     if (lastRound.roundWind !== Wind.SOUTH || lastRound.roundNumber !== NUM_PLAYERS) {
         return false; // not even S4 yet
     }
-
-    totalScore[NUM_PLAYERS - 1] -= 1; // for tiebreaking purposes
-    return Math.max(...totalScore) === totalScore[3];
+    for (let i = 0; i < totalScore.length - 1; i++) {
+        if (totalScore[i] >= totalScore[totalScore.length - 1]) {
+            // winning by position
+            return false;
+        }
+    }
+    return true;
 };
 
 export {

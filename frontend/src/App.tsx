@@ -8,6 +8,7 @@ import { AuthContextProvider } from "./common/AuthContext";
 
 import Home from "./home/Home";
 import Leaderboard from "./leaderboard/Leaderboard";
+import { CurrentGames } from "./game/CurrentGames";
 import CreateGame from "./game/CreateGame";
 import Game from "./game/Game";
 import Statistics from "./statistics/Statistics";
@@ -27,6 +28,14 @@ const App: React.FC = () => {
                         <Route path="/leaderboard/jp" element={<Leaderboard gameVariant="jp" />} />
                         <Route path="/leaderboard/hk" element={<Leaderboard gameVariant="hk" />} />
                         <Route path="/games/:variant/:id" element={<Game />} />
+                        <Route
+                            path="/games/current/jp"
+                            element={<CurrentGames gameVariant="jp" />}
+                        />
+                        <Route
+                            path="/games/current/hk"
+                            element={<CurrentGames gameVariant="hk" />}
+                        />
                         <Route path="/games/create/jp" element={<CreateGame gameVariant="jp" />} />
                         <Route path="/games/create/hk" element={<CreateGame gameVariant="hk" />} />
                         <Route path="/stats" element={<Statistics />} />

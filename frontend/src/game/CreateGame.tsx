@@ -1,5 +1,5 @@
 import React, { FC, useContext, useEffect, useState } from "react";
-import { createGameAPI, getCurrentGamesAPI, getPlayerNames } from "../api/GameAPI";
+import { createGameAPI, getPlayerNames } from "../api/GameAPI";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { AuthContext } from "../common/AuthContext";
@@ -19,7 +19,6 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
     const [southPlayer, setSouthPlayer] = useState<string | null>(null);
     const [westPlayer, setWestPlayer] = useState<string | null>(null);
     const [northPlayer, setNorthPlayer] = useState<string | null>(null);
-    const [currentGames, setCurrentGames] = useState<Game[]>([]);
 
     useEffect(() => {
         getPlayerNames(gameVariant)
@@ -28,16 +27,6 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
             })
             .catch((error: AxiosError) => {
                 alert(`Error fetching player names: ${error.response?.data}`);
-            });
-
-        getCurrentGamesAPI(gameVariant)
-            .then((response) => {
-                console.log("Current games: ");
-                console.log(response.data);
-                setCurrentGames(response.data);
-            })
-            .catch((error: AxiosError) => {
-                alert(`Error fetching current games: ${error.response?.data}`);
             });
     }, [gameVariant]);
 
@@ -64,12 +53,6 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
 
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
     const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4;
-
-    function getGamePlayers(game: Game) {
-        console.log(game.players);
-        const usernames = game.players.map((player: GamePlayer) => player.username);
-        return usernames.toString();
-    }
 
     return (
         <Container>
@@ -136,16 +119,6 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
             >
                 Create Game
             </Button>
-            <Row>
-                {currentGames.map((game, idx) => (
-                    <div key={idx}>
-                        <p>
-                            <b>{game.id}</b>{" "}
-                            <a href={"../" + gameVariant + "/" + game.id}>{getGamePlayers(game)}</a>
-                        </p>
-                    </div>
-                ))}
-            </Row>
         </Container>
     );
 };

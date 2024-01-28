@@ -62,7 +62,6 @@ const createGameHandler = async (
 
     try {
         const { players, gameType } = await createGameSchema.validate(req.body);
-        console.log(players.toString());
         const playersQuery = await generatePlayerQuery(gameVariant, players);
         const season = await getCurrentSeason();
 
@@ -161,9 +160,7 @@ const createRoundHandler = async (
             return next(createError.NotFound("Game not found"));
         } else if (game.status !== "IN_PROGRESS") {
             return next(createError.BadRequest("Game is not in progress"));
-        }
-
-        if (game.recordedById !== req.player.id) {
+        } else if (game.recordedById !== req.player.id) {
             return next(createError.Forbidden("You are not the recorder of this game"));
         }
 
@@ -194,10 +191,11 @@ const deleteLastRoundHandler = async (
             return next(createError.NotFound("Game not found"));
         } else if (game.status !== "IN_PROGRESS") {
             return next(createError.BadRequest("Game is not in progress"));
-        } else if (game.rounds.length === 0) {
-            return next(createError.BadRequest("Game has no rounds"));
         } else if (game.recordedById !== req.player.id) {
             return next(createError.Forbidden("You are not the recorder of this game"));
+        }
+        if (game.rounds.length === 0) {
+            return next(createError.BadRequest("Game has no rounds"));
         }
 
         await gameService.deleteRound(game.rounds[game.rounds.length - 1].id);
