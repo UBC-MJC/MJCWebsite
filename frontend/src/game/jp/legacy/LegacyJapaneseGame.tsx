@@ -27,10 +27,7 @@ import {
     generateCurrentScore,
     generateOverallScoreDelta,
 } from "../controller/JapaneseRound";
-import {
-    validateCreateTransaction,
-    validateCreateJapaneseRound,
-} from "../controller/ValidateJapaneseRound";
+import { validateTransaction, validateJapaneseRound } from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
 import riichiStick from "../../../assets/riichiStick.png";
 
@@ -119,47 +116,54 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         setHand(newHand);
     };
 
-    function getTransactionList(): JapaneseTransaction[] {
+    function getTransaction(): JapaneseTransaction | null {
         const dealerIndex = game.currentRound!.roundNumber! - 1;
         switch (transactionType) {
             case JapaneseTransactionType.DEAL_IN:
-                return [addDealIn(roundActions.WINNER!, roundActions.LOSER!, dealerIndex, hand)];
+                return addDealIn(roundActions.WINNER!, roundActions.LOSER!, dealerIndex, hand);
             case JapaneseTransactionType.SELF_DRAW:
-                return [addSelfDraw(roundActions.WINNER!, dealerIndex, hand)];
+                return addSelfDraw(roundActions.WINNER!, dealerIndex, hand);
             case JapaneseTransactionType.INROUND_RYUUKYOKU:
-                return [addInRoundRyuukyoku()];
+                return addInRoundRyuukyoku();
             case JapaneseTransactionType.DEAL_IN_PAO:
-                return [
-                    addPaoDealIn(
-                        roundActions.WINNER!,
-                        roundActions.LOSER!,
-                        roundActions.PAO!,
-                        dealerIndex,
-                        hand,
-                    ),
-                ];
+                return addPaoDealIn(
+                    roundActions.WINNER!,
+                    roundActions.LOSER!,
+                    roundActions.PAO!,
+                    dealerIndex,
+                    hand,
+                );
             case JapaneseTransactionType.SELF_DRAW_PAO:
-                return [addPaoSelfDraw(roundActions.WINNER!, roundActions.PAO!, dealerIndex, hand)];
+                return addPaoSelfDraw(roundActions.WINNER!, roundActions.PAO!, dealerIndex, hand);
             case JapaneseTransactionType.NAGASHI_MANGAN:
-                return [addNagashiMangan(roundActions.WINNER!, dealerIndex)];
+                return addNagashiMangan(roundActions.WINNER!, dealerIndex);
             default:
-                return [];
+                return null;
         }
     }
 
+    async function getTransactionList(): Promise<JapaneseTransaction[]> {
+        const transaction = getTransaction();
+        if (transaction !== null) {
+            try {
+                validateTransaction(transaction);
+            } catch (e: any) {
+                await alert(e.message);
+                return [];
+            }
+            return [transaction];
+        }
+        return [];
+    }
+
     const submitSingleTransactionRound = async () => {
-        const transactionList = getTransactionList();
+        const transactionList = await getTransactionList();
         await submitRound(transactionList);
     };
 
     const addTransaction = async () => {
-        try {
-            validateCreateTransaction(getTransactionList()[0]);
-        } catch (e: any) {
-            await alert(e.message);
-            return;
-        }
-        setTransactions([...transactions, ...getTransactionList()]);
+        const transactionList = await getTransactionList();
+        setTransactions([...transactions, ...transactionList]);
     };
 
     const deleteLastTransaction = () => {
@@ -168,7 +172,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
 
     const submitRound = async (transactionList: JapaneseTransaction[]) => {
         try {
-            validateCreateJapaneseRound(tenpaiList, riichiList, transactionList);
+            validateJapaneseRound(tenpaiList, riichiList, transactionList);
         } catch (e: any) {
             await alert(e.message);
             return;
@@ -393,21 +397,36 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         });
     };
 
+    function getRiichiStickCount() {
+        if (game.rounds.length === 0) {
+            return 0;
+        }
+        return (
+            (game.rounds[game.rounds.length - 1] as JapaneseRound).endRiichiStickCount +
+            riichiList.length
+        );
+    }
+
     function getFooter() {
         return (
-            <Row className={"my-4 position-sticky bottom-0 bg-light row-cols-4 align-items-end"}>
-                {generateCurrentScore(game.rounds as JapaneseRound[]).map((score, idx) => (
-                    <Col key={idx} className={"my-2"}>
-                        <div>{players[idx].username}</div>
-                        <div>
-                            {riichiList.includes(idx) && (
-                                <Image src={riichiStick} className={"w-75"}></Image>
-                            )}
-                        </div>
-                        <h2>{score - Number(riichiList.includes(idx)) * 1000}</h2>
-                    </Col>
-                ))}
-            </Row>
+            <Container fluid className={"my-4 position-sticky bottom-0 bg-light"}>
+                <Row className={"my-1 "}>
+                    <h4>Riichi sticks: {getRiichiStickCount()}</h4>
+                </Row>
+                <Row className={"row-cols-4 align-items-end"}>
+                    {generateCurrentScore(game.rounds as JapaneseRound[]).map((score, idx) => (
+                        <Col key={idx} className={"my-2"}>
+                            <div>{players[idx].username}</div>
+                            <div>
+                                {riichiList.includes(idx) && (
+                                    <Image src={riichiStick} className={"w-75"}></Image>
+                                )}
+                            </div>
+                            <h2>{score - Number(riichiList.includes(idx)) * 1000}</h2>
+                        </Col>
+                    ))}
+                </Row>
+            </Container>
         );
     }
 

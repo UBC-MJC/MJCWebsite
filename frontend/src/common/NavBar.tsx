@@ -37,6 +37,14 @@ const NavBar: FC = () => {
                                 )}
                             </NavDropdown>
                         )}
+                        <NavDropdown title={"Current Games"} id="current-games-nav-dropdown">
+                            <NavDropdown.Item as={Link} to="/games/current/jp">
+                                Riichi
+                            </NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/games/current/hk">
+                                Hong Kong
+                            </NavDropdown.Item>
+                        </NavDropdown>
                         <Nav.Link as={Link} to="/stats">
                             Statistics
                         </Nav.Link>

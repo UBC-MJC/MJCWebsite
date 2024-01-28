@@ -1,7 +1,7 @@
 import { JapaneseTransactionType, Player, Prisma, Wind } from "@prisma/client";
 import HongKongGameService from "./hongKongGame.service";
 import JapaneseGameService from "./japaneseGame.service";
-import { findPlayerByUsernames } from "../player.service";
+import { findPlayerByUsername } from "../player.service";
 import { EloCalculatorInput } from "./eloCalculator";
 import { JapaneseTransactionT, Transaction } from "../../validation/game.validation";
 
@@ -108,21 +108,23 @@ const generatePlayerQuery = async (
     originalPlayerNames: string[],
 ): Promise<any[]> => {
     checkPlayerListUnique(originalPlayerNames);
-    const playerList = await findPlayerByUsernames(originalPlayerNames);
-    playerList.forEach((player) => checkPlayerGameEligibility(gameVariant, player));
-    const result = Array.from({ length: 4 });
-    playerList.map((player: Player) => {
-        const originalIndex = originalPlayerNames.indexOf(player.username);
-        result[originalIndex] = {
-            wind: getWind(originalIndex),
+
+    const playerList = await Promise.all(
+        originalPlayerNames.map((playerName) => {
+            return findPlayerByUsername(playerName);
+        }),
+    );
+    playerList.forEach((player) => checkPlayerGameEligibility(gameVariant, player!));
+    return playerList.map((player, idx) => {
+        return {
+            wind: getWind(idx),
             player: {
                 connect: {
-                    id: player.id,
+                    id: player!.id,
                 },
             },
         };
     });
-    return result;
 };
 const createEloCalculatorInputs = (
     players: { player: Player; wind: Wind }[],

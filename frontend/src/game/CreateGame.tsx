@@ -7,6 +7,7 @@ import { withPlayerCondition } from "../common/withPlayerCondition";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import { getGameTypeString } from "../common/Utils";
+import Game from "./Game";
 
 const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
@@ -20,14 +21,9 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
     const [northPlayer, setNorthPlayer] = useState<string | null>(null);
 
     useEffect(() => {
-        setWestPlayer(null);
-        setSouthPlayer(null);
-        setEastPlayer(null);
-        setNorthPlayer(null);
-
         getPlayerNames(gameVariant)
             .then((response) => {
-                setPlayerNames(response.data.playerNames);
+                setPlayerNames(response.data.playerNames.sort());
             })
             .catch((error: AxiosError) => {
                 alert(`Error fetching player names: ${error.response?.data}`);

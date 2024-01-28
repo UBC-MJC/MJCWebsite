@@ -1,4 +1,5 @@
 import { findProminentPlayerRound, findProminentPlayers } from "./HonbaProcessing";
+import { JapaneseTransactionType } from "../../common/constants";
 
 const E_NOWIN = "A winner is required";
 const E_NOLOSE = "A loser is required";
@@ -15,19 +16,19 @@ const E_MULWIN = "There should only be one winner";
 const E_MULLOSE = "There should only be one loser";
 const E_MULNAGM = "There should only be one nagashi mangan per player";
 
-const validateCreateTransaction = (transaction: JapaneseTransaction) => {
+const validateTransaction = (transaction: JapaneseTransaction) => {
     const hand = transaction.hand;
     const scoreDeltas = transaction.scoreDeltas;
     const transactionType = transaction.transactionType;
     const indexPao = transaction.paoPlayerIndex;
 
-    let deltaSum = 0;
+    const deltaSum = scoreDeltas.reduce<number>((score, prev) => prev + score, 0);
     const { roundWinners, roundLosers } = findProminentPlayerRound(transaction);
     const [indexWin] = roundWinners;
     const [indexLose] = roundLosers;
 
     switch (transactionType) {
-        case "DEAL_IN":
+        case JapaneseTransactionType.DEAL_IN:
             if (hand === undefined) {
                 throw new Error(E_INVHAND); // never reaches this
             }
@@ -57,7 +58,7 @@ const validateCreateTransaction = (transaction: JapaneseTransaction) => {
                 }
             }
             break;
-        case "SELF_DRAW":
+        case JapaneseTransactionType.SELF_DRAW:
             if (hand === undefined) {
                 throw new Error(E_INVHAND); // never reaches this
             }
@@ -74,14 +75,11 @@ const validateCreateTransaction = (transaction: JapaneseTransaction) => {
                 }
             }
             break;
-        case "DEAL_IN_PAO":
+        case JapaneseTransactionType.DEAL_IN_PAO:
             if (hand === undefined) {
                 throw new Error(E_INVHAND); // never reaches this
             }
-            for (let i = 0; i < scoreDeltas.length; i++) {
-                deltaSum += scoreDeltas[i];
-            }
-            if (deltaSum != 0) {
+            if (deltaSum !== 0) {
                 throw new Error("Winner, loser, pao player, and hand are required");
             }
             if (indexWin === undefined) {
@@ -95,7 +93,7 @@ const validateCreateTransaction = (transaction: JapaneseTransaction) => {
             }
             checkPao(hand);
             break;
-        case "SELF_DRAW_PAO":
+        case JapaneseTransactionType.SELF_DRAW_PAO:
             if (hand === undefined) {
                 throw new Error(E_INVHAND); // never reaches this
             }
@@ -111,72 +109,68 @@ const validateCreateTransaction = (transaction: JapaneseTransaction) => {
             }
             checkPao(hand);
             break;
-        case "NAGASHI_MANGAN":
+        case JapaneseTransactionType.NAGASHI_MANGAN:
             if (indexWin === undefined) {
                 throw new Error(E_NOWIN);
             }
             break;
-        case "INROUND_RYUUKYOKU":
+        case JapaneseTransactionType.INROUND_RYUUKYOKU:
             break;
     }
 };
 
-const validateCreateJapaneseRound = (
+const validateJapaneseRound = (
     tenpaiList: number[],
     riichiList: number[],
     transactions: JapaneseTransaction[],
 ) => {
-    if (transactions.length > 0) {
-        transactions.forEach((transaction) => {
-            validateCreateTransaction(transaction);
-        });
-        const { winners, losers } = findProminentPlayers(transactions);
-        const firstTransactionType = transactions[0].transactionType;
-
-        switch (firstTransactionType) {
-            case "DEAL_IN":
-            case "DEAL_IN_PAO":
-                transactions.forEach((transaction) => {
-                    if (
-                        transaction.transactionType != "DEAL_IN" &&
-                        transaction.transactionType != "DEAL_IN_PAO"
-                    ) {
-                        throw new Error(E_INVTRAN);
-                    }
-                });
-                if (losers.size > 1) {
-                    throw new Error(E_MULLOSE);
-                }
-                break;
-            case "SELF_DRAW":
-            case "SELF_DRAW_PAO":
-                transactions.forEach((transaction) => {
-                    if (
-                        transaction.transactionType != "SELF_DRAW" &&
-                        transaction.transactionType != "SELF_DRAW_PAO"
-                    ) {
-                        throw new Error(E_INVTRAN);
-                    }
-                });
-                if (winners.size > 1) {
-                    throw new Error(E_MULWIN);
-                }
-                break;
-            case "NAGASHI_MANGAN":
-                if (winners.size !== transactions.length) {
-                    throw new Error(E_MULNAGM);
-                }
-                transactions.forEach((transaction) => {
-                    if (transaction.transactionType != "NAGASHI_MANGAN") {
-                        throw new Error(E_INVTRAN);
-                    }
-                    checkRiichiTenpai(tenpaiList, riichiList);
-                });
-                break;
-        }
-    } else {
-        // exhaustive draw
+    if (transactions.length === 0) {
         checkRiichiTenpai(tenpaiList, riichiList);
+        return;
+    }
+    const { winners, losers } = findProminentPlayers(transactions);
+    const firstTransactionType = transactions[0].transactionType;
+
+    switch (firstTransactionType) {
+        case JapaneseTransactionType.DEAL_IN:
+        case JapaneseTransactionType.DEAL_IN_PAO:
+            transactions.forEach((transaction) => {
+                if (
+                    transaction.transactionType !== JapaneseTransactionType.DEAL_IN &&
+                    transaction.transactionType !== JapaneseTransactionType.DEAL_IN_PAO
+                ) {
+                    throw new Error(E_INVTRAN);
+                }
+            });
+            if (losers.size > 1) {
+                throw new Error(E_MULLOSE);
+            }
+            break;
+        case JapaneseTransactionType.SELF_DRAW:
+        case JapaneseTransactionType.SELF_DRAW_PAO:
+            transactions.forEach((transaction) => {
+                if (
+                    transaction.transactionType !== JapaneseTransactionType.SELF_DRAW &&
+                    transaction.transactionType !== JapaneseTransactionType.SELF_DRAW_PAO
+                ) {
+                    throw new Error(E_INVTRAN);
+                }
+            });
+            if (winners.size > 1) {
+                throw new Error(E_MULWIN);
+            }
+            break;
+        case JapaneseTransactionType.NAGASHI_MANGAN:
+            if (winners.size !== transactions.length) {
+                throw new Error(E_MULNAGM);
+            }
+            transactions.forEach((transaction) => {
+                if (transaction.transactionType !== JapaneseTransactionType.NAGASHI_MANGAN) {
+                    throw new Error(E_INVTRAN);
+                }
+                checkRiichiTenpai(tenpaiList, riichiList);
+            });
+            break;
     }
 };
 
@@ -193,7 +187,7 @@ const checkHand = (hand: JapaneseHandInput): void => {
         throw new Error(E_NOHAN);
     }
     if (hand.han > 0 && hand.han < 5) {
-        if (hand.fu == 10) {
+        if (hand.fu === 10) {
             throw new Error(hand.han + E_NOFU);
         }
     }
@@ -211,4 +205,4 @@ const checkPao = (hand: JapaneseHandInput): void => {
     }
 };
 
-export { validateCreateTransaction, validateCreateJapaneseRound };
+export { validateTransaction, validateJapaneseRound };

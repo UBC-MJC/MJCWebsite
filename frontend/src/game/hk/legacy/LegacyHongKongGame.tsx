@@ -16,6 +16,8 @@ import { hongKongPointsWheel } from "../../../common/Utils";
 import DropdownInput from "../../common/DropdownInput";
 import { LegacyGameProps } from "../../Game";
 import { createHongKongRoundRequest, generateOverallScoreDelta } from "../controller/HongKongRound";
+import { validateHongKongRound } from "../controller/ValidateHongKongRound";
+import alert from "../../../common/AlertDialog";
 
 const LegacyHongKongGame: FC<LegacyGameProps> = ({
     enableRecording,
@@ -82,29 +84,40 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
             hand,
             game.currentRound!,
         );
+        console.log(roundRequest);
+        try {
+            validateHongKongRound(roundRequest.transactions);
+        } catch (e: any) {
+            await alert(e.message);
+            return;
+        }
+
         await handleSubmitRound(roundRequest);
     };
 
-    const getHongKongLabels = () => {
-        let labels: [HongKongLabel, (number | undefined)[]][] = [];
-
+    const getHongKongLabels = (): [HongKongLabel, (number | undefined)[]][] => {
         switch (transactionType) {
             case HongKongTransactionType.DEAL_IN:
-            case HongKongTransactionType.DEAL_IN_PAO:
-                labels = [
+                return [
                     [HongKongLabel.WINNER, [roundActions.WINNER]],
                     [HongKongLabel.LOSER, [roundActions.LOSER]],
                 ];
-                break;
+            case HongKongTransactionType.DEAL_IN_PAO:
+                return [
+                    [HongKongLabel.WINNER, [roundActions.WINNER]],
+                    [HongKongLabel.LOSER, [roundActions.LOSER]],
+                    [HongKongLabel.PAO, [roundActions.PAO]],
+                ];
             case HongKongTransactionType.SELF_DRAW:
+                return [[HongKongLabel.WINNER, [roundActions.WINNER]]];
             case HongKongTransactionType.SELF_DRAW_PAO:
-                labels = [[HongKongLabel.WINNER, [roundActions.WINNER]]];
-                break;
+                return [
+                    [HongKongLabel.WINNER, [roundActions.WINNER]],
+                    [HongKongLabel.PAO, [roundActions.PAO]],
+                ];
             case HongKongTransactionType.DECK_OUT:
-                break;
+                return [];
         }
-
-        return labels;
     };
 
     const getRecordingInterface = () => {
@@ -130,10 +143,10 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                 {getHongKongLabels().map(([label, labelPlayerIds], idx) => (
                     <Row key={label} className="my-4">
                         <Col>
-                            <h5>{HK_LABEL_MAP[label as HongKongLabel]}:</h5>
+                            <h5>{HK_LABEL_MAP[label]}:</h5>
                             <PlayerButtonRow
                                 players={players}
-                                label={label as HongKongLabel}
+                                label={label}
                                 labelPlayerIds={labelPlayerIds}
                                 onChange={actionOnChange}
                             />
