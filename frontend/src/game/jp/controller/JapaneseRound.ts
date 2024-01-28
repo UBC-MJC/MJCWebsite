@@ -241,10 +241,7 @@ const isJapaneseGameEnd = (
         // ends at north regardless of what happens
         return true;
     }
-    const totalScore = concludedRounds.reduce<number[]>(
-        (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
-        getJapaneseStartingScore(),
-    );
+    const totalScore = generateCurrentScore(concludedRounds);
     let exceedsHanten = false;
     for (const score of totalScore) {
         if (score < 0) {
@@ -257,10 +254,21 @@ const isJapaneseGameEnd = (
     if (!exceedsHanten) {
         return false;
     }
-    if (newRound.roundWind === Wind.EAST || newRound.roundWind === Wind.SOUTH) {
-        return false;
+    // At least one person is more than 30k
+    if (newRound.roundWind === Wind.WEST) {
+        return true; // dealership gone; someone's more than 30k
     }
-    return true; // west, and one person's score exceeds 30k
+    const lastRound = concludedRounds[concludedRounds.length - 1];
+    if (lastRound.roundWind !== Wind.SOUTH || lastRound.roundNumber !== NUM_PLAYERS) {
+        return false; // not even S4 yet
+    }
+    for (let i = 0; i < totalScore.length - 1; i++) {
+        if (totalScore[i] >= totalScore[totalScore.length - 1]) {
+            // winning by position
+            return false;
+        }
+    }
+    return true;
 };
 
 export {

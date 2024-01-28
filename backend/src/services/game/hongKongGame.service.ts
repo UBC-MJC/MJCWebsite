@@ -66,6 +66,26 @@ class HongKongGameService extends GameService {
         });
     }
 
+    public getCurrentGames(): Promise<any[]> {
+        return prisma.hongKongGame.findMany({
+            where: {
+                status: GameStatus.IN_PROGRESS,
+            },
+            include: {
+                players: {
+                    include: {
+                        player: true,
+                    },
+                },
+                rounds: {
+                    include: {
+                        transactions: true,
+                    },
+                },
+            },
+        });
+    }
+
     public async deleteGame(id: number): Promise<void> {
         await prisma.hongKongGame.delete({
             where: {

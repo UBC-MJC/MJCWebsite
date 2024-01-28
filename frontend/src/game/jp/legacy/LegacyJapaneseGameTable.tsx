@@ -7,7 +7,7 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { Table as BTable } from "react-bootstrap";
-import { mapWindToCharacter } from "../../../common/Utils";
+import { mapChineseNumerals, mapWindToCharacter } from "../../../common/Utils";
 import { generateCurrentScore } from "../controller/JapaneseRound";
 
 type LegacyGameTableProps = {
@@ -21,17 +21,18 @@ const getCurrentScoreRow = (rounds: JapaneseRound[]) => {
     return ["Score", ...generateCurrentScore(rounds)];
 };
 
+function getRowString(row: ModifiedJapaneseRound) {
+    return `${mapWindToCharacter(row.roundWind)}${mapChineseNumerals(row.roundNumber)}局 ${row.bonus}本場`;
+}
+
 const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {
     const columnHelper = createColumnHelper<ModifiedJapaneseRound>();
 
     const roundColumns: ColumnDef<ModifiedJapaneseRound, any>[] = [
-        columnHelper.accessor(
-            (row) => `${mapWindToCharacter(row.roundWind)} ${row.roundNumber} B${row.bonus}`,
-            {
-                id: "round",
-                header: "Round",
-            },
-        ),
+        columnHelper.accessor((row) => getRowString(row), {
+            id: "round",
+            header: "Round",
+        }),
         columnHelper.accessor(
             (row) => {
                 return row.scoreDeltas[0];
@@ -74,7 +75,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         data: rounds,
         columns: roundColumns,
         getCoreRowModel: getCoreRowModel(),
-        getRowId: (row) => row.id!,
+        getRowId: (row, idx) => idx.toString(),
     });
 
     return (

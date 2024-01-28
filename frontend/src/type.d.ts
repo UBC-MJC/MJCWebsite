@@ -104,7 +104,6 @@ type RoundValue = {
 };
 
 type JapaneseRound = {
-    id?: string;
     roundNumber: number;
     roundWind: string;
     roundCount: number;
@@ -122,7 +121,6 @@ type PartialJapaneseRound = Pick<
 >;
 
 type JapaneseTransaction = {
-    id?: string;
     transactionType: JapaneseTransactionType;
     scoreDeltas: number[];
     hand?: JapaneseHandInput;
@@ -160,7 +158,6 @@ type HongKongTransaction = {
     transactionType: HongKongTransactionType;
     scoreDeltas: number[];
     hand?: HongKongHandInput;
-    paoPlayerIndex?: number;
 };
 
 type HongKongHandInput = number;

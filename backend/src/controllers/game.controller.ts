@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
-import { createGameSchema, validateCreateRound } from "../validation/game.validation";
+import { createGameSchema } from "../validation/game.validation";
 import { getCurrentSeason } from "../services/season.service";
 import { generatePlayerQuery, getGameService } from "../services/game/game.util";
 import GameService from "../services/game/game.service";
@@ -37,6 +37,22 @@ const getGameHandler = async (req: Request, res: Response, next: NextFunction): 
     }
 };
 
+const getCurrentGamesHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    const gameVariant = req.params.gameVariant;
+    const gameService: GameService = getGameService(gameVariant);
+    try {
+        const currentGames = await gameService.getCurrentGames();
+        res.status(200).json(currentGames.map((game) => gameService.mapGameObject(game)));
+    } catch (error: any) {
+        console.error("Error in getCurrentGamesHandler:", error);
+        next(createError.InternalServerError(error.message));
+    }
+};
+
 const createGameHandler = async (
     req: Request,
     res: Response,
@@ -46,7 +62,6 @@ const createGameHandler = async (
 
     try {
         const { players, gameType } = await createGameSchema.validate(req.body);
-        console.log(players.toString());
         const playersQuery = await generatePlayerQuery(gameVariant, players);
         const season = await getCurrentSeason();
 
@@ -145,9 +160,7 @@ const createRoundHandler = async (
             return next(createError.NotFound("Game not found"));
         } else if (game.status !== "IN_PROGRESS") {
             return next(createError.BadRequest("Game is not in progress"));
-        }
-
-        if (game.recordedById !== req.player.id) {
+        } else if (game.recordedById !== req.player.id) {
             return next(createError.Forbidden("You are not the recorder of this game"));
         }
 
@@ -178,10 +191,11 @@ const deleteLastRoundHandler = async (
             return next(createError.NotFound("Game not found"));
         } else if (game.status !== "IN_PROGRESS") {
             return next(createError.BadRequest("Game is not in progress"));
-        } else if (game.rounds.length === 0) {
-            return next(createError.BadRequest("Game has no rounds"));
         } else if (game.recordedById !== req.player.id) {
             return next(createError.Forbidden("You are not the recorder of this game"));
+        }
+        if (game.rounds.length === 0) {
+            return next(createError.BadRequest("Game has no rounds"));
         }
 
         await gameService.deleteRound(game.rounds[game.rounds.length - 1].id);
@@ -197,6 +211,7 @@ export {
     getGamesHandler,
     getGameHandler,
     createGameHandler,
+    getCurrentGamesHandler,
     deleteGameHandler,
     submitGameHandler,
     createRoundHandler,
