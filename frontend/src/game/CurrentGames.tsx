@@ -27,7 +27,7 @@ export const CurrentGames: FC<GameTypeProp> = ({ gameVariant }) => {
 
     return (
         <Container>
-            <h1>Current {getGameTypeString(gameVariant)} Games</h1>
+            <h1 className="my-4">Current {getGameTypeString(gameVariant)} Games</h1>
             <Row>
                 {currentGames.map((game, idx) => (
                     <div key={idx}>

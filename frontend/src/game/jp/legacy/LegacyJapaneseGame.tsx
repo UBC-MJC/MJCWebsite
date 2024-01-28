@@ -397,15 +397,21 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         });
     };
 
+    function getRiichiStickCount() {
+        if (game.rounds.length === 0) {
+            return 0;
+        }
+        return (
+            (game.rounds[game.rounds.length - 1] as JapaneseRound).endRiichiStickCount +
+            riichiList.length
+        );
+    }
+
     function getFooter() {
         return (
             <Container fluid className={"my-4 position-sticky bottom-0 bg-light"}>
                 <Row className={"my-1 "}>
-                    <h4>
-                        Riichi sticks:{" "}
-                        {(game.rounds[game.rounds.length - 1] as JapaneseRound)
-                            .endRiichiStickCount + riichiList.length}
-                    </h4>
+                    <h4>Riichi sticks: {getRiichiStickCount()}</h4>
                 </Row>
                 <Row className={"row-cols-4 align-items-end"}>
                     {generateCurrentScore(game.rounds as JapaneseRound[]).map((score, idx) => (
