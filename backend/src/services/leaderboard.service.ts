@@ -10,11 +10,11 @@ const getAllPlayerElos = async (gameVariant: string, seasonId: string): Promise<
 };
 
 const getAllJapanesePlayerElos = async (seasonId: string): Promise<any[]> => {
-    return prisma.$queryRaw`SELECT sum(gp.eloChange) as elo, p.id, p.username
-                            FROM JapaneseGame g 
-                            LEFT JOIN JapanesePlayerGame gp 
-                                ON g.id = gp.gameId 
-                            LEFT JOIN Player p 
+    return prisma.$queryRaw`SELECT sum(gp.eloChange) as elo, count(gp.eloChange) as gameCount, p.id, p.username
+                            FROM JapaneseGame g
+                            LEFT JOIN JapanesePlayerGame gp
+                                ON g.id = gp.gameId
+                            LEFT JOIN Player p
                                 ON gp.playerId = p.id
                             WHERE g.seasonId = ${seasonId} AND g.status = ${"FINISHED"} AND g.type = ${"RANKED"}
                             GROUP BY playerId
@@ -22,7 +22,7 @@ const getAllJapanesePlayerElos = async (seasonId: string): Promise<any[]> => {
 };
 
 const getAllHongKongPlayerElos = async (seasonId: string): Promise<any[]> => {
-    return prisma.$queryRaw`SELECT sum(gp.eloChange) as elo, p.id, p.username
+    return prisma.$queryRaw`SELECT sum(gp.eloChange) as elo, count(gp.eloChange) as gameCount, p.id, p.username
                             FROM HongKongGame g 
                             LEFT JOIN HongKongPlayerGame gp 
                                 ON g.id = gp.gameId 
