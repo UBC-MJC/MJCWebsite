@@ -9,7 +9,7 @@ import {
     submitGameAPI,
 } from "../api/GameAPI";
 import { AuthContext } from "../common/AuthContext";
-import { getGameTypeString, validateGameVariant, windComparison } from "../common/Utils";
+import { getGameTypeString, validateGameVariant } from "../common/Utils";
 import alert from "../common/AlertDialog";
 import confirmDialog from "../common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
@@ -182,16 +182,13 @@ const Game: FC = () => {
             </div>
         );
     }
-
     return (
         <>
             <h1 className="mt-2">
                 {game.gameType} {getGameTypeString(variant)} Game
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game)}
             </h1>
-
             {getLegacyDisplayGame(game)}
-
             {isRecording(game) && (
                 <Container>
                     <Row>
