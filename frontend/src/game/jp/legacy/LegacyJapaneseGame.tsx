@@ -407,10 +407,14 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         );
     }
 
+    function reloadPage() {
+        window.location.reload();
+    }
+
     function getFooter() {
         return (
             <Container fluid className={"my-4 position-sticky bottom-0 bg-light"}>
-                <Row className={"my-1 "}>
+                <Row className={"my-1"}>
                     <h4>Riichi sticks: {getRiichiStickCount()}</h4>
                 </Row>
                 <Row className={"row-cols-4 align-items-end"}>
@@ -426,6 +430,15 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         </Col>
                     ))}
                 </Row>
+                {!enableRecording && (
+                    <Button
+                        onClick={reloadPage}
+                        variant={"outline-primary"}
+                        className={"mb-2 w-50"}
+                    >
+                        Fetch live score
+                    </Button>
+                )}
             </Container>
         );
     }

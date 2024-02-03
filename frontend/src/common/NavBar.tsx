@@ -2,6 +2,7 @@ import { FC, useContext } from "react";
 import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { AuthContext } from "./AuthContext";
 import { Link } from "react-router-dom";
+import { getGameTypeString } from "./Utils";
 
 const NavBar: FC = () => {
     const { player, logout } = useContext(AuthContext);
@@ -17,32 +18,32 @@ const NavBar: FC = () => {
                     <Nav className="me-auto">
                         <NavDropdown title="Leaderboard" id="leaderboard-nav-dropdown">
                             <NavDropdown.Item as={Link} to="/leaderboard/jp">
-                                Japanese
+                                {getGameTypeString("jp")}
                             </NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/leaderboard/hk">
-                                Hong Kong
+                                {getGameTypeString("hk")}
                             </NavDropdown.Item>
                         </NavDropdown>
                         {player && (player.japaneseQualified || player.hongKongQualified) && (
                             <NavDropdown title="Record Game" id="record-game-nav-dropdown">
                                 {player.japaneseQualified && (
                                     <NavDropdown.Item as={Link} to="/games/create/jp">
-                                        Japanese
+                                        {getGameTypeString("jp")}
                                     </NavDropdown.Item>
                                 )}
                                 {player.hongKongQualified && (
                                     <NavDropdown.Item as={Link} to="/games/create/hk">
-                                        Hong Kong
+                                        {getGameTypeString("hk")}
                                     </NavDropdown.Item>
                                 )}
                             </NavDropdown>
                         )}
                         <NavDropdown title={"Current Games"} id="current-games-nav-dropdown">
                             <NavDropdown.Item as={Link} to="/games/current/jp">
-                                Riichi
+                                {getGameTypeString("jp")}
                             </NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/games/current/hk">
-                                Hong Kong
+                                {getGameTypeString("hk")}
                             </NavDropdown.Item>
                         </NavDropdown>
                         <Nav.Link as={Link} to="/stats">
