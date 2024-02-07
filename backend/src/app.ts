@@ -58,8 +58,9 @@ const PORT: string | number = process.env.PORT || 80;
 if (process.env.NODE_ENV === "production") {
     const privateKey = fs.readFileSync(path.join(__dirname, "../certificate/private.key"));
     const certificate = fs.readFileSync(path.join(__dirname, "../certificate/certificate.crt"));
+    const ca = fs.readFileSync(path.join(__dirname, "../certificate/ca_bundle.crt"));
 
-    const credentials = { key: privateKey, cert: certificate };
+    const credentials = { key: privateKey, cert: certificate, ca: ca };
     https.createServer(credentials, app).listen(443, () => {
         console.log("HTTPS Server running on port 443");
     });
