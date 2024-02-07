@@ -14,7 +14,6 @@ import {
 import ListToggleButton from "../../common/TransactionTypeButtonList";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
 import { japanesePointsWheel } from "../../../common/Utils";
-import DropdownInput from "../../common/DropdownInput";
 import { LegacyGameProps } from "../../Game";
 import {
     addDealIn,
@@ -30,6 +29,7 @@ import {
 import { validateTransaction, validateJapaneseRound } from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
 import riichiStick from "../../../assets/riichiStick.png";
+import PointsInput from "../../common/PointsInput";
 
 const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     enableRecording,
@@ -289,7 +289,12 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         </Col>
                     </Row>
                 ))}
-                {getPointsInput()}
+                {showPointInput() && (
+                    <PointsInput
+                        pointsWheel={japanesePointsWheel}
+                        onChange={handOnChange}
+                    ></PointsInput>
+                )}
                 <Row className="my-4">
                     <Col>
                         <h5>Riichis:</h5>
@@ -310,7 +315,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
             return (
                 <Button
                     variant="success"
-                    className="mt-4 w-50"
+                    className="my-4 w-50"
                     disabled={gameOver}
                     onClick={submitSingleTransactionRound}
                 >
@@ -324,7 +329,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     <Col>
                         <Button
                             variant="primary"
-                            className="mt-4 w-100"
+                            className="my-4 w-100"
                             disabled={gameOver}
                             onClick={addTransaction}
                         >
@@ -334,7 +339,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     <Col>
                         <Button
                             variant="danger"
-                            className="mt-4 w-100"
+                            className="my-4 w-100"
                             disabled={gameOver || transactions.length === 0}
                             onClick={deleteLastTransaction}
                         >
@@ -347,7 +352,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
 
                 <Button
                     variant="success"
-                    className="mt-4 w-50"
+                    className="my-4 w-50"
                     disabled={gameOver || transactions.length === 0}
                     onClick={submitAllTransactionRound}
                 >
@@ -365,28 +370,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         ));
         return <ul>{listItems}</ul>;
     }
-
-    const getPointsInput = () => {
-        if (!showPointInput()) {
-            return <></>;
-        }
-
-        return (
-            <>
-                <Row>
-                    <h5>Hand:</h5>
-                    {japanesePointsWheel.map((wheel, idx) => (
-                        <DropdownInput
-                            key={wheel.label}
-                            label={wheel.label}
-                            data={wheel.data}
-                            onChange={(value) => handOnChange(wheel.value, value)}
-                        />
-                    ))}
-                </Row>
-            </>
-        );
-    };
 
     const mapRoundsToModifiedRounds = (rounds: JapaneseRound[]): ModifiedJapaneseRound[] => {
         return rounds.map((round) => {
@@ -430,7 +413,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         </Col>
                     ))}
                 </Row>
-                {!enableRecording && (
+                {!enableRecording && !gameOver && (
                     <Button
                         onClick={reloadPage}
                         variant={"outline-primary"}

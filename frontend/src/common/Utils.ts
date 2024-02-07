@@ -26,7 +26,7 @@ const japaneseDora: PickerData[] = Array.from({ length: 37 }, (_, k) => {
     };
 });
 
-const japanesePointsWheel = [
+const japanesePointsWheel: PointWheelComponent[] = [
     { label: "Fu", value: "fu", data: japaneseFu },
     { label: "Han", value: "han", data: japanesePoints },
     { label: "Dora", value: "dora", data: japaneseDora },
@@ -39,7 +39,15 @@ const hongKongPoints: PickerData[] = Array.from({ length: 11 }, (_, k) => {
     };
 });
 
-const hongKongPointsWheel = [{ label: "Points", value: "points", data: hongKongPoints }];
+const hongKongPointsWheel: PointWheelComponent[] = [
+    { label: "Points", value: "points", data: hongKongPoints },
+];
+
+export type PointWheelComponent = {
+    label: string;
+    value: string;
+    data: PickerData[];
+};
 
 const japaneseRoundLabels = [
     { name: "Round Winner", value: "win" },
