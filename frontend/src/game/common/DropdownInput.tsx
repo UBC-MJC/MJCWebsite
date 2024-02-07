@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { PickerData } from "react-simple-wheel-picker";
 import Select from "react-select";
+import { Col, Row } from "react-bootstrap";
 
 type DropdownInputProps = {
     label: string;
@@ -10,18 +11,20 @@ type DropdownInputProps = {
 
 const DropdownInput: FC<DropdownInputProps> = ({ label, data, onChange }) => {
     return (
-        <div className="d-flex justify-content-center align-items-center mb-4">
-            <h5 className="mx-2 my-0">{label}:</h5>
-            <div style={{ width: "200px" }} className="text-start">
+        <Col style={{ maxWidth: "200px" }}>
+            <Row>
+                <h6>{label}:</h6>
+            </Row>
+            <Row className="text-start">
                 <Select
                     options={transformToSelectOptions(data)}
-                    isSearchable
-                    placeholder={"Select " + label}
+                    isSearchable={false}
+                    placeholder={label}
                     getOptionValue={(selectOptions) => selectOptions.label}
                     onChange={(selectedOption) => onChange(selectedOption!.label)}
                 />
-            </div>
-        </div>
+            </Row>
+        </Col>
     );
 };
 

@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import React, { FC, useState } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import LegacyHongKongGameTable, { ModifiedHongKongRound } from "./LegacyHongKongGameTable";
 import {
@@ -12,12 +12,13 @@ import {
 } from "../../common/constants";
 import ListToggleButton from "../../common/TransactionTypeButtonList";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
-import { hongKongPointsWheel } from "../../../common/Utils";
+import { hongKongPointsWheel, japanesePointsWheel } from "../../../common/Utils";
 import DropdownInput from "../../common/DropdownInput";
 import { LegacyGameProps } from "../../Game";
 import { createHongKongRoundRequest, generateOverallScoreDelta } from "../controller/HongKongRound";
 import { validateHongKongRound } from "../controller/ValidateHongKongRound";
 import alert from "../../../common/AlertDialog";
+import PointsInput from "../../common/PointsInput";
 
 const LegacyHongKongGame: FC<LegacyGameProps> = ({
     enableRecording,
@@ -73,7 +74,7 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
         setRoundActions(newRoundActions);
     };
 
-    const handOnChange = (value: number) => {
+    const handOnChange = (_: string, value: number) => {
         setHand(+value);
     };
 
@@ -153,7 +154,12 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                         </Col>
                     </Row>
                 ))}
-                {getPointsInput()}
+                {showPointInput() && (
+                    <PointsInput
+                        pointsWheel={hongKongPointsWheel}
+                        onChange={handOnChange}
+                    ></PointsInput>
+                )}
                 <Button
                     variant="primary"
                     className="mt-4 w-50"
@@ -177,28 +183,6 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                 scoreDeltas: generateOverallScoreDelta(round),
             };
         });
-    };
-
-    const getPointsInput = () => {
-        if (!showPointInput()) {
-            return <></>;
-        }
-
-        return (
-            <>
-                <Row>
-                    <h5>Hand:</h5>
-                    {hongKongPointsWheel.map((wheel, idx) => (
-                        <DropdownInput
-                            key={wheel.label}
-                            label={wheel.label}
-                            data={wheel.data}
-                            onChange={(value) => handOnChange(value)}
-                        />
-                    ))}
-                </Row>
-            </>
-        );
     };
 
     return (
