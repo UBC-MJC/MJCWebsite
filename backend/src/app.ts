@@ -56,8 +56,8 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 const PORT: string | number = process.env.PORT || 80;
 
 if (process.env.NODE_ENV === "production") {
-    const privateKey = fs.readFileSync("~/certificate/private.key");
-    const certificate = fs.readFileSync("~/certificate/certificate.crt", "utf8");
+    const privateKey = fs.readFileSync("/home/ec2-user/certificate/private.key");
+    const certificate = fs.readFileSync("/home/ec2-user/certificate/certificate.crt");
 
     const credentials = { key: privateKey, cert: certificate };
     https.createServer(credentials, app).listen(443, () => {
