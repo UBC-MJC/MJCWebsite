@@ -5,6 +5,8 @@ import bodyParser from "body-parser";
 import router from "./routes";
 import path from "path";
 import { Player } from "@prisma/client";
+import * as fs from "fs";
+import * as https from "https";
 
 console.log("NODE_ENV:", process.env.NODE_ENV);
 
@@ -53,4 +55,14 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 const PORT: string | number = process.env.PORT || 80;
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+if (process.env.NODE_ENV === "production") {
+    const privateKey = fs.readFileSync("~/certificate/private.key");
+    const certificate = fs.readFileSync("~/certificate/certificate.crt", "utf8");
+
+    const credentials = { key: privateKey, cert: certificate };
+    https.createServer(credentials, app).listen(443, () => {
+        console.log("HTTPS Server running on port 443");
+    });
+} else {
+    app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+}

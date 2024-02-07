@@ -17,5 +17,6 @@ COPY --from=ui-build /usr/src/frontend/build ./build
 COPY backend .
 
 EXPOSE 80
+EXPOSE 443
 
 CMD ["npm", "run", "start"]
