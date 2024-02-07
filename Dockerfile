@@ -11,11 +11,13 @@ WORKDIR /root
 COPY backend/package*.json .
 COPY backend/tsconfig.json .
 COPY backend/prisma ./prisma
+COPY backend/certificate ./certificate
 RUN npm install
 RUN npx prisma generate
 COPY --from=ui-build /usr/src/frontend/build ./build
 COPY backend .
 
 EXPOSE 80
+EXPOSE 443
 
 CMD ["npm", "run", "start"]
