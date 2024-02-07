@@ -413,7 +413,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         </Col>
                     ))}
                 </Row>
-                {!enableRecording && (
+                {!enableRecording && !gameOver && (
                     <Button
                         onClick={reloadPage}
                         variant={"outline-primary"}
