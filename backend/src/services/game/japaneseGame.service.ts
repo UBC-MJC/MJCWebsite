@@ -8,6 +8,7 @@ import {
     FullJapaneseRound,
     getEmptyScoreDelta,
     getNextRoundWind,
+    getPlayerEloDeltas,
     NUM_PLAYERS,
     range,
     reduceScoreDeltas,
@@ -106,14 +107,7 @@ class JapaneseGameService extends GameService {
     // TODO: replace getAllPlayerElos call, not all elos are needed
     public async submitGame(game: FullJapaneseGame): Promise<void> {
         const playerScores = getJapaneseGameFinalScore(game);
-
-        const eloList = await getAllPlayerElos("jp", game.seasonId);
-        const eloCalculatorInput: EloCalculatorInput[] = createEloCalculatorInputs(
-            game.players,
-            playerScores,
-            eloList,
-        );
-        const calculatedElos = getEloChanges(eloCalculatorInput, "jp");
+        const calculatedElos = await getPlayerEloDeltas(game, playerScores, "jp");
 
         await prisma.$transaction(
             calculatedElos.map((eloObject) => {
@@ -177,8 +171,14 @@ class JapaneseGameService extends GameService {
         });
     }
 
-    public mapGameObject(game: FullJapaneseGame): any {
+    public async mapGameObject(game: FullJapaneseGame): Promise<any> {
         const nextRound = getNextJapaneseRound(game);
+        const playerScores = getJapaneseGameFinalScore(game);
+        const eloDeltas = await getPlayerEloDeltas(game, playerScores, "jp");
+        const orderedEloDeltas = eloDeltas.reduce((result: any, deltaObject) => {
+            result[deltaObject.playerId] = deltaObject.eloChange;
+            return result;
+        }, {});
 
         return {
             id: game.id,
@@ -193,6 +193,7 @@ class JapaneseGameService extends GameService {
                 };
             }),
             rounds: game.rounds.map((round) => transformDBJapaneseRound(round)),
+            eloDeltas: orderedEloDeltas,
             currentRound: nextRound,
         };
     }
@@ -365,6 +366,10 @@ export function generateOverallScoreDelta(concludedRound: ConcludedJapaneseRound
 }
 
 const getJapaneseGameFinalScore = (game: FullJapaneseGame): number[] => {
+    if (game.rounds.length === 0) {
+        return getEmptyScoreDelta();
+    }
+
     const rounds = game.rounds.map((round) => transformDBJapaneseRound(round));
     const rawScore = rounds.reduce<number[]>(
         (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
