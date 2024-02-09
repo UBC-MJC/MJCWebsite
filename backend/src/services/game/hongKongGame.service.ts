@@ -8,6 +8,7 @@ import {
     FullHongKongRound,
     getEmptyScoreDelta,
     getNextRoundWind,
+    getPlayerEloDeltas,
     reduceScoreDeltas,
 } from "./game.util";
 import { getAllPlayerElos } from "../leaderboard.service";
@@ -96,13 +97,7 @@ class HongKongGameService extends GameService {
 
     public async submitGame(game: FullHongKongGame): Promise<void> {
         const playerScores = getHongKongPlayersCurrentScore(game);
-        const eloList = await getAllPlayerElos("hk", game.seasonId);
-        const eloCalculatorInput: EloCalculatorInput[] = createEloCalculatorInputs(
-            game.players,
-            playerScores,
-            eloList,
-        );
-        const calculatedElos = getEloChanges(eloCalculatorInput, "hk");
+        const calculatedElos = await getPlayerEloDeltas(game, playerScores, "hk");
 
         await prisma.$transaction(
             calculatedElos.map((elo) => {
@@ -166,8 +161,14 @@ class HongKongGameService extends GameService {
         });
     }
 
-    public mapGameObject(game: FullHongKongGame): any {
+    public async mapGameObject(game: FullHongKongGame): Promise<any> {
         const nextRound = getNextHongKongRound(game);
+        const playerScores = getHongKongPlayersCurrentScore(game);
+        const eloDeltas = await getPlayerEloDeltas(game, playerScores, "hk");
+        const orderedEloDeltas = eloDeltas.reduce((result: any, deltaObject) => {
+            result[deltaObject.playerId] = deltaObject.eloChange;
+            return result;
+        }, {});
 
         return {
             id: game.id,
@@ -182,6 +183,7 @@ class HongKongGameService extends GameService {
                 };
             }),
             rounds: game.rounds.map((round) => transformDBHongKongRound(round)),
+            eloDeltas: orderedEloDeltas,
             currentRound: nextRound,
         };
     }
@@ -191,6 +193,10 @@ export function generateOverallScoreDelta(concludedGame: ConcludedHongKongRoundT
 }
 
 const getHongKongPlayersCurrentScore = (game: FullHongKongGame): number[] => {
+    if (game.rounds.length === 0) {
+        return getEmptyScoreDelta();
+    }
+
     return game.rounds.reduce<number[]>(
         (result, current) =>
             addScoreDeltas(result, generateOverallScoreDelta(transformDBHongKongRound(current))),

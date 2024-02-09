@@ -29,7 +29,7 @@ const getGameHandler = async (req: Request, res: Response, next: NextFunction): 
             return next(createError.NotFound("Game not found"));
         }
 
-        const result = gameService.mapGameObject(newGame);
+        const result = await gameService.mapGameObject(newGame);
         res.status(200).json(result);
     } catch (error: any) {
         console.error("Error in getGameHandler:", error);
@@ -46,7 +46,10 @@ const getCurrentGamesHandler = async (
     const gameService: GameService = getGameService(gameVariant);
     try {
         const currentGames = await gameService.getCurrentGames();
-        res.status(200).json(currentGames.map((game) => gameService.mapGameObject(game)));
+        const result = await Promise.all(
+            currentGames.map((game) => gameService.mapGameObject(game)),
+        );
+        res.status(200).json(result);
     } catch (error: any) {
         console.error("Error in getCurrentGamesHandler:", error);
         next(createError.InternalServerError(error.message));
@@ -166,7 +169,7 @@ const createRoundHandler = async (
 
         await gameService.createRound(game, roundRequest);
         const updatedGame = await gameService.getGame(gameId);
-        res.status(201).json(gameService.mapGameObject(updatedGame));
+        res.status(201).json(await gameService.mapGameObject(updatedGame));
     } catch (error: any) {
         console.error("Error in createRoundHandler:", error);
         next(createError.BadRequest(error.message));
@@ -200,7 +203,7 @@ const deleteLastRoundHandler = async (
 
         await gameService.deleteRound(game.rounds[game.rounds.length - 1].id);
         const updatedGame = await gameService.getGame(gameId);
-        res.status(201).json(gameService.mapGameObject(updatedGame));
+        res.status(201).json(await gameService.mapGameObject(updatedGame));
     } catch (error: any) {
         console.error("Error in deleteLastRoundHandler:", error);
         next(createError.BadRequest(error.message));

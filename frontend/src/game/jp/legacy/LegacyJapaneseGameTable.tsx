@@ -22,7 +22,9 @@ const getCurrentScoreRow = (rounds: JapaneseRound[]) => {
 };
 
 function getRowString(row: ModifiedJapaneseRound) {
-    return `${mapWindToCharacter(row.roundWind)}${mapChineseNumerals(row.roundNumber)}局 ${row.bonus}本場`;
+    return `${mapWindToCharacter(row.roundWind)}${mapChineseNumerals(row.roundNumber)}局 ${
+        row.bonus
+    }本場`;
 }
 
 const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {

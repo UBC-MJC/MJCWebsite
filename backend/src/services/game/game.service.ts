@@ -13,7 +13,7 @@ abstract class GameService {
     abstract submitGame(game: any): Promise<void>;
     abstract createRound(game: any, roundRequest: any): Promise<void>;
     abstract deleteRound(id: string): Promise<void>;
-    abstract mapGameObject(game: any): any;
+    abstract mapGameObject(game: any): Promise<any>;
 }
 
 export default GameService;

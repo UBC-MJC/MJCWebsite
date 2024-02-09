@@ -398,7 +398,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         return (
             <Container fluid className={"my-4 position-sticky bottom-0 bg-light"}>
                 <Row className={"my-1"}>
-                    <h4>Riichi sticks: {getRiichiStickCount()}</h4>
+                    <h4 className="my-2">Riichi sticks: {getRiichiStickCount()}</h4>
                 </Row>
                 <Row className={"row-cols-4 align-items-end"}>
                     {generateCurrentScore(game.rounds as JapaneseRound[]).map((score, idx) => (
@@ -409,7 +409,10 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                                     <Image src={riichiStick} className={"w-75"}></Image>
                                 )}
                             </div>
-                            <h2>{score - Number(riichiList.includes(idx)) * 1000}</h2>
+                            <h2 className="my-0">
+                                {score - Number(riichiList.includes(idx)) * 1000}
+                            </h2>
+                            <div>{game.eloDeltas[players[idx].id].toFixed(1)}</div>
                         </Col>
                     ))}
                 </Row>

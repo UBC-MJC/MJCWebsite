@@ -86,7 +86,12 @@ type Game = {
     recordedById: string;
     players: any[];
     rounds: (JapaneseRound | HongKongRound)[];
+    eloDeltas: EloDeltaObject;
     currentRound?: PartialJapaneseRound;
+};
+
+type EloDeltaObject = {
+    [key: string]: number;
 };
 
 type RoundType = {

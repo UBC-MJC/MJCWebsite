@@ -2,8 +2,9 @@ import { JapaneseTransactionType, Player, Prisma, Wind } from "@prisma/client";
 import HongKongGameService from "./hongKongGame.service";
 import JapaneseGameService from "./japaneseGame.service";
 import { findPlayerByUsername } from "../player.service";
-import { EloCalculatorInput } from "./eloCalculator";
+import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
 import { JapaneseTransactionT, Transaction } from "../../validation/game.validation";
+import { getAllPlayerElos } from "../leaderboard.service";
 
 const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
     include: {
@@ -126,6 +127,21 @@ const generatePlayerQuery = async (
         };
     });
 };
+
+const getPlayerEloDeltas = async (
+    game: FullJapaneseGame | FullHongKongGame,
+    playerScores: number[],
+    gameVariant: GameVariant,
+) => {
+    const eloList = await getAllPlayerElos(gameVariant, game.seasonId);
+    const eloCalculatorInput: EloCalculatorInput[] = createEloCalculatorInputs(
+        game.players,
+        playerScores,
+        eloList,
+    );
+    return getEloChanges(eloCalculatorInput, gameVariant);
+};
+
 const createEloCalculatorInputs = (
     players: { player: Player; wind: Wind }[],
     playerScores: number[],
@@ -199,6 +215,7 @@ export {
     checkPlayerGameEligibility,
     checkPlayerListUnique,
     generatePlayerQuery,
+    getPlayerEloDeltas,
     createEloCalculatorInputs,
     getWind,
     GAME_CONSTANTS,
