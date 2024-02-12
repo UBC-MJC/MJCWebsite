@@ -84,10 +84,11 @@ type Game = {
     gameVariant: GameVariant;
     status: string;
     recordedById: string;
+    createdAt: string;
     players: any[];
     rounds: (JapaneseRound | HongKongRound)[];
     eloDeltas: EloDeltaObject;
-    currentRound?: PartialJapaneseRound;
+    currentRound: PartialJapaneseRound;
 };
 
 type EloDeltaObject = {

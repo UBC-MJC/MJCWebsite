@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { Table as BTable } from "react-bootstrap";
 import { mapChineseNumerals, mapWindToCharacter } from "../../../common/Utils";
-import { generateCurrentScore } from "../controller/JapaneseRound";
+import { generateJapaneseCurrentScore } from "../controller/JapaneseRound";
 
 type LegacyGameTableProps = {
     rounds: ModifiedJapaneseRound[];
@@ -18,7 +18,7 @@ type LegacyGameTableProps = {
 export type ModifiedJapaneseRound = JapaneseRound & { scoreDeltas: number[] };
 
 const getCurrentScoreRow = (rounds: JapaneseRound[]) => {
-    return ["Score", ...generateCurrentScore(rounds)];
+    return ["Score", ...generateJapaneseCurrentScore(rounds)];
 };
 
 function getRowString(row: ModifiedJapaneseRound) {

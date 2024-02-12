@@ -1,4 +1,5 @@
 import { GameType } from "@prisma/client";
+import { GameFilterArgs } from "./game.util";
 
 abstract class GameService {
     abstract createGame(
@@ -8,7 +9,7 @@ abstract class GameService {
         seasonId: string,
     ): Promise<any>;
     abstract getGame(id: number): Promise<any>;
-    abstract getCurrentGames(): Promise<any[]>;
+    abstract getGames(filter: GameFilterArgs): Promise<any[]>;
     abstract deleteGame(id: number): Promise<void>;
     abstract submitGame(game: any): Promise<void>;
     abstract createRound(game: any, roundRequest: any): Promise<void>;

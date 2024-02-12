@@ -3,16 +3,15 @@ import { GameStatus, GameType, HongKongTransaction } from "@prisma/client";
 import GameService from "./game.service";
 import {
     addScoreDeltas,
-    createEloCalculatorInputs,
     FullHongKongGame,
     FullHongKongRound,
+    GameFilterArgs,
+    generateGameQuery,
     getEmptyScoreDelta,
     getNextRoundWind,
     getPlayerEloDeltas,
     reduceScoreDeltas,
 } from "./game.util";
-import { getAllPlayerElos } from "../leaderboard.service";
-import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
 import {
     ConcludedHongKongRoundT,
     HongKongTransactionT,
@@ -67,10 +66,12 @@ class HongKongGameService extends GameService {
         });
     }
 
-    public getCurrentGames(): Promise<any[]> {
+    public getGames(filter: GameFilterArgs): Promise<any[]> {
+        const whereQuery = generateGameQuery(filter);
+
         return prisma.hongKongGame.findMany({
             where: {
-                status: GameStatus.IN_PROGRESS,
+                ...whereQuery,
             },
             include: {
                 players: {
