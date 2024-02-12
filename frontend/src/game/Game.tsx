@@ -9,13 +9,13 @@ import {
     submitGameAPI,
 } from "../api/GameAPI";
 import { AuthContext } from "../common/AuthContext";
-import { getGameTypeString, validateGameVariant } from "../common/Utils";
+import { getGameTypeString, mapWindToCharacter, validateGameVariant } from "../common/Utils";
 import alert from "../common/AlertDialog";
 import confirmDialog from "../common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import { isGameEnd } from "./common/constants";
+import {gameRoundString, isGameEnd} from "./common/constants";
 
 const Game: FC = () => {
     const { id, variant } = useParams();
@@ -130,15 +130,6 @@ const Game: FC = () => {
             game.status === "IN_PROGRESS" &&
             game.recordedById === player.id
         );
-    };
-
-    const gameRoundString = (game: Game) => {
-        if (typeof game.currentRound === "undefined") {
-            return "End of Game";
-        }
-
-        const lastRound = game.currentRound;
-        return `${lastRound.roundWind} ${lastRound.roundNumber} Bonus ${lastRound.bonus}`;
     };
 
     const getLegacyDisplayGame = (game: Game) => {

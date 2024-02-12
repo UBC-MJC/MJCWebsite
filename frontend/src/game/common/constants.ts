@@ -1,5 +1,6 @@
 import { isJapaneseGameEnd } from "../jp/controller/JapaneseRound";
 import { isHongKongGameEnd } from "../hk/controller/HongKongRound";
+import {mapWindToCharacter} from "../../common/Utils";
 
 enum Wind {
     EAST = "EAST",
@@ -139,6 +140,17 @@ const isGameEnd = (game: Game, variant: GameVariant): boolean => {
     }
 };
 
+const gameRoundString = (game: Game) => {
+    if (typeof game.currentRound === "undefined") {
+        return "End of Game";
+    }
+
+    const lastRound = game.currentRound;
+    return `${mapWindToCharacter(lastRound.roundWind)} ${lastRound.roundNumber} Bonus ${
+        lastRound.bonus
+    }`;
+};
+
 export {
     Wind,
     JapaneseLabel,
@@ -153,6 +165,7 @@ export {
     HK_LABEL_MAP,
     HK_UNDEFINED_HAND,
     isGameEnd,
+    gameRoundString
 };
 
 export function getEmptyScoreDelta(): number[] {

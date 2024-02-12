@@ -6,6 +6,8 @@ import {
     createEloCalculatorInputs,
     FullJapaneseGame,
     FullJapaneseRound,
+    GameFilterArgs,
+    generateGameQuery,
     getEmptyScoreDelta,
     getNextRoundWind,
     getPlayerEloDeltas,
@@ -76,11 +78,11 @@ class JapaneseGameService extends GameService {
         });
     }
 
-    public getCurrentGames(): Promise<any[]> {
+    public getGames(filter: GameFilterArgs): Promise<any[]> {
+        const whereQuery = generateGameQuery(filter);
+
         return prisma.japaneseGame.findMany({
-            where: {
-                status: GameStatus.IN_PROGRESS,
-            },
+            where: whereQuery,
             include: {
                 players: {
                     include: {
@@ -185,6 +187,7 @@ class JapaneseGameService extends GameService {
             type: game.type,
             status: game.status,
             recordedById: game.recordedById,
+            createdAt: game.createdAt,
             players: game.players.map((player) => {
                 return {
                     id: player.player.id,

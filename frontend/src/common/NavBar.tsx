@@ -46,9 +46,9 @@ const NavBar: FC = () => {
                                 {getGameTypeString("hk")}
                             </NavDropdown.Item>
                         </NavDropdown>
-                        <Nav.Link as={Link} to="/stats">
-                            Statistics
-                        </Nav.Link>
+                        {/*<Nav.Link as={Link} to="/stats">*/}
+                        {/*    Statistics*/}
+                        {/*</Nav.Link>*/}
                     </Nav>
                     <Nav>
                         {player && player.admin && (
@@ -57,7 +57,7 @@ const NavBar: FC = () => {
                             </Nav.Link>
                         )}
                         {player ? (
-                            <NavDropdown title="Account" id="record-game-nav-dropdown">
+                            <NavDropdown title={player.username} id="record-game-nav-dropdown">
                                 <NavDropdown.Item as={Link} to="/settings">
                                     Settings
                                 </NavDropdown.Item>
