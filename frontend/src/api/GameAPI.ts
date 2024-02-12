@@ -34,6 +34,10 @@ const getCurrentGamesAPI = async (gameVariant: GameVariant): Promise<AxiosRespon
     return axios.get(baseUrl + `/games/${gameVariant}/current`);
 };
 
+const getGameLogsAPI = async (gameVariant: GameVariant): Promise<AxiosResponse<Game[]>> => {
+    return axios.get(baseUrl + `/games/${gameVariant}/logs`);
+};
+
 const deleteGameAPI = async (
     authToken: string,
     gameId: number,
