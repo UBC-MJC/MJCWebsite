@@ -134,3 +134,13 @@ table tr.footer-row {
 table tr.footer-row td:first-child {
     font-weight: bold;
 }
+
+.game-card {
+    cursor: pointer;
+    box-shadow: 0 0 0 transparent;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.game-card:hover {
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}

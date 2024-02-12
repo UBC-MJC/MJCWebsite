@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
 import { createGameSchema } from "../validation/game.validation";
 import { getCurrentSeason } from "../services/season.service";
-import { generatePlayerQuery, getGameService } from "../services/game/game.util";
+import { GameFilterArgs, generatePlayerQuery, getGameService } from "../services/game/game.util";
 import GameService from "../services/game/game.service";
 
 const getGamesHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -45,7 +45,10 @@ const getCurrentGamesHandler = async (
     const gameVariant = req.params.gameVariant;
     const gameService: GameService = getGameService(gameVariant);
     try {
-        const currentGames = await gameService.getCurrentGames();
+        const filter: GameFilterArgs = {
+            gameStatus: "IN_PROGRESS",
+        };
+        const currentGames = await gameService.getGames(filter);
         const result = await Promise.all(
             currentGames.map((game) => gameService.mapGameObject(game)),
         );

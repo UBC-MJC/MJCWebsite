@@ -9,7 +9,7 @@ import {
     submitGameAPI,
 } from "../api/GameAPI";
 import { AuthContext } from "../common/AuthContext";
-import { getGameTypeString, validateGameVariant } from "../common/Utils";
+import { getGameTypeString, mapWindToCharacter, validateGameVariant } from "../common/Utils";
 import alert from "../common/AlertDialog";
 import confirmDialog from "../common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
@@ -138,7 +138,9 @@ const Game: FC = () => {
         }
 
         const lastRound = game.currentRound;
-        return `${lastRound.roundWind} ${lastRound.roundNumber} Bonus ${lastRound.bonus}`;
+        return `${mapWindToCharacter(lastRound.roundWind)} ${lastRound.roundNumber} Bonus ${
+            lastRound.bonus
+        }`;
     };
 
     const getLegacyDisplayGame = (game: Game) => {

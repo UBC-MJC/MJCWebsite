@@ -226,7 +226,7 @@ export function generateOverallScoreDelta(concludedRound: JapaneseRound) {
     return riichiDeltas;
 }
 
-export function generateCurrentScore(rounds: JapaneseRound[]) {
+export function generateJapaneseCurrentScore(rounds: JapaneseRound[]) {
     return rounds.reduce<number[]>(
         (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
         getJapaneseStartingScore(),
@@ -241,7 +241,7 @@ const isJapaneseGameEnd = (
         // ends at north regardless of what happens
         return true;
     }
-    const totalScore = generateCurrentScore(concludedRounds);
+    const totalScore = generateJapaneseCurrentScore(concludedRounds);
     let exceedsHanten = false;
     for (const score of totalScore) {
         if (score < 0) {

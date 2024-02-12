@@ -1,4 +1,11 @@
-import { JapaneseTransactionType, Player, Prisma, Wind } from "@prisma/client";
+import {
+    GameStatus,
+    GameType,
+    JapaneseTransactionType,
+    Player,
+    Prisma,
+    Wind,
+} from "@prisma/client";
 import HongKongGameService from "./hongKongGame.service";
 import JapaneseGameService from "./japaneseGame.service";
 import { findPlayerByUsername } from "../player.service";
@@ -69,6 +76,13 @@ const getGameService = (gameVariant: string): any => {
     }
 };
 
+type GameFilterArgs = {
+    seasonId?: string;
+    playerIds?: string[];
+    gameType?: GameType;
+    gameStatus?: GameStatus;
+};
+
 const WIND_ORDER: Wind[] = ["EAST", "SOUTH", "WEST", "NORTH"];
 
 const GAME_CONSTANTS = {
@@ -126,6 +140,29 @@ const generatePlayerQuery = async (
             },
         };
     });
+};
+
+const generateGameQuery = (filter: GameFilterArgs): any => {
+    const query: any = {};
+    if (typeof filter.seasonId !== "undefined") {
+        query.seasonId = filter.seasonId;
+    }
+    if (typeof filter.playerIds !== "undefined") {
+        query.players = {
+            some: {
+                playerId: {
+                    in: filter.playerIds,
+                },
+            },
+        };
+    }
+    if (typeof filter.gameType !== "undefined") {
+        query.type = filter.gameType;
+    }
+    if (typeof filter.gameStatus !== "undefined") {
+        query.status = filter.gameStatus;
+    }
+    return query;
 };
 
 const getPlayerEloDeltas = async (
@@ -215,6 +252,7 @@ export {
     checkPlayerGameEligibility,
     checkPlayerListUnique,
     generatePlayerQuery,
+    generateGameQuery,
     getPlayerEloDeltas,
     createEloCalculatorInputs,
     getWind,
@@ -226,4 +264,5 @@ export {
     FullHongKongGame,
     FullHongKongRound,
     GameVariant,
+    GameFilterArgs,
 };
