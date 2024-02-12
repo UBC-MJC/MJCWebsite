@@ -11,7 +11,7 @@ import {
     JP_UNDEFINED_HAND,
 } from "../../common/constants";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
-import { japanesePointsWheel } from "../../../common/Utils";
+import {getRiichiStickCount, getScoresWithPlayers, japanesePointsWheel} from "../../../common/Utils";
 import { LegacyGameProps } from "../../Game";
 import {
     addDealIn,
@@ -28,6 +28,7 @@ import alert from "../../../common/AlertDialog";
 import PointsInput from "../../common/PointsInput";
 import { Button, ToggleButton, FormControlLabel, Switch } from "@mui/material";
 import { Footer } from "../../common/Footer";
+import riichiStick from "../../../assets/riichiStick.png";
 
 function getTransaction(
     game: Game,
@@ -398,6 +399,15 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
                 players={players}
             />
+            <Container fluid className={"my-4 bottom-0 bg-body"}>
+                <Row className={"row-cols-4 align-items-end"}>
+                    {getScoresWithPlayers(game, "jp").map(({ username, score }, idx) => (
+                        <Col key={idx} className={"my-2"}>
+                            <h2 className="my-0">{score - Number(riichiList.includes(idx)) * 1000}</h2>
+                        </Col>
+                    ))}
+                </Row>
+            </Container>
             <Footer game={game} gameVariant={"jp"} riichiList={riichiList} />
         </Container>
     );
