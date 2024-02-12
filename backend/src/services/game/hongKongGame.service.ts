@@ -70,9 +70,7 @@ class HongKongGameService extends GameService {
         const whereQuery = generateGameQuery(filter);
 
         return prisma.hongKongGame.findMany({
-            where: {
-                ...whereQuery,
-            },
+            where: whereQuery,
             include: {
                 players: {
                     include: {

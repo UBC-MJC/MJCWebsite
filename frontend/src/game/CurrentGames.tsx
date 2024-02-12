@@ -7,6 +7,7 @@ import { getGameTypeString, mapWindToCharacter } from "../common/Utils";
 import { useNavigate } from "react-router-dom";
 import { generateJapaneseCurrentScore } from "./jp/controller/JapaneseRound";
 import { generateHongKongCurrentScore } from "./hk/controller/HongKongRound";
+import {gameRoundString} from "./common/constants";
 
 export const CurrentGames: FC<GameTypeProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
@@ -25,8 +26,7 @@ export const CurrentGames: FC<GameTypeProp> = ({ gameVariant }) => {
     const getCardHeader = (game: Game) => {
         return (
             <div style={{ fontWeight: "bold" }}>
-                Game {game.id} - {mapWindToCharacter(game.currentRound.roundWind)}{" "}
-                {game.currentRound.roundNumber} Bonus {game.currentRound.bonus}
+                Game {game.id} - {gameRoundString(game)}
             </div>
         );
     };
@@ -53,7 +53,7 @@ export const CurrentGames: FC<GameTypeProp> = ({ gameVariant }) => {
                     <Col key={idx} xs={6} className="px-3">
                         <div className="d-flex justify-content-between">
                             <div>
-                                {idx + 1} - {score.username}
+                                {mapIndextoPlace(idx)} - {score.username}
                             </div>
                             <div>{score.score}</div>
                         </div>
@@ -62,6 +62,19 @@ export const CurrentGames: FC<GameTypeProp> = ({ gameVariant }) => {
             </Row>
         );
     };
+
+    const mapIndextoPlace = (idx: number) => {
+        switch (idx) {
+            case 0:
+                return "1st";
+            case 1:
+                return "2nd";
+            case 2:
+                return "3rd";
+            default:
+                return `${idx + 1}th`;
+        }
+    }
 
     const navigateToGame = (gameId: string) => {
         navigate(`/games/${gameVariant}/${gameId}`);

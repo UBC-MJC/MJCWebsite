@@ -82,9 +82,7 @@ class JapaneseGameService extends GameService {
         const whereQuery = generateGameQuery(filter);
 
         return prisma.japaneseGame.findMany({
-            where: {
-                ...whereQuery,
-            },
+            where: whereQuery,
             include: {
                 players: {
                     include: {
