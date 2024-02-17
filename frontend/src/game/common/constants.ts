@@ -1,6 +1,6 @@
 import { isJapaneseGameEnd } from "../jp/controller/JapaneseRound";
 import { isHongKongGameEnd } from "../hk/controller/HongKongRound";
-import {mapWindToCharacter} from "../../common/Utils";
+import { mapWindToCharacter } from "../../common/Utils";
 
 enum Wind {
     EAST = "EAST",
@@ -165,7 +165,7 @@ export {
     HK_LABEL_MAP,
     HK_UNDEFINED_HAND,
     isGameEnd,
-    gameRoundString
+    gameRoundString,
 };
 
 export function getEmptyScoreDelta(): number[] {
