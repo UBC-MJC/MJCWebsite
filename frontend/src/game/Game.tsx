@@ -15,7 +15,7 @@ import confirmDialog from "../common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import {gameRoundString, isGameEnd} from "./common/constants";
+import { gameRoundString, isGameEnd } from "./common/constants";
 
 const Game: FC = () => {
     const { id, variant } = useParams();

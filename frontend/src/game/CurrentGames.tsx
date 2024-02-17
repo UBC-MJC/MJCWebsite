@@ -7,7 +7,7 @@ import { getGameTypeString, mapWindToCharacter } from "../common/Utils";
 import { useNavigate } from "react-router-dom";
 import { generateJapaneseCurrentScore } from "./jp/controller/JapaneseRound";
 import { generateHongKongCurrentScore } from "./hk/controller/HongKongRound";
-import {gameRoundString} from "./common/constants";
+import { gameRoundString } from "./common/constants";
 
 export const CurrentGames: FC<GameTypeProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
@@ -74,7 +74,7 @@ export const CurrentGames: FC<GameTypeProp> = ({ gameVariant }) => {
             default:
                 return `${idx + 1}th`;
         }
-    }
+    };
 
     const navigateToGame = (gameId: string) => {
         navigate(`/games/${gameVariant}/${gameId}`);

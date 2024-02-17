@@ -142,28 +142,31 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         }
     }
 
-    async function getTransactionList(): Promise<JapaneseTransaction[]> {
+    function getTransactionList(): JapaneseTransaction[] {
         const transaction = getTransaction();
         if (transaction !== null) {
-            try {
-                validateTransaction(transaction);
-            } catch (e: any) {
-                await alert(e.message);
-                return [];
-            }
+            validateTransaction(transaction);
             return [transaction];
         }
         return [];
     }
 
     const submitSingleTransactionRound = async () => {
-        const transactionList = await getTransactionList();
-        await submitRound(transactionList);
+        try {
+            const transactionList = getTransactionList();
+            await submitRound(transactionList);
+        } catch (e: any) {
+            await alert(e.message);
+        }
     };
 
     const addTransaction = async () => {
-        const transactionList = await getTransactionList();
-        setTransactions([...transactions, ...transactionList]);
+        try {
+            const transactionList = getTransactionList();
+            setTransactions([...transactions, ...transactionList]);
+        } catch (e: any) {
+            await alert(e.message);
+        }
     };
 
     const deleteLastTransaction = () => {
@@ -171,12 +174,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     };
 
     const submitRound = async (transactionList: JapaneseTransaction[]) => {
-        try {
-            validateJapaneseRound(tenpaiList, riichiList, transactionList);
-        } catch (e: any) {
-            await alert(e.message);
-            return;
-        }
+        validateJapaneseRound(tenpaiList, riichiList, transactionList);
         const roundRequest: JapaneseRound = createJapaneseRoundRequest(
             game.currentRound!,
             transactionList,
@@ -191,7 +189,12 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     };
 
     const submitAllTransactionRound = async () => {
-        await submitRound(transactions);
+        try {
+            await submitRound(transactions);
+        } catch (e: any) {
+            await alert(e.message);
+            return;
+        }
     };
 
     const showPointInput = () => {

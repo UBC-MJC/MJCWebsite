@@ -85,7 +85,6 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
             hand,
             game.currentRound!,
         );
-        console.log(roundRequest);
         try {
             validateHongKongRound(roundRequest.transactions);
         } catch (e: any) {
