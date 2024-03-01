@@ -260,9 +260,11 @@ export function getGameFinalScore(game: any, gameVariant: GameVariant): number[]
 async function updateGamePlayerElo(calculatedElos: any[], game: any, gameVariant: GameVariant) {
     if (gameVariant === "jp") {
         await updateJapanesePlayerGameElo(calculatedElos, game);
+        return;
     }
     if (gameVariant === "hk") {
         await updateHongKongPlayerGameElo(calculatedElos, game);
+        return;
     }
     throw new Error(`Invalid game variant ${gameVariant}`);
 }
@@ -273,10 +275,15 @@ export async function recalcSeason(seasonId: string, gameVariant: GameVariant): 
         gameStatus: GameStatus.FINISHED,
     });
     finishedGames.sort((a, b) => {
-        return b.endedAt - a.endedAt;
+        const date1 = new Date(a.endedAt);
+        const date2 = new Date(b.endedAt);
+        if (date1 < date2) {
+            return -1;
+        }
+        return 1;
     });
     const eloStats: any = {};
-    const debugStats = []; // to be removed later
+    const debugStats = []; // to be removed once it has been established that this is correct
     for (const game of finishedGames) {
         const playerScores = getGameFinalScore(game, gameVariant);
         const calculatedElos = await getPlayerEloDeltas(
