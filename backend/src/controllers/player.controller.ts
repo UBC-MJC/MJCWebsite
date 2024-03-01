@@ -1,12 +1,17 @@
-import {NextFunction, Request, Response} from "express";
+import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
-import {loginSchema, registerSchema} from "../validation/player.validation";
-import {createPlayer, findPlayerByUsername, findQualifiedPlayers, updatePlayer,} from "../services/player.service";
-import {generateToken} from "../middleware/jwt";
+import { loginSchema, registerSchema } from "../validation/player.validation";
+import {
+    createPlayer,
+    findPlayerByUsername,
+    findQualifiedPlayers,
+    updatePlayer,
+} from "../services/player.service";
+import { generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
-import {getAllPlayerElos} from "../services/leaderboard.service";
-import {getCurrentSeason} from "../services/season.service";
-import {STARTING_ELO} from "../services/game/game.util";
+import { getAllPlayerElos } from "../services/leaderboard.service";
+import { getCurrentSeason } from "../services/season.service";
+import { STARTING_ELO } from "../services/game/game.util";
 
 const registerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     registerSchema

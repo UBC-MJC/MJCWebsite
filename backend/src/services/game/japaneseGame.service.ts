@@ -1,5 +1,5 @@
 import prisma from "../../db";
-import {GameStatus, GameType, JapaneseTransaction, JapaneseTransactionType} from "@prisma/client";
+import { GameStatus, GameType, JapaneseTransaction, JapaneseTransactionType } from "@prisma/client";
 import {
     addScoreDeltas,
     containingAny,

@@ -1,10 +1,23 @@
-import {GameStatus, GameType, JapaneseTransactionType, Player, Prisma, Wind,} from "@prisma/client";
-import HongKongGameService, {getHongKongGameFinalScore, updateHongKongPlayerGameElo,} from "./hongKongGame.service";
-import JapaneseGameService, {getJapaneseGameFinalScore, updateJapanesePlayerGameElo,} from "./japaneseGame.service";
-import {findPlayerByUsername} from "../player.service";
-import {EloCalculatorInput, getEloChanges} from "./eloCalculator";
-import {JapaneseTransactionT, Transaction} from "../../validation/game.validation";
-import {getAllPlayerElos} from "../leaderboard.service";
+import {
+    GameStatus,
+    GameType,
+    JapaneseTransactionType,
+    Player,
+    Prisma,
+    Wind,
+} from "@prisma/client";
+import HongKongGameService, {
+    getHongKongGameFinalScore,
+    updateHongKongPlayerGameElo,
+} from "./hongKongGame.service";
+import JapaneseGameService, {
+    getJapaneseGameFinalScore,
+    updateJapanesePlayerGameElo,
+} from "./japaneseGame.service";
+import { findPlayerByUsername } from "../player.service";
+import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
+import { JapaneseTransactionT, Transaction } from "../../validation/game.validation";
+import { getAllPlayerElos } from "../leaderboard.service";
 import GameService from "./game.service";
 
 const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({

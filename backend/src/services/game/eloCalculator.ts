@@ -1,5 +1,5 @@
-import {GAME_CONSTANTS, WIND_ORDER} from "./game.util";
-import {Wind} from "@prisma/client";
+import { GAME_CONSTANTS, WIND_ORDER } from "./game.util";
+import { Wind } from "@prisma/client";
 
 const JAPANESE_ADJUSTMENT = [55000, 25000, -5000, -75000];
 const HONG_KONG_SCORE_ADJUSTMENT = [100, 0, 0, -100];

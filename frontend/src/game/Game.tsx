@@ -1,15 +1,21 @@
-import {FC, useContext, useEffect, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
-import {AxiosError} from "axios";
-import {addRoundAPI, deleteGameAPI, deleteRoundAPI, getGameAPI, submitGameAPI,} from "../api/GameAPI";
-import {AuthContext} from "../common/AuthContext";
-import {getGameTypeString, validateGameVariant} from "../common/Utils";
+import { FC, useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { AxiosError } from "axios";
+import {
+    addRoundAPI,
+    deleteGameAPI,
+    deleteRoundAPI,
+    getGameAPI,
+    submitGameAPI,
+} from "../api/GameAPI";
+import { AuthContext } from "../common/AuthContext";
+import { getGameTypeString, validateGameVariant } from "../common/Utils";
 import alert from "../common/AlertDialog";
 import confirmDialog from "../common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
-import {Button, Col, Container, Row} from "react-bootstrap";
-import {gameRoundString, isGameEnd} from "./common/constants";
+import { Button, Col, Container, Row } from "react-bootstrap";
+import { gameRoundString, isGameEnd } from "./common/constants";
 
 const Game: FC = () => {
     const { id, variant } = useParams();
