@@ -240,11 +240,11 @@ const AdminPlayers: FC = () => {
                 <Button variant="outline-dark" onClick={makeTestAdmins}>
                     Make Test Admins
                 </Button>
-                <Button variant="outline-dark" onClick={recalcCurrentSeasonHK}>
-                    Recalc Elo for HK games
+                <Button variant="danger" onClick={recalcCurrentSeasonHK}>
+                    Recalc Elo for HK games (Expensive operation!)
                 </Button>
-                <Button variant="outline-dark" onClick={recalcCurrentSeasonJP}>
-                    Recalc Elo for JP games
+                <Button variant="danger" onClick={recalcCurrentSeasonJP}>
+                    Recalc Elo for JP games (Expensive operation!)
                 </Button>
             </div>
         </>
