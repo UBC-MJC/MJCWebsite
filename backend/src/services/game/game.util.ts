@@ -199,13 +199,14 @@ const createEloCalculatorInputs = (
 ): EloCalculatorInput[] => {
     return players.map((player) => {
         let elo = STARTING_ELO;
-        const eloObject = eloList.find((x) => x.playerId === player.player.id);
-        if (typeof eloObject !== "undefined") {
-            elo += eloObject.elo;
+        for (const eloEntry of eloList) {
+            if (eloEntry.id === player.player.id) {
+                elo += eloEntry.elo;
+            }
         }
 
         return {
-            playerId: player.player.id,
+            id: player.player.id,
             elo: elo,
             score: playerScores[WIND_ORDER.indexOf(player.wind)],
             wind: player.wind,
@@ -307,11 +308,11 @@ export async function recalcSeason(seasonId: string, gameVariant: GameVariant): 
         );
 
         for (const calculatedElo of calculatedElos) {
-            if (!(calculatedElo.playerId in eloStats)) {
+            if (!eloStats[calculatedElo.playerId]) {
+                console.log(eloStats[calculatedElo.playerId]);
                 eloStats[calculatedElo.playerId] = 0;
             }
-            eloStats[calculatedElo.playerId] =
-                eloStats[calculatedElo.playerId] + calculatedElo.eloChange;
+            eloStats[calculatedElo.playerId] += calculatedElo.eloChange;
         }
         await updateGamePlayerElo(calculatedElos, game, gameVariant);
         debugStats.push(calculatedElos);
@@ -323,7 +324,7 @@ function transformEloStats(eloStats: any): any[] {
     const result = [];
     for (const [key, value] of Object.entries(eloStats)) {
         result.push({
-            playerId: key,
+            id: key,
             elo: value,
         });
     }
