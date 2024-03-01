@@ -2,7 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
 import { createGameSchema } from "../validation/game.validation";
 import { getCurrentSeason } from "../services/season.service";
-import { GameFilterArgs, generatePlayerQuery, getGameService } from "../services/game/game.util";
+import {
+    GameFilterArgs,
+    generatePlayerQuery,
+    getGameService,
+    recalcSeason,
+} from "../services/game/game.util";
 import GameService from "../services/game/game.service";
 
 const getGamesHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -213,6 +218,22 @@ const deleteLastRoundHandler = async (
     }
 };
 
+const recalcSeasonHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    const gameVariant: string = req.params.gameVariant;
+    try {
+        const seasonId = await getCurrentSeason();
+        const newEloStats = await recalcSeason(seasonId.id, gameVariant as any);
+        res.status(201).json(newEloStats);
+    } catch (error: any) {
+        console.error("Error in recalcAllHandler:", error);
+        next(createError.BadRequest(error.message));
+    }
+};
+
 export {
     getGamesHandler,
     getGameHandler,
@@ -222,4 +243,5 @@ export {
     submitGameHandler,
     createRoundHandler,
     deleteLastRoundHandler,
+    recalcSeasonHandler,
 };

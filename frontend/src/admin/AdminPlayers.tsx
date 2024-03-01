@@ -5,6 +5,7 @@ import {
     deletePlayerAPI,
     getPlayersAdminAPI,
     makeDummyAdminsAPI,
+    recalcSeasonAPI,
     updatePlayerAPI,
 } from "../api/AdminAPI";
 import { Button, Form, Table as BTable } from "react-bootstrap";
@@ -17,7 +18,7 @@ import {
     RowData,
     useReactTable,
 } from "@tanstack/react-table";
-import { FaEdit, FaTrash, FaCheck, FaSave, FaBan } from "react-icons/fa";
+import { FaBan, FaCheck, FaEdit, FaSave, FaTrash } from "react-icons/fa";
 import IconButton from "../common/IconButton";
 import confirmDialog from "../common/ConfirmationDialog";
 
@@ -165,6 +166,26 @@ const AdminPlayers: FC = () => {
         });
     };
 
+    const recalcCurrentSeasonHK = () => {
+        recalcSeasonAPI(player!.authToken, "hk")
+            .then((response) => {
+                console.log("HK Recalculation Complete", response.data);
+            })
+            .catch((err: any) => {
+                console.log("Error recalculating hk", err.response?.data);
+            });
+    };
+
+    const recalcCurrentSeasonJP = () => {
+        recalcSeasonAPI(player!.authToken, "jp")
+            .then((response) => {
+                console.log("JP Recalculation Complete", response.data);
+            })
+            .catch((err: any) => {
+                console.log("Error recalculating riichi", err.response?.data);
+            });
+    };
+
     const table = useReactTable({
         data: players,
         columns: playerColumns,
@@ -218,6 +239,12 @@ const AdminPlayers: FC = () => {
             <div className="my-4">
                 <Button variant="outline-dark" onClick={makeTestAdmins}>
                     Make Test Admins
+                </Button>
+                <Button variant="danger" onClick={recalcCurrentSeasonHK}>
+                    Recalc Elo for HK games (Expensive operation!)
+                </Button>
+                <Button variant="danger" onClick={recalcCurrentSeasonJP}>
+                    Recalc Elo for JP games (Expensive operation!)
                 </Button>
             </div>
         </>

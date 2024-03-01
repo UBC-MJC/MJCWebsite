@@ -74,7 +74,7 @@ const findQualifiedPlayers = (gameVariant: string): Promise<Player[]> => {
     } else if (gameVariant === "hk") {
         return findHongKongQualifiedPlayers();
     } else {
-        throw new Error("Invalid game variant");
+        throw new Error(`Invalid game variant ${gameVariant}`);
     }
 };
 

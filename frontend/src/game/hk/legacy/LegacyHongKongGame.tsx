@@ -12,8 +12,7 @@ import {
 } from "../../common/constants";
 import ListToggleButton from "../../common/TransactionTypeButtonList";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
-import { hongKongPointsWheel, japanesePointsWheel } from "../../../common/Utils";
-import DropdownInput from "../../common/DropdownInput";
+import { hongKongPointsWheel } from "../../../common/Utils";
 import { LegacyGameProps } from "../../Game";
 import { createHongKongRoundRequest, generateOverallScoreDelta } from "../controller/HongKongRound";
 import { validateHongKongRound } from "../controller/ValidateHongKongRound";

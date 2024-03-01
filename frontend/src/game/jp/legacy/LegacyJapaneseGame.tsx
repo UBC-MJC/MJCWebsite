@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { Button, Col, Container, Form, Row, Image } from "react-bootstrap";
+import { Button, Col, Container, Form, Image, Row } from "react-bootstrap";
 import LegacyJapaneseGameTable, { ModifiedJapaneseRound } from "./LegacyJapaneseGameTable";
 import {
     isGameEnd,
@@ -26,7 +26,7 @@ import {
     generateJapaneseCurrentScore,
     generateOverallScoreDelta,
 } from "../controller/JapaneseRound";
-import { validateTransaction, validateJapaneseRound } from "../controller/ValidateJapaneseRound";
+import { validateJapaneseRound, validateTransaction } from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
 import riichiStick from "../../../assets/riichiStick.png";
 import PointsInput from "../../common/PointsInput";

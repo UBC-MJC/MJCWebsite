@@ -3,7 +3,6 @@ import { GameStatus, GameType, JapaneseTransaction, JapaneseTransactionType } fr
 import {
     addScoreDeltas,
     containingAny,
-    createEloCalculatorInputs,
     FullJapaneseGame,
     FullJapaneseRound,
     GameFilterArgs,
@@ -17,8 +16,6 @@ import {
     RIICHI_STICK_VALUE,
 } from "./game.util";
 import GameService from "./game.service";
-import { getAllPlayerElos } from "../leaderboard.service";
-import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
 import {
     ConcludedJapaneseRoundT,
     JapaneseTransactionT,
@@ -111,19 +108,7 @@ class JapaneseGameService extends GameService {
         const playerScores = getJapaneseGameFinalScore(game);
         const calculatedElos = await getPlayerEloDeltas(game, playerScores, "jp");
 
-        await prisma.$transaction(
-            calculatedElos.map((eloObject) => {
-                return prisma.japanesePlayerGame.update({
-                    where: {
-                        id: game.players.find((player) => player.player.id === eloObject.playerId)!
-                            .id,
-                    },
-                    data: {
-                        eloChange: eloObject.eloChange,
-                    },
-                });
-            }),
-        );
+        await updateJapanesePlayerGameElo(calculatedElos, game);
 
         await prisma.japaneseGame.update({
             where: {
@@ -368,7 +353,7 @@ export function generateOverallScoreDelta(concludedRound: ConcludedJapaneseRound
     return riichiDeltas;
 }
 
-const getJapaneseGameFinalScore = (game: FullJapaneseGame): number[] => {
+export const getJapaneseGameFinalScore = (game: FullJapaneseGame): number[] => {
     if (game.rounds.length === 0) {
         return getEmptyScoreDelta();
     }
@@ -388,6 +373,25 @@ const getJapaneseGameFinalScore = (game: FullJapaneseGame): number[] => {
     }
     return rawScore;
 };
+
+export async function updateJapanesePlayerGameElo(
+    calculatedElos: { eloChange: number; playerId: string }[],
+    game: any,
+) {
+    await prisma.$transaction(
+        calculatedElos.map((eloObject) => {
+            return prisma.japanesePlayerGame.update({
+                where: {
+                    id: game.players.find((player: any) => player.player.id === eloObject.playerId)!
+                        .id,
+                },
+                data: {
+                    eloChange: eloObject.eloChange,
+                },
+            });
+        }),
+    );
+}
 
 function transformTransaction(transaction: JapaneseTransactionT): any {
     return {

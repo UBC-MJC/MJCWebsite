@@ -9,7 +9,7 @@ import {
     submitGameAPI,
 } from "../api/GameAPI";
 import { AuthContext } from "../common/AuthContext";
-import { getGameTypeString, mapWindToCharacter, validateGameVariant } from "../common/Utils";
+import { getGameTypeString, validateGameVariant } from "../common/Utils";
 import alert from "../common/AlertDialog";
 import confirmDialog from "../common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";

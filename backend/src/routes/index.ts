@@ -1,31 +1,32 @@
 import { Router } from "express";
 import { isAdmin, isAuthenticated } from "../middleware/auth";
 import {
+    getCurrentPlayerHandler,
     getPlayerLeaderboardHandler,
     getPlayerNamesHandler,
     loginHandler,
     registerHandler,
-    getCurrentPlayerHandler,
     updateSettingsHandler,
 } from "../controllers/player.controller";
 import {
-    createRoundHandler,
     createGameHandler,
+    createRoundHandler,
+    deleteGameHandler,
+    deleteLastRoundHandler,
+    getCurrentGamesHandler,
     getGameHandler,
     getGamesHandler,
-    deleteLastRoundHandler,
-    deleteGameHandler,
+    recalcSeasonHandler,
     submitGameHandler,
-    getCurrentGamesHandler,
 } from "../controllers/game.controller";
 import {
-    getPlayersHandler,
     createSeasonHandler,
+    deletePlayerHandler,
+    deleteSeasonHandler,
+    getPlayersHandler,
     getSeasonsHandler,
     makeTestAdminsHandler,
-    deletePlayerHandler,
     updatePlayerHandler,
-    deleteSeasonHandler,
     updateSeasonHandler,
 } from "../controllers/admin.controller";
 import { getCurrentSeasonHandler } from "../controllers/season.controller";
@@ -55,6 +56,8 @@ router.get("/seasons/current", getCurrentSeasonHandler);
 router.get("/admin/players", isAuthenticated, isAdmin, getPlayersHandler);
 router.put("/admin/players/:id", isAuthenticated, isAdmin, updatePlayerHandler);
 router.delete("/admin/players/:id", isAuthenticated, isAdmin, deletePlayerHandler);
+
+router.put("/admin/recalc/:gameVariant", isAuthenticated, isAdmin, recalcSeasonHandler);
 
 router.get("/admin/seasons", isAuthenticated, isAdmin, getSeasonsHandler);
 router.post("/admin/seasons", isAuthenticated, isAdmin, createSeasonHandler);
