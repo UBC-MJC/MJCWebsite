@@ -1,6 +1,6 @@
-import { isJapaneseGameEnd } from "../jp/controller/JapaneseRound";
-import { isHongKongGameEnd } from "../hk/controller/HongKongRound";
-import { mapWindToCharacter } from "../../common/Utils";
+import {isJapaneseGameEnd} from "../jp/controller/JapaneseRound";
+import {isHongKongGameEnd} from "../hk/controller/HongKongRound";
+import {mapWindToCharacter} from "../../common/Utils";
 
 enum Wind {
     EAST = "EAST",

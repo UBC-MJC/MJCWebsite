@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
-import { RegisterType } from "../validation/player.validation";
+import {RegisterType} from "../validation/player.validation";
 import prisma from "../db";
-import { Player } from "@prisma/client";
+import {Player} from "@prisma/client";
 
 const createPlayer = async (player: RegisterType): Promise<Player> => {
     return bcrypt.hash(player.password, 12).then((hash) => {
@@ -74,7 +74,7 @@ const findQualifiedPlayers = (gameVariant: string): Promise<Player[]> => {
     } else if (gameVariant === "hk") {
         return findHongKongQualifiedPlayers();
     } else {
-        throw new Error("Invalid game variant");
+        throw new Error(`Invalid game variant ${gameVariant}`);
     }
 };
 

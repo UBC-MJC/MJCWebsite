@@ -1,6 +1,6 @@
-import React, { FC, useState } from "react";
-import { Button, Col, Container, Form, Row, Image } from "react-bootstrap";
-import LegacyJapaneseGameTable, { ModifiedJapaneseRound } from "./LegacyJapaneseGameTable";
+import React, {FC, useState} from "react";
+import {Button, Col, Container, Form, Image, Row} from "react-bootstrap";
+import LegacyJapaneseGameTable, {ModifiedJapaneseRound} from "./LegacyJapaneseGameTable";
 import {
     isGameEnd,
     JapaneseActions,
@@ -13,8 +13,8 @@ import {
 } from "../../common/constants";
 import ListToggleButton from "../../common/TransactionTypeButtonList";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
-import { japanesePointsWheel } from "../../../common/Utils";
-import { LegacyGameProps } from "../../Game";
+import {japanesePointsWheel} from "../../../common/Utils";
+import {LegacyGameProps} from "../../Game";
 import {
     addDealIn,
     addInRoundRyuukyoku,
@@ -26,7 +26,7 @@ import {
     generateJapaneseCurrentScore,
     generateOverallScoreDelta,
 } from "../controller/JapaneseRound";
-import { validateTransaction, validateJapaneseRound } from "../controller/ValidateJapaneseRound";
+import {validateJapaneseRound, validateTransaction} from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
 import riichiStick from "../../../assets/riichiStick.png";
 import PointsInput from "../../common/PointsInput";

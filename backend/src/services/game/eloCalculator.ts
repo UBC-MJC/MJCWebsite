@@ -1,5 +1,5 @@
-import { GAME_CONSTANTS, WIND_ORDER } from "./game.util";
-import { Wind } from "@prisma/client";
+import {GAME_CONSTANTS, WIND_ORDER} from "./game.util";
+import {Wind} from "@prisma/client";
 
 const JAPANESE_ADJUSTMENT = [55000, 25000, -5000, -75000];
 const HONG_KONG_SCORE_ADJUSTMENT = [100, 0, 0, -100];
@@ -12,8 +12,7 @@ type EloCalculatorInput = {
 };
 
 const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: "jp" | "hk") => {
-    let fieldElo = playerInformation.reduce((sum, player) => sum + player.elo, 0);
-    fieldElo = fieldElo / 4;
+    const avgElo = playerInformation.reduce((sum, player) => sum + player.elo, 0) / 4;
 
     const scoreAfterPlacement = addPlacementAdjustment(playerInformation, gameVariant);
 
@@ -22,7 +21,7 @@ const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: "jp
 
     return scoreAfterPlacement.map((player) => {
         const rawScore = player.score / GAME_CONSTANTS[gameVariant].DIVIDING_CONSTANT;
-        const eloDifference = fieldElo - player.elo;
+        const eloDifference = avgElo - player.elo;
         const eloChange = magnitude * (rawScore + eloSignificance * eloDifference);
 
         return {
@@ -39,7 +38,7 @@ const addPlacementAdjustment = (playerInformation: EloCalculatorInput[], gameVar
     } else if (gameVariant === "hk") {
         placingAdjustments = HONG_KONG_SCORE_ADJUSTMENT;
     } else {
-        throw new Error("Invalid game variant");
+        throw new Error(`Invalid game variant ${gameVariant}`);
     }
 
     const sortedPlayers = playerInformation.sort((a, b) => {

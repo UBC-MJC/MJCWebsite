@@ -1,17 +1,11 @@
-import {
-    GameStatus,
-    GameType,
-    JapaneseTransactionType,
-    Player,
-    Prisma,
-    Wind,
-} from "@prisma/client";
-import HongKongGameService from "./hongKongGame.service";
-import JapaneseGameService from "./japaneseGame.service";
-import { findPlayerByUsername } from "../player.service";
-import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
-import { JapaneseTransactionT, Transaction } from "../../validation/game.validation";
-import { getAllPlayerElos } from "../leaderboard.service";
+import {GameStatus, GameType, JapaneseTransactionType, Player, Prisma, Wind,} from "@prisma/client";
+import HongKongGameService, {getHongKongGameFinalScore, updateHongKongPlayerGameElo,} from "./hongKongGame.service";
+import JapaneseGameService, {getJapaneseGameFinalScore, updateJapanesePlayerGameElo,} from "./japaneseGame.service";
+import {findPlayerByUsername} from "../player.service";
+import {EloCalculatorInput, getEloChanges} from "./eloCalculator";
+import {JapaneseTransactionT, Transaction} from "../../validation/game.validation";
+import {getAllPlayerElos} from "../leaderboard.service";
+import GameService from "./game.service";
 
 const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
     include: {
@@ -65,14 +59,14 @@ type FullHongKongRound = Prisma.HongKongRoundGetPayload<typeof fullHongKongRound
 
 type GameVariant = "jp" | "hk";
 
-const getGameService = (gameVariant: string): any => {
+const getGameService = (gameVariant: string): GameService => {
     switch (gameVariant) {
         case "jp":
             return new JapaneseGameService();
         case "hk":
             return new HongKongGameService();
         default:
-            throw new Error("Invalid game variant");
+            throw new Error(`Invalid game variant ${gameVariant}`);
     }
 };
 
@@ -92,13 +86,15 @@ const GAME_CONSTANTS = {
     },
     hk: {
         STARTING_SCORE: 750,
-        DIVIDING_CONSTANT: 30,
+        DIVIDING_CONSTANT: 5,
     },
 } as const;
 
 export const NUM_PLAYERS = 4;
 
 export const RIICHI_STICK_VALUE = 1000;
+
+export const STARTING_ELO = 1500;
 
 // Throws error if the player list contains duplicates
 const checkPlayerListUnique = (playerNameList: string[]): void => {
@@ -169,8 +165,12 @@ const getPlayerEloDeltas = async (
     game: FullJapaneseGame | FullHongKongGame,
     playerScores: number[],
     gameVariant: GameVariant,
+    overridingEloList?: any[],
 ) => {
-    const eloList = await getAllPlayerElos(gameVariant, game.seasonId);
+    let eloList = overridingEloList;
+    if (eloList === undefined) {
+        eloList = await getAllPlayerElos(gameVariant, game.seasonId);
+    }
     const eloCalculatorInput: EloCalculatorInput[] = createEloCalculatorInputs(
         game.players,
         playerScores,
@@ -185,7 +185,7 @@ const createEloCalculatorInputs = (
     eloList: any[],
 ): EloCalculatorInput[] => {
     return players.map((player) => {
-        let elo = 1500;
+        let elo = STARTING_ELO;
         const eloObject = eloList.find((x) => x.playerId === player.player.id);
         if (typeof eloObject !== "undefined") {
             elo += eloObject.elo;
@@ -247,6 +247,68 @@ export function containingAny(
     return null;
 }
 
+export function getGameFinalScore(game: any, gameVariant: GameVariant): number[] {
+    if (gameVariant === "jp") {
+        return getJapaneseGameFinalScore(game);
+    }
+    if (gameVariant === "hk") {
+        return getHongKongGameFinalScore(game);
+    }
+    throw new Error(`Invalid game variant ${gameVariant}`);
+}
+
+async function updateGamePlayerElo(calculatedElos: any[], game: any, gameVariant: GameVariant) {
+    if (gameVariant === "jp") {
+        await updateJapanesePlayerGameElo(calculatedElos, game);
+    }
+    if (gameVariant === "hk") {
+        await updateHongKongPlayerGameElo(calculatedElos, game);
+    }
+    throw new Error(`Invalid game variant ${gameVariant}`);
+}
+
+export async function recalcSeason(seasonId: string, gameVariant: GameVariant): Promise<any> {
+    const finishedGames = await getGameService(gameVariant).getGames({
+        seasonId: seasonId,
+        gameStatus: GameStatus.FINISHED,
+    });
+    finishedGames.sort((a, b) => {
+        return b.endedAt - a.endedAt;
+    });
+    const eloStats: any = {};
+    const debugStats = []; // to be removed later
+    for (const game of finishedGames) {
+        const playerScores = getGameFinalScore(game, gameVariant);
+        const calculatedElos = await getPlayerEloDeltas(
+            game,
+            playerScores,
+            gameVariant,
+            transformEloStats(eloStats),
+        );
+
+        for (const calculatedElo of calculatedElos) {
+            if (!(calculatedElo.playerId in eloStats)) {
+                eloStats[calculatedElo.playerId] = 0;
+            }
+            eloStats[calculatedElo.playerId] =
+                eloStats[calculatedElo.playerId] + calculatedElo.eloChange;
+        }
+        await updateGamePlayerElo(calculatedElos, game, gameVariant);
+        debugStats.push(calculatedElos);
+    }
+    return { eloStats: eloStats, orderedGames: finishedGames, debugStats: debugStats };
+}
+
+function transformEloStats(eloStats: any): any[] {
+    const result = [];
+    for (const [key, value] of Object.entries(eloStats)) {
+        result.push({
+            playerId: key,
+            elo: value,
+        });
+    }
+    return result;
+}
 export {
     getGameService,
     checkPlayerGameEligibility,

@@ -1,5 +1,5 @@
 import prisma from "../../db";
-import { GameStatus, GameType, HongKongTransaction } from "@prisma/client";
+import {GameStatus, GameType, HongKongTransaction} from "@prisma/client";
 import GameService from "./game.service";
 import {
     addScoreDeltas,
@@ -95,21 +95,10 @@ class HongKongGameService extends GameService {
     }
 
     public async submitGame(game: FullHongKongGame): Promise<void> {
-        const playerScores = getHongKongPlayersCurrentScore(game);
+        const playerScores = getHongKongGameFinalScore(game);
         const calculatedElos = await getPlayerEloDeltas(game, playerScores, "hk");
 
-        await prisma.$transaction(
-            calculatedElos.map((elo) => {
-                return prisma.hongKongPlayerGame.update({
-                    where: {
-                        id: game.players.find((player) => player.player.id === elo.playerId)!.id,
-                    },
-                    data: {
-                        eloChange: elo.eloChange,
-                    },
-                });
-            }),
-        );
+        await updateHongKongPlayerGameElo(calculatedElos, game);
 
         await prisma.hongKongGame.update({
             where: {
@@ -162,7 +151,7 @@ class HongKongGameService extends GameService {
 
     public async mapGameObject(game: FullHongKongGame): Promise<any> {
         const nextRound = getNextHongKongRound(game);
-        const playerScores = getHongKongPlayersCurrentScore(game);
+        const playerScores = getHongKongGameFinalScore(game);
         const eloDeltas = await getPlayerEloDeltas(game, playerScores, "hk");
         const orderedEloDeltas = eloDeltas.reduce((result: any, deltaObject) => {
             result[deltaObject.playerId] = deltaObject.eloChange;
@@ -191,17 +180,34 @@ export function generateOverallScoreDelta(concludedGame: ConcludedHongKongRoundT
     return addScoreDeltas(reduceScoreDeltas(concludedGame.transactions), getEmptyScoreDelta());
 }
 
-const getHongKongPlayersCurrentScore = (game: FullHongKongGame): number[] => {
+export const getHongKongGameFinalScore = (game: FullHongKongGame): number[] => {
     if (game.rounds.length === 0) {
         return getEmptyScoreDelta();
     }
-
     return game.rounds.reduce<number[]>(
         (result, current) =>
             addScoreDeltas(result, generateOverallScoreDelta(transformDBHongKongRound(current))),
         getEmptyScoreDelta(),
     );
 };
+
+export async function updateHongKongPlayerGameElo(
+    calculatedElos: { eloChange: number; playerId: string }[],
+    game: FullHongKongGame,
+) {
+    await prisma.$transaction(
+        calculatedElos.map((elo) => {
+            return prisma.hongKongPlayerGame.update({
+                where: {
+                    id: game.players.find((player) => player.player.id === elo.playerId)!.id,
+                },
+                data: {
+                    eloChange: elo.eloChange,
+                },
+            });
+        }),
+    );
+}
 
 const getFirstHongKongRound = (): any => {
     return {
