@@ -12,6 +12,7 @@ import prisma from "../../db";
 abstract class GameService {
     public gameDatabase: any;
     public playerGameDatabase: any;
+    public constants: any;
     public async createGame(
         gameType: GameType,
         playersQuery: any[],
@@ -142,9 +143,12 @@ abstract class GameService {
             playerScores,
             eloList,
         );
-        return getEloChanges(eloCalculatorInput, this.getVariant());
+        return getEloChanges(
+            eloCalculatorInput,
+            this.constants.SCORE_ADJUSTMENT,
+            this.constants.DIVIDING_CONSTANT,
+        );
     }
-    abstract getVariant(): GameVariant;
     abstract getNextRound(game: any): any;
     abstract getAllPlayerElos(seasonId: string): Promise<any[]>;
 

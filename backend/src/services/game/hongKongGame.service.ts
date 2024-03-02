@@ -3,6 +3,7 @@ import { HongKongTransaction, Prisma } from "@prisma/client";
 import { GameService } from "./game.service";
 import {
     addScoreDeltas,
+    GAME_CONSTANTS,
     getEmptyScoreDelta,
     getNextRoundWind,
     reduceScoreDeltas,
@@ -38,6 +39,7 @@ type FullHongKongRound = Prisma.HongKongRoundGetPayload<typeof fullHongKongRound
 class HongKongGameService extends GameService {
     public gameDatabase = prisma.hongKongGame;
     public playerGameDatabase = prisma.hongKongPlayerGame;
+    public constants = GAME_CONSTANTS["hk"];
 
     public async createRound(game: FullHongKongGame, roundRequest: any): Promise<void> {
         validateCreateHongKongRound(roundRequest, game);

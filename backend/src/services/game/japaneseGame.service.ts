@@ -2,12 +2,12 @@ import prisma from "../../db";
 import { JapaneseTransaction, JapaneseTransactionType, Prisma } from "@prisma/client";
 import {
     addScoreDeltas,
+    GAME_CONSTANTS,
     getEmptyScoreDelta,
     getNextRoundWind,
     NUM_PLAYERS,
     range,
     reduceScoreDeltas,
-    RIICHI_STICK_VALUE,
 } from "./game.util";
 import { GameService } from "./game.service";
 import {
@@ -42,9 +42,12 @@ type PartialJapaneseRound = Pick<
     "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount"
 >;
 
+export const RIICHI_STICK_VALUE = 1000;
+
 class JapaneseGameService extends GameService {
     public gameDatabase = prisma.japaneseGame;
     public playerGameDatabase = prisma.japanesePlayerGame;
+    public constants = GAME_CONSTANTS["jp"];
 
     public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<void> {
         validateCreateJapaneseRound(roundRequest, game);
@@ -69,7 +72,7 @@ class JapaneseGameService extends GameService {
         try {
             await prisma.japaneseRound.create(query);
         } catch (err) {
-            console.error("Error adding japanese round: ", err);
+            console.error("Error adding Riichi round: ", err);
             console.error("Query: ", query);
             throw err;
         }

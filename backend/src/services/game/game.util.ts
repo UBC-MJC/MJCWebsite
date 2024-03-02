@@ -21,16 +21,16 @@ const GAME_CONSTANTS = {
     jp: {
         STARTING_SCORE: 25000,
         DIVIDING_CONSTANT: 1000,
+        SCORE_ADJUSTMENT: [55000, 25000, -5000, -75000],
     },
     hk: {
         STARTING_SCORE: 750,
         DIVIDING_CONSTANT: 5,
+        SCORE_ADJUSTMENT: [100, 0, 0, -100],
     },
 } as const;
 
 export const NUM_PLAYERS = 4;
-
-export const RIICHI_STICK_VALUE = 1000;
 
 export const STARTING_ELO = 1500;
 
