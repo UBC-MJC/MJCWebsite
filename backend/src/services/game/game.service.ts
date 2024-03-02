@@ -7,14 +7,11 @@ import {
     transformEloStats,
 } from "./game.util";
 import {EloCalculatorInput, getEloChanges} from "./eloCalculator";
-import JapaneseGameService from "./japaneseGame.service";
-import HongKongGameService from "./hongKongGame.service";
 import prisma from "../../db";
 
 abstract class GameService {
     public gameDatabase: any;
     public playerGameDatabase: any;
-
     public async createGame(
         gameType: GameType,
         playersQuery: any[],
@@ -149,17 +146,7 @@ abstract class GameService {
     }
     abstract getVariant(): GameVariant;
     abstract getNextRound(game: any): any;
-    public async getAllPlayerElos(seasonId: string): Promise<any[]> {
-        return (await prisma.$queryRaw`SELECT sum(gp.eloChange) as elo, count(gp.eloChange) as gameCount, p.id, p.username
-                                FROM ${this.gameDatabase} g
-                                         LEFT JOIN ${this.playerGameDatabase} gp
-                                                   ON g.id = gp.gameId
-                                         LEFT JOIN Player p
-                                                   ON gp.playerId = p.id
-                                WHERE g.seasonId = ${seasonId} AND g.status = ${"FINISHED"} AND g.type = ${"RANKED"}
-                                GROUP BY playerId
-                                ORDER BY elo DESC;`) as any[];
-    }
+    abstract getAllPlayerElos(seasonId: string): Promise<any[]>;
 
     abstract getGameFinalScore(game: any): number[];
 
@@ -221,16 +208,4 @@ abstract class GameService {
     }
 }
 
-const getGameService = (gameVariant: string): GameService => {
-    switch (gameVariant) {
-        case "jp":
-            return new JapaneseGameService();
-        case "hk":
-            return new HongKongGameService();
-        default:
-            throw new Error(`Invalid game variant ${gameVariant}`);
-    }
-};
-
-export { getGameService };
-export default GameService;
+export { GameService };

@@ -1,6 +1,6 @@
 import prisma from "../../db";
 import {HongKongTransaction, Prisma} from "@prisma/client";
-import GameService from "./game.service";
+import {GameService} from "./game.service";
 import {addScoreDeltas, getEmptyScoreDelta, getNextRoundWind, reduceScoreDeltas,} from "./game.util";
 import {
     ConcludedHongKongRoundT,
@@ -33,6 +33,7 @@ type FullHongKongRound = Prisma.HongKongRoundGetPayload<typeof fullHongKongRound
 class HongKongGameService extends GameService {
     public gameDatabase = prisma.hongKongGame;
     public playerGameDatabase = prisma.hongKongPlayerGame;
+
     public async createRound(game: FullHongKongGame, roundRequest: any): Promise<void> {
         validateCreateHongKongRound(roundRequest, game);
         const concludedRound = roundRequest as ConcludedHongKongRoundT;
@@ -120,6 +121,18 @@ class HongKongGameService extends GameService {
     public getVariant(): "hk" {
         return "hk";
     }
+
+    public async getAllPlayerElos(seasonId: string): Promise<any[]> {
+        return (await prisma.$queryRaw`SELECT sum(gp.eloChange) as elo, count(gp.eloChange) as gameCount, p.id, p.username
+                                FROM HongKongGame g
+                                         LEFT JOIN HongKongPlayerGame gp
+                                                   ON g.id = gp.gameId
+                                         LEFT JOIN Player p
+                                                   ON gp.playerId = p.id
+                                WHERE g.seasonId = ${seasonId} AND g.status = ${"FINISHED"} AND g.type = ${"RANKED"}
+                                GROUP BY playerId
+                                ORDER BY elo DESC;`) as any[];
+    }
 }
 export function generateOverallScoreDelta(concludedGame: ConcludedHongKongRoundT) {
     return addScoreDeltas(reduceScoreDeltas(concludedGame.transactions), getEmptyScoreDelta());
@@ -172,7 +185,5 @@ function transformDBTransaction(dbTransaction: HongKongTransaction): HongKongTra
     }
     return result as HongKongTransactionT;
 }
-
-export default HongKongGameService;
-export { FullHongKongRound };
+export { FullHongKongRound, HongKongGameService };
 export { FullHongKongGame };

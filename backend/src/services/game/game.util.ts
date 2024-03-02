@@ -2,6 +2,9 @@ import {GameStatus, GameType, Player, Wind} from "@prisma/client";
 import {findPlayerByUsername} from "../player.service";
 import {EloCalculatorInput} from "./eloCalculator";
 import {Transaction} from "../../validation/game.validation";
+import {JapaneseGameService} from "./japaneseGame.service";
+import {HongKongGameService} from "./hongKongGame.service";
+import {GameService} from "./game.service";
 
 type GameVariant = "jp" | "hk";
 
@@ -163,6 +166,17 @@ export function transformEloStats(eloStats: any): any[] {
     }
     return result;
 }
+
+const getGameService = (gameVariant: string): GameService => {
+    switch (gameVariant) {
+        case "jp":
+            return new JapaneseGameService() as GameService;
+        case "hk":
+            return new HongKongGameService() as GameService;
+        default:
+            throw new Error(`Invalid game variant ${gameVariant}`);
+    }
+};
 export {
     checkPlayerGameEligibility,
     checkPlayerListUnique,
@@ -175,4 +189,5 @@ export {
     Wind,
     GameVariant,
     GameFilterArgs,
+    getGameService,
 };

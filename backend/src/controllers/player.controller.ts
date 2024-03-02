@@ -5,8 +5,7 @@ import {createPlayer, findPlayerByUsername, findQualifiedPlayers, updatePlayer,}
 import {generateToken} from "../middleware/jwt";
 import bcrypt from "bcryptjs";
 import {getCurrentSeason} from "../services/season.service";
-import {STARTING_ELO} from "../services/game/game.util";
-import {getGameService} from "../services/game/game.service";
+import {getGameService, STARTING_ELO} from "../services/game/game.util";
 
 const registerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     registerSchema

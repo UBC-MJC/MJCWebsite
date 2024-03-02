@@ -2,8 +2,8 @@ import {NextFunction, Request, Response} from "express";
 import createError from "http-errors";
 import {createGameSchema} from "../validation/game.validation";
 import {getCurrentSeason} from "../services/season.service";
-import {GameFilterArgs, generatePlayerQuery} from "../services/game/game.util";
-import GameService, {getGameService} from "../services/game/game.service";
+import {GameFilterArgs, generatePlayerQuery, getGameService} from "../services/game/game.util";
+import {GameService} from "../services/game/game.service";
 
 const getGamesHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

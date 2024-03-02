@@ -9,7 +9,7 @@ import {
     reduceScoreDeltas,
     RIICHI_STICK_VALUE,
 } from "./game.util";
-import GameService from "./game.service";
+import {GameService} from "./game.service";
 import {
     ConcludedJapaneseRoundT,
     JapaneseTransactionT,
@@ -188,6 +188,17 @@ class JapaneseGameService extends GameService {
                 transformDBTransaction(dbTransaction),
             ),
         };
+    }
+    public async getAllPlayerElos(seasonId: string): Promise<any[]> {
+        return (await prisma.$queryRaw`SELECT sum(gp.eloChange) as elo, count(gp.eloChange) as gameCount, p.id, p.username
+                                FROM JapaneseGame g
+                                         LEFT JOIN JapanesePlayerGame gp
+                                                   ON g.id = gp.gameId
+                                         LEFT JOIN Player p
+                                                   ON gp.playerId = p.id
+                                WHERE g.seasonId = ${seasonId} AND g.status = ${"FINISHED"} AND g.type = ${"RANKED"}
+                                GROUP BY playerId
+                                ORDER BY elo DESC;`) as any[];
     }
 }
 
@@ -388,6 +399,4 @@ export function containingAny(
     }
     return null;
 }
-export default JapaneseGameService;
-export { FullJapaneseRound };
-export { FullJapaneseGame };
+export { FullJapaneseRound, FullJapaneseGame, JapaneseGameService };
