@@ -1,6 +1,7 @@
-import { array, InferType, mixed, number, object, string } from "yup";
-import { GameType, HongKongTransactionType, JapaneseTransactionType, Wind } from "@prisma/client";
-import { FullJapaneseGame } from "../services/game/game.util";
+import {array, InferType, mixed, number, object, string} from "yup";
+import {GameType, HongKongTransactionType, JapaneseTransactionType, Wind} from "@prisma/client";
+
+import {FullJapaneseGame} from "../services/game/japaneseGame.service";
 
 const createGameSchema = object({
     gameType: mixed<GameType>()

@@ -1,14 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import {NextFunction, Request, Response} from "express";
 import createError from "http-errors";
-import { createGameSchema } from "../validation/game.validation";
-import { getCurrentSeason } from "../services/season.service";
-import {
-    GameFilterArgs,
-    generatePlayerQuery,
-    getGameService,
-    recalcSeason,
-} from "../services/game/game.util";
-import GameService from "../services/game/game.service";
+import {createGameSchema} from "../validation/game.validation";
+import {getCurrentSeason} from "../services/season.service";
+import {GameFilterArgs, generatePlayerQuery} from "../services/game/game.util";
+import GameService, {getGameService} from "../services/game/game.service";
 
 const getGamesHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -226,7 +221,8 @@ const recalcSeasonHandler = async (
     const gameVariant: string = req.params.gameVariant;
     try {
         const seasonId = await getCurrentSeason();
-        const newEloStats = await recalcSeason(seasonId.id, gameVariant as any);
+        const gameService = getGameService(gameVariant);
+        const newEloStats = await gameService.recalcSeason(seasonId.id);
         res.status(201).json(newEloStats);
     } catch (error: any) {
         console.error("Error in recalcAllHandler:", error);

@@ -1,6 +1,6 @@
-import React, { FC, useState } from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
-import LegacyHongKongGameTable, { ModifiedHongKongRound } from "./LegacyHongKongGameTable";
+import React, {FC, useState} from "react";
+import {Button, Col, Container, Row} from "react-bootstrap";
+import LegacyHongKongGameTable, {ModifiedHongKongRound} from "./LegacyHongKongGameTable";
 import {
     HK_LABEL_MAP,
     HK_TRANSACTION_TYPE_BUTTONS,
@@ -12,10 +12,10 @@ import {
 } from "../../common/constants";
 import ListToggleButton from "../../common/TransactionTypeButtonList";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
-import { hongKongPointsWheel } from "../../../common/Utils";
-import { LegacyGameProps } from "../../Game";
-import { createHongKongRoundRequest, generateOverallScoreDelta } from "../controller/HongKongRound";
-import { validateHongKongRound } from "../controller/ValidateHongKongRound";
+import {hongKongPointsWheel} from "../../../common/Utils";
+import {LegacyGameProps} from "../../Game";
+import {createHongKongRoundRequest, generateOverallScoreDelta} from "../controller/HongKongRound";
+import {validateHongKongRound} from "../controller/ValidateHongKongRound";
 import alert from "../../../common/AlertDialog";
 import PointsInput from "../../common/PointsInput";
 

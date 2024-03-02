@@ -1,6 +1,6 @@
-import React, { FC, useContext, useEffect, useState } from "react";
-import { AuthContext } from "../common/AuthContext";
-import { AxiosError } from "axios";
+import React, {FC, useContext, useEffect, useState} from "react";
+import {AuthContext} from "../common/AuthContext";
+import {AxiosError} from "axios";
 import {
     deletePlayerAPI,
     getPlayersAdminAPI,
@@ -8,7 +8,7 @@ import {
     recalcSeasonAPI,
     updatePlayerAPI,
 } from "../api/AdminAPI";
-import { Button, Form, Table as BTable } from "react-bootstrap";
+import {Button, Form, Table as BTable} from "react-bootstrap";
 import {
     CellContext,
     ColumnDef,
@@ -18,7 +18,7 @@ import {
     RowData,
     useReactTable,
 } from "@tanstack/react-table";
-import { FaBan, FaCheck, FaEdit, FaSave, FaTrash } from "react-icons/fa";
+import {FaBan, FaCheck, FaEdit, FaSave, FaTrash} from "react-icons/fa";
 import IconButton from "../common/IconButton";
 import confirmDialog from "../common/ConfirmationDialog";
 

@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { isAdmin, isAuthenticated } from "../middleware/auth";
+import {Router} from "express";
+import {isAdmin, isAuthenticated} from "../middleware/auth";
 import {
     getCurrentPlayerHandler,
     getPlayerLeaderboardHandler,
@@ -29,7 +29,7 @@ import {
     updatePlayerHandler,
     updateSeasonHandler,
 } from "../controllers/admin.controller";
-import { getCurrentSeasonHandler } from "../controllers/season.controller";
+import {getCurrentSeasonHandler} from "../controllers/season.controller";
 
 const router: Router = Router();
 

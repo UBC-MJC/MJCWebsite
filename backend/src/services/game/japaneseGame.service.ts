@@ -1,15 +1,9 @@
 import prisma from "../../db";
-import { GameStatus, GameType, JapaneseTransaction, JapaneseTransactionType } from "@prisma/client";
+import {JapaneseTransaction, JapaneseTransactionType, Prisma,} from "@prisma/client";
 import {
     addScoreDeltas,
-    containingAny,
-    FullJapaneseGame,
-    FullJapaneseRound,
-    GameFilterArgs,
-    generateGameQuery,
     getEmptyScoreDelta,
     getNextRoundWind,
-    getPlayerEloDeltas,
     NUM_PLAYERS,
     range,
     reduceScoreDeltas,
@@ -22,104 +16,35 @@ import {
     validateCreateJapaneseRound,
 } from "../../validation/game.validation";
 
+const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
+    include: {
+        players: {
+            include: {
+                player: true,
+            },
+        },
+        rounds: {
+            include: {
+                transactions: true,
+            },
+        },
+    },
+});
+type FullJapaneseGame = Prisma.JapaneseGameGetPayload<typeof fullJapaneseGame>;
+const fullJapaneseRound = Prisma.validator<Prisma.JapaneseRoundDefaultArgs>()({
+    include: {
+        transactions: true,
+    },
+});
+type FullJapaneseRound = Prisma.JapaneseRoundGetPayload<typeof fullJapaneseRound>;
 type PartialJapaneseRound = Pick<
     FullJapaneseRound,
     "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount"
 >;
 
 class JapaneseGameService extends GameService {
-    public createGame(
-        gameType: GameType,
-        playersQuery: any[],
-        recorderId: string,
-        seasonId: string,
-    ): Promise<any> {
-        return prisma.japaneseGame.create({
-            data: {
-                season: {
-                    connect: {
-                        id: seasonId,
-                    },
-                },
-                type: gameType,
-                status: GameStatus.IN_PROGRESS,
-                recordedBy: {
-                    connect: {
-                        id: recorderId,
-                    },
-                },
-                players: {
-                    create: playersQuery,
-                },
-            },
-        });
-    }
-
-    public getGame(id: number): Promise<any> {
-        return prisma.japaneseGame.findUnique({
-            where: {
-                id: id,
-            },
-            include: {
-                players: {
-                    include: {
-                        player: true,
-                    },
-                },
-                rounds: {
-                    include: {
-                        transactions: true,
-                    },
-                },
-            },
-        });
-    }
-
-    public getGames(filter: GameFilterArgs): Promise<any[]> {
-        const whereQuery = generateGameQuery(filter);
-
-        return prisma.japaneseGame.findMany({
-            where: whereQuery,
-            include: {
-                players: {
-                    include: {
-                        player: true,
-                    },
-                },
-                rounds: {
-                    include: {
-                        transactions: true,
-                    },
-                },
-            },
-        });
-    }
-
-    public async deleteGame(id: number): Promise<void> {
-        await prisma.japaneseGame.delete({
-            where: {
-                id: id,
-            },
-        });
-    }
-
-    // TODO: replace getAllPlayerElos call, not all elos are needed
-    public async submitGame(game: FullJapaneseGame): Promise<void> {
-        const playerScores = getJapaneseGameFinalScore(game);
-        const calculatedElos = await getPlayerEloDeltas(game, playerScores, "jp");
-
-        await updateJapanesePlayerGameElo(calculatedElos, game);
-
-        await prisma.japaneseGame.update({
-            where: {
-                id: game.id,
-            },
-            data: {
-                status: GameStatus.FINISHED,
-                endedAt: new Date(),
-            },
-        });
-    }
+    public gameDatabase = prisma.japaneseGame;
+    public playerGameDatabase = prisma.japanesePlayerGame;
 
     public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<void> {
         validateCreateJapaneseRound(roundRequest, game);
@@ -158,31 +83,110 @@ class JapaneseGameService extends GameService {
         });
     }
 
-    public async mapGameObject(game: FullJapaneseGame): Promise<any> {
-        const nextRound = getNextJapaneseRound(game);
-        const playerScores = getJapaneseGameFinalScore(game);
-        const eloDeltas = await getPlayerEloDeltas(game, playerScores, "jp");
-        const orderedEloDeltas = eloDeltas.reduce((result: any, deltaObject) => {
-            result[deltaObject.playerId] = deltaObject.eloChange;
-            return result;
-        }, {});
+    public getNextRound(game: FullJapaneseGame): PartialJapaneseRound {
+        if (game.rounds.length === 0) {
+            return getFirstJapaneseRound();
+        }
 
+        const previousRound: ConcludedJapaneseRoundT = this.transformDBRound(
+            game.rounds[game.rounds.length - 1],
+        );
+        const newHonbaCount = getNewHonbaCount(
+            previousRound.transactions,
+            previousRound.roundNumber - 1,
+            previousRound.bonus,
+        );
+        if (
+            dealershipRetains(
+                previousRound.transactions,
+                previousRound.tenpais,
+                previousRound.roundNumber - 1,
+            )
+        ) {
+            return {
+                roundCount: previousRound.roundCount + 1,
+                bonus: newHonbaCount,
+                roundNumber: previousRound.roundNumber,
+                roundWind: previousRound.roundWind,
+                startRiichiStickCount: previousRound.endRiichiStickCount,
+            };
+        }
         return {
-            id: game.id,
-            type: game.type,
-            status: game.status,
-            recordedById: game.recordedById,
-            createdAt: game.createdAt,
-            players: game.players.map((player) => {
-                return {
-                    id: player.player.id,
-                    username: player.player.username,
-                    trueWind: player.wind,
-                };
-            }),
-            rounds: game.rounds.map((round) => transformDBJapaneseRound(round)),
-            eloDeltas: orderedEloDeltas,
-            currentRound: nextRound,
+            roundCount: previousRound.roundCount + 1,
+            bonus: newHonbaCount,
+            roundNumber: previousRound.roundNumber === 4 ? 1 : previousRound.roundNumber + 1,
+            roundWind:
+                previousRound.roundNumber === 4
+                    ? getNextRoundWind(previousRound.roundWind)
+                    : previousRound.roundWind,
+            startRiichiStickCount: previousRound.endRiichiStickCount,
+        };
+    }
+
+    public getGameFinalScore(game: FullJapaneseGame): number[] {
+        if (game.rounds.length === 0) {
+            return getEmptyScoreDelta();
+        }
+
+        const rounds = game.rounds.map((round) => this.transformDBRound(round));
+        const rawScore = rounds.reduce<number[]>(
+            (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
+            getEmptyScoreDelta(),
+        );
+        const finalRiichiStick = rounds[rounds.length - 1].endRiichiStickCount;
+        const maxScore = Math.max(...rawScore);
+        for (const index of range(NUM_PLAYERS)) {
+            if (rawScore[index] === maxScore) {
+                rawScore[index] += finalRiichiStick * RIICHI_STICK_VALUE; // added to the first player with the max score
+                break;
+            }
+        }
+        return rawScore;
+    }
+
+    public getVariant(): "jp" {
+        return "jp";
+    }
+
+    public transformDBRound(dbRound: FullJapaneseRound): ConcludedJapaneseRoundT {
+        const riichis = [];
+        const tenpais = [];
+        if (dbRound.player0Riichi) {
+            riichis.push(0);
+        }
+        if (dbRound.player1Riichi) {
+            riichis.push(1);
+        }
+        if (dbRound.player2Riichi) {
+            riichis.push(2);
+        }
+        if (dbRound.player3Riichi) {
+            riichis.push(3);
+        }
+        if (dbRound.player0Tenpai) {
+            tenpais.push(0);
+        }
+        if (dbRound.player1Tenpai) {
+            tenpais.push(1);
+        }
+        if (dbRound.player2Tenpai) {
+            tenpais.push(2);
+        }
+        if (dbRound.player3Tenpai) {
+            tenpais.push(3);
+        }
+        return {
+            roundCount: dbRound.roundCount,
+            roundWind: dbRound.roundWind,
+            roundNumber: dbRound.roundNumber,
+            bonus: dbRound.bonus,
+            startRiichiStickCount: dbRound.startRiichiStickCount,
+            endRiichiStickCount: dbRound.endRiichiStickCount,
+            riichis: riichis,
+            tenpais: tenpais,
+            transactions: dbRound.transactions.map((dbTransaction) =>
+                transformDBTransaction(dbTransaction),
+            ),
         };
     }
 }
@@ -238,48 +242,6 @@ export function getNewHonbaCount(
 
     return 0;
 }
-
-// CAREFUL the riichi sticks on table are just taken from prev round and need to be updated
-// TODO: breaks at north 4
-const getNextJapaneseRound = (game: FullJapaneseGame): PartialJapaneseRound => {
-    if (game.rounds.length === 0) {
-        return getFirstJapaneseRound();
-    }
-
-    const previousRound: ConcludedJapaneseRoundT = transformDBJapaneseRound(
-        game.rounds[game.rounds.length - 1],
-    );
-    const newHonbaCount = getNewHonbaCount(
-        previousRound.transactions,
-        previousRound.roundNumber - 1,
-        previousRound.bonus,
-    );
-    if (
-        dealershipRetains(
-            previousRound.transactions,
-            previousRound.tenpais,
-            previousRound.roundNumber - 1,
-        )
-    ) {
-        return {
-            roundCount: previousRound.roundCount + 1,
-            bonus: newHonbaCount,
-            roundNumber: previousRound.roundNumber,
-            roundWind: previousRound.roundWind,
-            startRiichiStickCount: previousRound.endRiichiStickCount,
-        };
-    }
-    return {
-        roundCount: previousRound.roundCount + 1,
-        bonus: newHonbaCount,
-        roundNumber: previousRound.roundNumber === 4 ? 1 : previousRound.roundNumber + 1,
-        roundWind:
-            previousRound.roundNumber === 4
-                ? getNextRoundWind(previousRound.roundWind)
-                : previousRound.roundWind,
-        startRiichiStickCount: previousRound.endRiichiStickCount,
-    };
-};
 
 function generateTenpaiScoreDeltas(tenpais: number[]) {
     const scoreDeltas = getEmptyScoreDelta();
@@ -353,46 +315,6 @@ export function generateOverallScoreDelta(concludedRound: ConcludedJapaneseRound
     return riichiDeltas;
 }
 
-export const getJapaneseGameFinalScore = (game: FullJapaneseGame): number[] => {
-    if (game.rounds.length === 0) {
-        return getEmptyScoreDelta();
-    }
-
-    const rounds = game.rounds.map((round) => transformDBJapaneseRound(round));
-    const rawScore = rounds.reduce<number[]>(
-        (result, current) => addScoreDeltas(result, generateOverallScoreDelta(current)),
-        getEmptyScoreDelta(),
-    );
-    const finalRiichiStick = rounds[rounds.length - 1].endRiichiStickCount;
-    const maxScore = Math.max(...rawScore);
-    for (const index of range(NUM_PLAYERS)) {
-        if (rawScore[index] === maxScore) {
-            rawScore[index] += finalRiichiStick * RIICHI_STICK_VALUE; // added to the first player with the max score
-            break;
-        }
-    }
-    return rawScore;
-};
-
-export async function updateJapanesePlayerGameElo(
-    calculatedElos: { eloChange: number; playerId: string }[],
-    game: any,
-) {
-    await prisma.$transaction(
-        calculatedElos.map((eloObject) => {
-            return prisma.japanesePlayerGame.update({
-                where: {
-                    id: game.players.find((player: any) => player.player.id === eloObject.playerId)!
-                        .id,
-                },
-                data: {
-                    eloChange: eloObject.eloChange,
-                },
-            });
-        }),
-    );
-}
-
 function transformTransaction(transaction: JapaneseTransactionT): any {
     return {
         ...transaction.hand,
@@ -455,46 +377,17 @@ function transformConcludedRound(concludedRound: ConcludedJapaneseRoundT): any {
     };
 }
 
-function transformDBJapaneseRound(dbJapaneseRound: FullJapaneseRound): ConcludedJapaneseRoundT {
-    const riichis = [];
-    const tenpais = [];
-    if (dbJapaneseRound.player0Riichi) {
-        riichis.push(0);
+export function containingAny(
+    transactions: JapaneseTransactionT[],
+    transactionType: JapaneseTransactionType,
+): JapaneseTransactionT | null {
+    for (const transaction of transactions) {
+        if (transaction.transactionType === transactionType) {
+            return transaction;
+        }
     }
-    if (dbJapaneseRound.player1Riichi) {
-        riichis.push(1);
-    }
-    if (dbJapaneseRound.player2Riichi) {
-        riichis.push(2);
-    }
-    if (dbJapaneseRound.player3Riichi) {
-        riichis.push(3);
-    }
-    if (dbJapaneseRound.player0Tenpai) {
-        tenpais.push(0);
-    }
-    if (dbJapaneseRound.player1Tenpai) {
-        tenpais.push(1);
-    }
-    if (dbJapaneseRound.player2Tenpai) {
-        tenpais.push(2);
-    }
-    if (dbJapaneseRound.player3Tenpai) {
-        tenpais.push(3);
-    }
-    return {
-        roundCount: dbJapaneseRound.roundCount,
-        roundWind: dbJapaneseRound.roundWind,
-        roundNumber: dbJapaneseRound.roundNumber,
-        bonus: dbJapaneseRound.bonus,
-        startRiichiStickCount: dbJapaneseRound.startRiichiStickCount,
-        endRiichiStickCount: dbJapaneseRound.endRiichiStickCount,
-        riichis: riichis,
-        tenpais: tenpais,
-        transactions: dbJapaneseRound.transactions.map((dbTransaction) =>
-            transformDBTransaction(dbTransaction),
-        ),
-    };
+    return null;
 }
-
 export default JapaneseGameService;
+export { FullJapaneseRound };
+export { FullJapaneseGame };
