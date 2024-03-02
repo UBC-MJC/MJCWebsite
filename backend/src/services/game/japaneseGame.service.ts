@@ -1,5 +1,5 @@
 import prisma from "../../db";
-import {JapaneseTransaction, JapaneseTransactionType, Prisma,} from "@prisma/client";
+import {JapaneseTransaction, JapaneseTransactionType, Prisma} from "@prisma/client";
 import {
     addScoreDeltas,
     getEmptyScoreDelta,
