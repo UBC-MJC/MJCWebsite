@@ -1,10 +1,10 @@
-import {GameStatus, GameType, Player, Wind} from "@prisma/client";
-import {findPlayerByUsername} from "../player.service";
-import {EloCalculatorInput} from "./eloCalculator";
-import {Transaction} from "../../validation/game.validation";
-import {JapaneseGameService} from "./japaneseGame.service";
-import {HongKongGameService} from "./hongKongGame.service";
-import {GameService} from "./game.service";
+import { GameStatus, GameType, Player, Wind } from "@prisma/client";
+import { findPlayerByUsername } from "../player.service";
+import { EloCalculatorInput } from "./eloCalculator";
+import { Transaction } from "../../validation/game.validation";
+import { JapaneseGameService } from "./japaneseGame.service";
+import { HongKongGameService } from "./hongKongGame.service";
+import { GameService } from "./game.service";
 
 type GameVariant = "jp" | "hk";
 

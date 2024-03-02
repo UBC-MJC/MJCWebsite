@@ -1,5 +1,5 @@
-import axios, {AxiosResponse} from "axios";
-import {baseUrl, getAuthConfig} from "./APIUtils";
+import axios, { AxiosResponse } from "axios";
+import { baseUrl, getAuthConfig } from "./APIUtils";
 
 const getPlayersAdminAPI = async (authToken: string) => {
     return axios.get(baseUrl + "/admin/players", getAuthConfig(authToken));

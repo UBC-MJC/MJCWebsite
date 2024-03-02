@@ -1,7 +1,12 @@
 import prisma from "../../db";
-import {HongKongTransaction, Prisma} from "@prisma/client";
-import {GameService} from "./game.service";
-import {addScoreDeltas, getEmptyScoreDelta, getNextRoundWind, reduceScoreDeltas,} from "./game.util";
+import { HongKongTransaction, Prisma } from "@prisma/client";
+import { GameService } from "./game.service";
+import {
+    addScoreDeltas,
+    getEmptyScoreDelta,
+    getNextRoundWind,
+    reduceScoreDeltas,
+} from "./game.util";
 import {
     ConcludedHongKongRoundT,
     HongKongTransactionT,

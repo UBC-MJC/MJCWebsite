@@ -1,4 +1,4 @@
-import {GameStatus, GameType} from "@prisma/client";
+import { GameStatus, GameType } from "@prisma/client";
 import {
     createEloCalculatorInputs,
     GameFilterArgs,
@@ -6,7 +6,7 @@ import {
     generateGameQuery,
     transformEloStats,
 } from "./game.util";
-import {EloCalculatorInput, getEloChanges} from "./eloCalculator";
+import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
 import prisma from "../../db";
 
 abstract class GameService {

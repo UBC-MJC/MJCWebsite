@@ -1,5 +1,5 @@
 import prisma from "../../db";
-import {JapaneseTransaction, JapaneseTransactionType, Prisma} from "@prisma/client";
+import { JapaneseTransaction, JapaneseTransactionType, Prisma } from "@prisma/client";
 import {
     addScoreDeltas,
     getEmptyScoreDelta,
@@ -9,7 +9,7 @@ import {
     reduceScoreDeltas,
     RIICHI_STICK_VALUE,
 } from "./game.util";
-import {GameService} from "./game.service";
+import { GameService } from "./game.service";
 import {
     ConcludedJapaneseRoundT,
     JapaneseTransactionT,
