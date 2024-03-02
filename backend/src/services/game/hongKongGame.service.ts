@@ -125,10 +125,6 @@ class HongKongGameService extends GameService {
         );
     }
 
-    public getVariant(): "hk" {
-        return "hk";
-    }
-
     public async getAllPlayerElos(seasonId: string): Promise<any[]> {
         return (await prisma.$queryRaw`SELECT sum(gp.eloChange) as elo, count(gp.eloChange) as gameCount, p.id, p.username
                                 FROM HongKongGame g

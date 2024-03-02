@@ -147,10 +147,6 @@ class JapaneseGameService extends GameService {
         return rawScore;
     }
 
-    public getVariant(): "jp" {
-        return "jp";
-    }
-
     public transformDBRound(dbRound: FullJapaneseRound): ConcludedJapaneseRoundT {
         const riichis = [];
         const tenpais = [];

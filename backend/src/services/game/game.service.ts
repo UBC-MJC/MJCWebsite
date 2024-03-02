@@ -2,7 +2,6 @@ import { GameStatus, GameType } from "@prisma/client";
 import {
     createEloCalculatorInputs,
     GameFilterArgs,
-    GameVariant,
     generateGameQuery,
     transformEloStats,
 } from "./game.util";
