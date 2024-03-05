@@ -71,12 +71,7 @@ const createGameHandler = async (
         const season = await getCurrentSeason();
 
         const gameService: GameService = getGameService(gameVariant);
-        const newGame = await gameService.createGame(
-            gameType,
-            players,
-            req.player.id,
-            season.id,
-        );
+        const newGame = await gameService.createGame(gameType, players, req.player.id, season.id);
 
         res.status(201).json({
             id: newGame.id,

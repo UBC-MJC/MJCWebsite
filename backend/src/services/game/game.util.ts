@@ -41,7 +41,7 @@ const checkPlayerListUnique = (playerNameList: string[]): void => {
 // Throws error if the player is not eligible for the game type
 const generatePlayerQuery = async (
     originalPlayerNames: string[],
-    checkEligibilityFunction: (x: Player) => boolean
+    checkEligibilityFunction: (x: Player) => boolean,
 ): Promise<any[]> => {
     checkPlayerListUnique(originalPlayerNames);
 

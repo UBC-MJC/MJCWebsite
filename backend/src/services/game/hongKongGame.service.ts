@@ -1,5 +1,5 @@
 import prisma from "../../db";
-import {HongKongTransaction, Player, Prisma} from "@prisma/client";
+import { HongKongTransaction, Player, Prisma } from "@prisma/client";
 import { GameService } from "./game.service";
 import {
     addScoreDeltas,

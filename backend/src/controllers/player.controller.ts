@@ -1,11 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
 import { loginSchema, registerSchema } from "../validation/player.validation";
-import {
-    createPlayer,
-    findPlayerByUsername,
-    updatePlayer,
-} from "../services/player.service";
+import { createPlayer, findPlayerByUsername, updatePlayer } from "../services/player.service";
 import { generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
 import { getCurrentSeason } from "../services/season.service";

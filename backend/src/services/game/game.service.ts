@@ -1,8 +1,9 @@
-import {GameStatus, GameType, Player} from "@prisma/client";
+import { GameStatus, GameType, Player } from "@prisma/client";
 import {
     createEloCalculatorInputs,
     GameFilterArgs,
-    generateGameQuery, generatePlayerQuery,
+    generateGameQuery,
+    generatePlayerQuery,
     transformEloStats,
 } from "./game.util";
 import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
@@ -25,7 +26,7 @@ abstract class GameService {
         recorderId: string,
         seasonId: string,
     ): Promise<any> {
-        const playersQuery = await generatePlayerQuery(players, this.isEligible)
+        const playersQuery = await generatePlayerQuery(players, this.isEligible);
         return await this.gameDatabase.create({
             data: {
                 season: {
