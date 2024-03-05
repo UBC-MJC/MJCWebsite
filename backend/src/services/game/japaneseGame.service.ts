@@ -1,5 +1,5 @@
 import prisma from "../../db";
-import { JapaneseTransaction, JapaneseTransactionType, Prisma } from "@prisma/client";
+import {JapaneseTransaction, JapaneseTransactionType, Player, Prisma} from "@prisma/client";
 import {
     addScoreDeltas,
     GAME_CONSTANTS,
@@ -45,9 +45,9 @@ type PartialJapaneseRound = Pick<
 export const RIICHI_STICK_VALUE = 1000;
 
 class JapaneseGameService extends GameService {
-    public gameDatabase = prisma.japaneseGame;
-    public playerGameDatabase = prisma.japanesePlayerGame;
-    public constants = GAME_CONSTANTS["jp"];
+    constructor() {
+        super(prisma.japaneseGame, prisma.japanesePlayerGame, GAME_CONSTANTS["jp"]);
+    }
 
     public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<void> {
         validateCreateJapaneseRound(roundRequest, game);
@@ -198,6 +198,18 @@ class JapaneseGameService extends GameService {
                                 WHERE g.seasonId = ${seasonId} AND g.status = ${"FINISHED"} AND g.type = ${"RANKED"}
                                 GROUP BY playerId
                                 ORDER BY elo DESC;`) as any[];
+    }
+
+    public isEligible(player: Player): boolean {
+        return player.japaneseQualified;
+    }
+
+    public async getQualifiedPlayers(): Promise<Player[]> {
+        return prisma.player.findMany({
+            where: {
+                japaneseQualified: true,
+            },
+        });
     }
 }
 

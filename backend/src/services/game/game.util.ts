@@ -5,9 +5,6 @@ import { Transaction } from "../../validation/game.validation";
 import { JapaneseGameService } from "./japaneseGame.service";
 import { HongKongGameService } from "./hongKongGame.service";
 import { GameService } from "./game.service";
-
-type GameVariant = "jp" | "hk";
-
 type GameFilterArgs = {
     seasonId?: string;
     playerIds?: string[];
@@ -42,19 +39,9 @@ const checkPlayerListUnique = (playerNameList: string[]): void => {
 };
 
 // Throws error if the player is not eligible for the game type
-const checkPlayerGameEligibility = (gameVariant: string, player: Player): void => {
-    if (gameVariant === "jp" && player.japaneseQualified) {
-        return;
-    } else if (gameVariant === "hk" && player.hongKongQualified) {
-        return;
-    }
-
-    throw new Error("Player not eligible for game type");
-};
-
 const generatePlayerQuery = async (
-    gameVariant: string,
     originalPlayerNames: string[],
+    checkEligibilityFunction: (x: Player) => boolean
 ): Promise<any[]> => {
     checkPlayerListUnique(originalPlayerNames);
 
@@ -63,7 +50,11 @@ const generatePlayerQuery = async (
             return findPlayerByUsername(playerName);
         }),
     );
-    playerList.forEach((player) => checkPlayerGameEligibility(gameVariant, player!));
+    playerList.forEach((player) => {
+        if (!checkEligibilityFunction(player!)) {
+            throw new Error("Player not eligible for game type");
+        }
+    });
     return playerList.map((player, idx) => {
         return {
             wind: getWind(idx),
@@ -178,7 +169,6 @@ const getGameService = (gameVariant: string): GameService => {
     }
 };
 export {
-    checkPlayerGameEligibility,
     checkPlayerListUnique,
     generatePlayerQuery,
     generateGameQuery,
@@ -187,7 +177,6 @@ export {
     GAME_CONSTANTS,
     WIND_ORDER,
     Wind,
-    GameVariant,
     GameFilterArgs,
     getGameService,
 };

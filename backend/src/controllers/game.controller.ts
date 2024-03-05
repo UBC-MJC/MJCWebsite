@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
 import { createGameSchema } from "../validation/game.validation";
 import { getCurrentSeason } from "../services/season.service";
-import { GameFilterArgs, generatePlayerQuery, getGameService } from "../services/game/game.util";
+import { GameFilterArgs, getGameService } from "../services/game/game.util";
 import { GameService } from "../services/game/game.service";
 
 const getGamesHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -68,13 +68,12 @@ const createGameHandler = async (
 
     try {
         const { players, gameType } = await createGameSchema.validate(req.body);
-        const playersQuery = await generatePlayerQuery(gameVariant, players);
         const season = await getCurrentSeason();
 
         const gameService: GameService = getGameService(gameVariant);
         const newGame = await gameService.createGame(
             gameType,
-            playersQuery,
+            players,
             req.player.id,
             season.id,
         );

@@ -4,7 +4,6 @@ import { loginSchema, registerSchema } from "../validation/player.validation";
 import {
     createPlayer,
     findPlayerByUsername,
-    findQualifiedPlayers,
     updatePlayer,
 } from "../services/player.service";
 import { generateToken } from "../middleware/jwt";
@@ -58,15 +57,14 @@ const getPlayerNamesHandler = async (
     next: NextFunction,
 ): Promise<void> => {
     const gameVariant = req.params.gameVariant;
-
-    findQualifiedPlayers(gameVariant)
-        .then((players) => {
-            const playerNames = players.map((player) => player.username);
-            res.json({ playerNames });
-        })
-        .catch((err: any) => {
-            next(createError.InternalServerError(err.message));
-        });
+    try {
+        const gameService = getGameService(gameVariant);
+        const qualifiedPlayers = await gameService.getQualifiedPlayers();
+        const playerNames = qualifiedPlayers.map((player) => player.username);
+        res.json({ playerNames });
+    } catch (err: any) {
+        next(createError.InternalServerError(err.message));
+    }
 };
 
 const getPlayerLeaderboardHandler = async (

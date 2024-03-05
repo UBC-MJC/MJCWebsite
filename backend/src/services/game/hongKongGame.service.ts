@@ -1,5 +1,5 @@
 import prisma from "../../db";
-import { HongKongTransaction, Prisma } from "@prisma/client";
+import {HongKongTransaction, Player, Prisma} from "@prisma/client";
 import { GameService } from "./game.service";
 import {
     addScoreDeltas,
@@ -37,9 +37,9 @@ const fullHongKongRound = Prisma.validator<Prisma.HongKongRoundDefaultArgs>()({
 type FullHongKongRound = Prisma.HongKongRoundGetPayload<typeof fullHongKongRound>;
 
 class HongKongGameService extends GameService {
-    public gameDatabase = prisma.hongKongGame;
-    public playerGameDatabase = prisma.hongKongPlayerGame;
-    public constants = GAME_CONSTANTS["hk"];
+    constructor() {
+        super(prisma.hongKongGame, prisma.hongKongPlayerGame, GAME_CONSTANTS["hk"]);
+    }
 
     public async createRound(game: FullHongKongGame, roundRequest: any): Promise<void> {
         validateCreateHongKongRound(roundRequest, game);
@@ -135,6 +135,18 @@ class HongKongGameService extends GameService {
                                 WHERE g.seasonId = ${seasonId} AND g.status = ${"FINISHED"} AND g.type = ${"RANKED"}
                                 GROUP BY playerId
                                 ORDER BY elo DESC;`) as any[];
+    }
+
+    public isEligible(player: Player): boolean {
+        return player.hongKongQualified;
+    }
+
+    public async getQualifiedPlayers(): Promise<Player[]> {
+        return prisma.player.findMany({
+            where: {
+                hongKongQualified: true,
+            },
+        });
     }
 }
 export function generateOverallScoreDelta(concludedGame: ConcludedHongKongRoundT) {

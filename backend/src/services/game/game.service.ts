@@ -1,24 +1,32 @@
-import { GameStatus, GameType } from "@prisma/client";
+import {GameStatus, GameType, Player} from "@prisma/client";
 import {
     createEloCalculatorInputs,
     GameFilterArgs,
-    generateGameQuery,
+    generateGameQuery, generatePlayerQuery,
     transformEloStats,
 } from "./game.util";
 import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
 import prisma from "../../db";
 
 abstract class GameService {
-    public gameDatabase: any;
-    public playerGameDatabase: any;
-    public constants: any;
+    public readonly gameDatabase: any;
+    public readonly playerGameDatabase: any;
+    public readonly constants: any;
+
+    protected constructor(gameDatabase: any, playerGameDatabase: any, constants: any) {
+        this.gameDatabase = gameDatabase;
+        this.playerGameDatabase = playerGameDatabase;
+        this.constants = constants;
+    }
+
     public async createGame(
         gameType: GameType,
-        playersQuery: any[],
+        players: string[],
         recorderId: string,
         seasonId: string,
     ): Promise<any> {
-        return this.gameDatabase.create({
+        const playersQuery = await generatePlayerQuery(players, this.isEligible)
+        return await this.gameDatabase.create({
             data: {
                 season: {
                     connect: {
@@ -86,7 +94,6 @@ abstract class GameService {
             },
         });
     }
-    // TODO: replace getAllPlayerElos call, not all elos are needed
     public async submitGame(game: any): Promise<void> {
         const playerScores = this.getGameFinalScore(game);
         const calculatedElos = await this.getPlayerEloDeltas(game, playerScores);
@@ -127,7 +134,7 @@ abstract class GameService {
                 };
             }),
             rounds: game.rounds.map((round: any) => this.transformDBRound(round)),
-            eloDeltas: orderedEloDeltas,
+            eloDeltas: orderedEloDeltas, // TODO: after the game has ended, it would be better to return the actual delta
             currentRound: nextRound,
         };
     }
@@ -209,6 +216,8 @@ abstract class GameService {
         }
         return { eloStats: eloStats, orderedGames: finishedGames, debugStats: debugStats };
     }
+    abstract isEligible(player: Player): boolean;
+    abstract getQualifiedPlayers(): Promise<Player[]>;
 }
 
 export { GameService };

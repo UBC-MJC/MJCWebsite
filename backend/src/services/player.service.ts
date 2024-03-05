@@ -67,33 +67,6 @@ const findPlayerByUsername = (username: string): Promise<Player | null> => {
         },
     });
 };
-
-const findQualifiedPlayers = (gameVariant: string): Promise<Player[]> => {
-    if (gameVariant === "jp") {
-        return findJapaneseQualifiedPlayers();
-    } else if (gameVariant === "hk") {
-        return findHongKongQualifiedPlayers();
-    } else {
-        throw new Error(`Invalid game variant ${gameVariant}`);
-    }
-};
-
-const findJapaneseQualifiedPlayers = (): Promise<Player[]> => {
-    return prisma.player.findMany({
-        where: {
-            japaneseQualified: true,
-        },
-    });
-};
-
-const findHongKongQualifiedPlayers = (): Promise<Player[]> => {
-    return prisma.player.findMany({
-        where: {
-            hongKongQualified: true,
-        },
-    });
-};
-
 export {
     createPlayer,
     updatePlayer,
@@ -102,6 +75,5 @@ export {
     findPlayerById,
     findPlayerByUsername,
     findPlayerByUsernames,
-    findQualifiedPlayers,
     findAllPlayers,
 };
