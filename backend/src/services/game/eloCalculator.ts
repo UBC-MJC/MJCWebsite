@@ -1,8 +1,5 @@
-import { GAME_CONSTANTS, GameVariant, WIND_ORDER } from "./game.util";
+import { WIND_ORDER } from "./game.util";
 import { Wind } from "@prisma/client";
-
-const JAPANESE_ADJUSTMENT = [55000, 25000, -5000, -75000];
-const HONG_KONG_SCORE_ADJUSTMENT = [100, 0, 0, -100];
 
 type EloCalculatorInput = {
     id: string;
@@ -11,16 +8,20 @@ type EloCalculatorInput = {
     wind: Wind;
 };
 
-const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: GameVariant) => {
+const getEloChanges = (
+    playerInformation: EloCalculatorInput[],
+    placingAdjustments: number[],
+    dividingConstant: number,
+) => {
     const avgElo = playerInformation.reduce((sum, player) => sum + player.elo, 0) / 4;
 
-    const scoreAfterPlacement = addPlacementAdjustment(playerInformation, gameVariant);
+    const scoreAfterPlacement = addPlacementAdjustment(playerInformation, placingAdjustments);
 
     const magnitude = 0.35;
     const eloSignificance = 0.03;
 
     return scoreAfterPlacement.map((player) => {
-        const rawScore = player.score / GAME_CONSTANTS[gameVariant].DIVIDING_CONSTANT;
+        const rawScore = player.score / dividingConstant;
         const eloDifference = avgElo - player.elo;
         const eloChange = magnitude * (rawScore + eloSignificance * eloDifference);
         return {
@@ -30,16 +31,10 @@ const getEloChanges = (playerInformation: EloCalculatorInput[], gameVariant: Gam
     });
 };
 
-const addPlacementAdjustment = (playerInformation: EloCalculatorInput[], gameVariant: string) => {
-    let placingAdjustments: number[];
-    if (gameVariant === "jp") {
-        placingAdjustments = JAPANESE_ADJUSTMENT;
-    } else if (gameVariant === "hk") {
-        placingAdjustments = HONG_KONG_SCORE_ADJUSTMENT;
-    } else {
-        throw new Error(`Invalid game variant ${gameVariant}`);
-    }
-
+const addPlacementAdjustment = (
+    playerInformation: EloCalculatorInput[],
+    placingAdjustments: number[],
+) => {
     const sortedPlayers = playerInformation.sort((a, b) => {
         if (a.score === b.score) {
             return WIND_ORDER.indexOf(a.wind) - WIND_ORDER.indexOf(b.wind);

@@ -1,88 +1,10 @@
-import {
-    GameStatus,
-    GameType,
-    JapaneseTransactionType,
-    Player,
-    Prisma,
-    Wind,
-} from "@prisma/client";
-import HongKongGameService, {
-    getHongKongGameFinalScore,
-    updateHongKongPlayerGameElo,
-} from "./hongKongGame.service";
-import JapaneseGameService, {
-    getJapaneseGameFinalScore,
-    updateJapanesePlayerGameElo,
-} from "./japaneseGame.service";
+import { GameStatus, GameType, Player, Wind } from "@prisma/client";
 import { findPlayerByUsername } from "../player.service";
-import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
-import { JapaneseTransactionT, Transaction } from "../../validation/game.validation";
-import { getAllPlayerElos } from "../leaderboard.service";
-import GameService from "./game.service";
-
-const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
-    include: {
-        players: {
-            include: {
-                player: true,
-            },
-        },
-        rounds: {
-            include: {
-                transactions: true,
-            },
-        },
-    },
-});
-
-type FullJapaneseGame = Prisma.JapaneseGameGetPayload<typeof fullJapaneseGame>;
-
-const fullJapaneseRound = Prisma.validator<Prisma.JapaneseRoundDefaultArgs>()({
-    include: {
-        transactions: true,
-    },
-});
-
-type FullJapaneseRound = Prisma.JapaneseRoundGetPayload<typeof fullJapaneseRound>;
-
-const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
-    include: {
-        players: {
-            include: {
-                player: true,
-            },
-        },
-        rounds: {
-            include: {
-                transactions: true,
-            },
-        },
-    },
-});
-
-type FullHongKongGame = Prisma.HongKongGameGetPayload<typeof fullHongKongGame>;
-
-const fullHongKongRound = Prisma.validator<Prisma.HongKongRoundDefaultArgs>()({
-    include: {
-        transactions: true,
-    },
-});
-
-type FullHongKongRound = Prisma.HongKongRoundGetPayload<typeof fullHongKongRound>;
-
-type GameVariant = "jp" | "hk";
-
-const getGameService = (gameVariant: string): GameService => {
-    switch (gameVariant) {
-        case "jp":
-            return new JapaneseGameService();
-        case "hk":
-            return new HongKongGameService();
-        default:
-            throw new Error(`Invalid game variant ${gameVariant}`);
-    }
-};
-
+import { EloCalculatorInput } from "./eloCalculator";
+import { Transaction } from "../../validation/game.validation";
+import { JapaneseGameService } from "./japaneseGame.service";
+import { HongKongGameService } from "./hongKongGame.service";
+import { GameService } from "./game.service";
 type GameFilterArgs = {
     seasonId?: string;
     playerIds?: string[];
@@ -96,16 +18,16 @@ const GAME_CONSTANTS = {
     jp: {
         STARTING_SCORE: 25000,
         DIVIDING_CONSTANT: 1000,
+        SCORE_ADJUSTMENT: [55000, 25000, -5000, -75000],
     },
     hk: {
         STARTING_SCORE: 750,
         DIVIDING_CONSTANT: 5,
+        SCORE_ADJUSTMENT: [100, 0, 0, -100],
     },
 } as const;
 
 export const NUM_PLAYERS = 4;
-
-export const RIICHI_STICK_VALUE = 1000;
 
 export const STARTING_ELO = 1500;
 
@@ -117,19 +39,9 @@ const checkPlayerListUnique = (playerNameList: string[]): void => {
 };
 
 // Throws error if the player is not eligible for the game type
-const checkPlayerGameEligibility = (gameVariant: string, player: Player): void => {
-    if (gameVariant === "jp" && player.japaneseQualified) {
-        return;
-    } else if (gameVariant === "hk" && player.hongKongQualified) {
-        return;
-    }
-
-    throw new Error("Player not eligible for game type");
-};
-
 const generatePlayerQuery = async (
-    gameVariant: string,
     originalPlayerNames: string[],
+    checkEligibilityFunction: (x: Player) => boolean,
 ): Promise<any[]> => {
     checkPlayerListUnique(originalPlayerNames);
 
@@ -138,7 +50,11 @@ const generatePlayerQuery = async (
             return findPlayerByUsername(playerName);
         }),
     );
-    playerList.forEach((player) => checkPlayerGameEligibility(gameVariant, player!));
+    playerList.forEach((player) => {
+        if (!checkEligibilityFunction(player!)) {
+            throw new Error("Player not eligible for game type");
+        }
+    });
     return playerList.map((player, idx) => {
         return {
             wind: getWind(idx),
@@ -172,24 +88,6 @@ const generateGameQuery = (filter: GameFilterArgs): any => {
         query.status = filter.gameStatus;
     }
     return query;
-};
-
-const getPlayerEloDeltas = async (
-    game: FullJapaneseGame | FullHongKongGame,
-    playerScores: number[],
-    gameVariant: GameVariant,
-    overridingEloList?: any[],
-) => {
-    let eloList = overridingEloList;
-    if (eloList === undefined) {
-        eloList = await getAllPlayerElos(gameVariant, game.seasonId);
-    }
-    const eloCalculatorInput: EloCalculatorInput[] = createEloCalculatorInputs(
-        game.players,
-        playerScores,
-        eloList,
-    );
-    return getEloChanges(eloCalculatorInput, gameVariant);
 };
 
 const createEloCalculatorInputs = (
@@ -249,78 +147,7 @@ export const getNextRoundWind = (wind: Wind): Wind => {
     return getWind((WIND_ORDER.indexOf(wind) + 1) % NUM_PLAYERS);
 };
 
-export function containingAny(
-    transactions: JapaneseTransactionT[],
-    transactionType: JapaneseTransactionType,
-): JapaneseTransactionT | null {
-    for (const transaction of transactions) {
-        if (transaction.transactionType === transactionType) {
-            return transaction;
-        }
-    }
-    return null;
-}
-
-export function getGameFinalScore(game: any, gameVariant: GameVariant): number[] {
-    if (gameVariant === "jp") {
-        return getJapaneseGameFinalScore(game);
-    }
-    if (gameVariant === "hk") {
-        return getHongKongGameFinalScore(game);
-    }
-    throw new Error(`Invalid game variant ${gameVariant}`);
-}
-
-async function updateGamePlayerElo(calculatedElos: any[], game: any, gameVariant: GameVariant) {
-    if (gameVariant === "jp") {
-        await updateJapanesePlayerGameElo(calculatedElos, game);
-        return;
-    }
-    if (gameVariant === "hk") {
-        await updateHongKongPlayerGameElo(calculatedElos, game);
-        return;
-    }
-    throw new Error(`Invalid game variant ${gameVariant}`);
-}
-
-export async function recalcSeason(seasonId: string, gameVariant: GameVariant): Promise<any> {
-    const finishedGames = await getGameService(gameVariant).getGames({
-        seasonId: seasonId,
-        gameStatus: GameStatus.FINISHED,
-    });
-    finishedGames.sort((a, b) => {
-        const date1 = new Date(a.endedAt);
-        const date2 = new Date(b.endedAt);
-        if (date1 < date2) {
-            return -1;
-        }
-        return 1;
-    });
-    const eloStats: any = {};
-    const debugStats = []; // to be removed once it has been established that this is correct
-    for (const game of finishedGames) {
-        const playerScores = getGameFinalScore(game, gameVariant);
-        const calculatedElos = await getPlayerEloDeltas(
-            game,
-            playerScores,
-            gameVariant,
-            transformEloStats(eloStats),
-        );
-
-        for (const calculatedElo of calculatedElos) {
-            if (!eloStats[calculatedElo.playerId]) {
-                console.log(eloStats[calculatedElo.playerId]);
-                eloStats[calculatedElo.playerId] = 0;
-            }
-            eloStats[calculatedElo.playerId] += calculatedElo.eloChange;
-        }
-        await updateGamePlayerElo(calculatedElos, game, gameVariant);
-        debugStats.push(calculatedElos);
-    }
-    return { eloStats: eloStats, orderedGames: finishedGames, debugStats: debugStats };
-}
-
-function transformEloStats(eloStats: any): any[] {
+export function transformEloStats(eloStats: any): any[] {
     const result = [];
     for (const [key, value] of Object.entries(eloStats)) {
         result.push({
@@ -330,22 +157,26 @@ function transformEloStats(eloStats: any): any[] {
     }
     return result;
 }
+
+const getGameService = (gameVariant: string): GameService => {
+    switch (gameVariant) {
+        case "jp":
+            return new JapaneseGameService() as GameService;
+        case "hk":
+            return new HongKongGameService() as GameService;
+        default:
+            throw new Error(`Invalid game variant ${gameVariant}`);
+    }
+};
 export {
-    getGameService,
-    checkPlayerGameEligibility,
     checkPlayerListUnique,
     generatePlayerQuery,
     generateGameQuery,
-    getPlayerEloDeltas,
     createEloCalculatorInputs,
     getWind,
     GAME_CONSTANTS,
     WIND_ORDER,
     Wind,
-    FullJapaneseGame,
-    FullJapaneseRound,
-    FullHongKongGame,
-    FullHongKongRound,
-    GameVariant,
     GameFilterArgs,
+    getGameService,
 };

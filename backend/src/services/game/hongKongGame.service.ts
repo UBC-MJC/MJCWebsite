@@ -1,15 +1,11 @@
 import prisma from "../../db";
-import { GameStatus, GameType, HongKongTransaction } from "@prisma/client";
-import GameService from "./game.service";
+import { HongKongTransaction, Player, Prisma } from "@prisma/client";
+import { GameService } from "./game.service";
 import {
     addScoreDeltas,
-    FullHongKongGame,
-    FullHongKongRound,
-    GameFilterArgs,
-    generateGameQuery,
+    GAME_CONSTANTS,
     getEmptyScoreDelta,
     getNextRoundWind,
-    getPlayerEloDeltas,
     reduceScoreDeltas,
 } from "./game.util";
 import {
@@ -18,97 +14,31 @@ import {
     validateCreateHongKongRound,
 } from "../../validation/game.validation";
 
+const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
+    include: {
+        players: {
+            include: {
+                player: true,
+            },
+        },
+        rounds: {
+            include: {
+                transactions: true,
+            },
+        },
+    },
+});
+type FullHongKongGame = Prisma.HongKongGameGetPayload<typeof fullHongKongGame>;
+const fullHongKongRound = Prisma.validator<Prisma.HongKongRoundDefaultArgs>()({
+    include: {
+        transactions: true,
+    },
+});
+type FullHongKongRound = Prisma.HongKongRoundGetPayload<typeof fullHongKongRound>;
+
 class HongKongGameService extends GameService {
-    public createGame(
-        gameType: GameType,
-        playersQuery: any[],
-        recorderId: string,
-        seasonId: string,
-    ): Promise<any> {
-        return prisma.hongKongGame.create({
-            data: {
-                season: {
-                    connect: {
-                        id: seasonId,
-                    },
-                },
-                type: gameType,
-                status: GameStatus.IN_PROGRESS,
-                recordedBy: {
-                    connect: {
-                        id: recorderId,
-                    },
-                },
-                players: {
-                    create: playersQuery,
-                },
-            },
-        });
-    }
-
-    public getGame(id: number): Promise<any> {
-        return prisma.hongKongGame.findUnique({
-            where: {
-                id: id,
-            },
-            include: {
-                players: {
-                    include: {
-                        player: true,
-                    },
-                },
-                rounds: {
-                    include: {
-                        transactions: true,
-                    },
-                },
-            },
-        });
-    }
-
-    public getGames(filter: GameFilterArgs): Promise<any[]> {
-        const whereQuery = generateGameQuery(filter);
-
-        return prisma.hongKongGame.findMany({
-            where: whereQuery,
-            include: {
-                players: {
-                    include: {
-                        player: true,
-                    },
-                },
-                rounds: {
-                    include: {
-                        transactions: true,
-                    },
-                },
-            },
-        });
-    }
-
-    public async deleteGame(id: number): Promise<void> {
-        await prisma.hongKongGame.delete({
-            where: {
-                id: id,
-            },
-        });
-    }
-
-    public async submitGame(game: FullHongKongGame): Promise<void> {
-        const playerScores = getHongKongGameFinalScore(game);
-        const calculatedElos = await getPlayerEloDeltas(game, playerScores, "hk");
-
-        await updateHongKongPlayerGameElo(calculatedElos, game);
-
-        await prisma.hongKongGame.update({
-            where: {
-                id: game.id,
-            },
-            data: {
-                status: GameStatus.FINISHED,
-                endedAt: new Date(),
-            },
-        });
+    constructor() {
+        super(prisma.hongKongGame, prisma.hongKongPlayerGame, GAME_CONSTANTS["hk"]);
     }
 
     public async createRound(game: FullHongKongGame, roundRequest: any): Promise<void> {
@@ -149,64 +79,78 @@ class HongKongGameService extends GameService {
         });
     }
 
-    public async mapGameObject(game: FullHongKongGame): Promise<any> {
-        const nextRound = getNextHongKongRound(game);
-        const playerScores = getHongKongGameFinalScore(game);
-        const eloDeltas = await getPlayerEloDeltas(game, playerScores, "hk");
-        const orderedEloDeltas = eloDeltas.reduce((result: any, deltaObject) => {
-            result[deltaObject.playerId] = deltaObject.eloChange;
-            return result;
-        }, {});
-
+    public transformDBRound(dbRound: FullHongKongRound): ConcludedHongKongRoundT {
         return {
-            id: game.id,
-            type: game.type,
-            status: game.status,
-            recordedById: game.recordedById,
-            players: game.players.map((player) => {
-                return {
-                    id: player.player.id,
-                    username: player.player.username,
-                    trueWind: player.wind,
-                };
-            }),
-            rounds: game.rounds.map((round) => transformDBHongKongRound(round)),
-            eloDeltas: orderedEloDeltas,
-            currentRound: nextRound,
+            roundCount: dbRound.roundCount,
+            roundWind: dbRound.roundWind,
+            roundNumber: dbRound.roundNumber,
+            transactions: dbRound.transactions.map((dbTransaction: HongKongTransaction) =>
+                transformDBTransaction(dbTransaction),
+            ),
         };
+    }
+
+    public getNextRound(game: FullHongKongGame): any {
+        if (game.rounds.length === 0) {
+            return getFirstHongKongRound();
+        }
+        const previousRound: ConcludedHongKongRoundT = this.transformDBRound(
+            game.rounds[game.rounds.length - 1],
+        );
+        if (dealershipRetains(previousRound.transactions, previousRound.roundNumber - 1)) {
+            return {
+                roundCount: previousRound.roundCount + 1,
+                roundNumber: previousRound.roundNumber,
+                roundWind: previousRound.roundWind,
+            };
+        }
+        return {
+            roundCount: previousRound.roundCount + 1,
+            roundNumber: previousRound.roundNumber === 4 ? 1 : previousRound.roundNumber + 1,
+            roundWind:
+                previousRound.roundNumber === 4
+                    ? getNextRoundWind(previousRound.roundWind)
+                    : previousRound.roundWind,
+        };
+    }
+
+    public getGameFinalScore(game: FullHongKongGame): number[] {
+        if (game.rounds.length === 0) {
+            return getEmptyScoreDelta();
+        }
+        return game.rounds.reduce<number[]>(
+            (result, current) =>
+                addScoreDeltas(result, generateOverallScoreDelta(this.transformDBRound(current))),
+            getEmptyScoreDelta(),
+        );
+    }
+
+    public async getAllPlayerElos(seasonId: string): Promise<any[]> {
+        return (await prisma.$queryRaw`SELECT sum(gp.eloChange) as elo, count(gp.eloChange) as gameCount, p.id, p.username
+                                FROM HongKongGame g
+                                         LEFT JOIN HongKongPlayerGame gp
+                                                   ON g.id = gp.gameId
+                                         LEFT JOIN Player p
+                                                   ON gp.playerId = p.id
+                                WHERE g.seasonId = ${seasonId} AND g.status = ${"FINISHED"} AND g.type = ${"RANKED"}
+                                GROUP BY playerId
+                                ORDER BY elo DESC;`) as any[];
+    }
+
+    public isEligible(player: Player): boolean {
+        return player.hongKongQualified;
+    }
+
+    public async getQualifiedPlayers(): Promise<Player[]> {
+        return prisma.player.findMany({
+            where: {
+                hongKongQualified: true,
+            },
+        });
     }
 }
 export function generateOverallScoreDelta(concludedGame: ConcludedHongKongRoundT) {
     return addScoreDeltas(reduceScoreDeltas(concludedGame.transactions), getEmptyScoreDelta());
-}
-
-export const getHongKongGameFinalScore = (game: FullHongKongGame): number[] => {
-    if (game.rounds.length === 0) {
-        return getEmptyScoreDelta();
-    }
-    return game.rounds.reduce<number[]>(
-        (result, current) =>
-            addScoreDeltas(result, generateOverallScoreDelta(transformDBHongKongRound(current))),
-        getEmptyScoreDelta(),
-    );
-};
-
-export async function updateHongKongPlayerGameElo(
-    calculatedElos: { eloChange: number; playerId: string }[],
-    game: FullHongKongGame,
-) {
-    await prisma.$transaction(
-        calculatedElos.map((elo) => {
-            return prisma.hongKongPlayerGame.update({
-                where: {
-                    id: game.players.find((player) => player.player.id === elo.playerId)!.id,
-                },
-                data: {
-                    eloChange: elo.eloChange,
-                },
-            });
-        }),
-    );
 }
 
 const getFirstHongKongRound = (): any => {
@@ -226,31 +170,6 @@ const dealershipRetains = (transactions: HongKongTransactionT[], dealerIndex: nu
     }
     return false;
 };
-
-const getNextHongKongRound = (game: FullHongKongGame): any => {
-    if (game.rounds.length === 0) {
-        return getFirstHongKongRound();
-    }
-    const previousRound: ConcludedHongKongRoundT = transformDBHongKongRound(
-        game.rounds[game.rounds.length - 1],
-    );
-    if (dealershipRetains(previousRound.transactions, previousRound.roundNumber - 1)) {
-        return {
-            roundCount: previousRound.roundCount + 1,
-            roundNumber: previousRound.roundNumber,
-            roundWind: previousRound.roundWind,
-        };
-    }
-    return {
-        roundCount: previousRound.roundCount + 1,
-        roundNumber: previousRound.roundNumber === 4 ? 1 : previousRound.roundNumber + 1,
-        roundWind:
-            previousRound.roundNumber === 4
-                ? getNextRoundWind(previousRound.roundWind)
-                : previousRound.roundWind,
-    };
-};
-
 function transformTransaction(transaction: HongKongTransactionT): any {
     return {
         hand: transaction.hand,
@@ -281,15 +200,5 @@ function transformDBTransaction(dbTransaction: HongKongTransaction): HongKongTra
     }
     return result as HongKongTransactionT;
 }
-function transformDBHongKongRound(dbHongKongRound: FullHongKongRound): ConcludedHongKongRoundT {
-    return {
-        roundCount: dbHongKongRound.roundCount,
-        roundWind: dbHongKongRound.roundWind,
-        roundNumber: dbHongKongRound.roundNumber,
-        transactions: dbHongKongRound.transactions.map((dbTransaction: HongKongTransaction) =>
-            transformDBTransaction(dbTransaction),
-        ),
-    };
-}
-
-export default HongKongGameService;
+export { FullHongKongRound, HongKongGameService };
+export { FullHongKongGame };

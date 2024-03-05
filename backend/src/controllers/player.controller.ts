@@ -1,17 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
 import { loginSchema, registerSchema } from "../validation/player.validation";
-import {
-    createPlayer,
-    findPlayerByUsername,
-    findQualifiedPlayers,
-    updatePlayer,
-} from "../services/player.service";
+import { createPlayer, findPlayerByUsername, updatePlayer } from "../services/player.service";
 import { generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
-import { getAllPlayerElos } from "../services/leaderboard.service";
 import { getCurrentSeason } from "../services/season.service";
-import { STARTING_ELO } from "../services/game/game.util";
+import { getGameService, STARTING_ELO } from "../services/game/game.util";
 
 const registerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     registerSchema
@@ -59,15 +53,14 @@ const getPlayerNamesHandler = async (
     next: NextFunction,
 ): Promise<void> => {
     const gameVariant = req.params.gameVariant;
-
-    findQualifiedPlayers(gameVariant)
-        .then((players) => {
-            const playerNames = players.map((player) => player.username);
-            res.json({ playerNames });
-        })
-        .catch((err: any) => {
-            next(createError.InternalServerError(err.message));
-        });
+    try {
+        const gameService = getGameService(gameVariant);
+        const qualifiedPlayers = await gameService.getQualifiedPlayers();
+        const playerNames = qualifiedPlayers.map((player) => player.username);
+        res.json({ playerNames });
+    } catch (err: any) {
+        next(createError.InternalServerError(err.message));
+    }
 };
 
 const getPlayerLeaderboardHandler = async (
@@ -76,13 +69,10 @@ const getPlayerLeaderboardHandler = async (
     next: NextFunction,
 ): Promise<void> => {
     const gameVariant = req.params.gameVariant;
-    if (gameVariant !== "jp" && gameVariant !== "hk") {
-        return next(createError.BadRequest(`Invalid game variant ${gameVariant}`));
-    }
-
     try {
         const season = await getCurrentSeason();
-        const playerElos = await getAllPlayerElos(gameVariant, season.id);
+        const gameService = getGameService(gameVariant);
+        const playerElos = await gameService.getAllPlayerElos(season.id);
         playerElos.forEach((playerElo) => {
             playerElo.elo = Number(playerElo.elo) + STARTING_ELO;
             playerElo.gameCount = Number(playerElo.gameCount);
