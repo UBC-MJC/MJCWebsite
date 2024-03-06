@@ -179,12 +179,12 @@ abstract class GameService {
                 username: true,
             },
         });
+        if (result === undefined) {
+            throw new Error("getAllPlayerElos result undefined, seasonId = " + seasonId);
+        }
         const usernameDict: any = {};
         for (const playerObj of allPlayers) {
             usernameDict[playerObj.id] = playerObj.username;
-        }
-        if (result === undefined) {
-            throw new Error("getAllPlayerElos result undefined, seasonId = " + seasonId);
         }
         return result.map((player: any) => {
             return {
@@ -196,8 +196,9 @@ abstract class GameService {
         });
     }
 
-    public async getSelectedPlayerElos(seasonId: string, players: any[]): Promise<any> {
-        const playerIds = players.map((player) => player.id);
+    public async getSelectedPlayerElos(seasonId: string, playerGames: any[]): Promise<any> {
+        const playerIds: string[] = playerGames.map((playerGame) => playerGame.playerId);
+        console.log(playerGames);
         const dbResult = await this.playerGameDatabase.groupBy({
             by: "playerId",
             _sum: {
@@ -209,10 +210,8 @@ abstract class GameService {
                     status: "FINISHED",
                     type: "RANKED",
                 },
-                player: {
-                    id: {
-                        in: playerIds,
-                    },
+                playerId: {
+                    in: playerIds,
                 },
             },
         });

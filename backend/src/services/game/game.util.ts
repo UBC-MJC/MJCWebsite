@@ -91,16 +91,16 @@ const generateGameQuery = (filter: GameFilterArgs): any => {
 };
 
 const createEloCalculatorInputs = (
-    players: { player: Player; wind: Wind }[],
+    playerGames: { player: Player; wind: Wind }[],
     playerScores: number[],
     eloDict: any,
 ): EloCalculatorInput[] => {
-    return players.map((player) => {
+    return playerGames.map(({ player, wind }) => {
         return {
-            id: player.player.id,
-            elo: STARTING_ELO + (player.player.id in eloDict ? eloDict[player.player.id] : 0),
-            score: playerScores[WIND_ORDER.indexOf(player.wind)],
-            wind: player.wind,
+            id: player.id,
+            elo: STARTING_ELO + player.id in eloDict ? eloDict[player.id] : 0,
+            score: playerScores[WIND_ORDER.indexOf(wind)],
+            wind: wind,
         };
     });
 };
