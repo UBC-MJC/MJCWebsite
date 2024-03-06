@@ -188,17 +188,6 @@ class JapaneseGameService extends GameService {
             ),
         };
     }
-    public async getAllPlayerElos(seasonId: string): Promise<any[]> {
-        return (await prisma.$queryRaw`SELECT sum(gp.eloChange) as elo, count(gp.eloChange) as gameCount, p.id, p.username
-                                FROM JapaneseGame g
-                                         LEFT JOIN JapanesePlayerGame gp
-                                                   ON g.id = gp.gameId
-                                         LEFT JOIN Player p
-                                                   ON gp.playerId = p.id
-                                WHERE g.seasonId = ${seasonId} AND g.status = ${"FINISHED"} AND g.type = ${"RANKED"}
-                                GROUP BY playerId
-                                ORDER BY elo DESC;`) as any[];
-    }
 
     public isEligible(player: Player): boolean {
         return player.japaneseQualified;

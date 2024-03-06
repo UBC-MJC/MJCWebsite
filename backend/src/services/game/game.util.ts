@@ -93,19 +93,12 @@ const generateGameQuery = (filter: GameFilterArgs): any => {
 const createEloCalculatorInputs = (
     players: { player: Player; wind: Wind }[],
     playerScores: number[],
-    eloList: any[],
+    eloDict: any,
 ): EloCalculatorInput[] => {
     return players.map((player) => {
-        let elo = STARTING_ELO;
-        for (const eloEntry of eloList) {
-            if (eloEntry.id === player.player.id) {
-                elo += eloEntry.elo;
-            }
-        }
-
         return {
             id: player.player.id,
-            elo: elo,
+            elo: STARTING_ELO + (player.player.id in eloDict ? eloDict[player.player.id] : 0),
             score: playerScores[WIND_ORDER.indexOf(player.wind)],
             wind: player.wind,
         };
@@ -146,18 +139,6 @@ const getWind = (index: number): Wind => {
 export const getNextRoundWind = (wind: Wind): Wind => {
     return getWind((WIND_ORDER.indexOf(wind) + 1) % NUM_PLAYERS);
 };
-
-export function transformEloStats(eloStats: any): any[] {
-    const result = [];
-    for (const [key, value] of Object.entries(eloStats)) {
-        result.push({
-            id: key,
-            elo: value,
-        });
-    }
-    return result;
-}
-
 const getGameService = (gameVariant: string): GameService => {
     switch (gameVariant) {
         case "jp":
