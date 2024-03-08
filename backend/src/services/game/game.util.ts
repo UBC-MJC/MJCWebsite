@@ -47,7 +47,7 @@ const generatePlayerQuery = async (
 
     const playerList = await Promise.all(
         originalPlayerNames.map((playerName) => {
-            return findPlayerByUsername(playerName);
+            return findPlayerByUsernameOrEmail(playerName);
         }),
     );
     playerList.forEach((player) => {

@@ -17,6 +17,7 @@ import Admin from "./admin/Admin";
 import Register from "./login/Register";
 import Unauthorized from "./common/Unauthorized";
 import Settings from "./account/Settings";
+import PasswordReset from "./login/PasswordReset";
 
 const App: React.FC = () => {
     return (
@@ -46,6 +47,7 @@ const App: React.FC = () => {
                     <Route element={<WithoutNav />}>
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
+                        <Route path="/password-reset" element={<PasswordReset />} />
                     </Route>
                     <Route
                         path="*" // redirect to home if no route matches

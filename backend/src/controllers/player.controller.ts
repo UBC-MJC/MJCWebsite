@@ -1,11 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
 import { loginSchema, registerSchema } from "../validation/player.validation";
-import { createPlayer, findPlayerByUsername, updatePlayer } from "../services/player.service";
+import {
+    createPlayer,
+    findPlayerByUsernameOrEmail,
+    updatePlayer,
+} from "../services/player.service";
 import { generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
 import { getCurrentSeason } from "../services/season.service";
 import { getGameService, STARTING_ELO } from "../services/game/game.util";
+import { createResetPasswordEmail } from "../services/email/resetPassword";
 
 const registerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     registerSchema
@@ -30,7 +35,7 @@ const registerHandler = async (req: Request, res: Response, next: NextFunction):
 const loginHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     loginSchema
         .validate(req.body)
-        .then(() => findPlayerByUsername(req.body.username))
+        .then(() => findPlayerByUsernameOrEmail(req.body.username))
         .then((player) => {
             if (player && bcrypt.compareSync(req.body.password, player.password)) {
                 const token = generateToken(player.id);
@@ -46,6 +51,23 @@ const loginHandler = async (req: Request, res: Response, next: NextFunction): Pr
             next(createError.Unauthorized("Username or password is incorrect"));
         });
 };
+
+const passwordResetHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const player = await findPlayerByUsernameOrEmail(req.body.username);
+        if (!player) {
+            return next(createError.BadRequest("Username or email not found"));
+        }
+
+        const info = await createResetPasswordEmail(player.email);
+        console.log("Email sent: ", info.response);
+
+        res.status(200);
+    } catch (error: any) {
+        console.error("Error in passwordResetHandler:", error);
+        next(createError.InternalServerError(error.message));
+    }
+}
 
 const getPlayerNamesHandler = async (
     req: Request,
@@ -111,6 +133,7 @@ const updateSettingsHandler = async (
 export {
     registerHandler,
     loginHandler,
+    passwordResetHandler,
     getPlayerNamesHandler,
     getPlayerLeaderboardHandler,
     getCurrentPlayerHandler,

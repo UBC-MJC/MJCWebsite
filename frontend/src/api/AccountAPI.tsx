@@ -5,8 +5,12 @@ const getCurrentPlayer = (authToken: string): Promise<AxiosResponse<PlayerAPIDat
     return axios.get(baseUrl + "/players/current", getAuthConfig(authToken));
 };
 
+const submitPasswordResetAPI = async (username: string): Promise<AxiosResponse> => {
+    return axios.post(baseUrl + "/password-reset", { username });
+}
+
 const updateSettingsAPI = async (authToken: string, settings: Setting): Promise<AxiosResponse> => {
     return axios.put(baseUrl + "/players/current/settings", { settings }, getAuthConfig(authToken));
 };
 
-export { getCurrentPlayer, updateSettingsAPI };
+export { getCurrentPlayer, submitPasswordResetAPI, updateSettingsAPI };

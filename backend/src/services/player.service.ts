@@ -60,10 +60,20 @@ const findAllPlayers = (): Promise<Player[]> => {
     return prisma.player.findMany({});
 };
 
-const findPlayerByUsername = (username: string): Promise<Player | null> => {
+const findPlayerByUsernameOrEmail = async (token: string): Promise<Player | null> => {
+    const result = await prisma.player.findUnique({
+        where: {
+            username: token,
+        },
+    });
+
+    if (result) {
+        return result;
+    }
+
     return prisma.player.findUnique({
         where: {
-            username,
+            email: token,
         },
     });
 };
@@ -73,7 +83,7 @@ export {
     deletePlayer,
     findPlayerByEmail,
     findPlayerById,
-    findPlayerByUsername,
+    findPlayerByUsernameOrEmail,
     findPlayerByUsernames,
     findAllPlayers,
 };
