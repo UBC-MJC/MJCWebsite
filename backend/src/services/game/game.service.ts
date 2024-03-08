@@ -198,7 +198,6 @@ abstract class GameService {
 
     public async getSelectedPlayerElos(seasonId: string, playerGames: any[]): Promise<any> {
         const playerIds: string[] = playerGames.map((playerGame) => playerGame.playerId);
-        console.log(playerGames);
         const dbResult = await this.playerGameDatabase.groupBy({
             by: "playerId",
             _sum: {
