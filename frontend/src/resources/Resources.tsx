@@ -34,6 +34,9 @@ export const Resources: FC = () => {
             </p>
             <p>
                 {"WWYD 300 "}
+                <a href="https://files.riichi.moe/mjg/books%20(en)/300%20Established%20Practice%20Which%20to%20cut%20%28wwyd-chan%201%29.pdf">
+                    English
+                </a>{" "}
                 <a href="https://www.bilibili.com/read/readlist/rl380536">Chinese</a>
             </p>
             <p>
