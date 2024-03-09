@@ -17,6 +17,7 @@ import Admin from "./admin/Admin";
 import Register from "./login/Register";
 import Unauthorized from "./common/Unauthorized";
 import Settings from "./account/Settings";
+import { Resources } from "./resources/Resources";
 
 const App: React.FC = () => {
     return (
@@ -38,6 +39,7 @@ const App: React.FC = () => {
                         />
                         <Route path="/games/create/jp" element={<CreateGame gameVariant="jp" />} />
                         <Route path="/games/create/hk" element={<CreateGame gameVariant="hk" />} />
+                        <Route path="/resources" element={<Resources />} />
                         <Route path="/stats" element={<Statistics />} />
                         <Route path="/admin" element={<Admin />} />
                         <Route path="/settings" element={<Settings />} />

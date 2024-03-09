@@ -17,6 +17,11 @@ const Home: FC = () => {
                 <a href={"https://www.discord.gg/Qd39mbxqcw"}>Join our discord channel</a> for
                 latest information!
             </p>
+            <p>
+                <a href="https://docs.google.com/document/d/1JcCKNW-aOUuAdWWWS2mtQfiJNOOuArgwCL9lGysXDAY">
+                    <b>Terms and conditions</b>
+                </a>
+            </p>
         </div>
     );
 };
