@@ -22,26 +22,26 @@ export const Resources: FC = () => {
             </p>
             <p>
                 {"Beginner's Luck "}
-                <a href="http://beginners.biz/">Japanese Version</a>{" "}
-                <a href="https://www.bilibili.com/read/readlist/rl45758">Chinese Version</a>
+                <a href="http://beginners.biz/">Japanese</a>{" "}
+                <a href="https://www.bilibili.com/read/readlist/rl45758">Chinese</a>
             </p>
             <p>
                 {"Uzaku's tile efficiency "}
                 <a href="https://drive.google.com/file/d/1ApHp2Dm-3dkEQTEAnmfTsk8J6OaH8d4G/view">
-                    English Version
+                    English
                 </a>{" "}
-                <a href="https://www.bilibili.com/read/readlist/rl509592">Chinese Version</a>
+                <a href="https://www.bilibili.com/read/readlist/rl509592">Chinese</a>
             </p>
             <p>
                 {"WWYD 300 "}
-                <a href="https://www.bilibili.com/read/readlist/rl380536">Chinese Version</a>
+                <a href="https://www.bilibili.com/read/readlist/rl380536">Chinese</a>
             </p>
             <p>
                 {"WWYD 301 "}
                 <a href="https://drive.google.com/file/d/1HQcoZ96XSVnEzy_ABNOxkxHLYQgYAeWr/view">
-                    English Version
+                    English
                 </a>{" "}
-                <a href="https://www.bilibili.com/read/readlist/rl493079">Chinese Version</a>
+                <a href="https://www.bilibili.com/read/readlist/rl493079">Chinese</a>
             </p>
             <h2>Hong Kong Mahjong</h2>
             <p>
