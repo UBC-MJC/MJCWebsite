@@ -1,4 +1,4 @@
-import { GameStatus, GameType, Player } from "@prisma/client";
+import { GameStatus, GameType, Player, Wind } from "@prisma/client";
 import {
     createEloCalculatorInputs,
     GameFilterArgs,
@@ -7,6 +7,8 @@ import {
 } from "./game.util";
 import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
 import prisma from "../../db";
+
+export type EloDict = { [key: string]: number };
 
 abstract class GameService {
     public readonly gameDatabase: any;
@@ -110,7 +112,7 @@ abstract class GameService {
             },
         });
     }
-    abstract createRound(game: any, roundRequest: any): Promise<void>;
+    abstract createRound(game: any, roundRequest: any): Promise<any>;
     abstract deleteRound(id: string): Promise<void>;
     public async mapGameObject(game: any): Promise<any> {
         const nextRound = this.getNextRound(game);
@@ -139,13 +141,37 @@ abstract class GameService {
         };
     }
 
-    public async getPlayerEloDeltas(game: any, playerScores: number[], overridingEloDict?: any) {
-        let eloDict = overridingEloDict;
-        if (eloDict === undefined) {
-            eloDict = await this.getSelectedPlayerElos(game.seasonId, game.players);
+    public async getPlayerEloDeltas(
+        game: any,
+        playerScores: number[],
+    ): Promise<
+        {
+            eloChange: number;
+            playerId: string;
+        }[]
+    > {
+        if (game.status == GameStatus.FINISHED) {
+            return await this.playerGameDatabase.findMany({
+                select: {
+                    playerId: true,
+                    eloChange: true,
+                },
+                where: {
+                    gameId: game.id,
+                },
+            });
         }
+        const eloDict = await this.getSelectedPlayerElos(game.seasonId, game.players);
+        return this.getEloDeltas(game.players, playerScores, eloDict);
+    }
+
+    private getEloDeltas(
+        playerGames: { player: Player; wind: Wind }[],
+        playerScores: number[],
+        eloDict: EloDict,
+    ) {
         const eloCalculatorInput: EloCalculatorInput[] = createEloCalculatorInputs(
-            game.players,
+            playerGames,
             playerScores,
             eloDict,
         );
@@ -155,6 +181,7 @@ abstract class GameService {
             this.constants.DIVIDING_CONSTANT,
         );
     }
+
     abstract getNextRound(game: any): any;
     public async getAllPlayerElos(seasonId: string): Promise<any[]> {
         const result = await this.playerGameDatabase.groupBy({
@@ -196,7 +223,7 @@ abstract class GameService {
         });
     }
 
-    public async getSelectedPlayerElos(seasonId: string, playerGames: any[]): Promise<any> {
+    public async getSelectedPlayerElos(seasonId: string, playerGames: any[]): Promise<EloDict> {
         const playerIds: string[] = playerGames.map((playerGame) => playerGame.playerId);
         const dbResult = await this.playerGameDatabase.groupBy({
             by: "playerId",
@@ -217,7 +244,7 @@ abstract class GameService {
         if (dbResult === undefined) {
             throw new Error("getSelectedPlayerElos dbResult undefined, seasonId = " + seasonId);
         }
-        const resultDict: any = {};
+        const resultDict: EloDict = {};
         for (const result of dbResult) {
             resultDict[result.playerId] = result._sum.eloChange;
         }
@@ -260,22 +287,22 @@ abstract class GameService {
             }
             return 1;
         });
-        const eloStats: any = {};
+        const eloDict: EloDict = {};
         const debugStats = []; // to be removed once it has been established that this is correct
         for (const game of finishedGames) {
             const playerScores = this.getGameFinalScore(game);
-            const calculatedElos = await this.getPlayerEloDeltas(game, playerScores, eloStats);
+            const calculatedElos = this.getEloDeltas(game.players, playerScores, eloDict);
 
             for (const calculatedElo of calculatedElos) {
-                if (!eloStats[calculatedElo.playerId]) {
-                    eloStats[calculatedElo.playerId] = 0;
+                if (!eloDict[calculatedElo.playerId]) {
+                    eloDict[calculatedElo.playerId] = 0;
                 }
-                eloStats[calculatedElo.playerId] += calculatedElo.eloChange;
+                eloDict[calculatedElo.playerId] += calculatedElo.eloChange;
             }
             await this.updatePlayerGameElo(calculatedElos, game);
             debugStats.push(calculatedElos);
         }
-        return { eloStats: eloStats, orderedGames: finishedGames, debugStats: debugStats };
+        return { eloDict: eloDict, orderedGames: finishedGames, debugStats: debugStats };
     }
     abstract isEligible(player: Player): boolean;
     abstract getQualifiedPlayers(): Promise<Player[]>;

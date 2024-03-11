@@ -49,7 +49,7 @@ class JapaneseGameService extends GameService {
         super(prisma.japaneseGame, prisma.japanesePlayerGame, GAME_CONSTANTS["jp"]);
     }
 
-    public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<void> {
+    public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<any> {
         validateCreateJapaneseRound(roundRequest, game);
         const concludedRound = roundRequest as ConcludedJapaneseRoundT;
 
@@ -70,7 +70,7 @@ class JapaneseGameService extends GameService {
         };
 
         try {
-            await prisma.japaneseRound.create(query);
+            return await prisma.japaneseRound.create(query);
         } catch (err) {
             console.error("Error adding Riichi round: ", err);
             console.error("Query: ", query);

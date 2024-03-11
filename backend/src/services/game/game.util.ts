@@ -4,7 +4,7 @@ import { EloCalculatorInput } from "./eloCalculator";
 import { Transaction } from "../../validation/game.validation";
 import { JapaneseGameService } from "./japaneseGame.service";
 import { HongKongGameService } from "./hongKongGame.service";
-import { GameService } from "./game.service";
+import { EloDict, GameService } from "./game.service";
 type GameFilterArgs = {
     seasonId?: string;
     playerIds?: string[];
@@ -93,12 +93,13 @@ const generateGameQuery = (filter: GameFilterArgs): any => {
 const createEloCalculatorInputs = (
     playerGames: { player: Player; wind: Wind }[],
     playerScores: number[],
-    eloDict: any,
+    eloDict: EloDict,
 ): EloCalculatorInput[] => {
     return playerGames.map(({ player, wind }) => {
+        const elo = STARTING_ELO + (player.id in eloDict ? eloDict[player.id] : 0);
         return {
             id: player.id,
-            elo: STARTING_ELO + player.id in eloDict ? eloDict[player.id] : 0,
+            elo: elo,
             score: playerScores[WIND_ORDER.indexOf(wind)],
             wind: wind,
         };
