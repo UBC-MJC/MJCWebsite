@@ -23,7 +23,7 @@ test("Player Service Test", async () => {
         admin: true,
         japaneseQualified: true,
         hongKongQualified: true,
-    })
+    });
     expect(updatedPlayer).toMatchObject({
         admin: true,
         email: "bruh@gmail.com",
