@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { createPlayer, updatePlayer } from "../src/services/player.service";
+import { createPlayer, updatePlayer } from "../../src/services/player.service";
 
 test("Player Service Test", async () => {
     const player = await createPlayer({

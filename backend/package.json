@@ -4,6 +4,7 @@
         "start": "ts-node ./src/app.ts",
         "dev": "nodemon ./src/app.ts",
         "test": "vitest",
+        "coverage": "vitest run --coverage",
         "lint": "eslint --ext .ts .",
         "format": "prettier --ignore-path .eslintignore --write \"**/*.+(ts|json)\""
     },

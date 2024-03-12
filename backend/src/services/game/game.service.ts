@@ -53,8 +53,8 @@ abstract class GameService {
             where: {
                 id: id,
             },
-            data: state // VERY UNSAFE. Don't expose to anyone.
-        })
+            data: state, // VERY UNSAFE. Don't expose to anyone.
+        });
     }
     public async getGame(id: number): Promise<any> {
         return this.gameDatabase.findUnique({
