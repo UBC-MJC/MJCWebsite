@@ -1,57 +1,100 @@
 import React, { FC, useState } from "react";
-import { Button, Card, Container, Form } from "react-bootstrap";
+import { Button, Card, Container, Form, Alert } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { submitPasswordResetAPI } from "../api/AccountAPI";
 import alert from "../common/AlertDialog";
+import { useNavigate } from "react-router-dom";
 
-const PasswordReset: FC = () => {
-    const [username, setUsername] = useState("");
-    const [success, setSuccess] = useState(false);
+type PasswordResetProps = {
+    playerId: string | null;
+    token: string | null;
+};
+
+const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
+    const navigate = useNavigate();
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [error, setError] = useState<string | undefined>(undefined);
+    const [isWaiting, setIsWaiting] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!username) {
-            await alert("Username is required");
-            return
+        setError(undefined);
+
+        if (!password) {
+            setError("Please enter a valid password.");
+            return;
+        }
+        if (password.length < 6) {
+            setError("Password must be at least 6 characters long.");
+            return;
+        }
+        if (password !== confirmPassword) {
+            setError("Passwords do not match.");
+            return;
         }
 
-        submitPasswordResetAPI(username)
+        setIsWaiting(true);
+        submitPasswordResetAPI(playerId!, token!, password)
             .then(() => {
-                console.log("Email successful!");
-                setSuccess(true);
+                alert(`Password reset successfully. Please login with your new password.`);
+            })
+            .then(() => {
+                navigate(`/login`);
             })
             .catch((err: AxiosError) => {
-                alert(err.response?.data);
+                setError(err.response?.data as string);
+                setIsWaiting(false);
             });
     };
+
+    if (!playerId || !token) {
+        return (
+            <Container className="my-5 d-flex flex-column" style={{ maxWidth: "540px" }}>
+                <Card body>
+                    <h2>Invalid Request</h2>
+                    <p>The link you have requested has been expired.</p>
+                </Card>
+            </Container>
+        );
+    }
 
     return (
         <Container className="my-5 d-flex flex-column" style={{ maxWidth: "540px" }}>
             <Card body>
-                <h2>Password Reset</h2>
+                <h2>Reset Password</h2>
+                {error && <Alert variant="danger">{error}</Alert>}
                 <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicUsername" className="my-4">
+                    <Form.Group controlId="formBasicPassword" className="my-4">
                         <Form.Control
                             required
-                            placeholder="Username Or Email"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            type="password"
+                            placeholder="New Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </Form.Group>
+
+                    <Form.Group controlId="formBasicConfirmPassword" className="my-4">
+                        <Form.Control
+                            required
+                            type="password"
+                            placeholder="Confirm Password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                     </Form.Group>
 
                     <div className="d-grid my-4">
-                        <Button variant="primary" type="submit">
+                        <Button variant="primary" type="submit" disabled={isWaiting}>
                             Reset Password
                         </Button>
                     </div>
                 </Form>
             </Card>
-            <Button className="my-4 mx-auto w-25" variant="light" href="/login">
-                Back
-            </Button>
         </Container>
     );
-}
+};
 
 export default PasswordReset;

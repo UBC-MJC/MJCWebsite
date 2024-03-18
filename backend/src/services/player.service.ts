@@ -1,7 +1,10 @@
 import bcrypt from "bcryptjs";
+import * as crypto from "crypto";
 import { RegisterType } from "../validation/player.validation";
 import prisma from "../db";
 import { Player } from "@prisma/client";
+import { sendResetPasswordEmail } from "./email/resetPasswordEmail";
+import tokenCache from "../tokenCache";
 
 const createPlayer = async (player: RegisterType): Promise<Player> => {
     return bcrypt.hash(player.password, 12).then((hash) => {
@@ -28,6 +31,36 @@ const deletePlayer = async (id: string): Promise<Player> => {
             id,
         },
     });
+};
+
+const requestPasswordReset = async (player: Player) => {
+    let resetToken = crypto.randomBytes(32).toString("hex");
+
+    const hash = await bcrypt.hash(resetToken, 12);
+    tokenCache[player.id] = hash;
+
+    const link = `/password-reset?token=${resetToken}&id=${player.id}`;
+    await sendResetPasswordEmail(player, link);
+};
+
+const resetPassword = async (id: string, token: string, newPassword: string) => {
+    if (tokenCache[id]) {
+        const valid = await bcrypt.compare(token, tokenCache[id]);
+        if (valid) {
+            const hash = await bcrypt.hash(newPassword, 12);
+            await prisma.player.update({
+                where: {
+                    id,
+                },
+                data: {
+                    password: hash,
+                },
+            });
+            delete tokenCache[id];
+            return true;
+        }
+    }
+    return false;
 };
 
 const findPlayerByEmail = (email: string): Promise<Player | null> => {
@@ -81,6 +114,8 @@ export {
     createPlayer,
     updatePlayer,
     deletePlayer,
+    requestPasswordReset,
+    resetPassword,
     findPlayerByEmail,
     findPlayerById,
     findPlayerByUsernameOrEmail,

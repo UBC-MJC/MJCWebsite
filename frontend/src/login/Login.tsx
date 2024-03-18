@@ -81,7 +81,7 @@ const Login: React.FC = () => {
                         <p>
                             Not a member? <a href="/register">Register</a>
                         </p>
-                        <a href="/password-reset">Forgot password?</a>
+                        <a href="/request-password-reset">Forgot password?</a>
                     </div>
                 </Form>
             </Card>

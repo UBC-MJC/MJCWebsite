@@ -1,5 +1,5 @@
 import { GameStatus, GameType, Player, Wind } from "@prisma/client";
-import { findPlayerByUsername } from "../player.service";
+import { findPlayerByUsernameOrEmail } from "../player.service";
 import { EloCalculatorInput } from "./eloCalculator";
 import { Transaction } from "../../validation/game.validation";
 import { JapaneseGameService } from "./japaneseGame.service";

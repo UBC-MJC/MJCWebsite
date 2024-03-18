@@ -40,6 +40,11 @@ DATABASE_PASSWORD="{PASSWORD}"
 DATABASE_URL="mysql://root:{PASSWORD}@db:3306/mahjong?schema=public"
 
 ACCESS_TOKEN_SECRET="{SECRET}"
+
+EMAIL_USERNAME="ubcmahjongreset@zohomail.ca"
+EMAIL_PASSWORD="CsK9D0SydCpq"
+FROM_EMAIL='"UBC Mahjong" <ubcmahjongreset@zohocloud.ca>'
+BASE_URL="http://localhost:3000"
 ```
 
 Replace all instances of `{PASSWORD}` with any string and replace `{SECRET}` with some random 32 character long string. Don't forget the quotation marks.

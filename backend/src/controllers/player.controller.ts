@@ -4,13 +4,14 @@ import { loginSchema, registerSchema } from "../validation/player.validation";
 import {
     createPlayer,
     findPlayerByUsernameOrEmail,
+    requestPasswordReset,
+    resetPassword,
     updatePlayer,
 } from "../services/player.service";
 import { generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
 import { getCurrentSeason } from "../services/season.service";
 import { getGameService, STARTING_ELO } from "../services/game/game.util";
-import { createResetPasswordEmail } from "../services/email/resetPassword";
 
 const registerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     registerSchema
@@ -52,22 +53,48 @@ const loginHandler = async (req: Request, res: Response, next: NextFunction): Pr
         });
 };
 
-const passwordResetHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const requestPasswordResetHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
     try {
         const player = await findPlayerByUsernameOrEmail(req.body.username);
         if (!player) {
             return next(createError.BadRequest("Username or email not found"));
         }
 
-        const info = await createResetPasswordEmail(player.email);
-        console.log("Email sent: ", info.response);
+        await requestPasswordReset(player);
 
-        res.status(200);
+        res.json({ email: player.email });
+    } catch (error: any) {
+        console.error("Error in requestPasswordResetHandler:", error);
+        next(createError.InternalServerError(error.message));
+    }
+};
+
+const passwordResetHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    try {
+        const { playerId, token, newPassword } = req.body;
+        if (!playerId || !token || !newPassword) {
+            return next(createError.BadRequest("Invalid request"));
+        }
+
+        const success = await resetPassword(playerId, token, newPassword);
+        if (!success) {
+            return next(createError.BadRequest("Invalid token"));
+        }
+
+        res.json({});
     } catch (error: any) {
         console.error("Error in passwordResetHandler:", error);
         next(createError.InternalServerError(error.message));
     }
-}
+};
 
 const getPlayerNamesHandler = async (
     req: Request,
@@ -133,6 +160,7 @@ const updateSettingsHandler = async (
 export {
     registerHandler,
     loginHandler,
+    requestPasswordResetHandler,
     passwordResetHandler,
     getPlayerNamesHandler,
     getPlayerLeaderboardHandler,
