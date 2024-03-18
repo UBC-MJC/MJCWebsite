@@ -45,6 +45,10 @@ type RegisterDataType = {
     password: string;
 };
 
+type ResetPasswordDataType = {
+    email: string;
+};
+
 type PlayerAPIDataType = {
     player: Player;
 };

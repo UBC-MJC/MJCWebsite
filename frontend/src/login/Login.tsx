@@ -47,7 +47,7 @@ const Login: React.FC = () => {
                     <Form.Group controlId="formBasicUsername" className="my-4">
                         <Form.Control
                             required
-                            placeholder="Username"
+                            placeholder="Username or Email"
                             value={username}
                             isInvalid={errors.username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -81,7 +81,7 @@ const Login: React.FC = () => {
                         <p>
                             Not a member? <a href="/register">Register</a>
                         </p>
-                        <a href="/login">Forgot password?</a>
+                        <a href="/request-password-reset">Forgot password?</a>
                     </div>
                 </Form>
             </Card>
