@@ -7,7 +7,6 @@ import { withPlayerCondition } from "../common/withPlayerCondition";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import { getGameTypeString } from "../common/Utils";
-import Game from "./Game";
 
 const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
