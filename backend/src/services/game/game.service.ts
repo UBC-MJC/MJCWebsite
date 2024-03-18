@@ -48,14 +48,7 @@ abstract class GameService {
             },
         });
     }
-    public async updateGame(id: string, state: any): Promise<any> {
-        return this.gameDatabase.update({
-            where: {
-                id: id,
-            },
-            data: state, // VERY UNSAFE. Don't expose to anyone.
-        });
-    }
+
     public async getGame(id: number): Promise<any> {
         return this.gameDatabase.findUnique({
             where: {
@@ -103,13 +96,13 @@ abstract class GameService {
             },
         });
     }
-    public async submitGame(game: any): Promise<any> {
+    public async submitGame(game: any): Promise<void> {
         const playerScores = this.getGameFinalScore(game);
         const calculatedElos = await this.getPlayerEloDeltas(game, playerScores);
 
-        const playerElos = await this.updatePlayerGameElo(calculatedElos, game);
+        await this.updatePlayerGameElo(calculatedElos, game);
 
-        const updatedGame = await this.gameDatabase.update({
+        await this.gameDatabase.update({
             where: {
                 id: game.id,
             },
@@ -118,7 +111,6 @@ abstract class GameService {
                 endedAt: new Date(),
             },
         });
-        return { playerElos, updatedGame };
     }
     abstract createRound(game: any, roundRequest: any): Promise<any>;
     abstract deleteRound(id: string): Promise<void>;
@@ -265,7 +257,7 @@ abstract class GameService {
         calculatedElos: { eloChange: number; playerId: string }[],
         game: any,
     ) {
-        return prisma.$transaction(
+        await prisma.$transaction(
             calculatedElos.map((eloObject) => {
                 return this.playerGameDatabase.update({
                     where: {

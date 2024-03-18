@@ -8,7 +8,6 @@ import {
     NUM_PLAYERS,
     range,
     reduceScoreDeltas,
-    Wind,
 } from "./game.util";
 import { GameService } from "./game.service";
 import {
@@ -207,7 +206,7 @@ const getFirstJapaneseRound = (): PartialJapaneseRound => {
     return {
         roundCount: 1,
         roundNumber: 1,
-        roundWind: Wind.EAST,
+        roundWind: "EAST",
         startRiichiStickCount: 0,
         bonus: 0,
     };
