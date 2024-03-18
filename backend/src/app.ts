@@ -56,6 +56,14 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 const PORT: string | number = process.env.PORT || 80;
 
 if (process.env.NODE_ENV === "production") {
+    const httpApp = express();
+    httpApp.get("*", (req, res) => {
+        res.redirect("https://" + req.headers.host + req.url);
+    });
+    httpApp.listen(80, () => {
+        console.log("HTTP Server running on port 80");
+    });
+
     const privateKey = fs.readFileSync(path.join(__dirname, "../certificate/private.key"));
     const certificate = fs.readFileSync(path.join(__dirname, "../certificate/certificate.crt"));
     const ca = fs.readFileSync(path.join(__dirname, "../certificate/ca_bundle.crt"));
