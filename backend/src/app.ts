@@ -25,6 +25,13 @@ declare global {
 const app: Express = express();
 
 if (process.env.NODE_ENV === "production") {
+    app.use((request, response, next) => {
+        if (!request.secure) {
+            return response.redirect("https://" + request.headers.host + request.url);
+        }
+        next();
+    })
+
     // Set static folder
     app.use(express.static(path.join(__dirname, "../build")));
 } else {
