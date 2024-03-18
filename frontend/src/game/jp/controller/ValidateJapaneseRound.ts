@@ -13,6 +13,7 @@ const E_INVDORA = "Dora must be fewer than Han";
 const E_INVHAND = "Invalid hand";
 const E_INVTRAN = "Incompatible transactions";
 const E_MULWIN = "There should only be one winner";
+const E_MULTRON = "Multi ron should not have a single winner";
 const E_MULLOSE = "There should only be one loser";
 const E_MULNAGM = "There should only be one nagashi mangan per player";
 
@@ -144,6 +145,14 @@ const validateJapaneseRound = (
             });
             if (losers.size > 1) {
                 throw new Error(E_MULLOSE);
+            }
+            if (winners.size == 1 && transactions.length > 1) {
+                for (const transaction of transactions) {
+                    if (transaction.transactionType === JapaneseTransactionType.DEAL_IN_PAO) {
+                        break;
+                    }
+                }
+                throw new Error(E_MULTRON); // comprised of solely normal dealins (multiron) - only single winner
             }
             break;
         case JapaneseTransactionType.SELF_DRAW:

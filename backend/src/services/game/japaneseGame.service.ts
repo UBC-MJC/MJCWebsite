@@ -49,7 +49,7 @@ class JapaneseGameService extends GameService {
         super(prisma.japaneseGame, prisma.japanesePlayerGame, GAME_CONSTANTS["jp"]);
     }
 
-    public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<void> {
+    public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<any> {
         validateCreateJapaneseRound(roundRequest, game);
         const concludedRound = roundRequest as ConcludedJapaneseRoundT;
 
@@ -70,7 +70,7 @@ class JapaneseGameService extends GameService {
         };
 
         try {
-            await prisma.japaneseRound.create(query);
+            return await prisma.japaneseRound.create(query);
         } catch (err) {
             console.error("Error adding Riichi round: ", err);
             console.error("Query: ", query);
@@ -187,17 +187,6 @@ class JapaneseGameService extends GameService {
                 transformDBTransaction(dbTransaction),
             ),
         };
-    }
-    public async getAllPlayerElos(seasonId: string): Promise<any[]> {
-        return (await prisma.$queryRaw`SELECT sum(gp.eloChange) as elo, count(gp.eloChange) as gameCount, p.id, p.username
-                                FROM JapaneseGame g
-                                         LEFT JOIN JapanesePlayerGame gp
-                                                   ON g.id = gp.gameId
-                                         LEFT JOIN Player p
-                                                   ON gp.playerId = p.id
-                                WHERE g.seasonId = ${seasonId} AND g.status = ${"FINISHED"} AND g.type = ${"RANKED"}
-                                GROUP BY playerId
-                                ORDER BY elo DESC;`) as any[];
     }
 
     public isEligible(player: Player): boolean {

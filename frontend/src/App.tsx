@@ -19,12 +19,14 @@ import Unauthorized from "./common/Unauthorized";
 import Settings from "./account/Settings";
 import RequestPasswordReset from "./login/RequestPasswordReset";
 import PasswordReset from "./login/PasswordReset";
+import { Resources } from "./resources/Resources";
 
 const useQuery = () => {
     const { search } = useLocation();
 
     return React.useMemo(() => new URLSearchParams(search), [search]);
 };
+
 
 const App: React.FC = () => {
     const query = useQuery();
@@ -48,6 +50,7 @@ const App: React.FC = () => {
                         />
                         <Route path="/games/create/jp" element={<CreateGame gameVariant="jp" />} />
                         <Route path="/games/create/hk" element={<CreateGame gameVariant="hk" />} />
+                        <Route path="/resources" element={<Resources />} />
                         <Route path="/stats" element={<Statistics />} />
                         <Route path="/admin" element={<Admin />} />
                         <Route path="/settings" element={<Settings />} />
