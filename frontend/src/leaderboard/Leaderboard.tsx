@@ -12,16 +12,17 @@ const Leaderboard: FC<GameTypeProp> = ({ gameVariant }) => {
     useEffect(() => {
         getPlayerLeaderboard(gameVariant)
             .then((response) => {
-                const oneDecimalEloLeaderboard: LeaderboardType[] = response.data.players.map(
-                    (player) => {
-                        const elo = Number(player.elo);
+                const playerElos: LeaderboardType[] = response.data.players.sort((a, b) => {
+                    return Number(b.elo) - Number(a.elo);
+                });
+                const oneDecimalEloLeaderboard: LeaderboardType[] = playerElos.map((player) => {
+                    const elo = Number(player.elo);
 
-                        return {
-                            ...player,
-                            elo: elo.toFixed(1),
-                        };
-                    },
-                );
+                    return {
+                        ...player,
+                        elo: elo.toFixed(1),
+                    };
+                });
                 setLeaderboard(oneDecimalEloLeaderboard);
             })
             .catch((error: AxiosError) => {

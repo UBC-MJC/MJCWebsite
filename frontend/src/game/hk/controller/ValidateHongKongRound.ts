@@ -17,7 +17,6 @@ const validateHongKongRound = (transactions: HongKongTransaction[]) => {
         throw new Error("Winner and loser set to same person");
     }
     if (absScoreDelta === 0) {
-        console.log(scoreDeltas.toString());
         throw new Error("Nothing prominent happened despite having hand");
     }
     return true;

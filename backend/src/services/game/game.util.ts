@@ -4,7 +4,7 @@ import { EloCalculatorInput } from "./eloCalculator";
 import { Transaction } from "../../validation/game.validation";
 import { JapaneseGameService } from "./japaneseGame.service";
 import { HongKongGameService } from "./hongKongGame.service";
-import { GameService } from "./game.service";
+import { EloDict, GameService } from "./game.service";
 type GameFilterArgs = {
     seasonId?: string;
     playerIds?: string[];
@@ -91,23 +91,17 @@ const generateGameQuery = (filter: GameFilterArgs): any => {
 };
 
 const createEloCalculatorInputs = (
-    players: { player: Player; wind: Wind }[],
+    playerGames: { player: Player; wind: Wind }[],
     playerScores: number[],
-    eloList: any[],
+    eloDict: EloDict,
 ): EloCalculatorInput[] => {
-    return players.map((player) => {
-        let elo = STARTING_ELO;
-        for (const eloEntry of eloList) {
-            if (eloEntry.id === player.player.id) {
-                elo += eloEntry.elo;
-            }
-        }
-
+    return playerGames.map(({ player, wind }) => {
+        const elo = STARTING_ELO + (player.id in eloDict ? eloDict[player.id] : 0);
         return {
-            id: player.player.id,
+            id: player.id,
             elo: elo,
-            score: playerScores[WIND_ORDER.indexOf(player.wind)],
-            wind: player.wind,
+            score: playerScores[WIND_ORDER.indexOf(wind)],
+            wind: wind,
         };
     });
 };
@@ -146,18 +140,6 @@ const getWind = (index: number): Wind => {
 export const getNextRoundWind = (wind: Wind): Wind => {
     return getWind((WIND_ORDER.indexOf(wind) + 1) % NUM_PLAYERS);
 };
-
-export function transformEloStats(eloStats: any): any[] {
-    const result = [];
-    for (const [key, value] of Object.entries(eloStats)) {
-        result.push({
-            id: key,
-            elo: value,
-        });
-    }
-    return result;
-}
-
 const getGameService = (gameVariant: string): GameService => {
     switch (gameVariant) {
         case "jp":
