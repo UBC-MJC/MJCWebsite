@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "./__mocks__/@prisma/client";
 
 const prisma = new PrismaClient();
 
