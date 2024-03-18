@@ -44,7 +44,6 @@ ACCESS_TOKEN_SECRET="{SECRET}"
 EMAIL_USERNAME="ubcmahjongreset@zohomail.ca"
 EMAIL_PASSWORD=""
 FROM_EMAIL='"UBC Mahjong" <ubcmahjongreset@zohocloud.ca>'
-BASE_URL="http://localhost:3000"
 ```
 
 Replace all instances of `{PASSWORD}` with any string and replace `{SECRET}` with some random 32 character long string. Don't forget the quotation marks. Ask a team member for the email password.

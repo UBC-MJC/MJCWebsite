@@ -33,13 +33,14 @@ const deletePlayer = async (id: string): Promise<Player> => {
     });
 };
 
-const requestPasswordReset = async (player: Player) => {
+const requestPasswordReset = async (player: Player, host: string) => {
     let resetToken = crypto.randomBytes(32).toString("hex");
 
     const hash = await bcrypt.hash(resetToken, 12);
     tokenCache[player.id] = hash;
 
-    const link = `/password-reset?token=${resetToken}&id=${player.id}`;
+    const link = `${host}/password-reset?token=${resetToken}&id=${player.id}`;
+    console.log("Link: ", link);
     await sendResetPasswordEmail(player, link);
 };
 

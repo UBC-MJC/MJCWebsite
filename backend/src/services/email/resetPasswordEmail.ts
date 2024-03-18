@@ -30,7 +30,7 @@ const sendResetPasswordEmail = async (player: Player, link: string) => {
                     <p>Hi ${player.firstName},</p>
                     <p>You requested to reset your password.</p>
                     <p>Please, click the link below to reset your password</p>
-                    <a href="${process.env.BASE_URL + link}">Reset Password</a>
+                    <a href="${link}">Reset Password</a>
                 </body>
             </html>
         `,
