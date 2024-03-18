@@ -1,5 +1,5 @@
 import prisma from "../../db";
-import { HongKongTransaction, Player, Prisma } from "@prisma/client";
+import { HongKongTransaction, HongKongTransactionType, Player, Prisma, Wind } from "@prisma/client";
 import { GameService } from "./game.service";
 import {
     addScoreDeltas,
@@ -97,7 +97,7 @@ class HongKongGameService extends GameService {
         const previousRound: ConcludedHongKongRoundT = this.transformDBRound(
             game.rounds[game.rounds.length - 1],
         );
-        if (dealershipRetains(previousRound.transactions, previousRound.roundNumber - 1)) {
+        if (dealershipRetains(previousRound)) {
             return {
                 roundCount: previousRound.roundCount + 1,
                 roundNumber: previousRound.roundNumber,
@@ -162,9 +162,12 @@ const getFirstHongKongRound = (): any => {
     };
 };
 
-const dealershipRetains = (transactions: HongKongTransactionT[], dealerIndex: number): boolean => {
-    for (const transaction of transactions) {
-        if (transaction.scoreDeltas[dealerIndex] > 0) {
+const dealershipRetains = (round: ConcludedHongKongRoundT): boolean => {
+    if (round.roundWind == Wind.NORTH && round.roundNumber == 4 && round.transactions.length == 0) {
+        return true; // carve out for N4 deck out
+    }
+    for (const transaction of round.transactions) {
+        if (transaction.scoreDeltas[round.roundNumber - 1] > 0) {
             return true;
         }
     }
