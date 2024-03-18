@@ -1,5 +1,5 @@
 import { GameStatus, GameType, Player, Wind } from "@prisma/client";
-import { findPlayerByUsernameOrEmail } from "../player.service";
+import { findPlayerByUsername } from "../player.service";
 import { EloCalculatorInput } from "./eloCalculator";
 import { Transaction } from "../../validation/game.validation";
 import { JapaneseGameService } from "./japaneseGame.service";
@@ -47,7 +47,7 @@ const generatePlayerQuery = async (
 
     const playerList = await Promise.all(
         originalPlayerNames.map((playerName) => {
-            return findPlayerByUsernameOrEmail(playerName);
+            return findPlayerByUsername(playerName);
         }),
     );
     playerList.forEach((player) => {

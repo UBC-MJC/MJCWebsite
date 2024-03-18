@@ -40,13 +40,9 @@ DATABASE_PASSWORD="{PASSWORD}"
 DATABASE_URL="mysql://root:{PASSWORD}@db:3306/mahjong?schema=public"
 
 ACCESS_TOKEN_SECRET="{SECRET}"
-
-EMAIL_USERNAME="ubcmahjongreset@zohomail.ca"
-EMAIL_PASSWORD=""
-FROM_EMAIL='"UBC Mahjong" <ubcmahjongreset@zohocloud.ca>'
 ```
 
-Replace all instances of `{PASSWORD}` with any string and replace `{SECRET}` with some random 32 character long string. Don't forget the quotation marks. Ask a team member for the email password.
+Replace all instances of `{PASSWORD}` with any string and replace `{SECRET}` with some random 32 character long string. Don't forget the quotation marks.
 
 6. Install some version of `cmake` (Should be bundled in with some basic stuff)
 7. Run `make build` in the backend directory. This will create docker images for all the services being used. Run `make up` to start live development, with all changes being immediately updated. Run `make down` or stop Docker Desktop to close ths services.

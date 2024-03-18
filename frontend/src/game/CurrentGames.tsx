@@ -50,7 +50,7 @@ export const CurrentGames: FC<GameTypeProp> = ({ gameVariant }) => {
         return (
             <Row>
                 {scoresWithPlayers.map((score, idx) => (
-                    <Col key={idx} xs={6} className="px-3 py-1">
+                    <Col key={idx} xs={6} className="px-3">
                         <div className="d-flex justify-content-between">
                             <div>
                                 {mapIndextoPlace(idx)} - {score.username}
@@ -86,11 +86,9 @@ export const CurrentGames: FC<GameTypeProp> = ({ gameVariant }) => {
             <Container>
                 <Row>
                     {currentGames.map((game, idx) => (
-                        <Col key={idx} className="text-center my-2" xs={12} lg={6}>
+                        <Col key={idx} className="text-center my-2" xs={12} lg={4}>
                             <Card className="game-card" onClick={() => navigateToGame(game.id)}>
-                                <Card.Header style={{ fontSize: 18 }}>
-                                    {getCardHeader(game)}
-                                </Card.Header>
+                                <Card.Header>{getCardHeader(game)}</Card.Header>
                                 <Card.Body>{getCardBody(game)}</Card.Body>
                             </Card>
                         </Col>
