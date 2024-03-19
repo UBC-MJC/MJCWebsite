@@ -1,11 +1,11 @@
-import { it, describe, expect, beforeEach } from "vitest";
+import { it, describe, expect, beforeEach, vi } from "vitest";
 import { getGameService } from "../../../src/services/game/game.util";
 import prisma from "../../../src/db";
 import { initialise, initialiseGame } from "../util";
 import { testGameServiceCommon } from "./game.service.test.common";
 import { JapaneseTransactionType, Wind } from "@prisma/client";
 import { generateOverallScoreDelta } from "../../../src/services/game/japaneseGame.service";
-
+vi.mock('@prisma/client');
 describe("Japanese Game Service Tests", async () => {
     const gameService = getGameService("jp");
     let initState;

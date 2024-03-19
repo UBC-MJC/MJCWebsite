@@ -1,11 +1,11 @@
-import { it, describe, expect, beforeEach } from "vitest";
+import { it, describe, expect, beforeEach, vi } from "vitest";
 import { getGameService } from "../../../src/services/game/game.util";
 import prisma from "../../../src/db";
 import { testGameServiceCommon } from "./game.service.test.common";
 import { initialise, initialiseGame } from "../util";
 import { HongKongTransactionType, Wind } from "@prisma/client";
 import { generateOverallScoreDelta } from "../../../src/services/game/hongKongGame.service";
-
+vi.mock('@prisma/client');
 describe("Hong Kong Game Service Tests", async () => {
     const gameService = getGameService("hk");
     let initState;
@@ -22,6 +22,7 @@ describe("Hong Kong Game Service Tests", async () => {
         const fullGame = await gameService.getGame(id);
         const firstRound = await gameService.getNextRound(fullGame);
         expect(firstRound).deep.equal({
+            bonus: 0,
             roundCount: 1,
             roundNumber: 1,
             roundWind: "EAST",
