@@ -421,15 +421,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         ),
                     )}
                 </Row>
-                {!enableRecording && !gameOver && (
-                    <Button
-                        onClick={reloadPage}
-                        variant={"outline-primary"}
-                        className={"mb-2 w-50"}
-                    >
-                        Fetch live score
-                    </Button>
-                )}
             </Container>
         );
     }

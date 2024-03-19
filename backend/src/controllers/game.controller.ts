@@ -4,6 +4,7 @@ import { createGameSchema } from "../validation/game.validation";
 import { getCurrentSeason } from "../services/season.service";
 import { GameFilterArgs, getGameService } from "../services/game/game.util";
 import { GameService } from "../services/game/game.service";
+import { addGameListener, sendGameUpdate } from "../services/game/liveGame.service";
 
 const getGamesHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -14,7 +15,12 @@ const getGamesHandler = async (req: Request, res: Response, next: NextFunction):
     }
 };
 
-const getGameHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const getGameHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    addListener = false,
+): Promise<void> => {
     const id = Number(req.params.id);
     const gameVariant = req.params.gameVariant;
     if (isNaN(id)) {
@@ -29,8 +35,13 @@ const getGameHandler = async (req: Request, res: Response, next: NextFunction): 
             return next(createError.NotFound("Game not found"));
         }
 
-        const result = await gameService.mapGameObject(newGame);
-        res.status(200).json(result);
+        const gameResult = await gameService.mapGameObject(newGame);
+
+        if (addListener) {
+            addGameListener(req, res, gameResult, gameVariant);
+        } else {
+            res.status(200).json(gameResult);
+        }
     } catch (error: any) {
         console.error("Error in getGameHandler:", error);
         next(createError.InternalServerError(error.message));
@@ -166,7 +177,9 @@ const createRoundHandler = async (
 
         await gameService.createRound(game, roundRequest);
         const updatedGame = await gameService.getGame(gameId);
-        res.status(201).json(await gameService.mapGameObject(updatedGame));
+        const gameResult = await gameService.mapGameObject(updatedGame);
+        res.status(201).json(gameResult);
+        sendGameUpdate(gameResult, gameVariant);
     } catch (error: any) {
         console.error("Error in createRoundHandler:", error);
         next(createError.BadRequest(error.message));
@@ -200,7 +213,9 @@ const deleteLastRoundHandler = async (
 
         await gameService.deleteRound(game.rounds[game.rounds.length - 1].id);
         const updatedGame = await gameService.getGame(gameId);
-        res.status(201).json(await gameService.mapGameObject(updatedGame));
+        const gameResult = await gameService.mapGameObject(updatedGame);
+        res.status(201).json(gameResult);
+        sendGameUpdate(gameResult, gameVariant);
     } catch (error: any) {
         console.error("Error in deleteLastRoundHandler:", error);
         next(createError.BadRequest(error.message));

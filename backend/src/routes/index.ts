@@ -44,6 +44,9 @@ router.get("/games/:gameVariant", isAuthenticated, getGamesHandler);
 router.post("/games/:gameVariant", isAuthenticated, createGameHandler);
 router.get("/games/:gameVariant/current", getCurrentGamesHandler);
 router.get("/games/:gameVariant/:id", getGameHandler);
+router.get("/games/:gameVariant/:id/live", (req, res, next) =>
+    getGameHandler(req, res, next, true),
+);
 router.post("/games/:gameVariant/:id", isAuthenticated, submitGameHandler);
 router.delete("/games/:gameVariant/:id", isAuthenticated, deleteGameHandler);
 router.post("/games/:gameVariant/:id/rounds", isAuthenticated, createRoundHandler);

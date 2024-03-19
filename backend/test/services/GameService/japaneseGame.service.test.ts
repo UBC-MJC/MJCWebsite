@@ -5,7 +5,7 @@ import { initialise, initialiseGame } from "../util";
 import { testGameServiceCommon } from "./game.service.test.common";
 import { JapaneseTransactionType, Wind } from "@prisma/client";
 import { generateOverallScoreDelta } from "../../../src/services/game/japaneseGame.service";
-vi.mock('@prisma/client');
+vi.mock("@prisma/client");
 describe("Japanese Game Service Tests", async () => {
     const gameService = getGameService("jp");
     let initState;

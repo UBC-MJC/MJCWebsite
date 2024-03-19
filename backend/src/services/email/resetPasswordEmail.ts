@@ -16,9 +16,7 @@ const sendResetPasswordEmail = async (player: Player, link: string) => {
         from: process.env.FROM_EMAIL,
         to: player.email,
         subject: "Reset UBC Mahjong Password",
-        text: `Hi ${
-            player.firstName
-        },\nYou requested to reset your password.\nPlease, click the link below to reset your password\n${link}`,
+        text: `Hi ${player.firstName},\nYou requested to reset your password.\nPlease, click the link below to reset your password\n${link}`,
         html: `
             <html>
                 <head>

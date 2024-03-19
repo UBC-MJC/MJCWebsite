@@ -1,6 +1,6 @@
 import { expect, test, vi } from "vitest";
 import { createPlayer, updatePlayer } from "../../src/services/player.service";
-vi.mock('@prisma/client');
+vi.mock("@prisma/client");
 test("Player Service Test", async () => {
     const player = await createPlayer({
         firstName: "test",
