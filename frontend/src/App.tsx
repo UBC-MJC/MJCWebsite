@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import "./App.css";
 import WithoutNav from "./common/WithoutNav";
@@ -17,9 +17,20 @@ import Admin from "./admin/Admin";
 import Register from "./login/Register";
 import Unauthorized from "./common/Unauthorized";
 import Settings from "./account/Settings";
+import RequestPasswordReset from "./login/RequestPasswordReset";
+import PasswordReset from "./login/PasswordReset";
 import { Resources } from "./resources/Resources";
 
+const useQuery = () => {
+    const { search } = useLocation();
+
+    return React.useMemo(() => new URLSearchParams(search), [search]);
+};
+
+
 const App: React.FC = () => {
+    const query = useQuery();
+
     return (
         <main className="App">
             <AuthContextProvider>
@@ -48,6 +59,16 @@ const App: React.FC = () => {
                     <Route element={<WithoutNav />}>
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
+                        <Route path="/request-password-reset" element={<RequestPasswordReset />} />
+                        <Route
+                            path="/password-reset"
+                            element={
+                                <PasswordReset
+                                    playerId={query.get("id")}
+                                    token={query.get("token")}
+                                />
+                            }
+                        />
                     </Route>
                     <Route
                         path="*" // redirect to home if no route matches

@@ -5,7 +5,9 @@ import {
     getPlayerLeaderboardHandler,
     getPlayerNamesHandler,
     loginHandler,
+    passwordResetHandler,
     registerHandler,
+    requestPasswordResetHandler,
     updateSettingsHandler,
 } from "../controllers/player.controller";
 import {
@@ -35,6 +37,8 @@ const router: Router = Router();
 
 router.post("/register", registerHandler);
 router.post("/login", loginHandler);
+router.post("/request-password-reset", requestPasswordResetHandler);
+router.post("/password-reset", passwordResetHandler);
 
 router.get("/games/:gameVariant", isAuthenticated, getGamesHandler);
 router.post("/games/:gameVariant", isAuthenticated, createGameHandler);
