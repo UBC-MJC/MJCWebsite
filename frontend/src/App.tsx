@@ -27,7 +27,6 @@ const useQuery = () => {
     return React.useMemo(() => new URLSearchParams(search), [search]);
 };
 
-
 const App: React.FC = () => {
     const query = useQuery();
 

@@ -140,15 +140,19 @@ const isGameEnd = (game: Game, variant: GameVariant): boolean => {
     }
 };
 
-const gameRoundString = (game: Game) => {
+const gameRoundString = (game: Game, variant: GameVariant) => {
     if (typeof game.currentRound === "undefined") {
         return "End of Game";
     }
 
     const lastRound = game.currentRound;
-    return `${mapWindToCharacter(lastRound.roundWind)} ${lastRound.roundNumber} Bonus ${
-        lastRound.bonus
-    }`;
+    if (variant === "jp") {
+        return `${mapWindToCharacter(lastRound.roundWind)} ${lastRound.roundNumber} Bonus ${
+            lastRound.bonus
+        }`;
+    } else if (variant === "hk") {
+        return `${mapWindToCharacter(lastRound.roundWind)} ${lastRound.roundNumber}`;
+    }
 };
 
 export {

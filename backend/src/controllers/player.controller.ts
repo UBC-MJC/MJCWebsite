@@ -64,7 +64,10 @@ const requestPasswordResetHandler = async (
             return next(createError.BadRequest("Username or email not found"));
         }
 
-        const host = process.env.NODE_ENV === "production" ? "https://" + req.headers.host : "http://localhost:3000";
+        const host =
+            process.env.NODE_ENV === "production"
+                ? "https://" + req.headers.host
+                : "http://localhost:3000";
         await requestPasswordReset(player, host);
 
         res.json({ email: player.email });

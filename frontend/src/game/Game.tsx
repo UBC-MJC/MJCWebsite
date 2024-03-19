@@ -16,6 +16,7 @@ import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { gameRoundString, isGameEnd } from "./common/constants";
+import { baseUrl } from "../api/APIUtils";
 
 const Game: FC = () => {
     const { id, variant } = useParams();
@@ -24,6 +25,7 @@ const Game: FC = () => {
     const gameId = Number(id);
 
     const [game, setGame] = useState<Game | undefined>(undefined);
+    const [listening, setListening] = useState(false);
 
     if (isNaN(gameId) || !validateGameVariant(variant)) {
         navigate("/games/not-found");
@@ -33,13 +35,10 @@ const Game: FC = () => {
     useEffect(() => {
         getGameAPI(gameId, variant)
             .then((response) => {
-                console.log("Game: ");
-                console.log(response.data);
-
                 setGame(response.data);
             })
             .catch((error: AxiosError) => {
-                console.log("Error fetching game: ", error.response?.data);
+                console.error("Error fetching game: ", error.response?.data);
                 if (error.response?.status === 404) {
                     navigate("/games/not-found");
                     return;
@@ -47,10 +46,32 @@ const Game: FC = () => {
             });
     }, [gameId, navigate]);
 
+    useEffect(() => {
+        if (
+            game &&
+            (!player || game.recordedById !== player.id) &&
+            game.status === "IN_PROGRESS" &&
+            !listening
+        ) {
+            const eventSource = new EventSource(baseUrl + `/games/${variant}/${game.id}/live`);
+
+            eventSource.onmessage = (event) => {
+                const gameResult = JSON.parse(event.data);
+                setGame(gameResult);
+            };
+
+            eventSource.onerror = (event) => {
+                console.error("EventSource Error: ", event);
+                eventSource.close();
+                setListening(false);
+            };
+            setListening(true);
+        }
+    }, [listening, game, player, variant]);
+
     const handleSubmitRound = async (roundRequest: any) => {
         addRoundAPI(player!.authToken, gameId, variant, roundRequest)
             .then((response) => {
-                console.log(response.data);
                 setGame(response.data);
             })
             .catch((error: AxiosError) => {
@@ -177,7 +198,7 @@ const Game: FC = () => {
         <>
             <h1 className="mt-2">
                 {game.gameType} {getGameTypeString(variant)} Game
-                {game.status === "IN_PROGRESS" && " - " + gameRoundString(game)}
+                {game.status === "IN_PROGRESS" && " - " + gameRoundString(game, variant)}
             </h1>
             {getLegacyDisplayGame(game)}
             {isRecording(game) && (
