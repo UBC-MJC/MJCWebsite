@@ -20,6 +20,7 @@ import Settings from "./account/Settings";
 import RequestPasswordReset from "./login/RequestPasswordReset";
 import PasswordReset from "./login/PasswordReset";
 import { Resources } from "./resources/Resources";
+import GameLogs from "./game/GameLogs";
 
 const useQuery = () => {
     const { search } = useLocation();
@@ -49,6 +50,7 @@ const App: React.FC = () => {
                         />
                         <Route path="/games/create/jp" element={<CreateGame gameVariant="jp" />} />
                         <Route path="/games/create/hk" element={<CreateGame gameVariant="hk" />} />
+                        <Route path="/games" element={<GameLogs />} />
                         <Route path="/resources" element={<Resources />} />
                         <Route path="/stats" element={<Statistics />} />
                         <Route path="/admin" element={<Admin />} />

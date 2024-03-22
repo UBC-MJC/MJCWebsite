@@ -3,7 +3,7 @@ import { baseUrl, getAuthConfig } from "./APIUtils";
 
 const getPlayerNames = async (
     gameType: string,
-): Promise<AxiosResponse<{ playerNames: string[] }>> => {
+): Promise<AxiosResponse<PlayerNamesDataType[]>> => {
     return axios.get(baseUrl + "/players/gametype/" + gameType + "/names");
 };
 
@@ -29,6 +29,22 @@ const getGameAPI = async (
 ): Promise<AxiosResponse<Game>> => {
     return axios.get(baseUrl + `/games/${gameVariant}/${gameId}`);
 };
+
+const getGamesAPI = async (
+    gameVariant: GameVariant,
+    seasonId: string,
+    playerIds: string[],
+): Promise<AxiosResponse<Game[]>> => {
+    return axios.get(
+        baseUrl + `/games/${gameVariant}`,
+        {
+            params: {
+                seasonId: seasonId,
+                playerIds: playerIds.join(","),
+            },
+        }
+    );
+}
 
 const getCurrentGamesAPI = async (gameVariant: GameVariant): Promise<AxiosResponse<Game[]>> => {
     return axios.get(baseUrl + `/games/${gameVariant}/current`);
@@ -80,6 +96,7 @@ export {
     getPlayerNames,
     createGameAPI,
     getGameAPI,
+    getGamesAPI,
     getCurrentGamesAPI,
     deleteGameAPI,
     submitGameAPI,

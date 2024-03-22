@@ -100,7 +100,7 @@ const passwordResetHandler = async (
     }
 };
 
-const getPlayerNamesHandler = async (
+const getQualifiedPlayersHandler = async (
     req: Request,
     res: Response,
     next: NextFunction,
@@ -109,8 +109,13 @@ const getPlayerNamesHandler = async (
     try {
         const gameService = getGameService(gameVariant);
         const qualifiedPlayers = await gameService.getQualifiedPlayers();
-        const playerNames = qualifiedPlayers.map((player) => player.username);
-        res.json({ playerNames });
+        const players = qualifiedPlayers.map((player) => {
+            return {
+                playerId: player.id,
+                username: player.username
+            }
+        });
+        res.json(players);
     } catch (err: any) {
         next(createError.InternalServerError(err.message));
     }
@@ -166,7 +171,7 @@ export {
     loginHandler,
     requestPasswordResetHandler,
     passwordResetHandler,
-    getPlayerNamesHandler,
+    getQualifiedPlayersHandler,
     getPlayerLeaderboardHandler,
     getCurrentPlayerHandler,
     updateSettingsHandler,

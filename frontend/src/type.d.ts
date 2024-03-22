@@ -53,6 +53,11 @@ type PlayerAPIDataType = {
     player: Player;
 };
 
+type PlayerNamesDataType = {
+    playerId: string;
+    username: string;
+}
+
 type Player = {
     id: string;
     authToken: string;
@@ -73,6 +78,11 @@ type Season = {
     startDate: string;
     endDate: string;
 };
+
+type SeasonsAPIDataType = {
+    currentSeason?: Season;
+    pastSeasons: Season[];
+}
 
 type AuthContextType = {
     player: Player | undefined;
@@ -179,3 +189,8 @@ type HongKongTransactionType =
     | "DEAL_IN_PAO"
     | "SELF_DRAW_PAO"
     | "RESHUFFLE";
+
+type OptionsType = {
+    label: string;
+    value: string;
+}
