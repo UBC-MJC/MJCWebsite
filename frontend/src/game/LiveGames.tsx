@@ -4,8 +4,6 @@ import { AxiosError } from "axios";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import { getGameTypeString } from "../common/Utils";
 import { useNavigate } from "react-router-dom";
-import { generateJapaneseCurrentScore } from "./jp/controller/JapaneseRound";
-import { generateHongKongCurrentScore } from "./hk/controller/HongKongRound";
 import { gameRoundString } from "./common/constants";
 import GameSummaryBody from "./common/GameSummaryBody";
 

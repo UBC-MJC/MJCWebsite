@@ -139,7 +139,7 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                         </Col>
                     ))}
                 </Row>
-                {getHongKongLabels().map(([label, labelPlayerIds], idx) => (
+                {getHongKongLabels().map(([label, labelPlayerIds]) => (
                     <Row key={label} className="my-4">
                         <Col>
                             <h5>{HK_LABEL_MAP[label]}:</h5>
