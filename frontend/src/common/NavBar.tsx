@@ -46,12 +46,12 @@ const NavBar: FC = () => {
                                 {getGameTypeString("hk")}
                             </NavDropdown.Item>
                         </NavDropdown>
+                        <Nav.Link as={Link} to="/games">
+                            Logs
+                        </Nav.Link>
                         <Nav.Link as={Link} to="/resources">
                             Resources
                         </Nav.Link>
-                        {/*<Nav.Link as={Link} to="/stats">*/}
-                        {/*    Statistics*/}
-                        {/*</Nav.Link>*/}
                     </Nav>
                     <Nav>
                         {player && player.admin && (

@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from "react";
-import Game from "./Game";
 import { getLiveGamesAPI } from "../api/GameAPI";
 import { AxiosError } from "axios";
 import { Card, Col, Container, Row } from "react-bootstrap";
@@ -8,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { generateJapaneseCurrentScore } from "./jp/controller/JapaneseRound";
 import { generateHongKongCurrentScore } from "./hk/controller/HongKongRound";
 import { gameRoundString } from "./common/constants";
+import GameSummaryBody from "./common/GameSummaryBody";
 
 export const LiveGames: FC<GameTypeProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
@@ -31,51 +31,6 @@ export const LiveGames: FC<GameTypeProp> = ({ gameVariant }) => {
         );
     };
 
-    const getCardBody = (game: Game) => {
-        let scores: number[];
-        if (gameVariant === "jp") {
-            scores = generateJapaneseCurrentScore(game.rounds as JapaneseRound[]);
-        } else {
-            scores = generateHongKongCurrentScore(game.rounds as HongKongRound[]);
-        }
-
-        const scoresWithPlayers = scores.map((score, idx) => {
-            return {
-                username: game.players[idx].username,
-                score: score,
-            };
-        });
-        scoresWithPlayers.sort((a, b) => b.score - a.score);
-
-        return (
-            <Row>
-                {scoresWithPlayers.map((score, idx) => (
-                    <Col key={idx} xs={6} className="px-3 py-1">
-                        <div className="d-flex justify-content-between">
-                            <div>
-                                {mapIndextoPlace(idx)} - {score.username}
-                            </div>
-                            <div>{score.score}</div>
-                        </div>
-                    </Col>
-                ))}
-            </Row>
-        );
-    };
-
-    const mapIndextoPlace = (idx: number) => {
-        switch (idx) {
-            case 0:
-                return "1st";
-            case 1:
-                return "2nd";
-            case 2:
-                return "3rd";
-            default:
-                return `${idx + 1}th`;
-        }
-    };
-
     const navigateToGame = (gameId: string) => {
         navigate(`/games/${gameVariant}/${gameId}`);
     };
@@ -91,7 +46,9 @@ export const LiveGames: FC<GameTypeProp> = ({ gameVariant }) => {
                                 <Card.Header style={{ fontSize: 18 }}>
                                     {getCardHeader(game)}
                                 </Card.Header>
-                                <Card.Body>{getCardBody(game)}</Card.Body>
+                                <Card.Body>
+                                    <GameSummaryBody game={game} gameVariant={gameVariant} />
+                                </Card.Body>
                             </Card>
                         </Col>
                     ))}
