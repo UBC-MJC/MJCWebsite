@@ -279,7 +279,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     ))}
                 </Row>
 
-                {getJapaneseLabels().map(([label, labelPlayerIds], idx) => (
+                {getJapaneseLabels().map(([label, labelPlayerIds]) => (
                     <Row key={label} className="my-4">
                         <Col>
                             <h5>{JP_LABEL_MAP[label as JapaneseLabel]}:</h5>
@@ -391,10 +391,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
             (game.rounds[game.rounds.length - 1] as JapaneseRound).endRiichiStickCount +
             riichiList.length
         );
-    }
-
-    function reloadPage() {
-        window.location.reload();
     }
 
     function getFooter() {
