@@ -70,6 +70,7 @@ const GameLogs: FC = () => {
         setLoading(true);
         getGamesAPI(queryGameVariant, querySeason!, queryPlayers)
             .then((response) => {
+                response.data.reverse();
                 setGames(response.data);
                 setLoading(false);
                 setPagination(1);
