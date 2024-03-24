@@ -7,8 +7,11 @@ const getCurrentSeason = async (): Promise<AxiosResponse<Season>> => {
 
 const getPlayerLeaderboard = async (
     gameType: string,
+    seasonId: string,
 ): Promise<AxiosResponse<{ players: LeaderboardType[] }>> => {
-    return axios.get(baseUrl + "/players/gametype/" + gameType + "/leaderboard");
+    return axios.get(
+        baseUrl + "/players/gametype/" + gameType + "/leaderboard/?seasonId=" + seasonId,
+    );
 };
 
 export { getCurrentSeason, getPlayerLeaderboard };

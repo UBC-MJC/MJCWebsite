@@ -12,6 +12,7 @@ import { generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
 import { getCurrentSeason } from "../services/season.service";
 import { getGameService, STARTING_ELO } from "../services/game/game.util";
+import { Season } from "@prisma/client";
 
 const registerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     registerSchema
@@ -128,9 +129,16 @@ const getPlayerLeaderboardHandler = async (
 ): Promise<void> => {
     const gameVariant = req.params.gameVariant;
     try {
-        const season = await getCurrentSeason();
+        let seasonId = "";
+        if (typeof req.query.seasonId !== "undefined") {
+            seasonId = req.query.seasonId as string;
+        } else {
+            const season = await getCurrentSeason();
+            seasonId = season.id;
+        }
+
         const gameService = getGameService(gameVariant);
-        const playerElos = await gameService.getAllPlayerElos(season.id);
+        const playerElos = await gameService.getAllPlayerElos(seasonId);
         playerElos.forEach((playerElo) => {
             playerElo.elo = Number(playerElo.elo) + STARTING_ELO;
             playerElo.gameCount = Number(playerElo.gameCount);
