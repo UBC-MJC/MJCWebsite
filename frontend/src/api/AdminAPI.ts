@@ -19,8 +19,8 @@ const updatePlayerAPI = async (
     return axios.put(baseUrl + "/admin/players/" + player.id, { player }, getAuthConfig(authToken));
 };
 
-const getSeasonsAdminAPI = async (authToken: string) => {
-    return axios.get(baseUrl + "/admin/seasons", getAuthConfig(authToken));
+const getSeasonsAPI = async (): Promise<AxiosResponse<SeasonsAPIDataType>> => {
+    return axios.get(baseUrl + "/seasons");
 };
 
 const createSeasonAdminAPI = async (
@@ -51,7 +51,7 @@ export {
     getPlayersAdminAPI,
     deletePlayerAPI,
     updatePlayerAPI,
-    getSeasonsAdminAPI,
+    getSeasonsAPI,
     createSeasonAdminAPI,
     updateSeasonAPI,
     makeDummyAdminsAPI,

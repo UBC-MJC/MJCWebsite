@@ -8,7 +8,22 @@ import { addGameListener, sendGameUpdate } from "../services/game/liveGame.servi
 
 const getGamesHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        res.status(200).json({});
+        const gameVariant = req.params.gameVariant;
+        const gameService: GameService = getGameService(gameVariant);
+
+        const query: GameFilterArgs = {
+            seasonId: req.query.seasonId?.toString(),
+            playerIds:
+                req.query.playerIds === "" || typeof req.query.playerIds === "undefined"
+                    ? undefined
+                    : req.query.playerIds.toString().split(","),
+            gameType: "RANKED",
+            gameStatus: "FINISHED",
+        };
+
+        const games = await gameService.getGames(query);
+        const result = await Promise.all(games.map((game) => gameService.mapGameObject(game)));
+        res.status(200).json(result);
     } catch (error: any) {
         console.error("Error in getGamesHandler:", error);
         next(createError.InternalServerError(error.message));

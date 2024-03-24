@@ -12,7 +12,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
     const { player } = useContext(AuthContext);
 
-    const [playerNames, setPlayerNames] = useState<string[]>([]);
+    const [playerNames, setPlayerNames] = useState<{ label: string }[]>([]);
 
     const [eastPlayer, setEastPlayer] = useState<string | null>(null);
     const [southPlayer, setSouthPlayer] = useState<string | null>(null);
@@ -22,7 +22,13 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
     useEffect(() => {
         getPlayerNames(gameVariant)
             .then((response) => {
-                setPlayerNames(response.data.playerNames.sort());
+                const playerNames = response.data
+                    .map((player: PlayerNamesDataType) => player.username)
+                    .sort();
+                const selectOptions = playerNames.map((name) => {
+                    return { label: name };
+                });
+                setPlayerNames(selectOptions);
             })
             .catch((error: AxiosError) => {
                 alert(`Error fetching player names: ${error.response?.data}`);
@@ -46,10 +52,6 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
 
     const title = `Create Ranked ${getGameTypeString(gameVariant)} Game`;
 
-    const selectOptions = playerNames.map((name) => {
-        return { label: name };
-    });
-
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
     const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4;
 
@@ -61,7 +63,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
                     <h3>East</h3>
                     <div className="text-start">
                         <Select
-                            options={selectOptions}
+                            options={playerNames}
                             isSearchable
                             placeholder="Choose a Player"
                             value={eastPlayer !== null ? { label: eastPlayer } : null}
@@ -74,7 +76,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
                     <h3>South</h3>
                     <div className="text-start">
                         <Select
-                            options={selectOptions}
+                            options={playerNames}
                             isSearchable
                             placeholder="Choose a Player"
                             value={southPlayer !== null ? { label: southPlayer } : null}
@@ -87,7 +89,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
                     <h3>West</h3>
                     <div className="text-start">
                         <Select
-                            options={selectOptions}
+                            options={playerNames}
                             isSearchable
                             placeholder="Choose a Player"
                             value={westPlayer !== null ? { label: westPlayer } : null}
@@ -100,7 +102,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
                     <h3>North</h3>
                     <div className="text-start">
                         <Select
-                            options={selectOptions}
+                            options={playerNames}
                             isSearchable
                             placeholder="Choose a Player"
                             value={northPlayer !== null ? { label: northPlayer } : null}

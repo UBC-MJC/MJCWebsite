@@ -1,6 +1,6 @@
 import React, { FC, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
-import { createSeasonAdminAPI, getSeasonsAdminAPI, updateSeasonAPI } from "../api/AdminAPI";
+import { createSeasonAdminAPI, getSeasonsAPI, updateSeasonAPI } from "../api/AdminAPI";
 import { AxiosError } from "axios";
 import { Table as BTable, Button, Form, Card, Container, Col } from "react-bootstrap";
 import {
@@ -83,7 +83,7 @@ const AdminSeason: FC = () => {
     const [editedSeason, setEditedSeason] = useState<Season | undefined>(undefined);
 
     useEffect(() => {
-        getSeasonsAdminAPI(player!.authToken)
+        getSeasonsAPI()
             .then((response) => {
                 setCurrentSeason(response.data.currentSeason);
                 setPastSeasons(response.data.pastSeasons);

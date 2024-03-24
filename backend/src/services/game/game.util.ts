@@ -73,13 +73,15 @@ const generateGameQuery = (filter: GameFilterArgs): any => {
         query.seasonId = filter.seasonId;
     }
     if (typeof filter.playerIds !== "undefined") {
-        query.players = {
-            some: {
-                playerId: {
-                    in: filter.playerIds,
+        query.AND = filter.playerIds.map((playerId) => {
+            return {
+                players: {
+                    some: {
+                        playerId: playerId,
+                    },
                 },
-            },
-        };
+            };
+        });
     }
     if (typeof filter.gameType !== "undefined") {
         query.type = filter.gameType;
