@@ -12,7 +12,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
     const { player } = useContext(AuthContext);
 
-    const [playerNames, setPlayerNames] = useState<{label: string}[]>([]);
+    const [playerNames, setPlayerNames] = useState<{ label: string }[]>([]);
 
     const [eastPlayer, setEastPlayer] = useState<string | null>(null);
     const [southPlayer, setSouthPlayer] = useState<string | null>(null);
@@ -22,7 +22,9 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
     useEffect(() => {
         getPlayerNames(gameVariant)
             .then((response) => {
-                const playerNames = response.data.map((player: PlayerNamesDataType) => player.username).sort();
+                const playerNames = response.data
+                    .map((player: PlayerNamesDataType) => player.username)
+                    .sort();
                 const selectOptions = playerNames.map((name) => {
                     return { label: name };
                 });

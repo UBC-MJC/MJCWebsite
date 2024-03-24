@@ -112,8 +112,8 @@ const getQualifiedPlayersHandler = async (
         const players = qualifiedPlayers.map((player) => {
             return {
                 playerId: player.id,
-                username: player.username
-            }
+                username: player.username,
+            };
         });
         res.json(players);
     } catch (err: any) {

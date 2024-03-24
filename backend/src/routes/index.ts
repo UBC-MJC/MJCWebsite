@@ -30,7 +30,7 @@ import {
     updatePlayerHandler,
     updateSeasonHandler,
 } from "../controllers/admin.controller";
-import {getCurrentSeasonHandler, getSeasonsHandler} from "../controllers/season.controller";
+import { getCurrentSeasonHandler, getSeasonsHandler } from "../controllers/season.controller";
 
 const router: Router = Router();
 

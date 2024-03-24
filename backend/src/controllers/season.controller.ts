@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import {findAllSeasons, getCurrentSeason} from "../services/season.service";
+import { findAllSeasons, getCurrentSeason } from "../services/season.service";
 import createError from "http-errors";
-import {Season} from "@prisma/client";
+import { Season } from "@prisma/client";
 
 const getCurrentSeasonHandler = async (
     req: Request,

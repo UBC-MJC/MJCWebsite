@@ -56,7 +56,7 @@ type PlayerAPIDataType = {
 type PlayerNamesDataType = {
     playerId: string;
     username: string;
-}
+};
 
 type Player = {
     id: string;
@@ -82,7 +82,7 @@ type Season = {
 type SeasonsAPIDataType = {
     currentSeason?: Season;
     pastSeasons: Season[];
-}
+};
 
 type AuthContextType = {
     player: Player | undefined;
@@ -193,4 +193,4 @@ type HongKongTransactionType =
 type OptionsType = {
     label: string;
     value: string;
-}
+};
