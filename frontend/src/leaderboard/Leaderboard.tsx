@@ -1,58 +1,105 @@
-import { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { AxiosError } from "axios";
-import { getCurrentSeason, getPlayerLeaderboard } from "../api/LeaderboardAPI";
+import { getPlayerLeaderboard } from "../api/LeaderboardAPI";
 import { getGameTypeString } from "../common/Utils";
 import { Container, Table } from "react-bootstrap";
+import Select from "react-select";
+import { getSeasonsAPI } from "../api/AdminAPI";
 
 const Leaderboard: FC<GameTypeProp> = ({ gameVariant }) => {
-    const [currentSeason, setCurrentSeason] = useState<Season | undefined>(undefined);
+    const [seasons, setSeasons] = useState<Season[]>([]);
+    const [selectSeason, setSelectSeason] = useState<Season | undefined>(undefined);
     const [leaderboard, setLeaderboard] = useState<LeaderboardType[]>([]);
-    const [noSeasonsMessage, setNoSeasonsMessage] = useState<string>("");
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getPlayerLeaderboard(gameVariant)
-            .then((response) => {
-                const playerElos: LeaderboardType[] = response.data.players.sort((a, b) => {
-                    return Number(b.elo) - Number(a.elo);
-                });
-                const oneDecimalEloLeaderboard: LeaderboardType[] = playerElos.map((player) => {
-                    const elo = Number(player.elo);
+        if (typeof selectSeason !== "undefined") {
+            getPlayerLeaderboard(gameVariant, selectSeason.id)
+                .then((response) => {
+                    const playerElos: LeaderboardType[] = response.data.players.sort((a, b) => {
+                        return Number(b.elo) - Number(a.elo);
+                    });
+                    const oneDecimalEloLeaderboard: LeaderboardType[] = playerElos.map((player) => {
+                        const elo = Number(player.elo);
 
-                    return {
-                        ...player,
-                        elo: elo.toFixed(1),
-                    };
+                        return {
+                            ...player,
+                            elo: elo.toFixed(1),
+                        };
+                    });
+                    setLeaderboard(oneDecimalEloLeaderboard);
+                })
+                .catch((error: AxiosError) => {
+                    console.log("Error fetching leaderboard: ", error.response?.data);
                 });
-                setLeaderboard(oneDecimalEloLeaderboard);
-            })
-            .catch((error: AxiosError) => {
-                console.log("Error fetching leaderboard: ", error.response?.data);
-            });
-    }, [gameVariant]);
+        }
+    }, [gameVariant, selectSeason]);
 
     useEffect(() => {
-        getCurrentSeason()
+        getSeasonsAPI()
             .then((response) => {
-                setCurrentSeason(response.data);
+                const allSeasons = response.data.pastSeasons;
+
+                console.log(response.data.pastSeasons[0].endDate);
+                console.log(new Date(response.data.pastSeasons[0].endDate));
+                console.log(new Date());
+
+                if (
+                    response.data.pastSeasons.length > 0 &&
+                    new Date(response.data.pastSeasons[0].endDate) > new Date()
+                ) {
+                    setSelectSeason(response.data.pastSeasons[0]);
+                }
+
+                setSeasons(allSeasons);
+                setLoading(false);
             })
             .catch((error: AxiosError) => {
-                setNoSeasonsMessage("No seasons currently active.");
+                console.error("Error fetching seasons: ", error.response?.data);
             });
     }, []);
 
-    if (currentSeason === undefined) {
-        return <h5>{noSeasonsMessage}</h5>;
+    const getSelectOptions = (seasons: Season[]): OptionsType[] => {
+        return seasons.map((season, index) => {
+            return { label: season.name, value: index.toString() };
+        });
+    };
+
+    if (loading) {
+        return <h5 className="my-3">Loading...</h5>;
     }
 
     return (
         <Container fluid="lg">
             <div className="my-4">
                 <h1>{getGameTypeString(gameVariant)} Leaderboard</h1>
-                {currentSeason && (
+
+                <div className="text-start d-flex justify-content-center align-items-end">
+                    <h5 className="mx-2">Season: </h5>
+                    <Select
+                        options={getSelectOptions(seasons)}
+                        isSearchable
+                        placeholder="Choose a season"
+                        value={
+                            selectSeason
+                                ? {
+                                      label: selectSeason.name,
+                                      value: seasons.indexOf(selectSeason).toString(),
+                                  }
+                                : null
+                        }
+                        getOptionValue={(selectOptions) => selectOptions.label}
+                        onChange={(e) => setSelectSeason(seasons[Number(e!.value)])}
+                    />
+                </div>
+
+                {selectSeason ? (
                     <h5>
-                        {currentSeason.name} season ends{" "}
-                        {new Date(currentSeason.endDate).toDateString()}
+                        {selectSeason.name} season ends{" "}
+                        {new Date(selectSeason.endDate).toDateString()}
                     </h5>
+                ) : (
+                    <h5>No season selected</h5>
                 )}
             </div>
             <Table striped responsive hover className="text-nowrap">

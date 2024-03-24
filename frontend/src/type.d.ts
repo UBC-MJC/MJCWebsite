@@ -80,7 +80,6 @@ type Season = {
 };
 
 type SeasonsAPIDataType = {
-    currentSeason?: Season;
     pastSeasons: Season[];
 };
 

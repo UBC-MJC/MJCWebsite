@@ -85,8 +85,15 @@ const AdminSeason: FC = () => {
     useEffect(() => {
         getSeasonsAPI()
             .then((response) => {
-                setCurrentSeason(response.data.currentSeason);
-                setPastSeasons(response.data.pastSeasons);
+                if (
+                    response.data.pastSeasons.length > 0 &&
+                    new Date(response.data.pastSeasons[0].endDate) > new Date()
+                ) {
+                    setCurrentSeason(response.data.pastSeasons[0]);
+                    setPastSeasons(response.data.pastSeasons.slice(1));
+                } else {
+                    setPastSeasons(response.data.pastSeasons);
+                }
             })
             .catch((error: AxiosError) => {
                 console.log("Error fetching seasons: ", error.response?.data);
