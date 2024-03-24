@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { getGamesAPI, getPlayerNames } from "../api/GameAPI";
 import { AxiosError } from "axios";
-import { Button, Card, Col, Container, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Pagination, Row } from "react-bootstrap";
 import Select from "react-select";
 import { getSeasonsAPI } from "../api/AdminAPI";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +15,8 @@ const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Hong Kong", value: "hk" },
 ];
 
+const MAX_GAMES_PER_PAGE = 12;
+
 const GameLogs: FC = () => {
     const navigate = useNavigate();
 
@@ -27,6 +29,7 @@ const GameLogs: FC = () => {
 
     const [loading, setLoading] = useState(false);
     const [games, setGames] = useState<Game[]>([]);
+    const [pagination, setPagination] = useState<number>(1);
 
     useEffect(() => {
         getSeasonsAPI()
@@ -71,6 +74,7 @@ const GameLogs: FC = () => {
             .then((response) => {
                 setGames(response.data);
                 setLoading(false);
+                setPagination(1);
                 if (response.data.length === 0) {
                     return alert("No games found");
                 }
@@ -83,6 +87,47 @@ const GameLogs: FC = () => {
 
     const navigateToGame = (gameId: string) => {
         navigate(`/games/${queryGameVariant}/${gameId}`);
+    };
+
+    const getPaginatedGames = () => {
+        const startIdx = (pagination - 1) * MAX_GAMES_PER_PAGE;
+        const endIdx = Math.min(pagination * MAX_GAMES_PER_PAGE, games.length);
+
+        return games.slice(startIdx, endIdx);
+    };
+
+    const getPagination = () => {
+        if (games.length <= MAX_GAMES_PER_PAGE) {
+            return null;
+        }
+
+        const numPages = Math.ceil(games.length / MAX_GAMES_PER_PAGE);
+
+        return (
+            <Pagination className="justify-content-center" size="lg">
+                <Pagination.Prev
+                    disabled={pagination === 1}
+                    onClick={() => setPagination(pagination - 1)}
+                />
+                {pagination !== 1 && (
+                    <Pagination.Item onClick={() => setPagination(1)}>{1}</Pagination.Item>
+                )}
+                {pagination > 2 && <Pagination.Ellipsis disabled />}
+
+                <Pagination.Item active>{pagination}</Pagination.Item>
+
+                {pagination < numPages - 1 && <Pagination.Ellipsis disabled />}
+                {pagination !== numPages && (
+                    <Pagination.Item onClick={() => setPagination(numPages)}>
+                        {numPages}
+                    </Pagination.Item>
+                )}
+                <Pagination.Next
+                    disabled={pagination === numPages}
+                    onClick={() => setPagination(pagination + 1)}
+                />
+            </Pagination>
+        );
     };
 
     return (
@@ -138,7 +183,7 @@ const GameLogs: FC = () => {
             </Container>
             <Container>
                 <Row>
-                    {games.map((game, idx) => (
+                    {getPaginatedGames().map((game, idx) => (
                         <Col key={idx} className="text-center my-2" xs={12}>
                             <Card className="game-card" onClick={() => navigateToGame(game.id)}>
                                 <Card.Body>
@@ -148,6 +193,7 @@ const GameLogs: FC = () => {
                         </Col>
                     ))}
                 </Row>
+                <Row className="my-2">{getPagination()}</Row>
             </Container>
         </>
     );
