@@ -44,7 +44,10 @@ const Leaderboard: FC<GameTypeProp> = ({ gameVariant }) => {
                 console.log(new Date(response.data.pastSeasons[0].endDate));
                 console.log(new Date());
 
-                if (response.data.pastSeasons.length > 0 && new Date(response.data.pastSeasons[0].endDate) > new Date()) {
+                if (
+                    response.data.pastSeasons.length > 0 &&
+                    new Date(response.data.pastSeasons[0].endDate) > new Date()
+                ) {
                     setSelectSeason(response.data.pastSeasons[0]);
                 }
 

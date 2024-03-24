@@ -85,7 +85,10 @@ const AdminSeason: FC = () => {
     useEffect(() => {
         getSeasonsAPI()
             .then((response) => {
-                if (response.data.pastSeasons.length > 0 && new Date(response.data.pastSeasons[0].endDate) > new Date()) {
+                if (
+                    response.data.pastSeasons.length > 0 &&
+                    new Date(response.data.pastSeasons[0].endDate) > new Date()
+                ) {
                     setCurrentSeason(response.data.pastSeasons[0]);
                     setPastSeasons(response.data.pastSeasons.slice(1));
                 } else {
