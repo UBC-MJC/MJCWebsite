@@ -39,9 +39,13 @@ const Leaderboard: FC<GameTypeProp> = ({ gameVariant }) => {
         getSeasonsAPI()
             .then((response) => {
                 const allSeasons = response.data.pastSeasons;
-                if (response.data.currentSeason) {
-                    allSeasons.unshift(response.data.currentSeason);
-                    setSelectSeason(response.data.currentSeason);
+
+                console.log(response.data.pastSeasons[0].endDate);
+                console.log(new Date(response.data.pastSeasons[0].endDate));
+                console.log(new Date());
+
+                if (response.data.pastSeasons.length > 0 && new Date(response.data.pastSeasons[0].endDate) > new Date()) {
+                    setSelectSeason(response.data.pastSeasons[0]);
                 }
 
                 setSeasons(allSeasons);

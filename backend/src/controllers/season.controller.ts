@@ -29,14 +29,7 @@ const getSeasonsHandler = async (
 ): Promise<void> => {
     findAllSeasons()
         .then((seasons) => {
-            let currentSeason: Season | undefined = undefined;
-            if (seasons.length !== 0 && seasons[0].endDate > new Date()) {
-                currentSeason = seasons[0];
-                seasons.splice(0, 1);
-            }
-
             res.json({
-                currentSeason: currentSeason,
                 pastSeasons: seasons,
             });
         })

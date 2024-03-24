@@ -33,10 +33,6 @@ const GameLogs: FC = () => {
         getSeasonsAPI()
             .then((response) => {
                 const allSeasons = response.data.pastSeasons;
-                if (response.data.currentSeason) {
-                    allSeasons.unshift(response.data.currentSeason);
-                }
-
                 const selectOptions = allSeasons.map((season) => {
                     return { label: season.name, value: season.id };
                 });
