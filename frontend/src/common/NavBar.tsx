@@ -38,7 +38,7 @@ const NavBar: FC = () => {
                                 )}
                             </NavDropdown>
                         )}
-                        <NavDropdown title={"Current Games"} id="current-games-nav-dropdown">
+                        <NavDropdown title={"Live Games"} id="live-games-nav-dropdown">
                             <NavDropdown.Item as={Link} to="/games/current/jp">
                                 {getGameTypeString("jp")}
                             </NavDropdown.Item>

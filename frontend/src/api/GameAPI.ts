@@ -30,8 +30,8 @@ const getGameAPI = async (
     return axios.get(baseUrl + `/games/${gameVariant}/${gameId}`);
 };
 
-const getCurrentGamesAPI = async (gameVariant: GameVariant): Promise<AxiosResponse<Game[]>> => {
-    return axios.get(baseUrl + `/games/${gameVariant}/current`);
+const getLiveGamesAPI = async (gameVariant: GameVariant): Promise<AxiosResponse<Game[]>> => {
+    return axios.get(baseUrl + `/games/${gameVariant}/live`);
 };
 
 const deleteGameAPI = async (
@@ -80,7 +80,7 @@ export {
     getPlayerNames,
     createGameAPI,
     getGameAPI,
-    getCurrentGamesAPI,
+    getLiveGamesAPI,
     deleteGameAPI,
     submitGameAPI,
     addRoundAPI,

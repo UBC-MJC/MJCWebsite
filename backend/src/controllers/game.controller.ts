@@ -48,7 +48,7 @@ const getGameHandler = async (
     }
 };
 
-const getCurrentGamesHandler = async (
+const getLiveGamesHandler = async (
     req: Request,
     res: Response,
     next: NextFunction,
@@ -59,13 +59,11 @@ const getCurrentGamesHandler = async (
         const filter: GameFilterArgs = {
             gameStatus: "IN_PROGRESS",
         };
-        const currentGames = await gameService.getGames(filter);
-        const result = await Promise.all(
-            currentGames.map((game) => gameService.mapGameObject(game)),
-        );
+        const liveGames = await gameService.getGames(filter);
+        const result = await Promise.all(liveGames.map((game) => gameService.mapGameObject(game)));
         res.status(200).json(result);
     } catch (error: any) {
-        console.error("Error in getCurrentGamesHandler:", error);
+        console.error("Error in getLiveGamesHandler:", error);
         next(createError.InternalServerError(error.message));
     }
 };
@@ -243,7 +241,7 @@ export {
     getGamesHandler,
     getGameHandler,
     createGameHandler,
-    getCurrentGamesHandler,
+    getLiveGamesHandler,
     deleteGameHandler,
     submitGameHandler,
     createRoundHandler,

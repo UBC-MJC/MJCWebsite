@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import Game from "./Game";
-import { getCurrentGamesAPI } from "../api/GameAPI";
+import { getLiveGamesAPI } from "../api/GameAPI";
 import { AxiosError } from "axios";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import { getGameTypeString } from "../common/Utils";
@@ -9,14 +9,14 @@ import { generateJapaneseCurrentScore } from "./jp/controller/JapaneseRound";
 import { generateHongKongCurrentScore } from "./hk/controller/HongKongRound";
 import { gameRoundString } from "./common/constants";
 
-export const CurrentGames: FC<GameTypeProp> = ({ gameVariant }) => {
+export const LiveGames: FC<GameTypeProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
-    const [currentGames, setCurrentGames] = useState<Game[]>([]);
+    const [liveGames, setLiveGames] = useState<Game[]>([]);
 
     useEffect(() => {
-        getCurrentGamesAPI(gameVariant)
+        getLiveGamesAPI(gameVariant)
             .then((response) => {
-                setCurrentGames(response.data);
+                setLiveGames(response.data);
             })
             .catch((error: AxiosError) => {
                 alert(`Error fetching current games: ${error.response?.data}`);
@@ -82,10 +82,10 @@ export const CurrentGames: FC<GameTypeProp> = ({ gameVariant }) => {
 
     return (
         <>
-            <h1 className="my-4">Current {getGameTypeString(gameVariant)} Games</h1>
+            <h1 className="my-4">Live {getGameTypeString(gameVariant)} Games</h1>
             <Container>
                 <Row>
-                    {currentGames.map((game, idx) => (
+                    {liveGames.map((game, idx) => (
                         <Col key={idx} className="text-center my-2" xs={12} lg={6}>
                             <Card className="game-card" onClick={() => navigateToGame(game.id)}>
                                 <Card.Header style={{ fontSize: 18 }}>
