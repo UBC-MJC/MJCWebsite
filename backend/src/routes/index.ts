@@ -15,7 +15,7 @@ import {
     createRoundHandler,
     deleteGameHandler,
     deleteLastRoundHandler,
-    getCurrentGamesHandler,
+    getLiveGamesHandler,
     getGameHandler,
     getGamesHandler,
     recalcSeasonHandler,
@@ -41,7 +41,7 @@ router.post("/password-reset", passwordResetHandler);
 
 router.get("/games/:gameVariant", getGamesHandler);
 router.post("/games/:gameVariant", isAuthenticated, createGameHandler);
-router.get("/games/:gameVariant/current", getCurrentGamesHandler);
+router.get("/games/:gameVariant/live", getLiveGamesHandler);
 router.get("/games/:gameVariant/:id", getGameHandler);
 router.get("/games/:gameVariant/:id/live", (req, res, next) =>
     getGameHandler(req, res, next, true),

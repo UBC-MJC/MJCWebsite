@@ -1,7 +1,6 @@
 import {
     getEmptyScoreDelta,
     getHongKongStartingScore,
-    getJapaneseStartingScore,
     HongKongActions,
     HongKongTransactionType,
     NUM_PLAYERS,

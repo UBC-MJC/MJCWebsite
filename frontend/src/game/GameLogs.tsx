@@ -5,8 +5,6 @@ import { Button, Card, Col, Container, Pagination, Row } from "react-bootstrap";
 import Select from "react-select";
 import { getSeasonsAPI } from "../api/AdminAPI";
 import { useNavigate } from "react-router-dom";
-import { generateJapaneseCurrentScore } from "./jp/controller/JapaneseRound";
-import { generateHongKongCurrentScore } from "./hk/controller/HongKongRound";
 import alert from "../common/AlertDialog";
 import GameSummaryBody from "./common/GameSummaryBody";
 
@@ -72,6 +70,7 @@ const GameLogs: FC = () => {
         setLoading(true);
         getGamesAPI(queryGameVariant, querySeason!, queryPlayers)
             .then((response) => {
+                response.data.reverse();
                 setGames(response.data);
                 setLoading(false);
                 setPagination(1);
