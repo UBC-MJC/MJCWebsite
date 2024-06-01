@@ -21,7 +21,7 @@ const PlayerButtonRow = <T extends string>({
                     key={idx}
                     id={`name-${label}-${idx}`}
                     type={getToggleType(label)}
-                    variant="outline-primary"
+                    variant={getVariant(label)}
                     name={label + "-button"}
                     className="mx-1 my-1"
                     value={player.id}
@@ -41,5 +41,12 @@ const getToggleType = (label: string) => {
     }
     return "radio";
 };
+
+function getVariant(label: string): string {
+    if (label === "RIICHI") {
+        return "outline-secondary";
+    }
+    return "outline-primary";
+}
 
 export default PlayerButtonRow;

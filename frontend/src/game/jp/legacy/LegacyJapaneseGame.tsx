@@ -278,7 +278,17 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         </Col>
                     ))}
                 </Row>
-
+                <Row className="my-4">
+                    <Col>
+                        <h5>Riichis:</h5>
+                        <PlayerButtonRow
+                            players={players}
+                            label={"RIICHI"}
+                            labelPlayerIds={riichiList}
+                            onChange={riichiOnChange}
+                        />
+                    </Col>
+                </Row>
                 {getJapaneseLabels().map(([label, labelPlayerIds]) => (
                     <Row key={label} className="my-4">
                         <Col>
@@ -298,17 +308,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         onChange={handOnChange}
                     ></PointsInput>
                 )}
-                <Row className="my-4">
-                    <Col>
-                        <h5>Riichis:</h5>
-                        <PlayerButtonRow
-                            players={players}
-                            label={"RIICHI"}
-                            labelPlayerIds={riichiList}
-                            onChange={riichiOnChange}
-                        />
-                    </Col>
-                </Row>
+
                 {getTransactionMatters()}
             </>
         );

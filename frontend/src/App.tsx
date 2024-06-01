@@ -1,7 +1,6 @@
 import React from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-
-import "./App.css";
+import "./App.scss"
 import WithoutNav from "./common/WithoutNav";
 import WithNav from "./common/WithNav";
 import { AuthContextProvider } from "./common/AuthContext";
