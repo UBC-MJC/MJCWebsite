@@ -314,6 +314,7 @@ abstract class GameService {
     }
     abstract isEligible(player: Player): boolean;
     abstract getQualifiedPlayers(): Promise<Player[]>;
+    abstract getUserStatistics(seasonId: string, playerId: string): Promise<any>;
 }
 
 export { GameService };

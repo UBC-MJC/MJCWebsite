@@ -49,6 +49,9 @@ const NavBar: FC = () => {
                         <Nav.Link as={Link} to="/games">
                             Logs
                         </Nav.Link>
+                        <Nav.Link as={Link} to="/stats/jp">
+                            Stats
+                        </Nav.Link>
                         <Nav.Link as={Link} to="/resources">
                             Resources
                         </Nav.Link>

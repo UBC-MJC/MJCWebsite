@@ -4,6 +4,7 @@ import {
     getCurrentPlayerHandler,
     getPlayerLeaderboardHandler,
     getQualifiedPlayersHandler,
+    getUserStatisticsHandler,
     loginHandler,
     passwordResetHandler,
     registerHandler,
@@ -51,12 +52,12 @@ router.delete("/games/:gameVariant/:id", isAuthenticated, deleteGameHandler);
 router.post("/games/:gameVariant/:id/rounds", isAuthenticated, createRoundHandler);
 router.delete("/games/:gameVariant/:id/rounds", isAuthenticated, deleteLastRoundHandler);
 
-router.get("/players/gametype/:gameVariant/names", getQualifiedPlayersHandler);
-router.get("/players/gametype/:gameVariant/leaderboard", getPlayerLeaderboardHandler);
+router.get("/players/qualified/:gameVariant/names", getQualifiedPlayersHandler);
+router.get("/players/qualified/:gameVariant/leaderboard", getPlayerLeaderboardHandler);
 
 router.get("/players/current", isAuthenticated, getCurrentPlayerHandler);
 router.put("/players/current/settings", isAuthenticated, updateSettingsHandler);
-
+router.get("/players/:playerId/:gameVariant/:seasonId", getUserStatisticsHandler);
 router.get("/seasons/current", getCurrentSeasonHandler);
 router.get("/seasons", getSeasonsHandler);
 

@@ -193,3 +193,11 @@ type OptionsType = {
     label: string;
     value: string;
 };
+
+type StatisticsType = {
+    totalRounds: number;
+    dealInCount: number;
+    dealInPoint: number;
+    winCount: number;
+    winPoint: number;
+};

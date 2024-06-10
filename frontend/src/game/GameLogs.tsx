@@ -7,6 +7,7 @@ import { getSeasonsAPI } from "../api/AdminAPI";
 import { useNavigate } from "react-router-dom";
 import alert from "../common/AlertDialog";
 import GameSummaryBody from "./common/GameSummaryBody";
+import { mapPlayerNameToOption, mapSeasonToOption } from "./common/constants";
 
 const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Riichi", value: "jp" },
@@ -22,7 +23,7 @@ const GameLogs: FC = () => {
     const [players, setPlayers] = useState<OptionsType[]>([]);
 
     const [queryGameVariant, setQueryGameVariant] = useState<GameVariant>(gameVariants[0].value);
-    const [querySeason, setQuerySeason] = useState<string | undefined>();
+    const [querySeasonId, setQuerySeasonId] = useState<string | undefined>();
     const [queryPlayers, setQueryPlayers] = useState<string[]>([]);
 
     const [loading, setLoading] = useState(false);
@@ -33,9 +34,7 @@ const GameLogs: FC = () => {
         getSeasonsAPI()
             .then((response) => {
                 const allSeasons = response.data.pastSeasons;
-                const selectOptions = allSeasons.map((season) => {
-                    return { label: season.name, value: season.id };
-                });
+                const selectOptions = mapSeasonToOption(allSeasons);
 
                 setSeasons(selectOptions);
             })
@@ -47,11 +46,7 @@ const GameLogs: FC = () => {
     useEffect(() => {
         getPlayerNames(queryGameVariant)
             .then((response) => {
-                const selectOptions = response.data.map((player) => {
-                    return { label: player.username, value: player.playerId };
-                });
-
-                setPlayers(selectOptions);
+                setPlayers(mapPlayerNameToOption(response.data));
             })
             .catch((error: AxiosError) => {
                 console.error("Error fetching players: ", error.response?.data);
@@ -59,12 +54,12 @@ const GameLogs: FC = () => {
     }, [queryGameVariant]);
 
     const disableQueryButton = (): boolean => {
-        return loading || typeof querySeason === "undefined";
+        return loading || typeof querySeasonId === "undefined";
     };
 
     const getGames = () => {
         setLoading(true);
-        getGamesAPI(queryGameVariant, querySeason!, queryPlayers)
+        getGamesAPI(queryGameVariant, querySeasonId!, queryPlayers)
             .then((response) => {
                 response.data.reverse();
                 setGames(response.data);
@@ -149,7 +144,7 @@ const GameLogs: FC = () => {
                                 isSearchable
                                 placeholder="Choose a season"
                                 getOptionValue={(selectOptions) => selectOptions.label}
-                                onChange={(e) => setQuerySeason(e!.value)}
+                                onChange={(e) => setQuerySeasonId(e!.value)}
                             />
                         </div>
                     </Col>

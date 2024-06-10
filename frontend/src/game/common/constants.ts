@@ -184,6 +184,24 @@ export function getHongKongStartingScore(): number[] {
     return Array(NUM_PLAYERS).fill(HONGKONG_STARTING_POINT);
 }
 
+export function mapPlayerNameToOption(playerNameDatas: PlayerNamesDataType[]): OptionsType[] {
+    return sortOptions(
+        playerNameDatas.map((playerNameData) => {
+            return { label: playerNameData.username, value: playerNameData.playerId };
+        }),
+    );
+}
+
+export function sortOptions(options: OptionsType[]) {
+    return options.sort((a, b) => a.label.localeCompare(b.label));
+}
+
+export function mapSeasonToOption(seasons: Season[]): OptionsType[] {
+    return seasons.map((season) => {
+        return { label: season.name, value: season.id };
+    });
+}
+
 export const NUM_PLAYERS = 4;
 export const JAPANESE_STARTING_POINT = 25000;
 export const JAPANESE_RETURNING_POINT = 30000; // kaeshi, genten

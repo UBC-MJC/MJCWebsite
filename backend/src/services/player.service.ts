@@ -10,7 +10,10 @@ const createPlayer = async (player: RegisterType): Promise<Player> => {
     return bcrypt.hash(player.password, 12).then((hash) => {
         return prisma.player.create({
             data: {
-                ...player,
+                firstName: player.firstName,
+                lastName: player.lastName,
+                username: player.username,
+                email: player.email,
                 password: hash,
             },
         });
@@ -34,10 +37,9 @@ const deletePlayer = async (id: string): Promise<Player> => {
 };
 
 const requestPasswordReset = async (player: Player, host: string) => {
-    let resetToken = crypto.randomBytes(32).toString("hex");
+    const resetToken = crypto.randomBytes(32).toString("hex");
 
-    const hash = await bcrypt.hash(resetToken, 12);
-    tokenCache[player.id] = hash;
+    tokenCache[player.id] = await bcrypt.hash(resetToken, 12);
 
     const link = `${host}/password-reset?token=${resetToken}&id=${player.id}`;
     console.log("Link: ", link);

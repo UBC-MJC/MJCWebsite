@@ -9,6 +9,7 @@ import {
     range,
     reduceScoreDeltas,
     Wind,
+    WIND_ORDER,
 } from "./game.util";
 import { GameService } from "./game.service";
 import {
@@ -149,8 +150,8 @@ class JapaneseGameService extends GameService {
     }
 
     public transformDBRound(dbRound: FullJapaneseRound): ConcludedJapaneseRoundT {
-        const riichis = [];
-        const tenpais = [];
+        const riichis: number[] = [];
+        const tenpais: number[] = [];
         if (dbRound.player0Riichi) {
             riichis.push(0);
         }
@@ -200,6 +201,74 @@ class JapaneseGameService extends GameService {
                 japaneseQualified: true,
             },
         });
+    }
+
+    public async getUserStatistics(seasonId: string, playerId: string): Promise<any> {
+        const totalTemp = await prisma.$queryRaw`select count(*) as count
+                                   from JapaneseRound r,
+                                        JapanesePlayerGame pg,
+                                        JapaneseGame g
+                                   where pg.gameId = r.gameId
+                                     and g.id = pg.gameId
+                                     and g.seasonId = ${seasonId}
+                                     and pg.playerId = ${playerId}`;
+        const total = totalTemp[0].count;
+        const dealIns = [];
+        const wins = [];
+        for (const i in WIND_ORDER) {
+            // Note: have to use unsafe for performance
+            const attributeName = "player" + i + "ScoreChange";
+            const windDealIn: any = await prisma.$queryRawUnsafe(
+                `select -sum(${attributeName}) as dealInPoint,
+                        count(r.id)           as count
+                 from JapaneseTransaction t,
+                      JapaneseRound r,
+                      JapanesePlayerGame pg,
+                      JapaneseGame g
+                 where pg.gameId = r.gameId
+                   and r.id = t.roundId
+                   and t.transactionType in ('DEAL_IN', 'DEAL_IN_PAO')
+                   and (t.paoPlayerIndex IS NULL or t.paoPlayerIndex != ${Number(i)})
+                   and ${attributeName} < 0
+                   and pg.wind = ${"'" + String(WIND_ORDER[i]) + "'"}
+                   and pg.gameId = g.id
+                   and g.seasonId = ${"'" + seasonId + "'"}
+                   and pg.playerId = ${"'" + playerId + "'"}`,
+            );
+            const windWin: any = await prisma.$queryRawUnsafe(
+                `select sum(${attributeName}) as winPoint,
+                        count(r.id)            as count
+                 from JapaneseTransaction t,
+                      JapaneseRound r,
+                      JapanesePlayerGame pg,
+                      JapaneseGame g
+                 where pg.gameId = r.gameId
+                   and r.id = t.roundId
+                   and ${attributeName} > 0
+                   and pg.wind = ${"'" + String(WIND_ORDER[i]) + "'"}
+                   and pg.gameId = g.id
+                   and g.seasonId = ${"'" + seasonId + "'"}
+                   and pg.playerId = ${"'" + playerId + "'"}`,
+            );
+            dealIns.push(windDealIn[0]);
+            wins.push(windWin[0]);
+        }
+        const result = {
+            totalRounds: Number(total),
+            dealInCount: 0,
+            dealInPoint: 0,
+            winCount: 0,
+            winPoint: 0,
+        };
+        for (const dealIn of dealIns) {
+            result.dealInCount += Number(dealIn.count);
+            result.dealInPoint += Number(dealIn.dealInPoint);
+        }
+        for (const win of wins) {
+            result.winCount += Number(win.count);
+            result.winPoint += Number(win.winPoint);
+        }
+        return result;
     }
 }
 

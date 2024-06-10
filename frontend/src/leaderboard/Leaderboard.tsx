@@ -5,6 +5,7 @@ import { getGameTypeString } from "../common/Utils";
 import { Container, Table } from "react-bootstrap";
 import Select from "react-select";
 import { getSeasonsAPI } from "../api/AdminAPI";
+import { mapSeasonToOption } from "../game/common/constants";
 
 const Leaderboard: FC<GameTypeProp> = ({ gameVariant }) => {
     const [seasons, setSeasons] = useState<Season[]>([]);
@@ -39,16 +40,8 @@ const Leaderboard: FC<GameTypeProp> = ({ gameVariant }) => {
         getSeasonsAPI()
             .then((response) => {
                 const allSeasons = response.data.pastSeasons;
-
-                console.log(response.data.pastSeasons[0].endDate);
-                console.log(new Date(response.data.pastSeasons[0].endDate));
-                console.log(new Date());
-
-                if (
-                    response.data.pastSeasons.length > 0 &&
-                    new Date(response.data.pastSeasons[0].endDate) > new Date()
-                ) {
-                    setSelectSeason(response.data.pastSeasons[0]);
+                if (allSeasons.length > 0 && new Date(allSeasons[0].endDate) > new Date()) {
+                    setSelectSeason(allSeasons[0]);
                 }
 
                 setSeasons(allSeasons);
@@ -58,13 +51,6 @@ const Leaderboard: FC<GameTypeProp> = ({ gameVariant }) => {
                 console.error("Error fetching seasons: ", error.response?.data);
             });
     }, []);
-
-    const getSelectOptions = (seasons: Season[]): OptionsType[] => {
-        return seasons.map((season, index) => {
-            return { label: season.name, value: index.toString() };
-        });
-    };
-
     if (loading) {
         return <h5 className="my-3">Loading...</h5>;
     }
@@ -77,7 +63,7 @@ const Leaderboard: FC<GameTypeProp> = ({ gameVariant }) => {
                 <div className="text-start d-flex justify-content-center align-items-end">
                     <h5 className="mx-2">Season: </h5>
                     <Select
-                        options={getSelectOptions(seasons)}
+                        options={mapSeasonToOption(seasons)}
                         isSearchable
                         placeholder="Choose a season"
                         value={
