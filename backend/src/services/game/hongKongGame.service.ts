@@ -140,7 +140,7 @@ class HongKongGameService extends GameService {
     }
 
     public async getUserStatistics(seasonId: string, playerId: string): Promise<any> {
-        const total: number = await prisma.$queryRaw`select count(*) as count
+        const total: number = await prisma.$queryRaw<{ count: number }[]>`select count(*) as count
             from HongKongRound r,
                  HongKongPlayerGame pg,
                  HongKongGame g
@@ -153,7 +153,9 @@ class HongKongGameService extends GameService {
         for (const i in WIND_ORDER) {
             // Note: have to use unsafe for performance
             const attributeName = "player" + i + "ScoreChange";
-            const windDealIn: any = await prisma.$queryRawUnsafe(
+            const windDealIn = await prisma.$queryRawUnsafe<
+                { dealInPoint: number; count: number }[]
+            >(
                 `select sum(${attributeName}) as dealInPoint,
                         count(r.id)           as count
                  from HongKongTransaction t,
@@ -169,7 +171,7 @@ class HongKongGameService extends GameService {
                    and g.seasonId = ${"'" + seasonId + "'"}
                    and pg.playerId = ${playerId}`,
             );
-            const windWin: any = await prisma.$queryRawUnsafe(
+            const windWin = await prisma.$queryRawUnsafe<{ winPoint: number; count: number }[]>(
                 `select
                         sum(${attributeName}) as dealInPoint,
                         count(r.id)           as count
