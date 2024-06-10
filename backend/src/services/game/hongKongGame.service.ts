@@ -140,7 +140,7 @@ class HongKongGameService extends GameService {
     }
 
     public async getUserStatistics(seasonId: string, playerId: string): Promise<any> {
-        const total: number = await prisma.$queryRaw<{ count: number }[]>`select count(*) as count
+        const total = await prisma.$queryRaw<{ count: number }[]>`select count(*) as count
             from HongKongRound r,
                  HongKongPlayerGame pg,
                  HongKongGame g
@@ -191,7 +191,7 @@ class HongKongGameService extends GameService {
             wins.push(windWin);
         }
         const result = {
-            totalRounds: Number(total),
+            totalRounds: Number(total[0].count),
             dealInCount: 0,
             dealInPoint: 0,
             winCount: 0,

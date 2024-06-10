@@ -204,7 +204,7 @@ class JapaneseGameService extends GameService {
     }
 
     public async getUserStatistics(seasonId: string, playerId: string): Promise<any> {
-        const totalTemp = await prisma.$queryRaw<{ count: number }[]>`select count(*) as count
+        const total = await prisma.$queryRaw<{ count: number }[]>`select count(*) as count
                                    from JapaneseRound r,
                                         JapanesePlayerGame pg,
                                         JapaneseGame g
@@ -212,7 +212,6 @@ class JapaneseGameService extends GameService {
                                      and g.id = pg.gameId
                                      and g.seasonId = ${seasonId}
                                      and pg.playerId = ${playerId}`;
-        const total = totalTemp[0].count;
         const dealIns = [];
         const wins = [];
         for (const i in WIND_ORDER) {
@@ -258,7 +257,7 @@ class JapaneseGameService extends GameService {
             wins.push(windWin[0]);
         }
         const result = {
-            totalRounds: Number(total),
+            totalRounds: Number(total[0].count),
             dealInCount: 0,
             dealInPoint: 0,
             winCount: 0,
