@@ -93,20 +93,32 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
                     </Col>
                 </Row>
                 <Row className="mb-4">
-                    <Col>Deal in rate</Col>
-                    <Col>{((100 * stats.dealInCount) / stats.totalRounds).toFixed(2)}%</Col>
-                    <Col>Avg Deal in size</Col>
-                    <Col>{(stats.dealInPoint / stats.dealInCount).toFixed(0)}</Col>
+                    <Col>Deal-in %</Col>
+                    <Col>
+                        {divideWithDefault(100 * stats.dealInCount, stats.totalRounds).toFixed(2)}%
+                    </Col>
+                    <Col>Avg Deal-in size</Col>
+                    <Col>{divideWithDefault(stats.dealInPoint, stats.dealInCount).toFixed(0)}</Col>
                 </Row>
                 <Row className="mb-4">
-                    <Col>Win rate</Col>
-                    <Col>{((100 * stats.winCount) / stats.totalRounds).toFixed(2)}%</Col>
-                    <Col>Avg Win size</Col>
-                    <Col>{(stats.winPoint / stats.winCount).toFixed()}</Col>
+                    <Col>Agari %</Col>
+                    <Col>
+                        {divideWithDefault(100 * stats.winCount, stats.totalRounds).toFixed(2)}%
+                    </Col>
+                    <Col>Avg Agari size</Col>
+                    <Col>{divideWithDefault(stats.winPoint, stats.winCount).toFixed()}</Col>
                 </Row>
             </Container>
         </div>
     );
 };
+
+function divideWithDefault(numerator: number, denominator: number, defaultValue = 0) {
+    const result = numerator / denominator;
+    if (isNaN(result)) {
+        return defaultValue;
+    }
+    return result;
+}
 
 export default Statistics;
