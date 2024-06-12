@@ -24,7 +24,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
             .then((response) => {
                 const playerNames = response.data
                     .map((player: PlayerNamesDataType) => player.username)
-                    .sort();
+                    .sort((a, b) => a.localeCompare(b));
                 const selectOptions = playerNames.map((name) => {
                     return { label: name };
                 });

@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import "./App.scss"
+import "./App.scss";
 import WithoutNav from "./common/WithoutNav";
 import WithNav from "./common/WithNav";
 import { AuthContextProvider } from "./common/AuthContext";
@@ -45,7 +45,7 @@ const App: React.FC = () => {
                         <Route path="/games/create/hk" element={<CreateGame gameVariant="hk" />} />
                         <Route path="/games" element={<GameLogs />} />
                         <Route path="/resources" element={<Resources />} />
-                        <Route path="/stats" element={<Statistics />} />
+                        <Route path="/stats/jp" element={<Statistics gameVariant={"jp"} />} />
                         <Route path="/admin" element={<Admin />} />
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/unauthorized" element={<Unauthorized />} />

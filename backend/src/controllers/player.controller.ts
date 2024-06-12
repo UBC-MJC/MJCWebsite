@@ -12,7 +12,7 @@ import { generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
 import { getCurrentSeason } from "../services/season.service";
 import { getGameService, STARTING_ELO } from "../services/game/game.util";
-import { Season } from "@prisma/client";
+import { GameService } from "../services/game/game.service";
 
 const registerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     registerSchema
@@ -174,6 +174,18 @@ const updateSettingsHandler = async (
         });
 };
 
+async function getUserStatisticsHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> {
+    const gameVariant: string = req.params.gameVariant;
+    const gameService: GameService = getGameService(gameVariant);
+    const playerId: string = req.params.playerId;
+    const seasonId: string = req.params.seasonId;
+    const result = await gameService.getUserStatistics(seasonId, playerId);
+    res.json(result);
+}
 export {
     registerHandler,
     loginHandler,
@@ -183,4 +195,5 @@ export {
     getPlayerLeaderboardHandler,
     getCurrentPlayerHandler,
     updateSettingsHandler,
+    getUserStatisticsHandler,
 };
