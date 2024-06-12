@@ -184,7 +184,9 @@ export function getHongKongStartingScore(): number[] {
     return Array(NUM_PLAYERS).fill(HONGKONG_STARTING_POINT);
 }
 
-export function mapPlayerNameToOption(playerNameDatas: PlayerNamesDataType[]): OptionsType[] {
+export function mapPlayerNameToOption(
+    playerNameDatas: PlayerNamesDataType[],
+): OptionsType<string>[] {
     return sortOptions(
         playerNameDatas.map((playerNameData) => {
             return { label: playerNameData.username, value: playerNameData.playerId };
@@ -192,13 +194,26 @@ export function mapPlayerNameToOption(playerNameDatas: PlayerNamesDataType[]): O
     );
 }
 
-export function sortOptions(options: OptionsType[]) {
+export function sortOptions(options: OptionsType<any>[]) {
     return options.sort((a, b) => a.label.localeCompare(b.label));
 }
 
-export function mapSeasonToOption(seasons: Season[]): OptionsType[] {
+export function mapSeasonToOption(seasons: Season[]): OptionsType<Season>[] {
     return seasons.map((season) => {
-        return { label: season.name, value: season.id };
+        return { label: season.name, value: season };
+    });
+}
+
+export function mapLeaderboardToOneDecimal(leaderboards: LeaderboardType[]) {
+    const playerElos = leaderboards.sort((a, b) => {
+        return Number(b.elo) - Number(a.elo);
+    });
+    return playerElos.map((player) => {
+        const elo = Number(player.elo);
+        return {
+            ...player,
+            elo: elo.toFixed(1),
+        };
     });
 }
 

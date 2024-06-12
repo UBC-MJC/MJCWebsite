@@ -28,7 +28,7 @@ type GameType = "RANKED" | "PLAY_OFF" | "TOURNEY";
 
 type GameVariant = "jp" | "hk";
 
-type GameTypeProp = {
+type GameVariantProp = {
     gameVariant: GameVariant;
 };
 
@@ -189,9 +189,9 @@ type HongKongTransactionType =
     | "SELF_DRAW_PAO"
     | "RESHUFFLE";
 
-type OptionsType = {
+type OptionsType<T> = {
     label: string;
-    value: string;
+    value: T;
 };
 
 type StatisticsType = {

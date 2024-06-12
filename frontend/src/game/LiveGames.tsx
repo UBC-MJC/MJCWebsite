@@ -2,12 +2,12 @@ import React, { FC, useEffect, useState } from "react";
 import { getLiveGamesAPI } from "../api/GameAPI";
 import { AxiosError } from "axios";
 import { Card, Col, Container, Row } from "react-bootstrap";
-import { getGameTypeString } from "../common/Utils";
+import { getGameVariantString } from "../common/Utils";
 import { useNavigate } from "react-router-dom";
 import { gameRoundString } from "./common/constants";
 import GameSummaryBody from "./common/GameSummaryBody";
 
-export const LiveGames: FC<GameTypeProp> = ({ gameVariant }) => {
+export const LiveGames: FC<GameVariantProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
     const [liveGames, setLiveGames] = useState<Game[]>([]);
 
@@ -35,7 +35,7 @@ export const LiveGames: FC<GameTypeProp> = ({ gameVariant }) => {
 
     return (
         <>
-            <h1 className="my-4">Live {getGameTypeString(gameVariant)} Games</h1>
+            <h1 className="my-4">Live {getGameVariantString(gameVariant)} Games</h1>
             <Container>
                 <Row>
                     {liveGames.map((game, idx) => (

@@ -81,10 +81,10 @@ const validateGameVariant = (gameVariant: string | undefined): gameVariant is Ga
     return typeof gameVariant !== "undefined" && (gameVariant === "jp" || gameVariant === "hk");
 };
 
-const getGameTypeString = (gameType: GameVariant): string => {
-    if (gameType === "jp") {
+const getGameVariantString = (gameVariant: GameVariant): string => {
+    if (gameVariant === "jp") {
         return "Riichi";
-    } else if (gameType === "hk") {
+    } else if (gameVariant === "hk") {
         return "Hong Kong";
     }
     return "";
@@ -123,7 +123,7 @@ export {
     japaneseRoundLabels,
     hongKongRoundLabels,
     windComparison,
-    getGameTypeString,
+    getGameVariantString,
     validateGameVariant,
     mapWindToCharacter,
     mapChineseNumerals,

@@ -6,9 +6,9 @@ import { AuthContext } from "../common/AuthContext";
 import { withPlayerCondition } from "../common/withPlayerCondition";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import { getGameTypeString } from "../common/Utils";
+import { getGameVariantString } from "../common/Utils";
 
-const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
+const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
     const { player } = useContext(AuthContext);
 
@@ -50,7 +50,7 @@ const CreateGameComponent: FC<GameTypeProp> = ({ gameVariant }) => {
             });
     };
 
-    const title = `Create Ranked ${getGameTypeString(gameVariant)} Game`;
+    const title = `Create Ranked ${getGameVariantString(gameVariant)} Game`;
 
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
     const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4;

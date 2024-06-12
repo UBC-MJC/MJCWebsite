@@ -6,11 +6,11 @@ const getCurrentSeason = async (): Promise<AxiosResponse<Season>> => {
 };
 
 const getPlayerLeaderboard = async (
-    gameType: string,
+    gameVariant: string,
     seasonId: string,
 ): Promise<AxiosResponse<{ players: LeaderboardType[] }>> => {
     return axios.get(
-        baseUrl + "/players/qualified/" + gameType + "/leaderboard/?seasonId=" + seasonId,
+        baseUrl + "/players/qualified/" + gameVariant + "/leaderboard/?seasonId=" + seasonId,
     );
 };
 

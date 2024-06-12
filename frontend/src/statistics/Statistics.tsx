@@ -12,9 +12,9 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const [playerId, setPlayerId] = useState<string | undefined>(
         useContext(AuthContext).player?.id,
     );
-    const [players, setPlayers] = useState<OptionsType[]>([]);
+    const [players, setPlayers] = useState<OptionsType<string>[]>([]);
     const [seasonId, setSeasonId] = useState<string | undefined>();
-    const [seasons, setSeasons] = useState<OptionsType[]>([]);
+    const [seasons, setSeasons] = useState<OptionsType<Season>[]>([]);
     const [stats, setStats] = useState<StatisticsType>();
     useEffect(() => {
         async function init() {
@@ -25,24 +25,7 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
             if (allSeasons.length > 0 && new Date(allSeasons[0].endDate) > new Date()) {
                 setSeasonId(allSeasons[0].id);
             }
-
             setSeasons(mapSeasonToOption(allSeasons));
-            if (playerId === undefined) {
-                setStats({
-                    dealInCount: 0,
-                    dealInPoint: 0,
-                    totalRounds: 0,
-                    winCount: 0,
-                    winPoint: 0,
-                });
-            } else {
-                const statsResponse = await getUserStatistics(
-                    playerId,
-                    gameVariant,
-                    allSeasons[0].id,
-                );
-                setStats(statsResponse.data);
-            }
         }
         if (seasonId === undefined) {
             init().catch((error: AxiosError) => {
@@ -52,11 +35,21 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     }, []);
 
     useEffect(() => {
-        async function getUserStats(seasonId: string, playerId: string) {
-            const statsResponse = await getUserStatistics(playerId, gameVariant, seasonId);
-            setStats(statsResponse.data);
+        async function getUserStats(seasonId: string, playerId: string | undefined) {
+            if (playerId === undefined) {
+                setStats({
+                    dealInCount: 0,
+                    dealInPoint: 0,
+                    totalRounds: 0,
+                    winCount: 0,
+                    winPoint: 0,
+                });
+            } else {
+                const statsResponse = await getUserStatistics(playerId, gameVariant, seasonId);
+                setStats(statsResponse.data);
+            }
         }
-        if (seasonId !== undefined && playerId !== undefined) {
+        if (seasonId !== undefined) {
             getUserStats(seasonId, playerId).catch((error: AxiosError) => {
                 console.error("Error fetching seasons: ", error.response?.data);
             });
@@ -78,7 +71,7 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
                             isSearchable
                             defaultValue={seasons[0]}
                             getOptionValue={(selectOptions) => selectOptions.label}
-                            onChange={(e) => setSeasonId(e!.value)}
+                            onChange={(e) => setSeasonId(e!.value.id)}
                         />
                     </Col>
                     <Col>

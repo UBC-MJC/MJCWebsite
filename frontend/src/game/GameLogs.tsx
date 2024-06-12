@@ -19,8 +19,8 @@ const MAX_GAMES_PER_PAGE = 12;
 const GameLogs: FC = () => {
     const navigate = useNavigate();
 
-    const [seasons, setSeasons] = useState<OptionsType[]>([]);
-    const [players, setPlayers] = useState<OptionsType[]>([]);
+    const [seasons, setSeasons] = useState<OptionsType<Season>[]>([]);
+    const [players, setPlayers] = useState<OptionsType<string>[]>([]);
 
     const [queryGameVariant, setQueryGameVariant] = useState<GameVariant>(gameVariants[0].value);
     const [querySeasonId, setQuerySeasonId] = useState<string | undefined>();
@@ -144,7 +144,7 @@ const GameLogs: FC = () => {
                                 isSearchable
                                 placeholder="Choose a season"
                                 getOptionValue={(selectOptions) => selectOptions.label}
-                                onChange={(e) => setQuerySeasonId(e!.value)}
+                                onChange={(e) => setQuerySeasonId(e!.value.id)}
                             />
                         </div>
                     </Col>
