@@ -88,6 +88,14 @@ const createGameHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
+    const currentTime = new Date();
+    if (
+        (currentTime.getHours() >= 22 && currentTime.getMinutes() >= 15) ||
+        currentTime.getHours() < 6
+    ) {
+        next(createError.InternalServerError("No games shall begin after 22:15"));
+        return;
+    }
     const gameVariant: string = req.params.gameVariant;
 
     try {

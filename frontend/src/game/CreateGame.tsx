@@ -55,6 +55,26 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
     const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4;
 
+    function getButton() {
+        const currentTime = new Date();
+        if (
+            (currentTime.getHours() >= 22 && currentTime.getMinutes() >= 15) ||
+            currentTime.getHours() < 6
+        ) {
+            return <div>No games shall begin between 22:15 to 06:00 + 1</div>;
+        }
+        return (
+            <Button
+                className="my-4 mx-auto"
+                variant="primary"
+                disabled={playerSelectMissing || notUnique}
+                onClick={createGame}
+            >
+                Create Game
+            </Button>
+        );
+    }
+
     return (
         <Container>
             <h1 className="my-4">{title}</h1>
@@ -112,14 +132,7 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
                     </div>
                 </Col>
             </Row>
-            <Button
-                className="my-4 mx-auto"
-                variant="primary"
-                disabled={playerSelectMissing || notUnique}
-                onClick={createGame}
-            >
-                Create Game
-            </Button>
+            {getButton()}
         </Container>
     );
 };
