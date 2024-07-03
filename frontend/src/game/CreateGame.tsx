@@ -7,33 +7,33 @@ import { withPlayerCondition } from "../common/withPlayerCondition";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import { getGameVariantString } from "../common/Utils";
+import { useQuery } from "@tanstack/react-query";
 
 const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
     const { player } = useContext(AuthContext);
-
-    const [playerNames, setPlayerNames] = useState<{ label: string }[]>([]);
 
     const [eastPlayer, setEastPlayer] = useState<string | null>(null);
     const [southPlayer, setSouthPlayer] = useState<string | null>(null);
     const [westPlayer, setWestPlayer] = useState<string | null>(null);
     const [northPlayer, setNorthPlayer] = useState<string | null>(null);
 
-    useEffect(() => {
-        getPlayerNames(gameVariant)
-            .then((response) => {
-                const playerNames = response.data
-                    .map((player: PlayerNamesDataType) => player.username)
-                    .sort((a, b) => a.localeCompare(b));
-                const selectOptions = playerNames.map((name) => {
-                    return { label: name };
-                });
-                setPlayerNames(selectOptions);
-            })
-            .catch((error: AxiosError) => {
-                alert(`Error fetching player names: ${error.response?.data}`);
+    const {
+        isPending,
+        error,
+        data: playerNames,
+    } = useQuery({
+        queryKey: ["createGame", "gameVariant", gameVariant],
+        queryFn: async () => {
+            const playerNamesData = await getPlayerNames(gameVariant);
+            const playerNames = playerNamesData.data
+                .map((player: PlayerNamesDataType) => player.username)
+                .sort((a, b) => a.localeCompare(b));
+            return playerNames.map((name) => {
+                return { label: name };
             });
-    }, [gameVariant]);
+        },
+    });
 
     const createGame = () => {
         if (playerSelectMissing || notUnique) {
@@ -54,7 +54,9 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
 
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
     const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4;
+    if (isPending) return <>Loading...</>;
 
+    if (error) return <>{"An error has occurred: " + error.message}</>;
     return (
         <Container>
             <h1 className="my-4">{title}</h1>

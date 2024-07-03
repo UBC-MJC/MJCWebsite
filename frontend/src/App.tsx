@@ -20,6 +20,7 @@ import RequestPasswordReset from "./login/RequestPasswordReset";
 import PasswordReset from "./login/PasswordReset";
 import { Resources } from "./resources/Resources";
 import GameLogs from "./game/GameLogs";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const useQuery = () => {
     const { search } = useLocation();
@@ -29,48 +30,71 @@ const useQuery = () => {
 
 const App: React.FC = () => {
     const query = useQuery();
-
+    const queryClient = new QueryClient();
     return (
-        <main className="App">
-            <AuthContextProvider>
-                <Routes>
-                    <Route element={<WithNav />}>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/leaderboard/jp" element={<Leaderboard gameVariant="jp" />} />
-                        <Route path="/leaderboard/hk" element={<Leaderboard gameVariant="hk" />} />
-                        <Route path="/games/:variant/:id" element={<Game />} />
-                        <Route path="/games/current/jp" element={<LiveGames gameVariant="jp" />} />
-                        <Route path="/games/current/hk" element={<LiveGames gameVariant="hk" />} />
-                        <Route path="/games/create/jp" element={<CreateGame gameVariant="jp" />} />
-                        <Route path="/games/create/hk" element={<CreateGame gameVariant="hk" />} />
-                        <Route path="/games" element={<GameLogs />} />
-                        <Route path="/resources" element={<Resources />} />
-                        <Route path="/stats/jp" element={<Statistics gameVariant={"jp"} />} />
-                        <Route path="/admin" element={<Admin />} />
-                        <Route path="/settings" element={<Settings />} />
-                        <Route path="/unauthorized" element={<Unauthorized />} />
-                    </Route>
-                    <Route element={<WithoutNav />}>
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/request-password-reset" element={<RequestPasswordReset />} />
+        <QueryClientProvider client={queryClient}>
+            <main className="App">
+                <AuthContextProvider>
+                    <Routes>
+                        <Route element={<WithNav />}>
+                            <Route path="/" element={<Home />} />
+                            <Route
+                                path="/leaderboard/jp"
+                                element={<Leaderboard gameVariant="jp" />}
+                            />
+                            <Route
+                                path="/leaderboard/hk"
+                                element={<Leaderboard gameVariant="hk" />}
+                            />
+                            <Route path="/games/:variant/:id" element={<Game />} />
+                            <Route
+                                path="/games/current/jp"
+                                element={<LiveGames gameVariant="jp" />}
+                            />
+                            <Route
+                                path="/games/current/hk"
+                                element={<LiveGames gameVariant="hk" />}
+                            />
+                            <Route
+                                path="/games/create/jp"
+                                element={<CreateGame gameVariant="jp" />}
+                            />
+                            <Route
+                                path="/games/create/hk"
+                                element={<CreateGame gameVariant="hk" />}
+                            />
+                            <Route path="/games" element={<GameLogs />} />
+                            <Route path="/resources" element={<Resources />} />
+                            <Route path="/stats/jp" element={<Statistics gameVariant={"jp"} />} />
+                            <Route path="/admin" element={<Admin />} />
+                            <Route path="/settings" element={<Settings />} />
+                            <Route path="/unauthorized" element={<Unauthorized />} />
+                        </Route>
+                        <Route element={<WithoutNav />}>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route
+                                path="/request-password-reset"
+                                element={<RequestPasswordReset />}
+                            />
+                            <Route
+                                path="/password-reset"
+                                element={
+                                    <PasswordReset
+                                        playerId={query.get("id")}
+                                        token={query.get("token")}
+                                    />
+                                }
+                            />
+                        </Route>
                         <Route
-                            path="/password-reset"
-                            element={
-                                <PasswordReset
-                                    playerId={query.get("id")}
-                                    token={query.get("token")}
-                                />
-                            }
+                            path="*" // redirect to home if no route matches
+                            element={<Navigate to="/" replace />}
                         />
-                    </Route>
-                    <Route
-                        path="*" // redirect to home if no route matches
-                        element={<Navigate to="/" replace />}
-                    />
-                </Routes>
-            </AuthContextProvider>
-        </main>
+                    </Routes>
+                </AuthContextProvider>
+            </main>
+        </QueryClientProvider>
     );
 };
 

@@ -27,11 +27,7 @@ const getSeasonsHandler = async (
     next: NextFunction,
 ): Promise<void> => {
     findAllSeasons()
-        .then((seasons) => {
-            res.json({
-                pastSeasons: seasons,
-            });
-        })
+        .then((seasons) => res.json(seasons))
         .catch((err: any) => {
             next(createError.InternalServerError(err.message));
         });

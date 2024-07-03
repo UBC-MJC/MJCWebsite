@@ -33,7 +33,7 @@ const GameLogs: FC = () => {
     useEffect(() => {
         getSeasonsAPI()
             .then((response) => {
-                const allSeasons = response.data.pastSeasons;
+                const allSeasons = response.data;
                 const selectOptions = mapSeasonToOption(allSeasons);
 
                 setSeasons(selectOptions);

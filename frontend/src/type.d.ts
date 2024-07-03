@@ -79,9 +79,7 @@ type Season = {
     endDate: string;
 };
 
-type SeasonsAPIDataType = {
-    pastSeasons: Season[];
-};
+type SeasonsAPIDataType = Season[];
 
 type AuthContextType = {
     player: Player | undefined;

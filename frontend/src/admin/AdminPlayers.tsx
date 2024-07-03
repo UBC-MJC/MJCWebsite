@@ -21,6 +21,7 @@ import {
 import { FaBan, FaCheck, FaEdit, FaSave, FaTrash } from "react-icons/fa";
 import IconButton from "../common/IconButton";
 import confirmDialog from "../common/ConfirmationDialog";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const booleanToCheckmark = (value: boolean) => {
     return value ? (
@@ -105,85 +106,102 @@ const playerColumns: ColumnDef<Player, any>[] = [
 const AdminPlayers: FC = () => {
     const { player } = useContext(AuthContext);
 
-    const [players, setPlayers] = useState<Player[]>([]);
+    if (!player) {
+        return <>No player logged in</>;
+    }
+    const queryKey = ["adminPlayers", player];
     const [editableRowId, setEditableRowId] = useState<string | undefined>(undefined);
     const [editedPlayer, setEditedPlayer] = useState<Player | undefined>(undefined);
 
-    useEffect(() => {
-        getPlayersAdminAPI(player!.authToken)
+    const queryClient = useQueryClient();
+
+    const {
+        isPending,
+        data: players,
+        error,
+    } = useQuery({
+        queryKey: queryKey,
+        queryFn: async () => {
+            const response = await getPlayersAdminAPI(player.authToken);
+            return response.data.players;
+        },
+    });
+
+    const deletePlayerMutation = useMutation({
+        mutationFn: (playerId: string) => deletePlayerAPI(player.authToken, playerId),
+        onSuccess: (response) => {
+            queryClient.setQueryData(
+                queryKey,
+                players.filter((player: Player) => player.id !== response.data.id),
+            );
+        },
+        onError: (error: AxiosError) => {
+            console.log("Error deleting player: ", error.response?.data);
+        },
+    });
+
+    const savePlayerMutation = useMutation({
+        mutationFn: (editedPlayer: Player) => updatePlayerAPI(player.authToken, editedPlayer),
+        onSuccess: (response) => {
+            queryClient.setQueryData(
+                queryKey,
+                players.map((player: Player) => {
+                    if (player.id === response.data.id) {
+                        return { ...editedPlayer };
+                    }
+                    return player;
+                }),
+            );
+            setEditableRowId(undefined);
+            setEditedPlayer(undefined);
+        },
+        onError: (error: AxiosError) => {
+            console.log("Error updating player: ", error.response?.data);
+        },
+    });
+
+    const makeTestAdmins = () => {
+        makeDummyAdminsAPI(player.authToken).catch((err: AxiosError) => {
+            console.log("Error making dummy admins: ", err.response?.data);
+        });
+    };
+
+    const recalcCurrentSeasonHK = () => {
+        recalcSeasonAPI(player.authToken, "hk")
             .then((response) => {
-                setPlayers(response.data.players);
+                console.log("HK Recalculation Complete", response.data);
             })
-            .catch((error: AxiosError) => {
-                console.log("Error fetching players: ", error.response?.data);
+            .catch((err) => {
+                console.log("Error recalculating hk", err.response.data);
             });
-    }, [player]);
+    };
+
+    const recalcCurrentSeasonJP = () => {
+        recalcSeasonAPI(player.authToken, "jp")
+            .then((response) => {
+                console.log("JP Recalculation Complete", response.data);
+            })
+            .catch((err) => {
+                console.log("Error recalculating riichi", err.response.data);
+            });
+    };
 
     const deletePlayer = async (playerId: string) => {
         const response = await confirmDialog("Are you sure you want to delete this player?", {
             okText: "Delete",
             okButtonStyle: "danger",
         });
-        if (!response) {
-            return;
+        if (response) {
+            deletePlayerMutation.mutate(playerId);
         }
-
-        deletePlayerAPI(player!.authToken, playerId)
-            .then((response) => {
-                setPlayers(players.filter((player) => player.id !== response.data.id));
-            })
-            .catch((error: AxiosError) => {
-                console.log("Error deleting player: ", error.response?.data);
-            });
     };
 
     const savePlayer = async () => {
-        if (typeof editedPlayer === "undefined") {
+        if (editedPlayer) {
+            savePlayerMutation.mutate(editedPlayer);
+        } else {
             console.log("Error updating player: editedPlayer is undefined");
-            return;
         }
-
-        updatePlayerAPI(player!.authToken, editedPlayer)
-            .then((response) => {
-                const newPlayers = players.map((player) => {
-                    if (player.id === editedPlayer.id) {
-                        return { ...editedPlayer };
-                    }
-                    return { ...player };
-                });
-                setPlayers(newPlayers);
-                setEditableRowId(undefined);
-                setEditedPlayer(undefined);
-            })
-            .catch((error: AxiosError) => {
-                console.log("Error updating player: ", error.response?.data);
-            });
-    };
-
-    const makeTestAdmins = () => {
-        makeDummyAdminsAPI(player!.authToken).catch((err: any) => {
-            console.log("Error making dummy admins: ", err.response?.data);
-        });
-    };
-
-    const recalcCurrentSeasonHK = () => {
-        recalcSeasonAPI(player!.authToken, "hk")
-            .then((response) => {
-                console.log("HK Recalculation Complete", response.data);
-            })
-            .catch((err: any) => {
-                console.log("Error recalculating hk", err.response?.data);
-            });
-    };
-
-    const recalcCurrentSeasonJP = () => {
-        recalcSeasonAPI(player!.authToken, "jp")
-            .then((response) => {
-                console.log("JP Recalculation Complete", response.data);
-            })
-            .catch((err: any) => {
-                console.log("Error recalculating riichi", err.response?.data);
-            });
     };
 
     const table = useReactTable({
@@ -200,7 +218,9 @@ const AdminPlayers: FC = () => {
             deletePlayer,
         },
     });
+    if (isPending) return <>Loading...</>;
 
+    if (error) return <>{"An error has occurred: " + error.message}</>;
     return (
         <>
             <BTable

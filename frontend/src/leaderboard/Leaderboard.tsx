@@ -16,7 +16,7 @@ const Leaderboard: FC<GameVariantProp> = ({ gameVariant }) => {
     useEffect(() => {
         async function init() {
             const seasonsResponse = await getSeasonsAPI();
-            const allSeasons = seasonsResponse.data.pastSeasons;
+            const allSeasons = seasonsResponse.data;
             if (allSeasons.length > 0 && new Date(allSeasons[0].endDate) > new Date()) {
                 setSeason(allSeasons[0]);
             }

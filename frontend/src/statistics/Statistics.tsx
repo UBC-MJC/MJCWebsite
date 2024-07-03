@@ -16,10 +16,11 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const [seasonId, setSeasonId] = useState<string | undefined>();
     const [seasons, setSeasons] = useState<OptionsType<Season>[]>([]);
     const [stats, setStats] = useState<StatisticsType>();
+
     useEffect(() => {
         async function init() {
             const seasonsResponse = await getSeasonsAPI();
-            const allSeasons = seasonsResponse.data.pastSeasons;
+            const allSeasons = seasonsResponse.data;
             const playerNamesResponse = await getPlayerNames(gameVariant);
             setPlayers(mapPlayerNameToOption(playerNamesResponse.data));
             if (allSeasons.length > 0 && new Date(allSeasons[0].endDate) > new Date()) {

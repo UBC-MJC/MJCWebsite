@@ -85,14 +85,11 @@ const AdminSeason: FC = () => {
     useEffect(() => {
         getSeasonsAPI()
             .then((response) => {
-                if (
-                    response.data.pastSeasons.length > 0 &&
-                    new Date(response.data.pastSeasons[0].endDate) > new Date()
-                ) {
-                    setCurrentSeason(response.data.pastSeasons[0]);
-                    setPastSeasons(response.data.pastSeasons.slice(1));
+                if (response.data.length > 0 && new Date(response.data[0].endDate) > new Date()) {
+                    setCurrentSeason(response.data[0]);
+                    setPastSeasons(response.data.slice(1));
                 } else {
-                    setPastSeasons(response.data.pastSeasons);
+                    setPastSeasons(response.data);
                 }
             })
             .catch((error: AxiosError) => {
@@ -152,10 +149,10 @@ const AdminSeason: FC = () => {
         updateSeasonAPI(player!.authToken, editedSeason)
             .then((response) => {
                 const newSeasons = pastSeasons.map((season) => {
-                    if (season.id === editedSeason.id) {
-                        return { ...editedSeason };
+                    if (season.id === response.data.id) {
+                        return response.data;
                     }
-                    return { ...season };
+                    return season;
                 });
                 setPastSeasons(newSeasons);
                 setEditableRowId(undefined);
@@ -203,7 +200,7 @@ const AdminSeason: FC = () => {
                                 </Card.Body>
                                 <ModifySeasonModal
                                     show={showUpdateSeasonModal}
-                                    season={currentSeason!}
+                                    season={currentSeason}
                                     handleClose={handleUpdateSeasonModalClose}
                                     handleSubmit={handleUpdate}
                                     actionString="Update Season"

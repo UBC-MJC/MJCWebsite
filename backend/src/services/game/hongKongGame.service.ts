@@ -250,15 +250,12 @@ function transformDBTransaction(dbTransaction: HongKongTransaction): HongKongTra
         dbTransaction.player2ScoreChange,
         dbTransaction.player3ScoreChange,
     ];
-    let result: any = {
+    const result: any = {
         scoreDeltas: scoreDeltas,
         transactionType: dbTransaction.transactionType,
     };
     if (dbTransaction.hand !== null) {
-        result = {
-            ...result,
-            hand: dbTransaction.hand,
-        };
+        result.update({ hand: dbTransaction.hand });
     }
     return result as HongKongTransactionT;
 }
