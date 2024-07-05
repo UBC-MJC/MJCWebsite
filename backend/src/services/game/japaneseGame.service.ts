@@ -418,7 +418,7 @@ function transformDBTransaction(dbTransaction: JapaneseTransaction): JapaneseTra
         dbTransaction.player2ScoreChange,
         dbTransaction.player3ScoreChange,
     ];
-    const result: any = {
+    let result: any = {
         scoreDeltas: scoreDeltas,
         transactionType: dbTransaction.transactionType,
     };
@@ -428,12 +428,16 @@ function transformDBTransaction(dbTransaction: JapaneseTransaction): JapaneseTra
             fu: dbTransaction.fu,
             dora: dbTransaction.dora,
         };
-        result.update({
+        result = {
+            ...result,
             hand: hand,
-        });
+        };
     }
     if (dbTransaction.paoPlayerIndex !== null) {
-        result.update({ paoPlayerIndex: dbTransaction.paoPlayerIndex });
+        result = {
+            ...result,
+            paoPlayerIndex: dbTransaction.paoPlayerIndex,
+        };
     }
     return result as JapaneseTransactionT;
 }

@@ -1,13 +1,7 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
 import { AxiosError } from "axios";
-import {
-    deletePlayerAPI,
-    getPlayersAdminAPI,
-    makeDummyAdminsAPI,
-    recalcSeasonAPI,
-    updatePlayerAPI,
-} from "../api/AdminAPI";
+import { makeDummyAdminsAPI, recalcSeasonAPI } from "../api/AdminAPI";
 import { Button, Form, Table as BTable } from "react-bootstrap";
 import {
     CellContext,
@@ -21,7 +15,7 @@ import {
 import { FaBan, FaCheck, FaEdit, FaSave, FaTrash } from "react-icons/fa";
 import IconButton from "../common/IconButton";
 import confirmDialog from "../common/ConfirmationDialog";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deletePlayerMutation, savePlayerMutation, useAdminPlayers } from "../hooks/AdminHooks";
 
 const booleanToCheckmark = (value: boolean) => {
     return value ? (
@@ -109,56 +103,14 @@ const AdminPlayers: FC = () => {
     if (!player) {
         return <>No player logged in</>;
     }
-    const queryKey = ["adminPlayers", player];
     const [editableRowId, setEditableRowId] = useState<string | undefined>(undefined);
     const [editedPlayer, setEditedPlayer] = useState<Player | undefined>(undefined);
 
-    const queryClient = useQueryClient();
+    const { isPending, data, error } = useAdminPlayers(player);
 
-    const {
-        isPending,
-        data: players,
-        error,
-    } = useQuery({
-        queryKey: queryKey,
-        queryFn: async () => {
-            const response = await getPlayersAdminAPI(player.authToken);
-            return response.data.players;
-        },
-    });
+    const deletePlayerMut = deletePlayerMutation(player);
 
-    const deletePlayerMutation = useMutation({
-        mutationFn: (playerId: string) => deletePlayerAPI(player.authToken, playerId),
-        onSuccess: (response) => {
-            queryClient.setQueryData(
-                queryKey,
-                players.filter((player: Player) => player.id !== response.data.id),
-            );
-        },
-        onError: (error: AxiosError) => {
-            console.log("Error deleting player: ", error.response?.data);
-        },
-    });
-
-    const savePlayerMutation = useMutation({
-        mutationFn: (editedPlayer: Player) => updatePlayerAPI(player.authToken, editedPlayer),
-        onSuccess: (response) => {
-            queryClient.setQueryData(
-                queryKey,
-                players.map((player: Player) => {
-                    if (player.id === response.data.id) {
-                        return { ...editedPlayer };
-                    }
-                    return player;
-                }),
-            );
-            setEditableRowId(undefined);
-            setEditedPlayer(undefined);
-        },
-        onError: (error: AxiosError) => {
-            console.log("Error updating player: ", error.response?.data);
-        },
-    });
+    const savePlayerMut = savePlayerMutation(player);
 
     const makeTestAdmins = () => {
         makeDummyAdminsAPI(player.authToken).catch((err: AxiosError) => {
@@ -192,18 +144,20 @@ const AdminPlayers: FC = () => {
             okButtonStyle: "danger",
         });
         if (response) {
-            deletePlayerMutation.mutate(playerId);
+            deletePlayerMut.mutate(playerId);
         }
     };
 
     const savePlayer = async () => {
         if (editedPlayer) {
-            savePlayerMutation.mutate(editedPlayer);
+            savePlayerMut.mutate(editedPlayer);
+            setEditableRowId(undefined);
+            setEditedPlayer(undefined);
         } else {
             console.log("Error updating player: editedPlayer is undefined");
         }
     };
-
+    const players = data ?? [];
     const table = useReactTable({
         data: players,
         columns: playerColumns,

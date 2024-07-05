@@ -1,7 +1,5 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
-import { createSeasonAdminAPI, getSeasonsAPI, updateSeasonAPI } from "../api/AdminAPI";
-import { AxiosError } from "axios";
 import { Table as BTable, Button, Form, Card, Container, Col } from "react-bootstrap";
 import {
     CellContext,
@@ -16,6 +14,12 @@ import {
 import IconButton from "../common/IconButton";
 import { FaBan, FaEdit, FaSave } from "react-icons/fa";
 import ModifySeasonModal from "./ModifySeasonModal";
+import {
+    createSeasonMutation,
+    saveSeasonMutation,
+    updateSeasonMutation,
+    useSeasons,
+} from "../hooks/AdminHooks";
 
 declare module "@tanstack/table-core" {
     interface TableMeta<TData extends RowData> {
@@ -40,15 +44,10 @@ const EditableStringCell = (cellContext: CellContext<Season, any>) => {
         table.options.meta!.setEditedSeason!(newSeason);
     };
 
-    return (
-        <>
-            {row.id === table.options.meta?.seasonsEditableRowId ? (
-                <Form.Control defaultValue={initialValue} onChange={onChange} />
-            ) : (
-                initialValue
-            )}
-        </>
-    );
+    if (row.id === table.options.meta?.seasonsEditableRowId) {
+        return <Form.Control defaultValue={initialValue} onChange={onChange} />;
+    }
+    return <>{initialValue}</>;
 };
 
 const columnHelper = createColumnHelper<Season>();
@@ -75,27 +74,14 @@ const seasonColumns: ColumnDef<Season, any>[] = [
 const AdminSeason: FC = () => {
     const { player } = useContext(AuthContext);
 
-    const [currentSeason, setCurrentSeason] = useState<Season | undefined>(undefined);
-    const [pastSeasons, setPastSeasons] = useState<Season[]>([]);
     const [showCreateSeasonModal, setShowCreateSeasonModal] = useState<boolean>(false);
     const [showUpdateSeasonModal, setShowUpdateSeasonModal] = useState<boolean>(false);
     const [editableRowId, setEditableRowId] = useState<string | undefined>(undefined);
     const [editedSeason, setEditedSeason] = useState<Season | undefined>(undefined);
-
-    useEffect(() => {
-        getSeasonsAPI()
-            .then((response) => {
-                if (response.data.length > 0 && new Date(response.data[0].endDate) > new Date()) {
-                    setCurrentSeason(response.data[0]);
-                    setPastSeasons(response.data.slice(1));
-                } else {
-                    setPastSeasons(response.data);
-                }
-            })
-            .catch((error: AxiosError) => {
-                console.log("Error fetching seasons: ", error.response?.data);
-            });
-    }, [player]);
+    if (!player) {
+        return <>No player logged in</>;
+    }
+    const { isPending, error, data } = useSeasons();
 
     const getDefaultSeason = (): Season => {
         const startDate = new Date();
@@ -113,58 +99,35 @@ const AdminSeason: FC = () => {
 
     const handleCreateSeasonModalShow = () => setShowCreateSeasonModal(true);
     const handleCreateSeasonModalClose = () => setShowCreateSeasonModal(false);
+    const createSeasonMut = createSeasonMutation(player);
     const handleCreate = (season: Season) => {
         setShowCreateSeasonModal(false);
-
         const { id, ...createSeasonRequest } = season;
-        createSeasonAdminAPI(player!.authToken, createSeasonRequest)
-            .then((response) => {
-                setCurrentSeason(response.data);
-            })
-            .catch((error: AxiosError) => {
-                console.log("Error creating season: ", error.response?.data);
-            });
+        createSeasonMut.mutate(createSeasonRequest);
     };
 
     const handleUpdateSeasonModalShow = () => setShowUpdateSeasonModal(true);
     const handleUpdateSeasonModalClose = () => setShowUpdateSeasonModal(false);
+    const updateSeasonMut = updateSeasonMutation(player);
     const handleUpdate = (updatedSeason: Season) => {
         setShowUpdateSeasonModal(false);
-
-        updateSeasonAPI(player!.authToken, updatedSeason)
-            .then((response) => {
-                setCurrentSeason(response.data);
-            })
-            .catch((error: AxiosError) => {
-                console.log("Error updating season: ", error.response?.data);
-            });
+        updateSeasonMut.mutate(updatedSeason);
     };
 
+    const saveSeasonMut = saveSeasonMutation(player);
     const saveSeason = async () => {
         if (typeof editedSeason === "undefined") {
             console.log("Error updating season: editedSeason is undefined");
             return;
         }
-
-        updateSeasonAPI(player!.authToken, editedSeason)
-            .then((response) => {
-                const newSeasons = pastSeasons.map((season) => {
-                    if (season.id === response.data.id) {
-                        return response.data;
-                    }
-                    return season;
-                });
-                setPastSeasons(newSeasons);
-                setEditableRowId(undefined);
-                setEditedSeason(undefined);
-            })
-            .catch((error: AxiosError) => {
-                console.log("Error updating season: ", error.response?.data);
-            });
+        saveSeasonMut.mutate(editedSeason);
+        setEditableRowId(undefined);
+        setEditedSeason(undefined);
     };
+    const seasons = data ?? []; // WTF is this syntax???
 
     const table: Table<Season> = useReactTable({
-        data: pastSeasons,
+        data: seasons,
         columns: seasonColumns,
         getCoreRowModel: getCoreRowModel(),
         getRowId: (row) => row.id,
@@ -176,6 +139,58 @@ const AdminSeason: FC = () => {
             saveSeason: saveSeason,
         },
     });
+    if (isPending) {
+        return <>Pending</>;
+    }
+    if (error) {
+        return <>Error</>;
+    }
+
+    function getCurrentSeasonPanel() {
+        if (seasons.length > 0 && new Date(seasons[0].endDate) > new Date()) {
+            const currentSeason = seasons[0];
+            return (
+                <>
+                    <Card.Body>
+                        <Card.Title>{currentSeason.name}</Card.Title>
+                        <div className="mb-2">
+                            Start Date: {new Date(currentSeason.startDate).toDateString()}
+                        </div>
+                        <div className="mb-2">
+                            End Date: {new Date(currentSeason.endDate).toDateString()}
+                        </div>
+                        <Button variant="primary" onClick={handleUpdateSeasonModalShow}>
+                            Edit
+                        </Button>
+                    </Card.Body>
+                    <ModifySeasonModal
+                        show={showUpdateSeasonModal}
+                        season={currentSeason}
+                        handleClose={handleUpdateSeasonModalClose}
+                        handleSubmit={handleUpdate}
+                        actionString="Update Season"
+                    />
+                </>
+            );
+        }
+        return (
+            <>
+                <Card.Body>
+                    <p>No current season</p>
+                    <Button variant="primary" onClick={handleCreateSeasonModalShow}>
+                        Create Season
+                    </Button>
+                </Card.Body>
+                <ModifySeasonModal
+                    show={showCreateSeasonModal}
+                    season={getDefaultSeason()}
+                    handleClose={handleCreateSeasonModalClose}
+                    handleSubmit={handleCreate}
+                    actionString="Create Season"
+                />
+            </>
+        );
+    }
 
     return (
         <>
@@ -183,51 +198,12 @@ const AdminSeason: FC = () => {
                 <Col xs sm={6} className="mx-auto">
                     <Card border="dark" className="my-4">
                         <Card.Header as="h3">Current Season</Card.Header>
-                        {currentSeason ? (
-                            <>
-                                <Card.Body>
-                                    <Card.Title>{currentSeason.name}</Card.Title>
-                                    <div className="mb-2">
-                                        Start Date:{" "}
-                                        {new Date(currentSeason.startDate).toDateString()}
-                                    </div>
-                                    <div className="mb-2">
-                                        End Date: {new Date(currentSeason.endDate).toDateString()}
-                                    </div>
-                                    <Button variant="primary" onClick={handleUpdateSeasonModalShow}>
-                                        Edit
-                                    </Button>
-                                </Card.Body>
-                                <ModifySeasonModal
-                                    show={showUpdateSeasonModal}
-                                    season={currentSeason}
-                                    handleClose={handleUpdateSeasonModalClose}
-                                    handleSubmit={handleUpdate}
-                                    actionString="Update Season"
-                                />
-                            </>
-                        ) : (
-                            <>
-                                <Card.Body>
-                                    <p>No current season</p>
-                                    <Button variant="primary" onClick={handleCreateSeasonModalShow}>
-                                        Create Season
-                                    </Button>
-                                </Card.Body>
-                                <ModifySeasonModal
-                                    show={showCreateSeasonModal}
-                                    season={getDefaultSeason()}
-                                    handleClose={handleCreateSeasonModalClose}
-                                    handleSubmit={handleCreate}
-                                    actionString="Create Season"
-                                />
-                            </>
-                        )}
+                        {getCurrentSeasonPanel()}
                     </Card>
                 </Col>
             </Container>
             <div>
-                <h2 className="mt-5">Past Seasons</h2>
+                <h2 className="mt-5">All Seasons</h2>
                 <BTable
                     striped
                     borderless

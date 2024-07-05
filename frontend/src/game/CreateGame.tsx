@@ -1,5 +1,5 @@
-import React, { FC, useContext, useEffect, useState } from "react";
-import { createGameAPI, getPlayerNames } from "../api/GameAPI";
+import React, { FC, useContext, useState } from "react";
+import { createGameAPI } from "../api/GameAPI";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { AuthContext } from "../common/AuthContext";
@@ -7,7 +7,7 @@ import { withPlayerCondition } from "../common/withPlayerCondition";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import { getGameVariantString } from "../common/Utils";
-import { useQuery } from "@tanstack/react-query";
+import { usePlayers } from "../hooks/GameHooks";
 
 const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
@@ -18,22 +18,7 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
     const [westPlayer, setWestPlayer] = useState<string | null>(null);
     const [northPlayer, setNorthPlayer] = useState<string | null>(null);
 
-    const {
-        isPending,
-        error,
-        data: playerNames,
-    } = useQuery({
-        queryKey: ["createGame", "gameVariant", gameVariant],
-        queryFn: async () => {
-            const playerNamesData = await getPlayerNames(gameVariant);
-            const playerNames = playerNamesData.data
-                .map((player: PlayerNamesDataType) => player.username)
-                .sort((a, b) => a.localeCompare(b));
-            return playerNames.map((name) => {
-                return { label: name };
-            });
-        },
-    });
+    const playerNamesResult = usePlayers(gameVariant);
 
     const createGame = () => {
         if (playerSelectMissing || notUnique) {
@@ -54,9 +39,17 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
 
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
     const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4;
-    if (isPending) return <>Loading...</>;
-
-    if (error) return <>{"An error has occurred: " + error.message}</>;
+    if (playerNamesResult.error)
+        return <>{"An error has occurred: " + playerNamesResult.error.message}</>;
+    if (!playerNamesResult.isSuccess) {
+        return <>Loading ... </>;
+    }
+    const playerNames = playerNamesResult.data
+        .map((player: PlayerNamesDataType) => player.username)
+        .sort((a, b) => a.localeCompare(b))
+        .map((name) => {
+            return { label: name };
+        });
     return (
         <Container>
             <h1 className="my-4">{title}</h1>

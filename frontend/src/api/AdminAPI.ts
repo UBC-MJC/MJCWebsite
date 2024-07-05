@@ -2,32 +2,27 @@ import axios, { AxiosResponse } from "axios";
 import { baseUrl, getAuthConfig } from "./APIUtils";
 
 const getPlayersAdminAPI = async (authToken: string) => {
-    return axios.get(baseUrl + "/admin/players", getAuthConfig(authToken));
+    return axios.get<{ players: Player[] }>(baseUrl + "/admin/players", getAuthConfig(authToken));
 };
 
-const deletePlayerAPI = async (
-    authToken: string,
-    playerId: string,
-): Promise<AxiosResponse<Player>> => {
-    return axios.delete(baseUrl + "/admin/players/" + playerId, getAuthConfig(authToken));
+const deletePlayerAPI = async (authToken: string, playerId: string) => {
+    return axios.delete<Player>(baseUrl + "/admin/players/" + playerId, getAuthConfig(authToken));
 };
 
-const updatePlayerAPI = async (
-    authToken: string,
-    player: Player,
-): Promise<AxiosResponse<Player>> => {
-    return axios.put(baseUrl + "/admin/players/" + player.id, { player }, getAuthConfig(authToken));
+const updatePlayerAPI = async (authToken: string, player: Player) => {
+    return axios.put<Player>(
+        baseUrl + "/admin/players/" + player.id,
+        { player },
+        getAuthConfig(authToken),
+    );
 };
 
-const getSeasonsAPI = async (): Promise<AxiosResponse<SeasonsAPIDataType>> => {
-    return axios.get(baseUrl + "/seasons");
+const getSeasonsAPI = async () => {
+    return axios.get<SeasonsAPIDataType>(baseUrl + "/seasons");
 };
 
-const createSeasonAdminAPI = async (
-    authToken: string,
-    season: Partial<Season>,
-): Promise<AxiosResponse<Season>> => {
-    return axios.post(baseUrl + "/admin/seasons", { season }, getAuthConfig(authToken));
+const createSeasonAdminAPI = async (authToken: string, season: Partial<Season>) => {
+    return axios.post<Season>(baseUrl + "/admin/seasons", { season }, getAuthConfig(authToken));
 };
 
 const updateSeasonAPI = async (

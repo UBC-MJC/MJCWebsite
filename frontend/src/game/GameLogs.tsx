@@ -1,13 +1,14 @@
-import React, { FC, useEffect, useState } from "react";
-import { getGamesAPI, getPlayerNames } from "../api/GameAPI";
+import React, { FC, useState } from "react";
+import { getGamesAPI } from "../api/GameAPI";
 import { AxiosError } from "axios";
 import { Button, Card, Col, Container, Pagination, Row } from "react-bootstrap";
 import Select from "react-select";
-import { getSeasonsAPI } from "../api/AdminAPI";
 import { useNavigate } from "react-router-dom";
 import alert from "../common/AlertDialog";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { mapPlayerNameToOption, mapSeasonToOption } from "./common/constants";
+import { useSeasons } from "../hooks/AdminHooks";
+import { usePlayers } from "../hooks/GameHooks";
 
 const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Riichi", value: "jp" },
@@ -18,10 +19,6 @@ const MAX_GAMES_PER_PAGE = 12;
 
 const GameLogs: FC = () => {
     const navigate = useNavigate();
-
-    const [seasons, setSeasons] = useState<OptionsType<Season>[]>([]);
-    const [players, setPlayers] = useState<OptionsType<string>[]>([]);
-
     const [queryGameVariant, setQueryGameVariant] = useState<GameVariant>(gameVariants[0].value);
     const [querySeasonId, setQuerySeasonId] = useState<string | undefined>();
     const [queryPlayers, setQueryPlayers] = useState<string[]>([]);
@@ -30,28 +27,8 @@ const GameLogs: FC = () => {
     const [games, setGames] = useState<Game[]>([]);
     const [pagination, setPagination] = useState<number>(1);
 
-    useEffect(() => {
-        getSeasonsAPI()
-            .then((response) => {
-                const allSeasons = response.data;
-                const selectOptions = mapSeasonToOption(allSeasons);
-
-                setSeasons(selectOptions);
-            })
-            .catch((error: AxiosError) => {
-                console.error("Error fetching seasons: ", error.response?.data);
-            });
-    }, []);
-
-    useEffect(() => {
-        getPlayerNames(queryGameVariant)
-            .then((response) => {
-                setPlayers(mapPlayerNameToOption(response.data));
-            })
-            .catch((error: AxiosError) => {
-                console.error("Error fetching players: ", error.response?.data);
-            });
-    }, [queryGameVariant]);
+    const seasonsResult = useSeasons();
+    const playersResult = usePlayers(queryGameVariant);
 
     const disableQueryButton = (): boolean => {
         return loading || typeof querySeasonId === "undefined";
@@ -119,6 +96,11 @@ const GameLogs: FC = () => {
             </Pagination>
         );
     };
+    if (!seasonsResult.isSuccess || !playersResult.isSuccess) {
+        return <>Loading ...</>;
+    }
+    const seasonsOptions = mapSeasonToOption(seasonsResult.data);
+    const playersOptions = mapPlayerNameToOption(playersResult.data);
 
     return (
         <>
@@ -140,7 +122,7 @@ const GameLogs: FC = () => {
                         <h3>Season</h3>
                         <div className="text-start">
                             <Select
-                                options={seasons}
+                                options={seasonsOptions}
                                 isSearchable
                                 placeholder="Choose a season"
                                 getOptionValue={(selectOptions) => selectOptions.label}
@@ -152,7 +134,7 @@ const GameLogs: FC = () => {
                         <h3>Players</h3>
                         <div className="text-start">
                             <Select
-                                options={players}
+                                options={playersOptions}
                                 isMulti
                                 isSearchable
                                 placeholder="Leave blank for all players"

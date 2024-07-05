@@ -1,65 +1,26 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
-import { getSeasonsAPI } from "../api/AdminAPI";
-import { AxiosError } from "axios";
-import { getUserStatistics } from "../api/LeaderboardAPI";
 import Select from "react-select";
-import { getPlayerNames } from "../api/GameAPI";
 import { Col, Container, Row } from "react-bootstrap";
+import { useSeasons } from "../hooks/AdminHooks";
+import { usePlayers } from "../hooks/GameHooks";
 import { mapPlayerNameToOption, mapSeasonToOption } from "../game/common/constants";
+import { useStatistics } from "../hooks/LeaderboardHooks";
 
 const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const [playerId, setPlayerId] = useState<string | undefined>(
         useContext(AuthContext).player?.id,
     );
-    const [players, setPlayers] = useState<OptionsType<string>[]>([]);
-    const [seasonId, setSeasonId] = useState<string | undefined>();
-    const [seasons, setSeasons] = useState<OptionsType<Season>[]>([]);
-    const [stats, setStats] = useState<StatisticsType>();
+    const [season, setSeason] = useState<Season | undefined>();
+    const seasonsResult = useSeasons(setSeason);
+    const playersResult = usePlayers(gameVariant);
 
-    useEffect(() => {
-        async function init() {
-            const seasonsResponse = await getSeasonsAPI();
-            const allSeasons = seasonsResponse.data;
-            const playerNamesResponse = await getPlayerNames(gameVariant);
-            setPlayers(mapPlayerNameToOption(playerNamesResponse.data));
-            if (allSeasons.length > 0 && new Date(allSeasons[0].endDate) > new Date()) {
-                setSeasonId(allSeasons[0].id);
-            }
-            setSeasons(mapSeasonToOption(allSeasons));
-        }
-        if (seasonId === undefined) {
-            init().catch((error: AxiosError) => {
-                console.error("Error fetching seasons: ", error.response?.data);
-            });
-        }
-    }, []);
-
-    useEffect(() => {
-        async function getUserStats(seasonId: string, playerId: string | undefined) {
-            if (playerId === undefined) {
-                setStats({
-                    dealInCount: 0,
-                    dealInPoint: 0,
-                    totalRounds: 0,
-                    winCount: 0,
-                    winPoint: 0,
-                });
-            } else {
-                const statsResponse = await getUserStatistics(playerId, gameVariant, seasonId);
-                setStats(statsResponse.data);
-            }
-        }
-        if (seasonId !== undefined) {
-            getUserStats(seasonId, playerId).catch((error: AxiosError) => {
-                console.error("Error fetching seasons: ", error.response?.data);
-            });
-        }
-    }, [seasonId, playerId]);
-
-    if (stats === undefined) {
-        return <h5 className="my-3">Loading...</h5>;
+    const { isSuccess, data: stats } = useStatistics(playerId, gameVariant, season);
+    if (!isSuccess || !seasonsResult.isSuccess || !playersResult.isSuccess) {
+        return <>Loading ...</>;
     }
+    const seasonsOptions = mapSeasonToOption(seasonsResult.data);
+    const playersOptions = mapPlayerNameToOption(playersResult.data);
     return (
         <div>
             <h1 className="my-4">Statistics</h1>
@@ -68,17 +29,17 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
                     <Col>
                         <h3>Season</h3>
                         <Select
-                            options={seasons}
+                            options={seasonsOptions}
                             isSearchable
-                            defaultValue={seasons[0]}
+                            placeholder="Default: This season"
                             getOptionValue={(selectOptions) => selectOptions.label}
-                            onChange={(e) => setSeasonId(e!.value.id)}
+                            onChange={(e) => setSeason(e!.value)}
                         />
                     </Col>
                     <Col>
                         <h3>Players</h3>
                         <Select
-                            options={players}
+                            options={playersOptions}
                             isSearchable
                             placeholder="Default: your stats"
                             getOptionValue={(selectOptions) => selectOptions.label}

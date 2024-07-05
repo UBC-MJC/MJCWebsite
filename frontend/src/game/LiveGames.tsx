@@ -1,25 +1,14 @@
-import React, { FC, useEffect, useState } from "react";
-import { getLiveGamesAPI } from "../api/GameAPI";
-import { AxiosError } from "axios";
+import React, { FC } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import { getGameVariantString } from "../common/Utils";
 import { useNavigate } from "react-router-dom";
 import { gameRoundString } from "./common/constants";
 import GameSummaryBody from "./common/GameSummaryBody";
+import { useLiveGames } from "../hooks/GameHooks";
 
 export const LiveGames: FC<GameVariantProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
-    const [liveGames, setLiveGames] = useState<Game[]>([]);
-
-    useEffect(() => {
-        getLiveGamesAPI(gameVariant)
-            .then((response) => {
-                setLiveGames(response.data);
-            })
-            .catch((error: AxiosError) => {
-                alert(`Error fetching current games: ${error.response?.data}`);
-            });
-    }, [gameVariant]);
+    const { isPending, error, data: liveGames } = useLiveGames(gameVariant);
 
     const getCardHeader = (game: Game) => {
         return (
@@ -32,7 +21,12 @@ export const LiveGames: FC<GameVariantProp> = ({ gameVariant }) => {
     const navigateToGame = (gameId: string) => {
         navigate(`/games/${gameVariant}/${gameId}`);
     };
-
+    if (isPending) {
+        return <>Loading...</>;
+    }
+    if (error) {
+        return <>Error</>;
+    }
     return (
         <>
             <h1 className="my-4">Live {getGameVariantString(gameVariant)} Games</h1>
