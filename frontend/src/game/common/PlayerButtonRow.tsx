@@ -1,5 +1,6 @@
-import { ToggleButton } from "react-bootstrap";
+import { Col, Container, Row, ToggleButton } from "react-bootstrap";
 import { JapaneseLabel } from "./constants";
+import React from "react";
 
 type PlayerButtonRow<T extends string> = {
     players: GamePlayer[];
@@ -22,6 +23,12 @@ const PlayerButtonRow = <T extends string>({
                     id={`name-${label}-${idx}`}
                     type={getToggleType(label)}
                     variant={getVariant(label)}
+                    style={{
+                        maxWidth: "22.5%",
+                        overflow: "clip",
+                        whiteSpace: "nowrap",
+                        // textOverflow: "ellipsis"
+                    }}
                     name={label + "-button"}
                     className="mx-1 my-1"
                     value={player.id}

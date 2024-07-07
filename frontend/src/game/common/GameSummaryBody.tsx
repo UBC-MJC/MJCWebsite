@@ -10,12 +10,13 @@ type GameSummaryBodyProps = {
 
 const GameSummaryBody: FC<GameSummaryBodyProps> = ({ game, gameVariant }) => {
     const getScoresWithPlayers = () => {
-        let scores: number[];
-        if (gameVariant === "jp") {
-            scores = generateJapaneseCurrentScore(game.rounds as JapaneseRound[]);
-        } else {
-            scores = generateHongKongCurrentScore(game.rounds as HongKongRound[]);
-        }
+        const scores: number[] = (() => {
+            if (gameVariant === "jp") {
+                return generateJapaneseCurrentScore(game.rounds as JapaneseRound[]);
+            } else {
+                return generateHongKongCurrentScore(game.rounds as HongKongRound[]);
+            }
+        })();
 
         const scoresWithPlayers = scores.map((score, idx) => {
             return {

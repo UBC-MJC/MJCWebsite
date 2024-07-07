@@ -15,6 +15,12 @@ const getPlayerLeaderboard = async (
 };
 
 async function getUserStatistics(playerId: string, gameVariant: string, seasonId: string) {
-    return axios.get(baseUrl + "/players/" + playerId + "/" + gameVariant + "/" + seasonId + "/");
+    return axios.get<{
+        dealInCount: number;
+        dealInPoint: number;
+        winCount: number;
+        winPoint: number;
+        totalRounds: number;
+    }>(baseUrl + "/players/" + playerId + "/" + gameVariant + "/" + seasonId + "/");
 }
 export { getCurrentSeason, getPlayerLeaderboard, getUserStatistics };
