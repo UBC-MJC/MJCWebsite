@@ -14,7 +14,7 @@ COPY backend/prisma ./prisma
 COPY backend/certificate ./certificate
 RUN npm install
 RUN npx prisma generate
-COPY --from=ui-build /usr/src/frontend/build ./build
+COPY --from=ui-build /usr/src/frontend/dist ./dist
 COPY backend .
 
 EXPOSE 80
