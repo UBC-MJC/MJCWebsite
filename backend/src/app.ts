@@ -26,7 +26,7 @@ const app: Express = express();
 
 if (process.env.NODE_ENV === "production") {
     // Set static folder
-    app.use(express.static(path.join(__dirname, "../build")));
+    app.use(express.static(path.join(__dirname, "../dist")));
 } else {
     app.use(
         cors({
@@ -43,7 +43,7 @@ app.use("/api", router);
 
 if (process.env.NODE_ENV === "production") {
     app.get("*", (req, res) => {
-        res.sendFile(path.join(__dirname, "../build/index.html"));
+        res.sendFile(path.join(__dirname, "../dist/index.html"));
     });
 }
 
