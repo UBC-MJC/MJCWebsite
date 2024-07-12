@@ -34,9 +34,9 @@ const App: React.FC = () => {
     const queryClient = new QueryClient({
         defaultOptions: {
             queries: {
-                staleTime: 5000,
-            },
-        },
+                staleTime: 5000
+            }
+        }
     });
     return (
         <ThemeProvider>
