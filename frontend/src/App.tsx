@@ -21,6 +21,7 @@ import PasswordReset from "./login/PasswordReset";
 import { Resources } from "./resources/Resources";
 import GameLogs from "./game/GameLogs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "./common/theme-provider";
 
 const useQuery = () => {
     const { search } = useLocation();
@@ -30,71 +31,82 @@ const useQuery = () => {
 
 const App: React.FC = () => {
     const query = useQuery();
-    const queryClient = new QueryClient();
+    const queryClient = new QueryClient({
+        defaultOptions: {
+            queries: {
+                staleTime: 5000
+            }
+        }
+    });
     return (
-        <QueryClientProvider client={queryClient}>
-            <main className="App">
+        <ThemeProvider>
+            <QueryClientProvider client={queryClient}>
                 <AuthContextProvider>
-                    <Routes>
-                        <Route element={<WithNav />}>
-                            <Route path="/" element={<Home />} />
+                    <main className="App">
+                        <Routes>
+                            <Route element={<WithNav />}>
+                                <Route path="/" element={<Home />} />
+                                <Route
+                                    path="/leaderboard/jp"
+                                    element={<Leaderboard gameVariant="jp" />}
+                                />
+                                <Route
+                                    path="/leaderboard/hk"
+                                    element={<Leaderboard gameVariant="hk" />}
+                                />
+                                <Route path="/games/:variant/:id" element={<Game />} />
+                                <Route
+                                    path="/games/current/jp"
+                                    element={<LiveGames gameVariant="jp" />}
+                                />
+                                <Route
+                                    path="/games/current/hk"
+                                    element={<LiveGames gameVariant="hk" />}
+                                />
+                                <Route
+                                    path="/games/create/jp"
+                                    element={<CreateGame gameVariant="jp" />}
+                                />
+                                <Route
+                                    path="/games/create/hk"
+                                    element={<CreateGame gameVariant="hk" />}
+                                />
+                                <Route path="/games" element={<GameLogs />} />
+                                <Route path="/resources" element={<Resources />} />
+                                <Route
+                                    path="/stats/jp"
+                                    element={<Statistics gameVariant={"jp"} />}
+                                />
+                                <Route path="/admin" element={<Admin />} />
+                                <Route path="/settings" element={<Settings />} />
+                                <Route path="/unauthorized" element={<Unauthorized />} />
+                            </Route>
+                            <Route element={<WithoutNav />}>
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/register" element={<Register />} />
+                                <Route
+                                    path="/request-password-reset"
+                                    element={<RequestPasswordReset />}
+                                />
+                                <Route
+                                    path="/password-reset"
+                                    element={
+                                        <PasswordReset
+                                            playerId={query.get("id")}
+                                            token={query.get("token")}
+                                        />
+                                    }
+                                />
+                            </Route>
                             <Route
-                                path="/leaderboard/jp"
-                                element={<Leaderboard gameVariant="jp" />}
+                                path="*" // redirect to home if no route matches
+                                element={<Navigate to="/" replace />}
                             />
-                            <Route
-                                path="/leaderboard/hk"
-                                element={<Leaderboard gameVariant="hk" />}
-                            />
-                            <Route path="/games/:variant/:id" element={<Game />} />
-                            <Route
-                                path="/games/current/jp"
-                                element={<LiveGames gameVariant="jp" />}
-                            />
-                            <Route
-                                path="/games/current/hk"
-                                element={<LiveGames gameVariant="hk" />}
-                            />
-                            <Route
-                                path="/games/create/jp"
-                                element={<CreateGame gameVariant="jp" />}
-                            />
-                            <Route
-                                path="/games/create/hk"
-                                element={<CreateGame gameVariant="hk" />}
-                            />
-                            <Route path="/games" element={<GameLogs />} />
-                            <Route path="/resources" element={<Resources />} />
-                            <Route path="/stats/jp" element={<Statistics gameVariant={"jp"} />} />
-                            <Route path="/admin" element={<Admin />} />
-                            <Route path="/settings" element={<Settings />} />
-                            <Route path="/unauthorized" element={<Unauthorized />} />
-                        </Route>
-                        <Route element={<WithoutNav />}>
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/register" element={<Register />} />
-                            <Route
-                                path="/request-password-reset"
-                                element={<RequestPasswordReset />}
-                            />
-                            <Route
-                                path="/password-reset"
-                                element={
-                                    <PasswordReset
-                                        playerId={query.get("id")}
-                                        token={query.get("token")}
-                                    />
-                                }
-                            />
-                        </Route>
-                        <Route
-                            path="*" // redirect to home if no route matches
-                            element={<Navigate to="/" replace />}
-                        />
-                    </Routes>
+                        </Routes>
+                    </main>
                 </AuthContextProvider>
-            </main>
-        </QueryClientProvider>
+            </QueryClientProvider>
+        </ThemeProvider>
     );
 };
 

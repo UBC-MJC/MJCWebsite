@@ -3,10 +3,11 @@ import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { AuthContext } from "./AuthContext";
 import { Link } from "react-router-dom";
 import { getGameVariantString } from "./Utils";
+import { useTheme } from "./theme-provider";
 
 const NavBar: FC = () => {
     const { player, logout } = useContext(AuthContext);
-
+    const { setTheme } = useTheme()
     return (
         <Navbar bg="info" expand="md">
             <Container fluid>
@@ -57,6 +58,17 @@ const NavBar: FC = () => {
                         </Nav.Link>
                     </Nav>
                     <Nav>
+                        <NavDropdown title="Theme" id="theme-nav-dropdown">
+                            <NavDropdown.Item onClick={() => setTheme("light")}>
+                                Light
+                            </NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => setTheme("dark")}>
+                            Dark
+                            </NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => setTheme("system")}>
+                                System
+                            </NavDropdown.Item>
+                        </NavDropdown>
                         {player && player.admin && (
                             <Nav.Link as={Link} to="/admin">
                                 Admin

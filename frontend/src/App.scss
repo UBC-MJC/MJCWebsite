@@ -1,12 +1,11 @@
-
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/mixins/color-mode";
 $primary: #870E06;
 $secondary: #0B3413;
 $tertiary: #07092D;
 $danger: #CC1009;
 $info: #F0B733;
 $light: #F2F2F2;
-
-
 .App {
   text-align: center;
 }
@@ -23,14 +22,14 @@ $light: #F2F2F2;
 }
 
 .App-header {
-  background-color: #282c34;
+  //background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: $light;
+  //color: $light;
 }
 
 .App-link {
@@ -74,12 +73,12 @@ $light: #F2F2F2;
 .table-responsive::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 10px;
-  border: 2px solid $light;
+  //border: 2px solid $light;
 }
 
 .table-responsive::-webkit-scrollbar-track {
   border-radius: 10px;
-  background-color: $light;
+  //background-color: $light;
 }
 
 .game-round-input {
@@ -119,14 +118,14 @@ $light: #F2F2F2;
 }
 
 .game-round-input svg polygon {
-  fill: $light;
+  //fill: $light;
   stroke-width: 1px;
   stroke: black;
   cursor: pointer;
 }
 
 .game-round-input svg polygon:hover {
-  fill: #e6e6e6;
+  //fill: #e6e6e6;
 }
 
 .wheel-picker-container ul::-webkit-scrollbar {
