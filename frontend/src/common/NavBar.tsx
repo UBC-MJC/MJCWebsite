@@ -7,7 +7,7 @@ import { useTheme } from "./theme-provider";
 
 const NavBar: FC = () => {
     const { player, logout } = useContext(AuthContext);
-    const { setTheme } = useTheme()
+    const { setTheme } = useTheme();
     return (
         <Navbar bg="info" expand="md">
             <Container fluid>
@@ -63,7 +63,7 @@ const NavBar: FC = () => {
                                 Light
                             </NavDropdown.Item>
                             <NavDropdown.Item onClick={() => setTheme("dark")}>
-                            Dark
+                                Dark
                             </NavDropdown.Item>
                             <NavDropdown.Item onClick={() => setTheme("system")}>
                                 System
