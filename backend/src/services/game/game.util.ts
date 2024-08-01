@@ -39,28 +39,13 @@ const checkPlayerListUnique = (playerNameList: string[]): void => {
 };
 
 // Throws error if the player is not eligible for the game type
-const generatePlayerQuery = async (
-    originalPlayerNames: string[],
-    checkEligibilityFunction: (x: Player) => boolean,
-): Promise<any[]> => {
-    checkPlayerListUnique(originalPlayerNames);
-
-    const playerList = await Promise.all(
-        originalPlayerNames.map((playerName) => {
-            return findPlayerByUsernameOrEmail(playerName);
-        }),
-    );
-    playerList.forEach((player) => {
-        if (!checkEligibilityFunction(player!)) {
-            throw new Error("Player not eligible for game type");
-        }
-    });
+const generatePlayerQuery = (playerList: Player[]) => {
     return playerList.map((player, idx) => {
         return {
             wind: getWind(idx),
             player: {
                 connect: {
-                    id: player!.id,
+                    id: player.id,
                 },
             },
         };

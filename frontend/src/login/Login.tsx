@@ -85,7 +85,7 @@ const Login: React.FC = () => {
                     </div>
                 </Form>
             </Card>
-            <Button className="my-4 mx-auto w-25" variant="light" href="/">
+            <Button className="my-4 mx-auto w-25" href="/">
                 Back
             </Button>
         </Container>

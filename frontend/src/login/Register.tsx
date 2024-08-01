@@ -144,7 +144,7 @@ const Register: React.FC = () => {
                     </div>
                 </Form>
             </Card>
-            <Button className="my-4 mx-auto w-25" variant="light" href="/login">
+            <Button className="my-4 mx-auto w-25" href="/login">
                 Back
             </Button>
         </Container>

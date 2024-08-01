@@ -395,7 +395,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
 
     function getFooter() {
         return (
-            <Container fluid className={"my-4 position-sticky bottom-0 bg-light"}>
+            <Container fluid className={"my-4 position-sticky bottom-0 bg-body"}>
                 <Row className={"my-1"}>
                     <h4 className="my-2">Riichi sticks: {getRiichiStickCount()}</h4>
                 </Row>

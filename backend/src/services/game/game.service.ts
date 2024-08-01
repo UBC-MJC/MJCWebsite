@@ -1,5 +1,6 @@
 import { GameStatus, GameType, Player, Wind } from "@prisma/client";
 import {
+    checkPlayerListUnique,
     createEloCalculatorInputs,
     GameFilterArgs,
     generateGameQuery,
@@ -7,8 +8,10 @@ import {
 } from "./game.util";
 import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
 import prisma from "../../db";
+import { findPlayerByUsernameOrEmail } from "../player.service";
 
 export type EloDict = { [key: string]: number };
+const MAX_GAME_COUNT = 120;
 
 abstract class GameService {
     public readonly gameDatabase: any;
@@ -27,7 +30,31 @@ abstract class GameService {
         recorderId: string,
         seasonId: string,
     ): Promise<any> {
-        const playersQuery = await generatePlayerQuery(players, this.isEligible);
+        checkPlayerListUnique(players);
+
+        const playerList = await Promise.all(
+            players.map((playerName) => {
+                return findPlayerByUsernameOrEmail(playerName);
+            }),
+        );
+        for (const player of playerList) {
+            if (!this.isEligible(player!)) {
+                throw new Error("Player not eligible for game type");
+            }
+            const gameCount = await this.playerGameDatabase.count({
+                where: {
+                    playerId: player.id,
+                    game: {
+                        seasonId: seasonId,
+                        type: gameType,
+                    },
+                },
+            });
+            if (gameCount > MAX_GAME_COUNT) {
+                throw Error("Maximum Game Count exceeded for player " + player.username + "!");
+            }
+        }
+        const playersQuery = generatePlayerQuery(playerList);
         return await this.gameDatabase.create({
             data: {
                 season: {
@@ -144,20 +171,12 @@ abstract class GameService {
                 };
             }),
             rounds: game.rounds.map((round: any) => this.transformDBRound(round)),
-            eloDeltas: orderedEloDeltas, // TODO: after the game has ended, it would be better to return the actual delta
+            eloDeltas: orderedEloDeltas,
             currentRound: nextRound,
         };
     }
 
-    public async getPlayerEloDeltas(
-        game: any,
-        playerScores: number[],
-    ): Promise<
-        {
-            eloChange: number;
-            playerId: string;
-        }[]
-    > {
+    public async getPlayerEloDeltas(game: any, playerScores: number[]) {
         if (game.status == GameStatus.FINISHED) {
             return await this.playerGameDatabase.findMany({
                 select: {
@@ -203,8 +222,8 @@ abstract class GameService {
             where: {
                 game: {
                     seasonId: seasonId,
-                    status: "FINISHED",
-                    type: "RANKED",
+                    status: GameStatus.FINISHED,
+                    type: GameType.RANKED,
                 },
             },
         });
@@ -241,8 +260,8 @@ abstract class GameService {
             where: {
                 game: {
                     seasonId: seasonId,
-                    status: "FINISHED",
-                    type: "RANKED",
+                    status: GameStatus.FINISHED,
+                    type: GameType.RANKED,
                 },
                 playerId: {
                     in: playerIds,
@@ -285,6 +304,7 @@ abstract class GameService {
     public async recalcSeason(seasonId: string): Promise<any> {
         const finishedGames = await this.getGames({
             seasonId: seasonId,
+            gameType: GameType.RANKED,
             gameStatus: GameStatus.FINISHED,
         });
         finishedGames.sort((a, b) => {

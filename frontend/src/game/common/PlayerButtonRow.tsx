@@ -1,4 +1,4 @@
-import { Col, Container, Row, ToggleButton } from "react-bootstrap";
+import { ToggleButton } from "react-bootstrap";
 import { JapaneseLabel } from "./constants";
 import React from "react";
 
@@ -19,6 +19,7 @@ const PlayerButtonRow = <T extends string>({
         <>
             {players.map((player, idx) => (
                 <ToggleButton
+                    data-bs-theme={"dark"}
                     key={idx}
                     id={`name-${label}-${idx}`}
                     type={getToggleType(label)}

@@ -1,8 +1,7 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { PickerData } from "react-simple-wheel-picker";
-import Select from "react-select";
 import { Col, Row } from "react-bootstrap";
-
+import Form from "react-bootstrap/Form";
 type DropdownInputProps = {
     label: string;
     data: PickerData[];
@@ -10,19 +9,25 @@ type DropdownInputProps = {
 };
 
 const DropdownInput: FC<DropdownInputProps> = ({ label, data, onChange }) => {
+    const options = transformToSelectOptions(data);
     return (
-        <Col style={{ maxWidth: "200px" }}>
+        <Col style={{ maxWidth: "200px" }} className={"mx-2"}>
             <Row>
                 <h6>{label}:</h6>
             </Row>
             <Row className="text-start">
-                <Select
-                    options={transformToSelectOptions(data)}
-                    isSearchable={false}
-                    placeholder={label}
-                    getOptionValue={(selectOptions) => selectOptions.label}
-                    onChange={(selectedOption) => onChange(selectedOption!.label)}
-                />
+                <Form.Select onChange={(e) => onChange(e.target.value)}>
+                    <option value="" selected disabled hidden>
+                        {label}
+                    </option>
+                    {options.map((option, idx) => {
+                        return (
+                            <option key={idx} value={option.label}>
+                                {option.label}
+                            </option>
+                        );
+                    })}
+                </Form.Select>
             </Row>
         </Col>
     );
