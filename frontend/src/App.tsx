@@ -43,37 +43,26 @@ const App: React.FC = () => {
             },
         },
     });
-    const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-    const [mode, setMode] = React.useState<"light" | "dark">(prefersDarkMode ? "dark" : "light");
+    const systemMode = useMediaQuery("(prefers-color-scheme: dark)") ? "dark" : "light";
+    const [mode, setMode] = React.useState<"light" | "dark">(systemMode);
 
-    const colorMode = React.useMemo(() => {
-        const root = window.document.documentElement;
-        return {
-            toggleColorMode: (theme: "light" | "dark" | "system") => {
-                if (theme === "system") {
-                    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-                        ? "dark"
-                        : "light";
-                    setMode(systemTheme);
-                    root.setAttribute("data-bs-theme", systemTheme);
-                    return;
-                } else {
-                    setMode(theme);
-                    root.setAttribute("data-bs-theme", theme);
-                }
-            },
-        };
-    }, []);
-
-    const theme = React.useMemo(
-        () =>
-            createTheme({
-                palette: {
-                    mode: mode,
-                },
-            }),
-        [mode],
-    );
+    const root = window.document.documentElement;
+    const colorMode = {
+        toggleColorMode: (mode: "light" | "dark" | "system") => {
+            if (mode === "system") {
+                setMode(systemMode);
+                root.setAttribute("data-bs-theme", systemMode);
+                return;
+            }
+            setMode(mode);
+            root.setAttribute("data-bs-theme", mode);
+        },
+    };
+    const theme = createTheme({
+        palette: {
+            mode: mode,
+        },
+    });
 
     return (
         <ColorModeContext.Provider value={colorMode}>
