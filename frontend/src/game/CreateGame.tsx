@@ -4,10 +4,10 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { AuthContext } from "../common/AuthContext";
 import { withPlayerCondition } from "../common/withPlayerCondition";
-import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import { getGameVariantString } from "../common/Utils";
 import { usePlayers } from "../hooks/GameHooks";
+import { Autocomplete, TextField } from "@mui/material";
 
 const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
@@ -57,52 +57,52 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
                 <Col xs={12} md={6} lg={3} className="mb-4">
                     <h3>East</h3>
                     <div className="text-start">
-                        <Select
+                        <Autocomplete
                             options={playerNames}
-                            isSearchable
-                            placeholder="Choose a Player"
                             value={eastPlayer !== null ? { label: eastPlayer } : null}
-                            getOptionValue={(selectOptions) => selectOptions.label}
-                            onChange={(e) => setEastPlayer(e!.label)}
+                            onChange={(event, value) => setEastPlayer(value!.label)}
+                            renderInput={(params) => (
+                                <TextField {...params} placeholder="Choose a Player" />
+                            )}
                         />
                     </div>
                 </Col>
                 <Col xs={12} md={6} lg={3} className="mb-4">
                     <h3>South</h3>
                     <div className="text-start">
-                        <Select
+                        <Autocomplete
                             options={playerNames}
-                            isSearchable
-                            placeholder="Choose a Player"
                             value={southPlayer !== null ? { label: southPlayer } : null}
-                            getOptionValue={(selectOptions) => selectOptions.label}
-                            onChange={(e) => setSouthPlayer(e!.label)}
+                            onChange={(event, value) => setSouthPlayer(value!.label)}
+                            renderInput={(params) => (
+                                <TextField {...params} placeholder="Choose a Player" />
+                            )}
                         />
                     </div>
                 </Col>
                 <Col xs={12} md={6} lg={3} className="mb-4">
                     <h3>West</h3>
                     <div className="text-start">
-                        <Select
+                        <Autocomplete
                             options={playerNames}
-                            isSearchable
-                            placeholder="Choose a Player"
                             value={westPlayer !== null ? { label: westPlayer } : null}
-                            getOptionValue={(selectOptions) => selectOptions.label}
-                            onChange={(e) => setWestPlayer(e!.label)}
+                            onChange={(event, value) => setWestPlayer(value!.label)}
+                            renderInput={(params) => (
+                                <TextField {...params} placeholder="Choose a Player" />
+                            )}
                         />
                     </div>
                 </Col>
                 <Col xs={12} md={6} lg={3} className="mb-4">
                     <h3>North</h3>
                     <div className="text-start">
-                        <Select
+                        <Autocomplete
                             options={playerNames}
-                            isSearchable
-                            placeholder="Choose a Player"
                             value={northPlayer !== null ? { label: northPlayer } : null}
-                            getOptionValue={(selectOptions) => selectOptions.label}
-                            onChange={(e) => setNorthPlayer(e!.label)}
+                            onChange={(event, value) => setNorthPlayer(value!.label)}
+                            renderInput={(params) => (
+                                <TextField {...params} placeholder="Choose a Player" />
+                            )}
                         />
                     </div>
                 </Col>

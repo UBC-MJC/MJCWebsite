@@ -51,19 +51,12 @@ const EditableBooleanCell = (cellContext: CellContext<Player, any>) => {
         table.options.meta!.setEditedPlayer!(newPlayer);
     };
 
-    return (
-        <>
-            {row.id === table.options.meta?.playersEditableRowId ? (
-                <Form.Check
-                    className="text-center"
-                    defaultChecked={initialValue}
-                    onChange={onChange}
-                />
-            ) : (
-                booleanToCheckmark(initialValue)
-            )}
-        </>
-    );
+    if (row.id === table.options.meta?.playersEditableRowId) {
+        return (
+            <Form.Check className="text-center" defaultChecked={initialValue} onChange={onChange} />
+        );
+    }
+    return booleanToCheckmark(initialValue);
 };
 
 const columnHelper = createColumnHelper<Player>();

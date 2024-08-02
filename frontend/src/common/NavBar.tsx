@@ -1,13 +1,14 @@
-import { FC, useContext } from "react";
+import React, { FC, useContext } from "react";
 import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { AuthContext } from "./AuthContext";
 import { Link } from "react-router-dom";
 import { getGameVariantString } from "./Utils";
-import { useTheme } from "./theme-provider";
+import { ColorModeContext } from "../App";
 
 const NavBar: FC = () => {
     const { player, logout } = useContext(AuthContext);
-    const { setTheme } = useTheme();
+    const colorMode = React.useContext(ColorModeContext);
+
     return (
         <Navbar bg="info" expand="md">
             <Container fluid>
@@ -59,13 +60,21 @@ const NavBar: FC = () => {
                     </Nav>
                     <Nav>
                         <NavDropdown title="Theme" id="theme-nav-dropdown">
-                            <NavDropdown.Item onClick={() => setTheme("light")}>
+                            <NavDropdown.Item
+                                onClick={() => {
+                                    colorMode.toggleColorMode("light");
+                                }}
+                            >
                                 Light
                             </NavDropdown.Item>
-                            <NavDropdown.Item onClick={() => setTheme("dark")}>
+                            <NavDropdown.Item
+                                onClick={() => {
+                                    colorMode.toggleColorMode("dark");
+                                }}
+                            >
                                 Dark
                             </NavDropdown.Item>
-                            <NavDropdown.Item onClick={() => setTheme("system")}>
+                            <NavDropdown.Item onClick={() => colorMode.toggleColorMode("system")}>
                                 System
                             </NavDropdown.Item>
                         </NavDropdown>

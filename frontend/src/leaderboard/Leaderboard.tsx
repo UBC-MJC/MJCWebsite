@@ -1,10 +1,10 @@
 import React, { FC, useState } from "react";
 import { getGameVariantString } from "../common/Utils";
 import { Container, Table } from "react-bootstrap";
-import Select from "react-select";
 import { useSeasons } from "../hooks/AdminHooks";
 import { usePlayerLeaderboard } from "../hooks/LeaderboardHooks";
 import { mapSeasonToOption } from "../game/common/constants";
+import { Autocomplete, TextField } from "@mui/material";
 
 const Leaderboard: FC<GameVariantProp> = ({ gameVariant }) => {
     const [season, setSeason] = useState<Season | undefined>();
@@ -24,13 +24,13 @@ const Leaderboard: FC<GameVariantProp> = ({ gameVariant }) => {
 
                 <div className="text-start d-flex justify-content-center align-items-end">
                     <h5 className="mx-2">Season: </h5>
-                    <Select
+                    <Autocomplete
                         options={seasonsOptions}
-                        isSearchable
-                        placeholder="Choose a season"
                         defaultValue={season === undefined ? null : seasonsOptions[0]}
-                        getOptionValue={(selectOptions) => selectOptions.label}
-                        onChange={(e) => setSeason(e!.value)}
+                        onChange={(event, value) => setSeason(value!.value)}
+                        renderInput={(params) => (
+                            <TextField {...params} placeholder="Choose a season" />
+                        )}
                     />
                 </div>
 
