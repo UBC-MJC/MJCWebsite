@@ -11,37 +11,48 @@ const Leaderboard: FC<GameVariantProp> = ({ gameVariant }) => {
 
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons(setSeason);
 
-    const { isSuccess, data: leaderboard } = usePlayerLeaderboard(gameVariant, season);
-
-    if (!isSuccess || !seasonsSuccess) {
+    if (!seasonsSuccess) {
         return <h5 className="my-3">Loading...</h5>;
     }
     const seasonsOptions = mapSeasonToOption(seasons);
     return (
-        <Container fluid="lg">
-            <div className="my-4">
-                <h1>{getGameVariantString(gameVariant)} Leaderboard</h1>
+        <Container className="my-4" fluid="lg">
+            <h1 >{getGameVariantString(gameVariant)} Leaderboard</h1>
 
-                <div className="text-start d-flex justify-content-center align-items-end">
-                    <h5 className="mx-2">Season: </h5>
-                    <Autocomplete
-                        options={seasonsOptions}
-                        defaultValue={season === undefined ? null : seasonsOptions[0]}
-                        onChange={(event, value) => setSeason(value!.value)}
-                        renderInput={(params) => (
-                            <TextField {...params} placeholder="Choose a season" />
-                        )}
-                    />
-                </div>
-
-                {season ? (
-                    <h5>
-                        {season.name} season ends {new Date(season.endDate).toDateString()}
-                    </h5>
-                ) : (
-                    <h5>No season selected</h5>
-                )}
+            <div className="text-start d-flex justify-content-center align-items-end">
+                <h5 className="mx-2">Season: </h5>
+                <Autocomplete
+                    options={seasonsOptions}
+                    sx={{ width: "200px" }}
+                    onChange={(event, value) => setSeason(value!.value)}
+                    renderInput={(params) => (
+                        <TextField {...params} placeholder="Default: this season" />
+                    )}
+                />
             </div>
+
+            {season === undefined ? (
+                <h5>No season selected</h5>
+            ) : (
+                <LeaderboardDisplay season={season} gameVariant={gameVariant}></LeaderboardDisplay>
+            )}
+        </Container>
+    );
+};
+
+const LeaderboardDisplay: FC<{ gameVariant: GameVariant; season: Season }> = ({
+    gameVariant,
+    season,
+}) => {
+    const { isSuccess, data: leaderboard } = usePlayerLeaderboard(gameVariant, season);
+    if (!isSuccess) {
+        return <h5>Loading ...</h5>;
+    }
+    return (
+        <>
+            <h5>
+                {season.name} season ends {new Date(season.endDate).toDateString()}
+            </h5>
             <Table striped responsive hover className="text-nowrap">
                 <thead>
                     <tr>
@@ -64,8 +75,7 @@ const Leaderboard: FC<GameVariantProp> = ({ gameVariant }) => {
                     })}
                 </tbody>
             </Table>
-        </Container>
+        </>
     );
 };
-
 export default Leaderboard;
