@@ -14,7 +14,7 @@ const Home: FC = () => {
             </p>
             <p>Email: ubcmahjongclub@gmail.com </p>
             <p>
-                <a href={"https://discord.gg/JQaTEF6fQR"}>Join our discord channel</a> for latest
+                <a href={"https://discord.gg/93mksWsQNB"}>Join our discord channel</a> for latest
                 information!
             </p>
             <p>
