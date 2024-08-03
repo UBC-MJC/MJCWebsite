@@ -10,11 +10,7 @@ type ListToggleButtonProps = {
 
 const ListToggleButton = ({ key, name, value, checked, onChange }: ListToggleButtonProps) => {
     return (
-        <ToggleButton
-            key={key}
-            className="my-1 w-100"
-            value={value}
-        >
+        <ToggleButton key={key} className="my-1 w-100" value={value}>
             {name}
         </ToggleButton>
     );

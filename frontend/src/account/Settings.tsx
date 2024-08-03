@@ -42,15 +42,15 @@ const Settings: FC = () => {
         <Container fluid className={"my-4"}>
             <h1>Settings</h1>
             <Col xs sm={3} className="mx-auto">
-                    <FormControlLabel
-                        label="Legacy Display Game"
-                        defaultChecked={settings.legacyDisplayGame}
-                        control={
-                            <Switch
-                                onChange={(e, checked) => handleToggle(checked, "legacyDisplayGame")}
-                            />
-                        }
-                    />
+                <FormControlLabel
+                    label="Legacy Display Game"
+                    defaultChecked={settings.legacyDisplayGame}
+                    control={
+                        <Switch
+                            onChange={(e, checked) => handleToggle(checked, "legacyDisplayGame")}
+                        />
+                    }
+                />
             </Col>
             <ButtonGroup variant="contained" aria-label="Basic button group">
                 <Button onClick={() => colorMode.toggleColorMode("light")}>Light</Button>

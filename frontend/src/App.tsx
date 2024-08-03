@@ -69,7 +69,7 @@ const App: React.FC = () => {
             <ThemeProvider theme={theme}>
                 <QueryClientProvider client={queryClient}>
                     <AuthContextProvider>
-                        <CssBaseline/>
+                        <CssBaseline />
                         <main className="App">
                             <Routes>
                                 <Route element={<WithNav />}>

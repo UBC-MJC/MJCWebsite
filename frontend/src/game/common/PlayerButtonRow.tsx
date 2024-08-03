@@ -1,6 +1,6 @@
 import { JapaneseLabel } from "./constants";
 import React from "react";
-import { Checkbox, FormControlLabel, FormGroup, FormLabel, Radio} from "@mui/material";
+import { Checkbox, FormControlLabel, FormGroup, FormLabel, Radio } from "@mui/material";
 
 type PlayerButtonRow<T extends string> = {
     players: GamePlayer[];
@@ -32,7 +32,6 @@ const PlayerButtonRow = <T extends string>({
                         whiteSpace: "nowrap",
                         textOverflow: "ellipsis",
                     }}
-
                     control={
                         isMulti(label) ? (
                             <Checkbox

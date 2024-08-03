@@ -255,9 +255,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 <Col xs sm={3} className="mx-auto">
                     <FormControlLabel
                         control={
-                            <Switch
-                                onChange={(e, checked) => setMultipleHandInputMode(checked)}
-                            />
+                            <Switch onChange={(e, checked) => setMultipleHandInputMode(checked)} />
                         }
                         label="Multiple Transactions"
                     />
