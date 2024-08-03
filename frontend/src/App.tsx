@@ -21,7 +21,7 @@ import PasswordReset from "./login/PasswordReset";
 import { Resources } from "./resources/Resources";
 import GameLogs from "./game/GameLogs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createTheme, ThemeProvider, useMediaQuery } from "@mui/material";
+import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 
 const useQuery = () => {
     const { search } = useLocation();
@@ -69,6 +69,7 @@ const App: React.FC = () => {
             <ThemeProvider theme={theme}>
                 <QueryClientProvider client={queryClient}>
                     <AuthContextProvider>
+                        <CssBaseline/>
                         <main className="App">
                             <Routes>
                                 <Route element={<WithNav />}>

@@ -111,6 +111,9 @@ const GameLogs: FC = () => {
                         <h3>Game Variant</h3>
                         <div className="text-start">
                             <Autocomplete
+                                isOptionEqualToValue={(option, value) =>
+                                    option.label === value.label
+                                }
                                 options={gameVariants}
                                 defaultValue={gameVariants[0]}
                                 onChange={(event, value) => setQueryGameVariant(value!.value)}
@@ -124,6 +127,9 @@ const GameLogs: FC = () => {
                         <h3>Season</h3>
                         <div className="text-start">
                             <Autocomplete
+                                isOptionEqualToValue={(option, value) =>
+                                    option.label === value.label
+                                }
                                 options={seasonsOptions}
                                 onChange={(event, value) => setQuerySeasonId(value!.value.id)}
                                 renderInput={(params) => (
@@ -136,6 +142,9 @@ const GameLogs: FC = () => {
                         <h3>Players</h3>
                         <div className="text-start">
                             <Autocomplete
+                                isOptionEqualToValue={(option, value) =>
+                                    option.label === value.label
+                                }
                                 options={playersOptions}
                                 multiple
                                 disableCloseOnSelect

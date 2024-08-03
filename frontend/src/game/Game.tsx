@@ -14,9 +14,10 @@ import alert from "../common/AlertDialog";
 import confirmDialog from "../common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import { gameRoundString, isGameEnd } from "./common/constants";
 import { baseUrl } from "../api/APIUtils";
+import { Button } from "@mui/material";
 
 const Game: FC = () => {
     const { id, variant } = useParams();
@@ -206,7 +207,8 @@ const Game: FC = () => {
                     <Row>
                         <Col sm>
                             <Button
-                                variant="danger"
+                                variant="contained"
+                                color="error"
                                 className="mb-2 w-100"
                                 onClick={() => handleDeleteRound()}
                             >
@@ -215,7 +217,8 @@ const Game: FC = () => {
                         </Col>
                         <Col sm>
                             <Button
-                                variant="danger"
+                                variant="contained"
+                                color="error"
                                 className="mb-2 w-100"
                                 onClick={() => handleDeleteGame()}
                             >
@@ -224,7 +227,8 @@ const Game: FC = () => {
                         </Col>
                         <Col sm>
                             <Button
-                                variant="success"
+                                variant="contained"
+                                color="success"
                                 className="mb-2 w-100"
                                 disabled={!isGameEnd(game, variant)}
                                 onClick={() => handleSubmitGame()}

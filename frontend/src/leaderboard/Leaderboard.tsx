@@ -22,6 +22,7 @@ const Leaderboard: FC<GameVariantProp> = ({ gameVariant }) => {
             <div className="text-start d-flex justify-content-center align-items-end">
                 <h5 className="mx-2">Season: </h5>
                 <Autocomplete
+                    isOptionEqualToValue={(option, value) => option.label === value.label}
                     options={seasonsOptions}
                     sx={{ width: "200px" }}
                     onChange={(event, value) => setSeason(value!.value)}

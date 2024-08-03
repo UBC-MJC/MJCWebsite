@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import LegacyHongKongGameTable, { ModifiedHongKongRound } from "./LegacyHongKongGameTable";
 import {
     HK_LABEL_MAP,
@@ -18,6 +18,7 @@ import { createHongKongRoundRequest, generateOverallScoreDelta } from "../contro
 import { validateHongKongRound } from "../controller/ValidateHongKongRound";
 import alert from "../../../common/AlertDialog";
 import PointsInput from "../../common/PointsInput";
+import { Button } from "@mui/material";
 
 const LegacyHongKongGame: FC<LegacyGameProps> = ({
     enableRecording,
@@ -126,7 +127,7 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                     {HK_TRANSACTION_TYPE_BUTTONS.map((button, idx) => (
                         <Col key={idx} xs={4}>
                             <ListToggleButton
-                                index={idx}
+                                key={idx}
                                 name={button.name}
                                 value={button.value}
                                 checked={transactionType.toString() === button.value}
@@ -159,7 +160,8 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                     ></PointsInput>
                 )}
                 <Button
-                    variant="primary"
+                    color="success"
+                    variant="contained"
                     className="mt-4 w-50"
                     disabled={gameOver}
                     onClick={submitRound}

@@ -2,7 +2,7 @@ import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
 import { AxiosError } from "axios";
 import { makeDummyAdminsAPI, recalcSeasonAPI } from "../api/AdminAPI";
-import { Button, Form, Table as BTable } from "react-bootstrap";
+import { Form, Table as BTable } from "react-bootstrap";
 import {
     CellContext,
     ColumnDef,
@@ -16,6 +16,7 @@ import { FaBan, FaCheck, FaEdit, FaSave, FaTrash } from "react-icons/fa";
 import IconButton from "../common/IconButton";
 import confirmDialog from "../common/ConfirmationDialog";
 import { deletePlayerMutation, savePlayerMutation, useAdminPlayers } from "../hooks/AdminHooks";
+import { Button } from "@mui/material";
 
 const booleanToCheckmark = (value: boolean) => {
     return value ? (
@@ -204,13 +205,13 @@ const AdminPlayers: FC = () => {
                 </tbody>
             </BTable>
             <div className="my-4">
-                <Button variant="outline-dark" onClick={makeTestAdmins}>
+                <Button variant="outlined" onClick={makeTestAdmins}>
                     Make Test Admins
                 </Button>
-                <Button variant="danger" onClick={recalcCurrentSeasonHK}>
+                <Button variant="outlined" color="warning" onClick={recalcCurrentSeasonHK}>
                     Recalc Elo for HK games (Expensive operation!)
                 </Button>
-                <Button variant="danger" onClick={recalcCurrentSeasonJP}>
+                <Button variant="outlined" color="warning" onClick={recalcCurrentSeasonJP}>
                     Recalc Elo for JP games (Expensive operation!)
                 </Button>
             </div>

@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
-import { Button, Card, Container, Form, Row, Col } from "react-bootstrap";
+import { Card, Container, Form, Row, Col } from "react-bootstrap";
 import { AuthContext } from "../common/AuthContext";
 import { AxiosError } from "axios";
+import { Button } from "@mui/material";
 
 const isEmail = (email: string) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
 
@@ -132,7 +133,7 @@ const Register: React.FC = () => {
                     </Form.Group>
 
                     <div className="d-grid my-4">
-                        <Button variant="primary" type="submit">
+                        <Button variant="contained" type="submit">
                             Sign Up
                         </Button>
                     </div>

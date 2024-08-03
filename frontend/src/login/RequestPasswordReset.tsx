@@ -1,8 +1,9 @@
 import React, { FC, useState } from "react";
-import { Button, Card, Container, Form } from "react-bootstrap";
+import { Card, Container, Form } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { submitRequestPasswordResetAPI } from "../api/AccountAPI";
 import alert from "../common/AlertDialog";
+import { Button } from "@mui/material";
 
 const RequestPasswordReset: FC = () => {
     const [username, setUsername] = useState("");
@@ -45,7 +46,7 @@ const RequestPasswordReset: FC = () => {
                     </Form.Group>
 
                     <div className="d-grid my-4">
-                        <Button variant="primary" type="submit" disabled={isWaiting}>
+                        <Button variant="contained" type="submit" disabled={isWaiting}>
                             Request Password Reset
                         </Button>
                     </div>

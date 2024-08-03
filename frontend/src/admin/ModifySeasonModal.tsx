@@ -1,5 +1,6 @@
 import React, { FC, useState } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Form, Modal } from "react-bootstrap";
+import { Button } from "@mui/material";
 
 type ModifySeasonModalProps = {
     show: boolean;
@@ -108,10 +109,10 @@ const ModifySeasonModal: FC<ModifySeasonModalProps> = ({
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={onClose}>
+                    <Button variant="contained" onClick={onClose}>
                         Close
                     </Button>
-                    <Button variant="primary" type="submit">
+                    <Button variant="contained" type="submit">
                         {actionString}
                     </Button>
                 </Modal.Footer>

@@ -3,12 +3,9 @@ import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { AuthContext } from "./AuthContext";
 import { Link } from "react-router-dom";
 import { getGameVariantString } from "./Utils";
-import { ColorModeContext } from "../App";
 
 const NavBar: FC = () => {
     const { player, logout } = useContext(AuthContext);
-    const colorMode = React.useContext(ColorModeContext);
-
     return (
         <Navbar bg="info" expand="md">
             <Container fluid>
@@ -59,25 +56,6 @@ const NavBar: FC = () => {
                         </Nav.Link>
                     </Nav>
                     <Nav>
-                        <NavDropdown title="Theme" id="theme-nav-dropdown">
-                            <NavDropdown.Item
-                                onClick={() => {
-                                    colorMode.toggleColorMode("light");
-                                }}
-                            >
-                                Light
-                            </NavDropdown.Item>
-                            <NavDropdown.Item
-                                onClick={() => {
-                                    colorMode.toggleColorMode("dark");
-                                }}
-                            >
-                                Dark
-                            </NavDropdown.Item>
-                            <NavDropdown.Item onClick={() => colorMode.toggleColorMode("system")}>
-                                System
-                            </NavDropdown.Item>
-                        </NavDropdown>
                         {player && player.admin && (
                             <Nav.Link as={Link} to="/admin">
                                 Admin

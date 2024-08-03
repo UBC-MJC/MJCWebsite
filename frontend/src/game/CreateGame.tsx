@@ -1,13 +1,13 @@
 import React, { FC, useContext, useState } from "react";
 import { createGameAPI } from "../api/GameAPI";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { AuthContext } from "../common/AuthContext";
 import { withPlayerCondition } from "../common/withPlayerCondition";
 import { useNavigate } from "react-router-dom";
 import { getGameVariantString } from "../common/Utils";
 import { usePlayers } from "../hooks/GameHooks";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, Button, TextField } from "@mui/material";
 
 const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
@@ -58,6 +58,7 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
                     <h3>East</h3>
                     <div className="text-start">
                         <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playerNames}
                             value={eastPlayer !== null ? { label: eastPlayer } : null}
                             onChange={(event, value) => setEastPlayer(value!.label)}
@@ -71,6 +72,7 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
                     <h3>South</h3>
                     <div className="text-start">
                         <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playerNames}
                             value={southPlayer !== null ? { label: southPlayer } : null}
                             onChange={(event, value) => setSouthPlayer(value!.label)}
@@ -84,6 +86,7 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
                     <h3>West</h3>
                     <div className="text-start">
                         <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playerNames}
                             value={westPlayer !== null ? { label: westPlayer } : null}
                             onChange={(event, value) => setWestPlayer(value!.label)}
@@ -97,6 +100,7 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
                     <h3>North</h3>
                     <div className="text-start">
                         <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playerNames}
                             value={northPlayer !== null ? { label: northPlayer } : null}
                             onChange={(event, value) => setNorthPlayer(value!.label)}
@@ -109,7 +113,7 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
             </Row>
             <Button
                 className="my-4 mx-auto"
-                variant="primary"
+                variant="contained"
                 disabled={playerSelectMissing || notUnique}
                 onClick={createGame}
             >

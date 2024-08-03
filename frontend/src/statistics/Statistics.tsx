@@ -28,6 +28,7 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
                     <Col>
                         <h3>Season</h3>
                         <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={seasonsOptions}
                             onChange={(event, value) => setSeason(value!.value)}
                             renderInput={(params) => (
@@ -38,6 +39,7 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
                     <Col>
                         <h3>Players</h3>
                         <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playersOptions}
                             onChange={(event, value) => setPlayerId(value!.value)}
                             renderInput={(params) => (

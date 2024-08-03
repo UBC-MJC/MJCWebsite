@@ -1,17 +1,15 @@
 import React, { FC, useState } from "react";
-import { Button, Col, Container, Form, Image, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import LegacyJapaneseGameTable, { ModifiedJapaneseRound } from "./LegacyJapaneseGameTable";
 import {
     isGameEnd,
     JapaneseActions,
     JapaneseLabel,
     JapaneseTransactionType,
-    JP_LABEL_MAP,
     JP_SINGLE_ACTION_BUTTONS,
     JP_TRANSACTION_TYPE_BUTTONS,
     JP_UNDEFINED_HAND,
 } from "../../common/constants";
-import ListToggleButton from "../../common/TransactionTypeButtonList";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
 import { japanesePointsWheel } from "../../../common/Utils";
 import { LegacyGameProps } from "../../Game";
@@ -30,6 +28,7 @@ import { validateJapaneseRound, validateTransaction } from "../controller/Valida
 import alert from "../../../common/AlertDialog";
 import riichiStick from "../../../assets/riichiStick.png";
 import PointsInput from "../../common/PointsInput";
+import { Button, ToggleButton, FormControlLabel, Switch, ToggleButtonGroup } from "@mui/material";
 
 const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     enableRecording,
@@ -254,33 +253,38 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         return (
             <>
                 <Col xs sm={3} className="mx-auto">
-                    <Form>
-                        <Form.Switch
-                            label="Multiple Transactions"
-                            onChange={(e) => setMultipleHandInputMode(e.target.checked)}
-                        />
-                    </Form>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                onChange={(e, checked) => setMultipleHandInputMode(checked)}
+                            />
+                        }
+                        label="Multiple Transactions"
+                    />
                 </Col>
                 <Row className="gx-2">
-                    {getActions().map((button, idx) => (
-                        <Col key={idx} xs={4}>
-                            <ListToggleButton
-                                index={idx}
-                                name={button.name}
-                                value={button.value}
-                                checked={transactionType === button.value}
-                                onChange={(value) =>
-                                    transactionTypeOnChange(
-                                        value as unknown as JapaneseTransactionType,
-                                    )
-                                }
-                            />
-                        </Col>
-                    ))}
+                    <ToggleButtonGroup
+                        value={transactionType}
+                        exclusive
+                        sx={{ flexWrap: "wrap" }}
+                        onChange={(event, value) => transactionTypeOnChange(value)}
+                    >
+                        {getActions().map((button, idx) => (
+                            <Col key={idx} xs={4}>
+                                <ToggleButton
+                                    key={idx}
+                                    className="my-1 w-100"
+                                    value={button.value}
+                                    id={button.name}
+                                >
+                                    {button.name}
+                                </ToggleButton>
+                            </Col>
+                        ))}
+                    </ToggleButtonGroup>
                 </Row>
                 <Row className="my-4">
                     <Col>
-                        <h5>Riichis:</h5>
                         <PlayerButtonRow
                             players={players}
                             label={"RIICHI"}
@@ -292,7 +296,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 {getJapaneseLabels().map(([label, labelPlayerIds]) => (
                     <Row key={label} className="my-4">
                         <Col>
-                            <h5>{JP_LABEL_MAP[label as JapaneseLabel]}:</h5>
                             <PlayerButtonRow
                                 players={players}
                                 label={label as JapaneseLabel}
@@ -317,7 +320,8 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         if (!multipleHandInputMode) {
             return (
                 <Button
-                    variant="success"
+                    color="success"
+                    variant="contained"
                     className="my-4 w-50"
                     disabled={gameOver}
                     onClick={submitSingleTransactionRound}
@@ -331,7 +335,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 <Row className={"gx-1"}>
                     <Col>
                         <Button
-                            variant="primary"
+                            variant="contained"
                             className="my-4 w-100"
                             disabled={gameOver}
                             onClick={addTransaction}
@@ -341,7 +345,8 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     </Col>
                     <Col>
                         <Button
-                            variant="danger"
+                            color="warning"
+                            variant="contained"
                             className="my-4 w-100"
                             disabled={gameOver || transactions.length === 0}
                             onClick={deleteLastTransaction}
@@ -354,7 +359,8 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 {getTransactionListRender()}
 
                 <Button
-                    variant="success"
+                    color="success"
+                    variant="contained"
                     className="my-4 w-50"
                     disabled={gameOver || transactions.length === 0}
                     onClick={submitAllTransactionRound}
@@ -406,7 +412,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                                 <div>{players[idx].username}</div>
                                 <div>
                                     {riichiList.includes(idx) && (
-                                        <Image src={riichiStick} className={"w-75"}></Image>
+                                        <img src={riichiStick} className={"w-75"}></img>
                                     )}
                                 </div>
                                 <h2 className="my-0">

@@ -17,6 +17,7 @@ const PointsInput: FC<PointsInputProps> = ({ pointsWheel, onChange }) => {
                     key={wheel.value}
                     label={wheel.label}
                     data={wheel.data}
+
                     onChange={(value) => onChange(wheel.value, value)}
                 />
             ))}
