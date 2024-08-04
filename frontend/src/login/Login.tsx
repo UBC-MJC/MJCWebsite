@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
-import { Button, Container, Form, Card } from "react-bootstrap";
+import { Container, Form, Card } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { AuthContext } from "../common/AuthContext";
+import { Button } from "@mui/material";
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState("");
@@ -72,7 +73,7 @@ const Login: React.FC = () => {
                     </Form.Group>
 
                     <div className="d-grid my-4">
-                        <Button variant="primary" type="submit">
+                        <Button variant="contained" type="submit">
                             Login
                         </Button>
                     </div>

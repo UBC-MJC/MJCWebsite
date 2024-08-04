@@ -1,14 +1,14 @@
 import React, { FC, useState } from "react";
 import { getGamesAPI } from "../api/GameAPI";
 import { AxiosError } from "axios";
-import { Button, Card, Col, Container, Pagination, Row } from "react-bootstrap";
-import Select from "react-select";
+import { Card, Col, Container, Pagination, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import alert from "../common/AlertDialog";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { mapPlayerNameToOption, mapSeasonToOption } from "./common/constants";
 import { useSeasons } from "../hooks/AdminHooks";
 import { usePlayers } from "../hooks/GameHooks";
+import { Autocomplete, Button, TextField } from "@mui/material";
 
 const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Riichi", value: "jp" },
@@ -110,43 +110,60 @@ const GameLogs: FC = () => {
                     <Col xs={12} lg={4} className="mb-4">
                         <h3>Game Variant</h3>
                         <div className="text-start">
-                            <Select
+                            <Autocomplete
+                                isOptionEqualToValue={(option, value) =>
+                                    option.label === value.label
+                                }
                                 options={gameVariants}
                                 defaultValue={gameVariants[0]}
-                                getOptionValue={(selectOptions) => selectOptions.label}
-                                onChange={(e) => setQueryGameVariant(e!.value)}
+                                onChange={(event, value) => setQueryGameVariant(value!.value)}
+                                renderInput={(params) => (
+                                    <TextField {...params} placeholder="Choose a season" />
+                                )}
                             />
                         </div>
                     </Col>
                     <Col xs={12} lg={4} className="mb-4">
                         <h3>Season</h3>
                         <div className="text-start">
-                            <Select
+                            <Autocomplete
+                                isOptionEqualToValue={(option, value) =>
+                                    option.label === value.label
+                                }
                                 options={seasonsOptions}
-                                isSearchable
-                                placeholder="Choose a season"
-                                getOptionValue={(selectOptions) => selectOptions.label}
-                                onChange={(e) => setQuerySeasonId(e!.value.id)}
+                                onChange={(event, value) => setQuerySeasonId(value!.value.id)}
+                                renderInput={(params) => (
+                                    <TextField {...params} placeholder="Choose a season" />
+                                )}
                             />
                         </div>
                     </Col>
                     <Col xs={12} lg={4} className="mb-4">
                         <h3>Players</h3>
                         <div className="text-start">
-                            <Select
+                            <Autocomplete
+                                isOptionEqualToValue={(option, value) =>
+                                    option.label === value.label
+                                }
                                 options={playersOptions}
-                                isMulti
-                                isSearchable
-                                placeholder="Leave blank for all players"
-                                getOptionValue={(selectOptions) => selectOptions.label}
-                                onChange={(e) => setQueryPlayers(e!.map((player) => player.value))}
+                                multiple
+                                disableCloseOnSelect
+                                onChange={(event, value) =>
+                                    setQueryPlayers(value!.map((player) => player.value))
+                                }
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        placeholder="Leave blank for all players"
+                                    />
+                                )}
                             />
                         </div>
                     </Col>
                 </Row>
                 <Button
                     className="my-2 mx-auto"
-                    variant="primary"
+                    variant={"contained"}
                     disabled={disableQueryButton()}
                     onClick={getGames}
                 >

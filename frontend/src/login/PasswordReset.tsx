@@ -1,9 +1,10 @@
 import React, { FC, useState } from "react";
-import { Button, Card, Container, Form, Alert } from "react-bootstrap";
+import { Card, Container, Form, Alert } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { submitPasswordResetAPI } from "../api/AccountAPI";
 import alert from "../common/AlertDialog";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
 
 type PasswordResetProps = {
     playerId: string | null;
@@ -87,7 +88,7 @@ const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
                     </Form.Group>
 
                     <div className="d-grid my-4">
-                        <Button variant="primary" type="submit" disabled={isWaiting}>
+                        <Button variant="contained" type="submit" disabled={isWaiting}>
                             Reset Password
                         </Button>
                     </div>

@@ -1,6 +1,5 @@
-import { ToggleButton } from "react-bootstrap";
-import { JapaneseLabel } from "./constants";
 import React from "react";
+import { ToggleButton } from "@mui/material";
 
 type PlayerButtonRow<T extends string> = {
     players: GamePlayer[];
@@ -17,23 +16,21 @@ const PlayerButtonRow = <T extends string>({
 }: PlayerButtonRow<T>) => {
     return (
         <>
+            <h5>{label[0] + label.slice(1).toLowerCase()}:</h5>
             {players.map((player, idx) => (
                 <ToggleButton
-                    data-bs-theme={"dark"}
                     key={idx}
                     id={`name-${label}-${idx}`}
-                    type={getToggleType(label)}
-                    variant={getVariant(label)}
-                    style={{
+                    color={getVariant(label)}
+                    sx={{
                         maxWidth: "22.5%",
                         overflow: "clip",
                         whiteSpace: "nowrap",
                         // textOverflow: "ellipsis"
                     }}
-                    name={label + "-button"}
                     className="mx-1 my-1"
                     value={player.id}
-                    checked={labelPlayerIds.includes(idx)}
+                    selected={labelPlayerIds.includes(idx)}
                     onChange={() => onChange(idx, label)}
                 >
                     {player.username}
@@ -43,18 +40,11 @@ const PlayerButtonRow = <T extends string>({
     );
 };
 
-const getToggleType = (label: string) => {
-    if (label === JapaneseLabel.TENPAI || label === "RIICHI") {
-        return "checkbox";
-    }
-    return "radio";
-};
-
-function getVariant(label: string): string {
+function getVariant(label: string) {
     if (label === "RIICHI") {
-        return "outline-secondary";
+        return "secondary";
     }
-    return "outline-primary";
+    return "primary";
 }
 
 export default PlayerButtonRow;

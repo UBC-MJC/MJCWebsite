@@ -1,7 +1,8 @@
 import React, { FC } from "react";
 import PropTypes from "prop-types";
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { confirmable, createConfirmation } from "react-confirm";
+import { Button } from "@mui/material";
 
 const ConfirmationDialog: FC<any> = ({
     show,
@@ -26,12 +27,8 @@ const ConfirmationDialog: FC<any> = ({
             {header}
             <Modal.Body>{confirmation}</Modal.Body>
             <Modal.Footer>
-                <Button variant={cancelButtonStyle} onClick={() => proceed(false)}>
-                    {cancelText}
-                </Button>
-                <Button variant={okButtonStyle} onClick={() => proceed(true)}>
-                    {okText}
-                </Button>
+                <Button onClick={() => proceed(false)}>{cancelText}</Button>
+                <Button onClick={() => proceed(true)}>{okText}</Button>
             </Modal.Footer>
         </Modal>
     );

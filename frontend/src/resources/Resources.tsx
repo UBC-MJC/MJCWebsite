@@ -1,7 +1,7 @@
 import { FC } from "react";
 export const Resources: FC = () => {
     return (
-        <div>
+        <div className={"my-4"}>
             <h1>Study resources</h1>
             <h2>Riichi Mahjong</h2>
             <p>
@@ -18,6 +18,11 @@ export const Resources: FC = () => {
             <p>
                 <a href="https://github.com/dainachiba/RiichiBooks/raw/master/RiichiBook1.pdf">
                     Riichi Book 1
+                </a>
+            </p>
+            <p>
+                <a href="https://drive.google.com/drive/folders/18hxO5DMVAqxSNV9VvpjAg6YjyPVAMzyS">
+                    Cheat Sheet
                 </a>
             </p>
             <p>

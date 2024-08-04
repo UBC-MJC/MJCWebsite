@@ -1,6 +1,6 @@
 import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
-import { Table as BTable, Button, Form, Card, Container, Col } from "react-bootstrap";
+import { Table as BTable, Form, Card, Container, Col } from "react-bootstrap";
 import {
     CellContext,
     ColumnDef,
@@ -20,6 +20,7 @@ import {
     updateSeasonMutation,
     useSeasons,
 } from "../hooks/AdminHooks";
+import { Button } from "@mui/material";
 
 declare module "@tanstack/table-core" {
     interface TableMeta<TData extends RowData> {
@@ -159,7 +160,7 @@ const AdminSeason: FC = () => {
                         <div className="mb-2">
                             End Date: {new Date(currentSeason.endDate).toDateString()}
                         </div>
-                        <Button variant="primary" onClick={handleUpdateSeasonModalShow}>
+                        <Button variant="contained" onClick={handleUpdateSeasonModalShow}>
                             Edit
                         </Button>
                     </Card.Body>
@@ -177,7 +178,7 @@ const AdminSeason: FC = () => {
             <>
                 <Card.Body>
                     <p>No current season</p>
-                    <Button variant="primary" onClick={handleCreateSeasonModalShow}>
+                    <Button variant="contained" onClick={handleCreateSeasonModalShow}>
                         Create Season
                     </Button>
                 </Card.Body>
