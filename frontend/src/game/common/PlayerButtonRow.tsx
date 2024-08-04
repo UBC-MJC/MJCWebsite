@@ -16,7 +16,7 @@ const PlayerButtonRow = <T extends string>({
 }: PlayerButtonRow<T>) => {
     return (
         <>
-            <h4>{label[0] + label.slice(1).toLowerCase()}:</h4>
+            <h5>{label[0] + label.slice(1).toLowerCase()}:</h5>
             {players.map((player, idx) => (
                 <ToggleButton
                     key={idx}
