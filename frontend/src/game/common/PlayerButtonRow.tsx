@@ -1,6 +1,5 @@
-import { JapaneseLabel } from "./constants";
 import React from "react";
-import { Checkbox, FormControlLabel, FormGroup, FormLabel, Radio } from "@mui/material";
+import { ToggleButton } from "@mui/material";
 
 type PlayerButtonRow<T extends string> = {
     players: GamePlayer[];
@@ -15,47 +14,30 @@ const PlayerButtonRow = <T extends string>({
     labelPlayerIds,
     onChange,
 }: PlayerButtonRow<T>) => {
-    const formOnChange = (playerIndex: number) => {
-        return () => {
-            return onChange(playerIndex, label);
-        };
-    };
     return (
-        <FormGroup row className={"justify-content-center align-items-center"}>
-            <FormLabel component="legend"> {label} </FormLabel>
+        <>
+            <h4>{label[0] + label.slice(1).toLowerCase()}:</h4>
             {players.map((player, idx) => (
-                <FormControlLabel
-                    label={player.username}
-                    key={player.id}
+                <ToggleButton
+                    key={idx}
+                    id={`name-${label}-${idx}`}
+                    color={getVariant(label)}
                     sx={{
-                        maxWidth: "15%",
+                        maxWidth: "22.5%",
+                        overflow: "clip",
                         whiteSpace: "nowrap",
-                        textOverflow: "ellipsis",
+                        // textOverflow: "ellipsis"
                     }}
-                    control={
-                        isMulti(label) ? (
-                            <Checkbox
-                                checked={labelPlayerIds.includes(idx)}
-                                onChange={formOnChange(idx)}
-                                color={getVariant(label)}
-                            />
-                        ) : (
-                            <Radio
-                                checked={labelPlayerIds.includes(idx)}
-                                onChange={formOnChange(idx)}
-                                color={getVariant(label)}
-                            />
-                        )
-                    }
-                    labelPlacement="top"
-                ></FormControlLabel>
+                    className="mx-1 my-1"
+                    value={player.id}
+                    selected={labelPlayerIds.includes(idx)}
+                    onChange={() => onChange(idx, label)}
+                >
+                    {player.username}
+                </ToggleButton>
             ))}
-        </FormGroup>
+        </>
     );
-};
-
-const isMulti = (label: string) => {
-    return label === JapaneseLabel.TENPAI || label === "RIICHI";
 };
 
 function getVariant(label: string) {

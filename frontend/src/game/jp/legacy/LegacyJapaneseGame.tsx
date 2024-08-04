@@ -261,25 +261,20 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     />
                 </Col>
                 <Row className="gx-2">
-                    <ToggleButtonGroup
-                        value={transactionType}
-                        exclusive
-                        sx={{ flexWrap: "wrap" }}
-                        onChange={(event, value) => transactionTypeOnChange(value)}
-                    >
-                        {getActions().map((button, idx) => (
-                            <Col key={idx} xs={4}>
-                                <ToggleButton
-                                    key={idx}
-                                    className="my-1 w-100"
-                                    value={button.value}
-                                    id={button.name}
-                                >
-                                    {button.name}
-                                </ToggleButton>
-                            </Col>
-                        ))}
-                    </ToggleButtonGroup>
+                    {getActions().map((button, idx) => (
+                        <Col key={idx} xs={4}>
+                            <ToggleButton
+                                key={idx}
+                                className="my-1 w-100"
+                                value={button.value}
+                                id={button.name}
+                                selected={transactionType === button.value}
+                                onChange={(event, value) => transactionTypeOnChange(value)}
+                            >
+                                {button.name}
+                            </ToggleButton>
+                        </Col>
+                    ))}
                 </Row>
                 <Row className="my-4">
                     <Col>

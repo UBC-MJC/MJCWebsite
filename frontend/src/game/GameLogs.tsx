@@ -1,14 +1,14 @@
 import React, { FC, useState } from "react";
 import { getGamesAPI } from "../api/GameAPI";
 import { AxiosError } from "axios";
-import { Button, Card, Col, Container, Pagination, Row } from "react-bootstrap";
+import { Card, Col, Container, Pagination, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import alert from "../common/AlertDialog";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { mapPlayerNameToOption, mapSeasonToOption } from "./common/constants";
 import { useSeasons } from "../hooks/AdminHooks";
 import { usePlayers } from "../hooks/GameHooks";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, Button, TextField } from "@mui/material";
 
 const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Riichi", value: "jp" },
@@ -163,7 +163,7 @@ const GameLogs: FC = () => {
                 </Row>
                 <Button
                     className="my-2 mx-auto"
-                    variant="primary"
+                    variant={"contained"}
                     disabled={disableQueryButton()}
                     onClick={getGames}
                 >
