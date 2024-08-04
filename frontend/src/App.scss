@@ -153,37 +153,4 @@ table tr.footer-row td:first-child {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
-.react-select-container {
-  .react-select__control {
-    background-color: var(--bg-secondary);
-    border-color: var(--border-color);
-    transition: none;
-
-    &:hover {
-      border-color: var(--border-color);
-    }
-  }
-
-  .react-select__menu {
-    background-color: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-  }
-
-  .react-select__option {
-    background-color: var(--bg-secondary);
-
-    &:hover {
-      background-color: var(--bg-primary);
-    }
-  }
-
-  .react-select__indicator-separator {
-    background-color: var(--border-color);
-  }
-
-  .react-select__placeholder,
-  .react-select__single-value {
-    color: var(--text-primary);
-  }
-}
 @import "../node_modules/bootstrap";
