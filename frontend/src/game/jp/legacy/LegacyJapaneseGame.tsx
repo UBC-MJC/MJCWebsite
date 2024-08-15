@@ -28,7 +28,7 @@ import { validateJapaneseRound, validateTransaction } from "../controller/Valida
 import alert from "../../../common/AlertDialog";
 import riichiStick from "../../../assets/riichiStick.png";
 import PointsInput from "../../common/PointsInput";
-import { Button, ToggleButton, FormControlLabel, Switch, ToggleButtonGroup } from "@mui/material";
+import { Button, ToggleButton, FormControlLabel, Switch } from "@mui/material";
 
 const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     enableRecording,

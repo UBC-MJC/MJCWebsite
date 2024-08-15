@@ -44,9 +44,10 @@ const App: React.FC = () => {
         },
     });
     const systemMode = useMediaQuery("(prefers-color-scheme: dark)") ? "dark" : "light";
+    const root = window.document.documentElement;
+    root.setAttribute("data-bs-theme", systemMode);
     const [mode, setMode] = React.useState<"light" | "dark">(systemMode);
 
-    const root = window.document.documentElement;
     const colorMode = {
         toggleColorMode: (mode: "light" | "dark" | "system") => {
             if (mode === "system") {

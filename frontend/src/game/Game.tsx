@@ -210,6 +210,7 @@ const Game: FC = () => {
                                 variant="contained"
                                 color="error"
                                 className="mb-2 w-100"
+                                disabled={game.rounds.length == 0}
                                 onClick={() => handleDeleteRound()}
                             >
                                 Delete last Hand
