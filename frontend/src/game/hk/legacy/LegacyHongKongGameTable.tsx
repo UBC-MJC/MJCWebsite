@@ -9,7 +9,7 @@ import { mapWindToCharacter } from "../../../common/Utils";
 import { addScoreDeltas } from "../../jp/controller/JapaneseRound";
 import { generateOverallScoreDelta } from "../controller/HongKongRound";
 import { getHongKongStartingScore } from "../../common/constants";
-import displayTable from "../../common/TableDisplay";
+import TableDisplay from "../../common/TableDisplay";
 type LegacyGameTableProps = {
     rounds: ModifiedHongKongRound[];
     players: GamePlayer[];
@@ -80,7 +80,7 @@ const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         getRowId: (row) => row.id!,
     });
 
-    return displayTable(table, getCurrentScoreRow(rounds));
+    return <TableDisplay table={table} currentScoreRow={getCurrentScoreRow(rounds)}/>;
 };
 
 export default LegacyHongKongGameTable;

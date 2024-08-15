@@ -302,7 +302,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     <PointsInput
                         pointsWheel={japanesePointsWheel}
                         onChange={handOnChange}
-                    ></PointsInput>
+                    />
                 )}
 
                 {getTransactionMatters()}
@@ -365,12 +365,13 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     }
 
     function getTransactionListRender() {
-        const listItems = transactions.map((transaction, idx) => (
+        return <ul>
+            {transactions.map((transaction, idx) => (
             <li key={idx}>
                 Transaction {idx}: {transaction.scoreDeltas.toString()}
             </li>
-        ));
-        return <ul>{listItems}</ul>;
+        ))}
+        </ul>;
     }
 
     const mapRoundsToModifiedRounds = (rounds: JapaneseRound[]): ModifiedJapaneseRound[] => {

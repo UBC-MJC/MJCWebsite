@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-table";
 import { mapChineseNumerals, mapWindToCharacter } from "../../../common/Utils";
 import { generateJapaneseCurrentScore } from "../controller/JapaneseRound";
-import displayTable from "../../common/TableDisplay";
+import TableDisplay from "../../common/TableDisplay";
 
 type LegacyGameTableProps = {
     rounds: ModifiedJapaneseRound[];
@@ -79,7 +79,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         getRowId: (row, idx) => idx.toString(),
     });
 
-    return displayTable(table, getCurrentScoreRow(rounds));
+    return <TableDisplay table={table} currentScoreRow={getCurrentScoreRow(rounds)}/>;
 };
 
 export default LegacyJapaneseGameTable;

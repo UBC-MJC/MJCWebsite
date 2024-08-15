@@ -2,7 +2,8 @@ import { flexRender, Table } from "@tanstack/react-table";
 import React from "react";
 import { Table as BTable } from "react-bootstrap";
 
-function displayTable(table: Table<any>, currentScoreRow: (string | number)[]) {
+function TableDisplay(props: {table: Table<any>, currentScoreRow: (string | number)[]}) {
+    const {table, currentScoreRow} = props;
     return (
         <BTable striped borderless responsive className="my-4 text-nowrap align-middle">
             <thead>
@@ -39,4 +40,4 @@ function displayTable(table: Table<any>, currentScoreRow: (string | number)[]) {
     );
 }
 
-export default displayTable;
+export default TableDisplay;

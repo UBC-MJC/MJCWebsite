@@ -156,7 +156,7 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                     <PointsInput
                         pointsWheel={hongKongPointsWheel}
                         onChange={handOnChange}
-                    ></PointsInput>
+                    />
                 )}
                 <Button
                     color="success"
