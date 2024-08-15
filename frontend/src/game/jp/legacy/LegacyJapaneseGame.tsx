@@ -406,7 +406,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                                 <div>{players[idx].username}</div>
                                 <div>
                                     {riichiList.includes(idx) && (
-                                        <img src={riichiStick} className={"w-75"}></img>
+                                        <img src={riichiStick} className={"w-75"}/>
                                     )}
                                 </div>
                                 <h2 className="my-0">

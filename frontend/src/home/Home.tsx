@@ -6,7 +6,7 @@ const Home: FC = () => {
     return (
         <div className={"my-4"}>
             <h1>Home</h1>
-            <img src={logo} className={"w-50"} alt={"Logo of UBC MJC"}></img>
+            <img src={logo} className={"w-50"} alt={"Logo of UBC MJC"}/>
             <p>Club room location: Room 3206B, The Nest</p>
             <p>The University of British Columbia, Vancouver, BC</p>
             <p>
