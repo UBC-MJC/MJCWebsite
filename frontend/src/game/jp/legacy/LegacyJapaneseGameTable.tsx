@@ -79,7 +79,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         getRowId: (row, idx) => idx.toString(),
     });
 
-    return <TableDisplay table={table} currentScoreRow={getCurrentScoreRow(rounds)}/>;
+    return <TableDisplay table={table} currentScoreRow={getCurrentScoreRow(rounds)} />;
 };
 
 export default LegacyJapaneseGameTable;

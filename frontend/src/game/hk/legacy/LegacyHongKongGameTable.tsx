@@ -80,7 +80,7 @@ const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         getRowId: (row) => row.id!,
     });
 
-    return <TableDisplay table={table} currentScoreRow={getCurrentScoreRow(rounds)}/>;
+    return <TableDisplay table={table} currentScoreRow={getCurrentScoreRow(rounds)} />;
 };
 
 export default LegacyHongKongGameTable;

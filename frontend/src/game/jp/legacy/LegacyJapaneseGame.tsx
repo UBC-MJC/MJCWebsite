@@ -299,10 +299,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     </Row>
                 ))}
                 {showPointInput() && (
-                    <PointsInput
-                        pointsWheel={japanesePointsWheel}
-                        onChange={handOnChange}
-                    />
+                    <PointsInput pointsWheel={japanesePointsWheel} onChange={handOnChange} />
                 )}
 
                 {getTransactionMatters()}
@@ -365,13 +362,15 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     }
 
     function getTransactionListRender() {
-        return <ul>
-            {transactions.map((transaction, idx) => (
-            <li key={idx}>
-                Transaction {idx}: {transaction.scoreDeltas.toString()}
-            </li>
-        ))}
-        </ul>;
+        return (
+            <ul>
+                {transactions.map((transaction, idx) => (
+                    <li key={idx}>
+                        Transaction {idx}: {transaction.scoreDeltas.toString()}
+                    </li>
+                ))}
+            </ul>
+        );
     }
 
     const mapRoundsToModifiedRounds = (rounds: JapaneseRound[]): ModifiedJapaneseRound[] => {
@@ -406,7 +405,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                                 <div>{players[idx].username}</div>
                                 <div>
                                     {riichiList.includes(idx) && (
-                                        <img src={riichiStick} className={"w-75"}/>
+                                        <img src={riichiStick} className={"w-75"} />
                                     )}
                                 </div>
                                 <h2 className="my-0">
