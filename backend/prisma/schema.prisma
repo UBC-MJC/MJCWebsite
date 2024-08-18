@@ -11,6 +11,7 @@ enum GameType {
     RANKED
     PLAY_OFF
     TOURNEY
+    CASUAL
 }
 
 enum JapaneseTransactionType {
@@ -65,7 +66,7 @@ model JapanesePlayerGame {
     eloChange Float?
     player    Player        @relation(fields: [playerId], references: [id])
     playerId  String
-    game      JapaneseGame? @relation(fields: [gameId], references: [id])
+    game      JapaneseGame? @relation(fields: [gameId], references: [id], onDelete: Cascade)
     gameId    Int?
 }
 
