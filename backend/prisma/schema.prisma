@@ -61,23 +61,25 @@ model Player {
 }
 
 model JapanesePlayerGame {
-    id        String        @id @default(cuid())
-    wind      Wind
-    eloChange Float?
-    player    Player        @relation(fields: [playerId], references: [id])
-    playerId  String
-    game      JapaneseGame? @relation(fields: [gameId], references: [id], onDelete: Cascade)
-    gameId    Int?
+    id          String        @id @default(cuid())
+    wind        Wind
+    eloChange   Float?
+    player      Player        @relation(fields: [playerId], references: [id])
+    playerId    String
+    chomboCount Int           @default(0)
+    game        JapaneseGame? @relation(fields: [gameId], references: [id], onDelete: Cascade)
+    gameId      Int?
 }
 
 model HongKongPlayerGame {
-    id        String        @id @default(cuid())
-    wind      Wind
-    eloChange Float?
-    player    Player        @relation(fields: [playerId], references: [id])
-    playerId  String
-    game      HongKongGame? @relation(fields: [gameId], references: [id])
-    gameId    Int?
+    id          String        @id @default(cuid())
+    wind        Wind
+    eloChange   Float?
+    player      Player        @relation(fields: [playerId], references: [id])
+    playerId    String
+    chomboCount Int           @default(0)
+    game        HongKongGame? @relation(fields: [gameId], references: [id])
+    gameId      Int?
 }
 
 model Season {

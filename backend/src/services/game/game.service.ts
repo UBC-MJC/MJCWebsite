@@ -188,7 +188,7 @@ abstract class GameService {
                 },
             });
         }
-        const eloDict = await this.getSelectedPlayerElos(game.seasonId, game.players);
+        const eloDict = await this.getSelectedPlayerElos(game.seasonId, game.players, game.type);
         return this.getEloDeltas(game.players, playerScores, eloDict);
     }
 
@@ -215,6 +215,7 @@ abstract class GameService {
             by: "playerId",
             _sum: {
                 eloChange: true,
+                chomboCount: true,
             },
             _count: {
                 eloChange: true,
@@ -244,13 +245,13 @@ abstract class GameService {
             return {
                 id: player.playerId,
                 username: usernameDict[player.playerId],
-                elo: player._sum.eloChange,
+                elo: player._sum.eloChange - player._sum.chomboCount,
                 gameCount: player._count.eloChange,
             };
         });
     }
 
-    public async getSelectedPlayerElos(seasonId: string, playerGames: any[]): Promise<EloDict> {
+    public async getSelectedPlayerElos(seasonId: string, playerGames: any[], gameType: GameType): Promise<EloDict> {
         const playerIds: string[] = playerGames.map((playerGame) => playerGame.playerId);
         const dbResult = await this.playerGameDatabase.groupBy({
             by: "playerId",
@@ -261,7 +262,7 @@ abstract class GameService {
                 game: {
                     seasonId: seasonId,
                     status: GameStatus.FINISHED,
-                    type: GameType.RANKED,
+                    type: gameType,
                 },
                 playerId: {
                     in: playerIds,
