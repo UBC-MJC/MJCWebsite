@@ -1,14 +1,13 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import {
     ColumnDef,
     createColumnHelper,
-    flexRender,
     getCoreRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { Table as BTable } from "react-bootstrap";
 import { mapChineseNumerals, mapWindToCharacter } from "../../../common/Utils";
 import { generateJapaneseCurrentScore } from "../controller/JapaneseRound";
+import TableDisplay from "../../common/TableDisplay";
 
 type LegacyGameTableProps = {
     rounds: ModifiedJapaneseRound[];
@@ -80,45 +79,7 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
         getRowId: (row, idx) => idx.toString(),
     });
 
-    return (
-        <div>
-            <BTable striped borderless responsive className="my-4 text-nowrap align-middle">
-                <thead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <th key={header.id}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody>
-                    {table.getRowModel().rows.map((row) => (
-                        <tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <td key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-
-                    <tr className="footer-row" key="current-score">
-                        {getCurrentScoreRow(rounds).map((value, idx) => (
-                            <td className={idx === 0 ? "footer-label" : ""} key={idx}>
-                                {value}
-                            </td>
-                        ))}
-                    </tr>
-                </tbody>
-            </BTable>
-        </div>
-    );
+    return <TableDisplay table={table} currentScoreRow={getCurrentScoreRow(rounds)} />;
 };
 
 export default LegacyJapaneseGameTable;

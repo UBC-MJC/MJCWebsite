@@ -10,6 +10,7 @@ japanesePoints.push({ id: "26", value: 26 });
 japanesePoints.push({ id: "39", value: 39 });
 japanesePoints.push({ id: "52", value: 52 });
 japanesePoints.push({ id: "65", value: 65 });
+japanesePoints.push({ id: "78", value: 78 });
 
 const japaneseFu: PickerData[] = Array.from({ length: 10 }, (_, k) => {
     return {

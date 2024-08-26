@@ -30,6 +30,9 @@ const manganValue = (points: number) => {
         case points === 65:
             multiplier = 4 * 5;
             break;
+        case points == 78:
+            multiplier = 4 * 6;
+            break;
     }
     return MANGAN_BASE_POINT * multiplier;
 };

@@ -28,7 +28,7 @@ import { validateJapaneseRound, validateTransaction } from "../controller/Valida
 import alert from "../../../common/AlertDialog";
 import riichiStick from "../../../assets/riichiStick.png";
 import PointsInput from "../../common/PointsInput";
-import { Button, ToggleButton, FormControlLabel, Switch, ToggleButtonGroup } from "@mui/material";
+import { Button, ToggleButton, FormControlLabel, Switch } from "@mui/material";
 
 const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     enableRecording,
@@ -299,10 +299,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     </Row>
                 ))}
                 {showPointInput() && (
-                    <PointsInput
-                        pointsWheel={japanesePointsWheel}
-                        onChange={handOnChange}
-                    ></PointsInput>
+                    <PointsInput pointsWheel={japanesePointsWheel} onChange={handOnChange} />
                 )}
 
                 {getTransactionMatters()}
@@ -365,12 +362,15 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     }
 
     function getTransactionListRender() {
-        const listItems = transactions.map((transaction, idx) => (
-            <li key={idx}>
-                Transaction {idx}: {transaction.scoreDeltas.toString()}
-            </li>
-        ));
-        return <ul>{listItems}</ul>;
+        return (
+            <ul>
+                {transactions.map((transaction, idx) => (
+                    <li key={idx}>
+                        Transaction {idx}: {transaction.scoreDeltas.toString()}
+                    </li>
+                ))}
+            </ul>
+        );
     }
 
     const mapRoundsToModifiedRounds = (rounds: JapaneseRound[]): ModifiedJapaneseRound[] => {
@@ -405,7 +405,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                                 <div>{players[idx].username}</div>
                                 <div>
                                     {riichiList.includes(idx) && (
-                                        <img src={riichiStick} className={"w-75"}></img>
+                                        <img src={riichiStick} className={"w-75"} />
                                     )}
                                 </div>
                                 <h2 className="my-0">
