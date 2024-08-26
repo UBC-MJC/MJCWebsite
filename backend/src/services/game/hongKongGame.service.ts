@@ -132,7 +132,7 @@ class HongKongGameService extends GameService {
     }
 
     public async getQualifiedPlayers(gameType: GameType): Promise<Player[]> {
-        if (gameType == GameType.CASUAL) {
+        if (gameType === GameType.CASUAL) {
             return prisma.player.findMany();
         }
         return prisma.player.findMany({
@@ -225,7 +225,11 @@ const getFirstHongKongRound = (): any => {
 };
 
 const dealershipRetains = (round: ConcludedHongKongRoundT): boolean => {
-    if (round.roundWind == Wind.NORTH && round.roundNumber == 4 && round.transactions.length == 0) {
+    if (
+        round.roundWind === Wind.NORTH &&
+        round.roundNumber === 4 &&
+        round.transactions.length === 0
+    ) {
         return true; // carve out for N4 deck out
     }
     for (const transaction of round.transactions) {

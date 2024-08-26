@@ -180,7 +180,7 @@ abstract class GameService {
     }
 
     public async getPlayerEloDeltas(game: any, playerScores: number[]) {
-        if (game.status == GameStatus.FINISHED) {
+        if (game.status === GameStatus.FINISHED) {
             return await this.playerGameDatabase.findMany({
                 select: {
                     playerId: true,

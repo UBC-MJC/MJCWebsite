@@ -203,7 +203,7 @@ class JapaneseGameService extends GameService {
     }
 
     public async getQualifiedPlayers(gameType: GameType): Promise<Player[]> {
-        if (gameType == GameType.CASUAL) {
+        if (gameType === GameType.CASUAL) {
             return prisma.player.findMany();
         }
         return prisma.player.findMany({
