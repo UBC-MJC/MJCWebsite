@@ -37,21 +37,24 @@ abstract class GameService {
                 return findPlayerByUsernameOrEmail(playerName);
             }),
         );
-        for (const player of playerList) {
-            if (!this.isEligible(player!)) {
-                throw new Error("Player not eligible for game type");
-            }
-            const gameCount = await this.playerGameDatabase.count({
-                where: {
-                    playerId: player.id,
-                    game: {
-                        seasonId: seasonId,
-                        type: gameType,
+        // Throws error if the player is not eligible for the game type
+        if (gameType === GameType.RANKED) {
+            for (const player of playerList) {
+                if (!this.isEligible(player!)) {
+                    throw new Error("Player not eligible for game type");
+                }
+                const gameCount = await this.playerGameDatabase.count({
+                    where: {
+                        playerId: player.id,
+                        game: {
+                            seasonId: seasonId,
+                            type: gameType,
+                        },
                     },
-                },
-            });
-            if (gameCount > MAX_GAME_COUNT) {
-                throw Error("Maximum Game Count exceeded for player " + player.username + "!");
+                });
+                if (gameCount > MAX_GAME_COUNT) {
+                    throw Error("Maximum Game Count exceeded for player " + player.username + "!");
+                }
             }
         }
         const playersQuery = generatePlayerQuery(playerList);
@@ -210,7 +213,7 @@ abstract class GameService {
     }
 
     abstract getNextRound(game: any): any;
-    public async getAllPlayerElos(seasonId: string): Promise<any[]> {
+    public async getAllPlayerElos(seasonId: string, gameType: GameType): Promise<any[]> {
         const result = await this.playerGameDatabase.groupBy({
             by: "playerId",
             _sum: {
@@ -224,7 +227,7 @@ abstract class GameService {
                 game: {
                     seasonId: seasonId,
                     status: GameStatus.FINISHED,
-                    type: GameType.RANKED,
+                    type: gameType,
                 },
             },
         });
@@ -251,7 +254,11 @@ abstract class GameService {
         });
     }
 
-    public async getSelectedPlayerElos(seasonId: string, playerGames: any[], gameType: GameType): Promise<EloDict> {
+    public async getSelectedPlayerElos(
+        seasonId: string,
+        playerGames: any[],
+        gameType: GameType,
+    ): Promise<EloDict> {
         const playerIds: string[] = playerGames.map((playerGame) => playerGame.playerId);
         const dbResult = await this.playerGameDatabase.groupBy({
             by: "playerId",
@@ -334,7 +341,7 @@ abstract class GameService {
         return { eloDict: eloDict, orderedGames: finishedGames, debugStats: debugStats };
     }
     abstract isEligible(player: Player): boolean;
-    abstract getQualifiedPlayers(): Promise<Player[]>;
+    abstract getQualifiedPlayers(gameType: GameType): Promise<Player[]>;
     abstract getUserStatistics(seasonId: string, playerId: string): Promise<any>;
 }
 

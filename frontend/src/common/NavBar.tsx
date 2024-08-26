@@ -19,8 +19,14 @@ const NavBar: FC = () => {
                             <NavDropdown.Item as={Link} to="/leaderboard/jp">
                                 {getGameVariantString("jp")}
                             </NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/leaderboard/jp/casual">
+                                {getGameVariantString("jp")} Casual
+                            </NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/leaderboard/hk">
                                 {getGameVariantString("hk")}
+                            </NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/leaderboard/hk/casual">
+                                {getGameVariantString("hk")} Casual
                             </NavDropdown.Item>
                         </NavDropdown>
                         {player && (player.japaneseQualified || player.hongKongQualified) && (
@@ -30,11 +36,17 @@ const NavBar: FC = () => {
                                         {getGameVariantString("jp")}
                                     </NavDropdown.Item>
                                 )}
+                                <NavDropdown.Item as={Link} to="/games/create/jp/casual">
+                                    {getGameVariantString("jp")} Casual
+                                </NavDropdown.Item>
                                 {player.hongKongQualified && (
                                     <NavDropdown.Item as={Link} to="/games/create/hk">
                                         {getGameVariantString("hk")}
                                     </NavDropdown.Item>
                                 )}
+                                <NavDropdown.Item as={Link} to="/games/create/hk/casual">
+                                    {getGameVariantString("hk")} Casual
+                                </NavDropdown.Item>
                             </NavDropdown>
                         )}
                         <NavDropdown title={"Live Games"} id="live-games-nav-dropdown">

@@ -6,7 +6,7 @@ import { usePlayerLeaderboard } from "../hooks/LeaderboardHooks";
 import { mapSeasonToOption } from "../game/common/constants";
 import { Autocomplete, TextField } from "@mui/material";
 
-const Leaderboard: FC<GameVariantProp> = ({ gameVariant }) => {
+const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const [season, setSeason] = useState<Season | undefined>();
 
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons(setSeason);
@@ -35,17 +35,22 @@ const Leaderboard: FC<GameVariantProp> = ({ gameVariant }) => {
             {season === undefined ? (
                 <h5>No season selected</h5>
             ) : (
-                <LeaderboardDisplay season={season} gameVariant={gameVariant} />
+                <LeaderboardDisplay
+                    season={season}
+                    gameType={gameType!}
+                    gameVariant={gameVariant}
+                />
             )}
         </Container>
     );
 };
 
-const LeaderboardDisplay: FC<{ gameVariant: GameVariant; season: Season }> = ({
+const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; season: Season }> = ({
     gameVariant,
+    gameType,
     season,
 }) => {
-    const { isSuccess, data: leaderboard } = usePlayerLeaderboard(gameVariant, season);
+    const { isSuccess, data: leaderboard } = usePlayerLeaderboard(gameVariant, gameType, season);
     if (!isSuccess) {
         return <h5>Loading ...</h5>;
     }

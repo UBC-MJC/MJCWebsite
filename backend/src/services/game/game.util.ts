@@ -38,7 +38,6 @@ const checkPlayerListUnique = (playerNameList: string[]): void => {
     }
 };
 
-// Throws error if the player is not eligible for the game type
 const generatePlayerQuery = (playerList: Player[]) => {
     return playerList.map((player, idx) => {
         return {

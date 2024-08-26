@@ -52,8 +52,8 @@ router.delete("/games/:gameVariant/:id", isAuthenticated, deleteGameHandler);
 router.post("/games/:gameVariant/:id/rounds", isAuthenticated, createRoundHandler);
 router.delete("/games/:gameVariant/:id/rounds", isAuthenticated, deleteLastRoundHandler);
 
-router.get("/players/qualified/:gameVariant/names", getQualifiedPlayersHandler);
-router.get("/players/qualified/:gameVariant/leaderboard", getPlayerLeaderboardHandler);
+router.get("/players/qualified/:gameVariant/:gameType/names", getQualifiedPlayersHandler);
+router.get("/players/qualified/:gameVariant/:gameType/leaderboard", getPlayerLeaderboardHandler);
 
 router.get("/players/current", isAuthenticated, getCurrentPlayerHandler);
 router.put("/players/current/settings", isAuthenticated, updateSettingsHandler);

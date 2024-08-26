@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from "axios";
 import { baseUrl, getAuthConfig } from "./APIUtils";
 
-const getPlayerNames = async (gameVariant: string) => {
+const getPlayerNames = async (gameVariant: string, gameType: GameType) => {
     return axios.get<PlayerNamesDataType[]>(
-        baseUrl + "/players/qualified/" + gameVariant + "/names",
+        `${baseUrl}/players/qualified/${gameVariant}/${gameType}/names`,
     );
 };
 

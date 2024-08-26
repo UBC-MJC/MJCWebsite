@@ -1,5 +1,11 @@
 import prisma from "../../db";
-import { JapaneseTransaction, JapaneseTransactionType, Player, Prisma } from "@prisma/client";
+import {
+    GameType,
+    JapaneseTransaction,
+    JapaneseTransactionType,
+    Player,
+    Prisma,
+} from "@prisma/client";
 import {
     addScoreDeltas,
     GAME_CONSTANTS,
@@ -196,7 +202,10 @@ class JapaneseGameService extends GameService {
         return player.japaneseQualified;
     }
 
-    public async getQualifiedPlayers(): Promise<Player[]> {
+    public async getQualifiedPlayers(gameType: GameType): Promise<Player[]> {
+        if (gameType == GameType.CASUAL) {
+            return prisma.player.findMany();
+        }
         return prisma.player.findMany({
             where: {
                 japaneseQualified: true,
@@ -205,7 +214,6 @@ class JapaneseGameService extends GameService {
     }
 
     public async getUserStatistics(seasonId: string, playerId: string): Promise<any> {
-
         const [[total], [totalDealIns], [totalWins]] = await Promise.all([
             prisma.$queryRaw<
                 {
