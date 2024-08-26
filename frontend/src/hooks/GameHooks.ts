@@ -1,11 +1,11 @@
 import { getGameAPI, getLiveGamesAPI, getPlayerNames } from "../api/GameAPI";
 import { useQuery } from "@tanstack/react-query";
 
-export function usePlayers(gameVariant: GameVariant) {
+export function usePlayers(gameVariant: GameVariant, gameType?: GameType) {
     return useQuery({
-        queryKey: ["players", "gameVariant", gameVariant],
+        queryKey: ["players", gameVariant, gameType ?? "RANKED"],
         queryFn: async () => {
-            const playerNamesResponse = await getPlayerNames(gameVariant);
+            const playerNamesResponse = await getPlayerNames(gameVariant, gameType ?? "RANKED");
             return playerNamesResponse.data;
         },
     });

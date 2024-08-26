@@ -24,12 +24,13 @@ interface GameProps {
     game: IGame;
 }
 
-type GameType = "RANKED" | "PLAY_OFF" | "TOURNEY";
+type GameType = "RANKED" | "PLAY_OFF" | "TOURNEY" | "CASUAL";
 
 type GameVariant = "jp" | "hk";
 
-type GameVariantProp = {
+type GameCreationProp = {
     gameVariant: GameVariant;
+    gameType: GameType;
 };
 
 type LoginDataType = {

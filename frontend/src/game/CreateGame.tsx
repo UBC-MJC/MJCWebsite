@@ -9,7 +9,7 @@ import { getGameVariantString } from "../common/Utils";
 import { usePlayers } from "../hooks/GameHooks";
 import { Autocomplete, Button, TextField } from "@mui/material";
 
-const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
+const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const navigate = useNavigate();
     const { player } = useContext(AuthContext);
 
@@ -18,7 +18,7 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
     const [westPlayer, setWestPlayer] = useState<string | null>(null);
     const [northPlayer, setNorthPlayer] = useState<string | null>(null);
 
-    const playerNamesResult = usePlayers(gameVariant);
+    const playerNamesResult = usePlayers(gameVariant, gameType);
 
     const createGame = () => {
         if (playerSelectMissing || notUnique) {
@@ -26,7 +26,7 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
         }
 
         const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
-        createGameAPI(player!.authToken, "RANKED", gameVariant, playerList)
+        createGameAPI(player!.authToken, gameType, gameVariant, playerList)
             .then((response) => {
                 navigate(`/games/${gameVariant}/${response.data.id}`);
             })
@@ -35,7 +35,7 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
             });
     };
 
-    const title = `Create Ranked ${getGameVariantString(gameVariant)} Game`;
+    const title = `Create ${gameType} ${getGameVariantString(gameVariant)} Game`;
 
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
     const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4;
@@ -124,6 +124,9 @@ const CreateGameComponent: FC<GameVariantProp> = ({ gameVariant }) => {
 };
 
 const hasGamePermissions = (player: Player | undefined, props: any): boolean => {
+    if (props.gameType === "CASUAL") {
+        return typeof player !== "undefined"; // everyone is allowed to start casual games
+    }
     if (props.gameVariant === "jp") {
         return typeof player !== "undefined" && player.japaneseQualified;
     } else if (props.gameVariant === "hk") {

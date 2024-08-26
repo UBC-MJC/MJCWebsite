@@ -2,12 +2,16 @@ import { skipToken, useQuery } from "@tanstack/react-query";
 import { getPlayerLeaderboard, getUserStatistics } from "../api/LeaderboardAPI";
 import { mapLeaderboardToOneDecimal } from "../game/common/constants";
 
-export function usePlayerLeaderboard(gameVariant: GameVariant, season: Season | undefined) {
+export function usePlayerLeaderboard(
+    gameVariant: GameVariant,
+    gameType: GameType,
+    season: Season | undefined,
+) {
     return useQuery({
-        queryKey: ["playerLeaderboard", "gameVariant", gameVariant, "season", season],
+        queryKey: ["playerLeaderboard", gameVariant, gameType, season],
         queryFn: season
             ? async () => {
-                  const response = await getPlayerLeaderboard(gameVariant, season.id);
+                  const response = await getPlayerLeaderboard(gameVariant, gameType, season.id);
                   return mapLeaderboardToOneDecimal(response.data.players);
               }
             : skipToken,
@@ -20,15 +24,7 @@ export function useStatistics(
     season: Season | undefined,
 ) {
     return useQuery({
-        queryKey: [
-            "Statistics",
-            "playerId",
-            playerId,
-            "gameVariant",
-            gameVariant,
-            "season",
-            season,
-        ],
+        queryKey: ["Statistics", playerId, gameVariant, season],
         queryFn: season
             ? async () => {
                   if (playerId === undefined) {

@@ -146,7 +146,7 @@ const validateJapaneseRound = (
             if (losers.size > 1) {
                 throw new Error(E_MULLOSE);
             }
-            if (winners.size == 1 && transactions.length > 1) {
+            if (winners.size === 1 && transactions.length > 1) {
                 for (const transaction of transactions) {
                     if (transaction.transactionType === JapaneseTransactionType.DEAL_IN_PAO) {
                         break;

@@ -52,8 +52,8 @@ router.delete("/games/:gameVariant/:id", isAuthenticated, deleteGameHandler);
 router.post("/games/:gameVariant/:id/rounds", isAuthenticated, createRoundHandler);
 router.delete("/games/:gameVariant/:id/rounds", isAuthenticated, deleteLastRoundHandler);
 
-router.get("/players/qualified/:gameVariant/names", getQualifiedPlayersHandler);
-router.get("/players/qualified/:gameVariant/leaderboard", getPlayerLeaderboardHandler);
+router.get("/players/qualified/:gameVariant/:gameType/names", getQualifiedPlayersHandler);
+router.get("/players/qualified/:gameVariant/:gameType/leaderboard", getPlayerLeaderboardHandler);
 
 router.get("/players/current", isAuthenticated, getCurrentPlayerHandler);
 router.put("/players/current/settings", isAuthenticated, updateSettingsHandler);
@@ -65,7 +65,7 @@ router.get("/admin/players", isAuthenticated, isAdmin, getPlayersHandler);
 router.put("/admin/players/:id", isAuthenticated, isAdmin, updatePlayerHandler);
 router.delete("/admin/players/:id", isAuthenticated, isAdmin, deletePlayerHandler);
 
-router.put("/admin/recalc/:gameVariant", isAuthenticated, isAdmin, recalcSeasonHandler);
+router.put("/admin/recalc/:gameVariant/", isAuthenticated, isAdmin, recalcSeasonHandler);
 
 router.post("/admin/seasons", isAuthenticated, isAdmin, createSeasonHandler);
 router.put("/admin/seasons/:id", isAuthenticated, isAdmin, updateSeasonHandler);

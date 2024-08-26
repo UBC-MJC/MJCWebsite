@@ -4,9 +4,7 @@ import { GameType, HongKongTransactionType, JapaneseTransactionType, Wind } from
 import { FullJapaneseGame } from "../services/game/japaneseGame.service";
 
 const createGameSchema = object({
-    gameType: mixed<GameType>()
-        .oneOf([GameType.RANKED, GameType.PLAY_OFF, GameType.TOURNEY])
-        .required(),
+    gameType: mixed<GameType>().required(),
     players: array().of(string().required()).length(4).required(),
 });
 

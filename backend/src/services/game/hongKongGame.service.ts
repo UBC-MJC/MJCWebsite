@@ -1,5 +1,5 @@
 import prisma from "../../db";
-import { HongKongTransaction, Player, Prisma, Wind } from "@prisma/client";
+import { GameType, HongKongTransaction, Player, Prisma, Wind } from "@prisma/client";
 import { GameService } from "./game.service";
 import {
     addScoreDeltas,
@@ -131,7 +131,10 @@ class HongKongGameService extends GameService {
         return player.hongKongQualified;
     }
 
-    public async getQualifiedPlayers(): Promise<Player[]> {
+    public async getQualifiedPlayers(gameType: GameType): Promise<Player[]> {
+        if (gameType === GameType.CASUAL) {
+            return prisma.player.findMany();
+        }
         return prisma.player.findMany({
             where: {
                 hongKongQualified: true,
@@ -222,7 +225,11 @@ const getFirstHongKongRound = (): any => {
 };
 
 const dealershipRetains = (round: ConcludedHongKongRoundT): boolean => {
-    if (round.roundWind == Wind.NORTH && round.roundNumber == 4 && round.transactions.length == 0) {
+    if (
+        round.roundWind === Wind.NORTH &&
+        round.roundNumber === 4 &&
+        round.transactions.length === 0
+    ) {
         return true; // carve out for N4 deck out
     }
     for (const transaction of round.transactions) {
