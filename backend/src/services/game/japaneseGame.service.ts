@@ -1,5 +1,6 @@
 import prisma from "../../db";
 import {
+    GameType,
     JapaneseTransaction,
     JapaneseTransactionType,
     Player,
