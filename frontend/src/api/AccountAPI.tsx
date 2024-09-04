@@ -1,25 +1,19 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { baseUrl, getAuthConfig } from "./APIUtils";
 
-const getCurrentPlayer = (authToken: string): Promise<AxiosResponse<PlayerAPIDataType>> => {
-    return axios.get(baseUrl + "/players/current", getAuthConfig(authToken));
+const getCurrentPlayer = (authToken: string) => {
+    return axios.get<PlayerAPIDataType>(baseUrl + "/players/current", getAuthConfig(authToken));
 };
 
-const submitRequestPasswordResetAPI = async (
-    username: string,
-): Promise<AxiosResponse<ResetPasswordDataType>> => {
-    return axios.post(baseUrl + "/request-password-reset", { username });
+const submitRequestPasswordResetAPI = async (username: string) => {
+    return axios.post<ResetPasswordDataType>(baseUrl + "/request-password-reset", { username });
 };
 
-const submitPasswordResetAPI = async (
-    playerId: string,
-    token: string,
-    newPassword: string,
-): Promise<AxiosResponse> => {
+const submitPasswordResetAPI = async (playerId: string, token: string, newPassword: string) => {
     return axios.post(baseUrl + "/password-reset", { playerId, token, newPassword });
 };
 
-const updateSettingsAPI = async (authToken: string, settings: Setting): Promise<AxiosResponse> => {
+const updateSettingsAPI = async (authToken: string, settings: Setting) => {
     return axios.put(baseUrl + "/players/current/settings", { settings }, getAuthConfig(authToken));
 };
 

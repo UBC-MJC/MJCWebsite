@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { baseUrl, getAuthConfig } from "./APIUtils";
 
 const getPlayersAdminAPI = async (authToken: string) => {

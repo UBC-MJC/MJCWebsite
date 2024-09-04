@@ -2,7 +2,6 @@ import { FC, ReactNode, useEffect } from "react";
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAPICall, registerAPICall } from "../api/AuthAPI";
-import { AxiosResponse } from "axios";
 import { getCurrentPlayer } from "../api/AccountAPI";
 
 type ChildProps = {
@@ -40,16 +39,16 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
     }, []);
 
     const authLogin = async (loginData: LoginDataType) => {
-        const apiResponse: AxiosResponse<PlayerAPIDataType> = await loginAPICall(loginData);
-        const playerAPIData: PlayerAPIDataType = apiResponse.data;
+        const apiResponse = await loginAPICall(loginData);
+        const playerAPIData = apiResponse.data;
         localStorage.setItem("player", JSON.stringify(playerAPIData.player));
         setPlayer(playerAPIData.player);
         navigate("/");
     };
 
     const authRegister = async (registerData: RegisterDataType) => {
-        const apiResponse: AxiosResponse<PlayerAPIDataType> = await registerAPICall(registerData);
-        const playerAPIData: PlayerAPIDataType = apiResponse.data;
+        const apiResponse = await registerAPICall(registerData);
+        const playerAPIData = apiResponse.data;
         localStorage.setItem("player", JSON.stringify(playerAPIData.player));
         setPlayer(playerAPIData.player);
         navigate("/");

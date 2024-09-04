@@ -4,7 +4,6 @@ import createError from "http-errors";
 import {
     createSeason,
     deleteSeason,
-    findAllSeasons,
     getCurrentSeason,
     updateSeason,
 } from "../services/season.service";

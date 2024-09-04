@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { baseUrl, getAuthConfig } from "./APIUtils";
 
 const getPlayerNames = async (gameVariant: string, gameType: GameType) => {
@@ -12,8 +12,8 @@ const createGameAPI = async (
     gameType: GameType,
     gameVariant: GameVariant,
     players: string[],
-): Promise<AxiosResponse> => {
-    return axios.post(
+) => {
+    return axios.post<void>(
         baseUrl + `/games/${gameVariant}`,
         {
             gameType,
@@ -23,19 +23,12 @@ const createGameAPI = async (
     );
 };
 
-const getGameAPI = async (
-    gameId: number,
-    gameVariant: GameVariant,
-): Promise<AxiosResponse<Game>> => {
-    return axios.get(baseUrl + `/games/${gameVariant}/${gameId}`);
+const getGameAPI = async (gameId: number, gameVariant: GameVariant) => {
+    return axios.get<Game>(baseUrl + `/games/${gameVariant}/${gameId}`);
 };
 
-const getGamesAPI = async (
-    gameVariant: GameVariant,
-    seasonId: string,
-    playerIds: string[],
-): Promise<AxiosResponse<Game[]>> => {
-    return axios.get(baseUrl + `/games/${gameVariant}`, {
+const getGamesAPI = async (gameVariant: GameVariant, seasonId: string, playerIds: string[]) => {
+    return axios.get<Game[]>(baseUrl + `/games/${gameVariant}`, {
         params: {
             seasonId: seasonId,
             playerIds: playerIds.join(","),
@@ -43,24 +36,23 @@ const getGamesAPI = async (
     });
 };
 
-const getLiveGamesAPI = async (gameVariant: GameVariant): Promise<AxiosResponse<Game[]>> => {
-    return axios.get(baseUrl + `/games/${gameVariant}/live`);
+const getLiveGamesAPI = async (gameVariant: GameVariant) => {
+    return axios.get<Game[]>(baseUrl + `/games/${gameVariant}/live`);
 };
 
-const deleteGameAPI = async (
-    authToken: string,
-    gameId: number,
-    gameVariant: GameVariant,
-): Promise<AxiosResponse> => {
-    return axios.delete(baseUrl + `/games/${gameVariant}/${gameId}`, getAuthConfig(authToken));
+const deleteGameAPI = async (authToken: string, gameId: number, gameVariant: GameVariant) => {
+    return axios.delete<void>(
+        baseUrl + `/games/${gameVariant}/${gameId}`,
+        getAuthConfig(authToken),
+    );
 };
 
-const submitGameAPI = async (
-    authToken: string,
-    gameId: number,
-    gameVariant: GameVariant,
-): Promise<AxiosResponse> => {
-    return axios.post(baseUrl + `/games/${gameVariant}/${gameId}`, {}, getAuthConfig(authToken));
+const submitGameAPI = async (authToken: string, gameId: number, gameVariant: GameVariant) => {
+    return axios.post<void>(
+        baseUrl + `/games/${gameVariant}/${gameId}`,
+        {},
+        getAuthConfig(authToken),
+    );
 };
 
 const addRoundAPI = async (
@@ -68,8 +60,8 @@ const addRoundAPI = async (
     gameId: number,
     gameVariant: GameVariant,
     round: any,
-): Promise<AxiosResponse> => {
-    return axios.post(
+) => {
+    return axios.post<Game>(
         baseUrl + `/games/${gameVariant}/${gameId}/rounds`,
         {
             roundRequest: round,
@@ -78,12 +70,8 @@ const addRoundAPI = async (
     );
 };
 
-const deleteRoundAPI = async (
-    authToken: string,
-    gameId: number,
-    gameVariant: GameVariant,
-): Promise<AxiosResponse> => {
-    return axios.delete(
+const deleteRoundAPI = async (authToken: string, gameId: number, gameVariant: GameVariant) => {
+    return axios.delete<Game>(
         baseUrl + `/games/${gameVariant}/${gameId}/rounds`,
         getAuthConfig(authToken),
     );
