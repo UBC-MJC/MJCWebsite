@@ -1,11 +1,12 @@
 import { getGameAPI, getLiveGamesAPI, getPlayerNames } from "../api/GameAPI";
 import { useQuery } from "@tanstack/react-query";
 
-export function usePlayers(gameVariant: GameVariant, gameType?: GameType) {
+export function usePlayers(gameVariant: GameVariant, gameType: GameType) {
+    // When gameType === "CASUAL", a list of all players is returned.
     return useQuery({
-        queryKey: ["players", gameVariant, gameType ?? "RANKED"],
+        queryKey: ["players", gameVariant, gameType],
         queryFn: async () => {
-            const playerNamesResponse = await getPlayerNames(gameVariant, gameType ?? "RANKED");
+            const playerNamesResponse = await getPlayerNames(gameVariant, gameType);
             return playerNamesResponse.data;
         },
     });

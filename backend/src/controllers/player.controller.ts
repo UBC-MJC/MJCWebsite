@@ -132,7 +132,7 @@ const getPlayerLeaderboardHandler = async (
 ): Promise<void> => {
     const gameVariant = req.params.gameVariant;
     try {
-        let seasonId = "";
+        let seasonId: string;
         if (typeof req.query.seasonId !== "undefined") {
             seasonId = req.query.seasonId as string;
         } else {

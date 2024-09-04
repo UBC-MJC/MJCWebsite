@@ -17,6 +17,7 @@ import {
     updateSeasonSchema,
     UpdateSeasonType,
 } from "../validation/season.validation";
+import prisma from "../db";
 
 const getPlayersHandler = async (
     req: Request,
@@ -167,6 +168,16 @@ const makeTestAdminsHandler = async (
     });
 };
 
+async function removeQualificationHandler(req: Request, res: Response, next: NextFunction) {
+    const result = await prisma.player.updateMany({
+        data: {
+            japaneseQualified: false,
+            hongKongQualified: false,
+        },
+    });
+    res.json(result);
+}
+
 export {
     getPlayersHandler,
     updatePlayerHandler,
@@ -175,4 +186,5 @@ export {
     updateSeasonHandler,
     deleteSeasonHandler,
     makeTestAdminsHandler,
+    removeQualificationHandler,
 };
