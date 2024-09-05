@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { baseUrl, getAuthConfig } from "./APIUtils";
 
 const getPlayersAdminAPI = async (authToken: string) => {
@@ -25,23 +25,26 @@ const createSeasonAdminAPI = async (authToken: string, season: Partial<Season>) 
     return axios.post<Season>(baseUrl + "/admin/seasons", { season }, getAuthConfig(authToken));
 };
 
-const updateSeasonAPI = async (
-    authToken: string,
-    season: Season,
-): Promise<AxiosResponse<Season>> => {
-    return axios.put(baseUrl + "/admin/seasons/" + season.id, { season }, getAuthConfig(authToken));
+const updateSeasonAPI = async (authToken: string, season: Season) => {
+    return axios.put<Season>(
+        baseUrl + "/admin/seasons/" + season.id,
+        { season },
+        getAuthConfig(authToken),
+    );
 };
 
-const makeDummyAdminsAPI = async (authToken: string): Promise<AxiosResponse<void>> => {
-    return axios.post(baseUrl + "/admin/makeDummyAdmins", {}, getAuthConfig(authToken));
+const makeDummyAdminsAPI = async (authToken: string) => {
+    return axios.post<void>(baseUrl + "/admin/makeDummyAdmins", {}, getAuthConfig(authToken));
 };
 
-const recalcSeasonAPI = async (
-    authToken: string,
-    variant: GameVariant,
-): Promise<AxiosResponse<void>> => {
-    return axios.put(baseUrl + "/admin/recalc/" + variant, {}, getAuthConfig(authToken));
+const recalcSeasonAPI = async (authToken: string, variant: GameVariant) => {
+    return axios.put<void>(baseUrl + "/admin/recalc/" + variant, {}, getAuthConfig(authToken));
 };
+
+export async function removeQualificationAPI(authToken: string) {
+    return axios.put<void>(`${baseUrl}/admin/removeQualification`, {}, getAuthConfig(authToken));
+}
+
 export {
     getPlayersAdminAPI,
     deletePlayerAPI,

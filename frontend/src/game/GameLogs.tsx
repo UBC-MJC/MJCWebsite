@@ -28,7 +28,7 @@ const GameLogs: FC = () => {
     const [pagination, setPagination] = useState<number>(1);
 
     const seasonsResult = useSeasons();
-    const playersResult = usePlayers(queryGameVariant);
+    const playersResult = usePlayers(queryGameVariant, "CASUAL");
 
     const disableQueryButton = (): boolean => {
         return loading || typeof querySeasonId === "undefined";

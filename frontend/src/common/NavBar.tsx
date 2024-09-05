@@ -29,7 +29,7 @@ const NavBar: FC = () => {
                                 {getGameVariantString("hk")} Casual
                             </NavDropdown.Item>
                         </NavDropdown>
-                        {player && (player.japaneseQualified || player.hongKongQualified) && (
+                        {player && (
                             <NavDropdown title="Record Game" id="record-game-nav-dropdown">
                                 {player.japaneseQualified && (
                                     <NavDropdown.Item as={Link} to="/games/create/jp">

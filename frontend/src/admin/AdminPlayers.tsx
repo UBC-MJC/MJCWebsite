@@ -1,7 +1,7 @@
 import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
 import { AxiosError } from "axios";
-import { makeDummyAdminsAPI, recalcSeasonAPI } from "../api/AdminAPI";
+import { makeDummyAdminsAPI, recalcSeasonAPI, removeQualificationAPI } from "../api/AdminAPI";
 import { Form, Table as BTable } from "react-bootstrap";
 import {
     CellContext,
@@ -34,7 +34,7 @@ declare module "@tanstack/table-core" {
         setPlayersEditableRowId?: (id: string | undefined) => void;
         editedPlayer?: TData | undefined;
         setEditedPlayer?: (player: TData | undefined) => void;
-        savePlayer?: () => Promise<void>;
+        savePlayer?: () => void;
         deletePlayer?: (playerId: string) => Promise<void>;
     }
 }
@@ -142,7 +142,7 @@ const AdminPlayers: FC = () => {
         }
     };
 
-    const savePlayer = async () => {
+    const savePlayer = () => {
         if (editedPlayer) {
             savePlayerMut.mutate(editedPlayer);
             setEditableRowId(undefined);
@@ -207,6 +207,14 @@ const AdminPlayers: FC = () => {
             <div className="my-4">
                 <Button variant="outlined" onClick={makeTestAdmins}>
                     Make Test Admins
+                </Button>
+                <Button
+                    color={"warning"}
+                    onClick={() => {
+                        removeQualificationAPI(player?.authToken);
+                    }}
+                >
+                    Remove all qualification
                 </Button>
                 <Button variant="outlined" color="warning" onClick={recalcCurrentSeasonHK}>
                     Recalc Elo for HK games (Expensive operation!)

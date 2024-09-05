@@ -93,6 +93,12 @@ const App: React.FC = () => {
                                             <Leaderboard gameVariant="hk" gameType={"RANKED"} />
                                         }
                                     />
+                                    <Route
+                                        path="/leaderboard/hk/casual"
+                                        element={
+                                            <Leaderboard gameVariant="hk" gameType={"CASUAL"} />
+                                        }
+                                    />
                                     <Route path="/games/:variant/:id" element={<Game />} />
                                     <Route
                                         path="/games/current/jp"
@@ -118,6 +124,12 @@ const App: React.FC = () => {
                                         path="/games/create/hk"
                                         element={
                                             <CreateGame gameVariant="hk" gameType={"RANKED"} />
+                                        }
+                                    />
+                                    <Route
+                                        path="/games/create/hk/casual"
+                                        element={
+                                            <CreateGame gameVariant="hk" gameType={"CASUAL"} />
                                         }
                                     />
                                     <Route path="/games" element={<GameLogs />} />

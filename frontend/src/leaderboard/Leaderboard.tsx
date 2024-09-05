@@ -35,11 +35,7 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
             {season === undefined ? (
                 <h5>No season selected</h5>
             ) : (
-                <LeaderboardDisplay
-                    season={season}
-                    gameType={gameType!}
-                    gameVariant={gameVariant}
-                />
+                <LeaderboardDisplay season={season} gameType={gameType} gameVariant={gameVariant} />
             )}
         </Container>
     );

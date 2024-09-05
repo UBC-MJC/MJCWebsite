@@ -1,16 +1,12 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { baseUrl } from "./APIUtils";
 
-const getCurrentSeason = async (): Promise<AxiosResponse<Season>> => {
-    return axios.get(baseUrl + "/seasons/current");
+const getCurrentSeason = async () => {
+    return axios.get<Season>(baseUrl + "/seasons/current");
 };
 
-const getPlayerLeaderboard = async (
-    gameVariant: string,
-    gameType: GameType,
-    seasonId: string,
-): Promise<AxiosResponse<{ players: LeaderboardType[] }>> => {
-    return axios.get(
+const getPlayerLeaderboard = async (gameVariant: string, gameType: GameType, seasonId: string) => {
+    return axios.get<{ players: LeaderboardType[] }>(
         `${baseUrl}/players/qualified/${gameVariant}/${gameType}/leaderboard/?seasonId=${seasonId}`,
     );
 };

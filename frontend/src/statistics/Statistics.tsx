@@ -13,7 +13,7 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     );
     const [season, setSeason] = useState<Season | undefined>();
     const seasonsResult = useSeasons(setSeason);
-    const playersResult = usePlayers(gameVariant);
+    const playersResult = usePlayers(gameVariant, "CASUAL");
 
     if (!seasonsResult.isSuccess || !playersResult.isSuccess) {
         return <>Loading ...</>;
