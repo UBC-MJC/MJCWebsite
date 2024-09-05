@@ -2,7 +2,6 @@ import React, { FC, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import LegacyHongKongGameTable, { ModifiedHongKongRound } from "./LegacyHongKongGameTable";
 import {
-    HK_LABEL_MAP,
     HK_TRANSACTION_TYPE_BUTTONS,
     HK_UNDEFINED_HAND,
     HongKongActions,
