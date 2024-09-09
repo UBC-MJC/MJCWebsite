@@ -17,7 +17,7 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const seasonsOptions = mapSeasonToOption(seasons);
     return (
         <Container className="my-4" fluid="lg">
-            <h1>{getGameVariantString(gameVariant)} Leaderboard</h1>
+            <h1>{getGameVariantString(gameVariant, gameType)} Leaderboard</h1>
 
             <div className="text-start d-flex justify-content-center align-items-end">
                 <h5 className="mx-2">Season: </h5>

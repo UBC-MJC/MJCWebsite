@@ -82,11 +82,13 @@ const validateGameVariant = (gameVariant: string | undefined): gameVariant is Ga
     return typeof gameVariant !== "undefined" && (gameVariant === "jp" || gameVariant === "hk");
 };
 
-const getGameVariantString = (gameVariant: GameVariant): string => {
+const getGameVariantString = (gameVariant: GameVariant, gameType: GameType = "RANKED"): string => {
+    const capitalizedGameType = gameType.charAt(0).toUpperCase() + gameType.slice(1).toLowerCase();
+
     if (gameVariant === "jp") {
-        return "Riichi";
+        return capitalizedGameType + " Riichi";
     } else if (gameVariant === "hk") {
-        return "Hong Kong";
+        return capitalizedGameType + " Hong Kong";
     }
     return "";
 };
