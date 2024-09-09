@@ -198,7 +198,7 @@ const Game: FC = () => {
     return (
         <>
             <h1 className="mt-2">
-                {game.gameType} {getGameVariantString(variant)} Game
+                {getGameVariantString(variant, game.type)} Game
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game, variant)}
             </h1>
             {getLegacyDisplayGame(game)}

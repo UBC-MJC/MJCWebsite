@@ -20,13 +20,13 @@ const NavBar: FC = () => {
                                 {getGameVariantString("jp")}
                             </NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/leaderboard/jp/casual">
-                                {getGameVariantString("jp")} Casual
+                                {getGameVariantString("jp", "CASUAL")}
                             </NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/leaderboard/hk">
                                 {getGameVariantString("hk")}
                             </NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/leaderboard/hk/casual">
-                                {getGameVariantString("hk")} Casual
+                                {getGameVariantString("hk", "CASUAL")}
                             </NavDropdown.Item>
                         </NavDropdown>
                         {player && (
@@ -37,7 +37,7 @@ const NavBar: FC = () => {
                                     </NavDropdown.Item>
                                 )}
                                 <NavDropdown.Item as={Link} to="/games/create/jp/casual">
-                                    {getGameVariantString("jp")} Casual
+                                    {getGameVariantString("jp", "CASUAL")}
                                 </NavDropdown.Item>
                                 {player.hongKongQualified && (
                                     <NavDropdown.Item as={Link} to="/games/create/hk">
@@ -45,16 +45,16 @@ const NavBar: FC = () => {
                                     </NavDropdown.Item>
                                 )}
                                 <NavDropdown.Item as={Link} to="/games/create/hk/casual">
-                                    {getGameVariantString("hk")} Casual
+                                    {getGameVariantString("hk", "CASUAL")}
                                 </NavDropdown.Item>
                             </NavDropdown>
                         )}
                         <NavDropdown title={"Live Games"} id="live-games-nav-dropdown">
                             <NavDropdown.Item as={Link} to="/games/current/jp">
-                                {getGameVariantString("jp")}
+                                {getGameVariantString("jp", "")}
                             </NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/games/current/hk">
-                                {getGameVariantString("hk")}
+                                {getGameVariantString("hk", "")}
                             </NavDropdown.Item>
                         </NavDropdown>
                         <Nav.Link as={Link} to="/games">

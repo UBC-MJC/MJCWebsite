@@ -13,7 +13,7 @@ export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
     const getCardHeader = (game: Game) => {
         return (
             <div style={{ fontWeight: "bold" }}>
-                {getGameVariantString(gameVariant, game.gameType)} Game {game.id} - {gameRoundString(game, gameVariant)}
+                {getGameVariantString(gameVariant, game.type)} Game {game.id} - {gameRoundString(game, gameVariant)}
             </div>
         );
     };
@@ -29,7 +29,7 @@ export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
     }
     return (
         <>
-            <h1 className="my-4">Live {getGameVariantString(gameVariant)} Games</h1>
+            <h1 className="my-4">Live {getGameVariantString(gameVariant, "")} Games</h1>
             <Container>
                 <Row>
                     {liveGames.map((game, idx) => (
