@@ -35,7 +35,7 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
             });
     };
 
-    const title = `Create ${gameType} ${getGameVariantString(gameVariant)} Game`;
+    const title = `Create ${getGameVariantString(gameVariant, gameType)} Game`;
 
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
     const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4;
