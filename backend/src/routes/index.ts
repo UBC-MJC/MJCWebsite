@@ -9,7 +9,7 @@ import {
     passwordResetHandler,
     registerHandler,
     requestPasswordResetHandler,
-    updateSettingsHandler,
+    updateSettingsHandler, updateUsernameHandler,
 } from "../controllers/player.controller";
 import {
     createGameHandler,
@@ -58,6 +58,7 @@ router.get("/players/qualified/:gameVariant/:gameType/leaderboard", getPlayerLea
 
 router.get("/players/current", isAuthenticated, getCurrentPlayerHandler);
 router.put("/players/current/settings", isAuthenticated, updateSettingsHandler);
+router.put("/players/current/username", isAuthenticated, updateUsernameHandler);
 router.get("/players/:playerId/:gameVariant/:seasonId", getUserStatisticsHandler);
 router.get("/seasons/current", getCurrentSeasonHandler);
 router.get("/seasons", getSeasonsHandler);

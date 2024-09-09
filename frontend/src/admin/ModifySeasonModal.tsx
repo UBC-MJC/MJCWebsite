@@ -109,7 +109,7 @@ const ModifySeasonModal: FC<ModifySeasonModalProps> = ({
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="contained" onClick={onClose}>
+                    <Button className={"mx-2"} variant="contained" onClick={onClose}>
                         Close
                     </Button>
                     <Button variant="contained" type="submit">

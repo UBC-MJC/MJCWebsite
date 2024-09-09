@@ -180,6 +180,21 @@ const updateSettingsHandler = async (
         });
 };
 
+const updateUsernameHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    updatePlayer(req.player.id, { username: req.body.username })
+        .then((player) => {
+            const { password, ...playerOmitted } = player;
+            res.json({ ...playerOmitted });
+        })
+        .catch((err: any) => {
+            next(createError.InternalServerError(err.message));
+        });
+}
+
 async function getUserStatisticsHandler(
     req: Request,
     res: Response,
@@ -192,6 +207,7 @@ async function getUserStatisticsHandler(
     const result = await gameService.getUserStatistics(seasonId, playerId);
     res.json(result);
 }
+
 export {
     registerHandler,
     loginHandler,
@@ -201,5 +217,6 @@ export {
     getPlayerLeaderboardHandler,
     getCurrentPlayerHandler,
     updateSettingsHandler,
+    updateUsernameHandler,
     getUserStatisticsHandler,
 };
