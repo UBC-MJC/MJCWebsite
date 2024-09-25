@@ -52,7 +52,7 @@ const addDealIn = (
     hand: HongKongHandInput,
 ): HongKongTransaction => {
     const scoreDeltas = getEmptyScoreDelta();
-    const handValue = calculateHandValue(2, hand);
+    const handValue = calculateHandValue(3, hand);
     scoreDeltas[winnerIndex] = handValue;
     scoreDeltas[loserIndex] = -handValue;
     return {

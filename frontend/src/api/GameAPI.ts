@@ -13,7 +13,7 @@ const createGameAPI = async (
     gameVariant: GameVariant,
     players: string[],
 ) => {
-    return axios.post<void>(
+    return axios.post<{id: string}>(
         baseUrl + `/games/${gameVariant}`,
         {
             gameType,

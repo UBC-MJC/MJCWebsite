@@ -9,7 +9,6 @@ import {
     HongKongTransactionType,
     isGameEnd,
 } from "../../common/constants";
-import ListToggleButton from "../../common/TransactionTypeButtonList";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
 import { hongKongPointsWheel } from "../../../common/Utils";
 import { LegacyGameProps } from "../../Game";
@@ -17,7 +16,7 @@ import { createHongKongRoundRequest, generateOverallScoreDelta } from "../contro
 import { validateHongKongRound } from "../controller/ValidateHongKongRound";
 import alert from "../../../common/AlertDialog";
 import PointsInput from "../../common/PointsInput";
-import { Button } from "@mui/material";
+import { Button, ToggleButton } from "@mui/material";
 
 const LegacyHongKongGame: FC<LegacyGameProps> = ({
     enableRecording,
@@ -125,17 +124,16 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                 <Row className="gx-2">
                     {HK_TRANSACTION_TYPE_BUTTONS.map((button, idx) => (
                         <Col key={idx} xs={4}>
-                            <ListToggleButton
+                            <ToggleButton
                                 key={idx}
-                                name={button.name}
+                                className="my-1 w-100"
                                 value={button.value}
-                                checked={transactionType.toString() === button.value}
-                                onChange={(value) =>
-                                    transactionTypeOnChange(
-                                        value as unknown as HongKongTransactionType,
-                                    )
-                                }
-                            />
+                                id={button.name}
+                                selected={transactionType === button.value}
+                                onChange={(event, value) => transactionTypeOnChange(value)}
+                            >
+                                {button.name}
+                            </ToggleButton>
                         </Col>
                     ))}
                 </Row>
