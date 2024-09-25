@@ -124,13 +124,16 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
 };
 
 const hasGamePermissions = (player: Player | undefined, props: any): boolean => {
+    if (player === undefined) {
+        return false;
+    }
     if (props.gameType === "CASUAL") {
-        return typeof player !== "undefined"; // everyone is allowed to start casual games
+        return true; // everyone is allowed to start casual games
     }
     if (props.gameVariant === "jp") {
-        return typeof player !== "undefined" && player.japaneseQualified;
+        return player.japaneseQualified;
     } else if (props.gameVariant === "hk") {
-        return typeof player !== "undefined" && player.hongKongQualified;
+        return player.hongKongQualified;
     }
     return false;
 };
