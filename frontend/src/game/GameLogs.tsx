@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 import { getGamesAPI } from "../api/GameAPI";
 import { AxiosError } from "axios";
 import { Card, Col, Container, Pagination, Row } from "react-bootstrap";
@@ -20,37 +20,39 @@ const MAX_GAMES_PER_PAGE = 12;
 const GameLogs: FC = () => {
     const navigate = useNavigate();
     const [queryGameVariant, setQueryGameVariant] = useState<GameVariant>(gameVariants[0].value);
-    const [querySeasonId, setQuerySeasonId] = useState<string | undefined>();
+    const [season, setSeason] = useState<Season | undefined>();
     const [queryPlayers, setQueryPlayers] = useState<string[]>([]);
 
     const [loading, setLoading] = useState(false);
     const [games, setGames] = useState<Game[]>([]);
     const [pagination, setPagination] = useState<number>(1);
 
-    const seasonsResult = useSeasons();
+    const seasonsResult = useSeasons(setSeason);
     const playersResult = usePlayers(queryGameVariant, "CASUAL");
 
-    const disableQueryButton = (): boolean => {
-        return loading || typeof querySeasonId === "undefined";
-    };
+    const disableQueryButton = useCallback((): boolean => {
+        return loading || season == undefined;
+    }, [loading, season]);
 
-    const getGames = () => {
-        setLoading(true);
-        getGamesAPI(queryGameVariant, querySeasonId!, queryPlayers)
-            .then((response) => {
-                response.data.reverse();
-                setGames(response.data);
-                setLoading(false);
-                setPagination(1);
-                if (response.data.length === 0) {
-                    return alert("No games found");
-                }
-            })
-            .catch((error: AxiosError) => {
-                console.error("Error fetching games: ", error.response?.data);
-                setLoading(false);
-            });
-    };
+    const getGames = useCallback(() => {
+        if (season != undefined) {
+            setLoading(true);
+            getGamesAPI(queryGameVariant, season.id, queryPlayers)
+                .then((response) => {
+                    response.data.reverse();
+                    setGames(response.data);
+                    setLoading(false);
+                    setPagination(1);
+                    if (response.data.length === 0) {
+                        return alert("No games found");
+                    }
+                })
+                .catch((error: AxiosError) => {
+                    console.error("Error fetching games: ", error.response?.data);
+                    setLoading(false);
+                });
+        }
+    }, [queryGameVariant, season, queryPlayers]);
 
     const navigateToGame = (gameId: string) => {
         navigate(`/games/${queryGameVariant}/${gameId}`);
@@ -118,7 +120,7 @@ const GameLogs: FC = () => {
                                 defaultValue={gameVariants[0]}
                                 onChange={(event, value) => setQueryGameVariant(value!.value)}
                                 renderInput={(params) => (
-                                    <TextField {...params} placeholder="Choose a season" />
+                                    <TextField {...params} placeholder="Choose a variant" />
                                 )}
                             />
                         </div>
@@ -131,9 +133,9 @@ const GameLogs: FC = () => {
                                     option.label === value.label
                                 }
                                 options={seasonsOptions}
-                                onChange={(event, value) => setQuerySeasonId(value!.value.id)}
+                                onChange={(event, value) => setSeason(value!.value)}
                                 renderInput={(params) => (
-                                    <TextField {...params} placeholder="Choose a season" />
+                                    <TextField {...params} placeholder="Default: this season" />
                                 )}
                             />
                         </div>
