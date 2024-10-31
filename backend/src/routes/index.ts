@@ -9,7 +9,8 @@ import {
     passwordResetHandler,
     registerHandler,
     requestPasswordResetHandler,
-    updateSettingsHandler, updateUsernameHandler,
+    updateSettingsHandler,
+    updateUsernameHandler,
 } from "../controllers/player.controller";
 import {
     createGameHandler,

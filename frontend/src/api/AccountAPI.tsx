@@ -19,12 +19,12 @@ const updateSettingsAPI = async (authToken: string, settings: Setting) => {
 
 const updateUsernameAPI = async (authToken: string, username: string) => {
     return axios.put(baseUrl + "/players/current/username", { username }, getAuthConfig(authToken));
-}
+};
 
 export {
     getCurrentPlayer,
     submitRequestPasswordResetAPI,
     submitPasswordResetAPI,
     updateSettingsAPI,
-    updateUsernameAPI
+    updateUsernameAPI,
 };

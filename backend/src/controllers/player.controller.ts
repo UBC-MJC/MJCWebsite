@@ -193,7 +193,7 @@ const updateUsernameHandler = async (
         .catch((err: any) => {
             next(createError.InternalServerError(err.message));
         });
-}
+};
 
 async function getUserStatisticsHandler(
     req: Request,
