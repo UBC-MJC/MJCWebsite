@@ -77,6 +77,22 @@ const deleteRoundAPI = async (authToken: string, gameId: number, gameVariant: Ga
     );
 };
 
+const setChomboAPI = async (
+    authToken: string,
+    gameId: number,
+    gameVariant: GameVariant,
+    playerId: string,
+    chomboCount: number,
+) => {
+    return axios.post<Game>(
+        baseUrl + `/games/${gameVariant}/${gameId}/chombo`,
+        {
+            playerId: playerId,
+            chomboCount: chomboCount,
+        },
+        getAuthConfig(authToken),
+    );
+};
 export {
     getPlayerNames,
     createGameAPI,
@@ -87,4 +103,5 @@ export {
     submitGameAPI,
     addRoundAPI,
     deleteRoundAPI,
+    setChomboAPI,
 };

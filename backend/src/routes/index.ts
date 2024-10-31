@@ -21,6 +21,7 @@ import {
     getGamesHandler,
     recalcSeasonHandler,
     submitGameHandler,
+    setChomboHandler,
 } from "../controllers/game.controller";
 import {
     createSeasonHandler,
@@ -51,6 +52,7 @@ router.get("/games/:gameVariant/:id/live", (req, res, next) =>
 router.post("/games/:gameVariant/:id", isAuthenticated, submitGameHandler);
 router.delete("/games/:gameVariant/:id", isAuthenticated, deleteGameHandler);
 router.post("/games/:gameVariant/:id/rounds", isAuthenticated, createRoundHandler);
+router.post("/games/:gameVariant/:id/chombo", isAuthenticated, setChomboHandler);
 router.delete("/games/:gameVariant/:id/rounds", isAuthenticated, deleteLastRoundHandler);
 
 router.get("/players/qualified/:gameVariant/:gameType/names", getQualifiedPlayersHandler);
