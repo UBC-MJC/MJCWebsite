@@ -1,7 +1,7 @@
 import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
-import {Container, Col, Row, Modal, Form} from "react-bootstrap";
-import {updateSettingsAPI, updateUsernameAPI} from "../api/AccountAPI";
+import { Container, Col, Row, Modal, Form } from "react-bootstrap";
+import { updateSettingsAPI, updateUsernameAPI } from "../api/AccountAPI";
 import { AxiosError } from "axios";
 import { ButtonGroup, Button, FormControlLabel, Switch } from "@mui/material";
 import { ColorModeContext } from "../App";
@@ -35,12 +35,14 @@ const Settings: FC = () => {
         return updateUsernameAPI(player!.authToken, username)
             .then(() => {
                 return reloadPlayer();
-            }).then(() => {
+            })
+            .then(() => {
                 setShowUpdateUsernameModal(false);
-            }).catch((error: AxiosError) => {
+            })
+            .catch((error: AxiosError) => {
                 console.log("Error updating username: ", error.response?.data);
             });
-    }
+    };
 
     if (typeof player === "undefined") {
         return <h1>Not Logged In</h1>;
@@ -67,9 +69,19 @@ const Settings: FC = () => {
                 <Button onClick={() => colorMode.toggleColorMode("system")}>System</Button>
             </ButtonGroup>
             <Row className="pt-2 d-flex justify-content-center">
-                <Button onClick={() => setShowUpdateUsernameModal(true)} variant="contained" style={{maxWidth: "200px"}}>Update Username</Button>
+                <Button
+                    onClick={() => setShowUpdateUsernameModal(true)}
+                    variant="contained"
+                    style={{ maxWidth: "200px" }}
+                >
+                    Update Username
+                </Button>
             </Row>
-            <UpdateUsernameModal show={showUpdateUsernameModal} handleClose={() => setShowUpdateUsernameModal(false)} handleSubmit={updateUsername} />
+            <UpdateUsernameModal
+                show={showUpdateUsernameModal}
+                handleClose={() => setShowUpdateUsernameModal(false)}
+                handleSubmit={updateUsername}
+            />
         </Container>
     );
 };
@@ -80,11 +92,7 @@ type UpdateUsernameModalProps = {
     handleSubmit: (username: string) => void;
 };
 
-const UpdateUsernameModal: FC<UpdateUsernameModalProps> = ({
-   show,
-   handleClose,
-   handleSubmit,
-}) => {
+const UpdateUsernameModal: FC<UpdateUsernameModalProps> = ({ show, handleClose, handleSubmit }) => {
     const [updatedUsername, setUpdatedUsername] = useState("");
     const [errors, setErrors] = useState<any>({});
 

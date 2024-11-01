@@ -82,7 +82,10 @@ const validateGameVariant = (gameVariant: string | undefined): gameVariant is Ga
     return typeof gameVariant !== "undefined" && (gameVariant === "jp" || gameVariant === "hk");
 };
 
-const getGameVariantString = (gameVariant: GameVariant, gameType: GameType | "" = "RANKED"): string => {
+const getGameVariantString = (
+    gameVariant: GameVariant,
+    gameType: GameType | "" = "RANKED",
+): string => {
     const capitalizedGameType = gameType.charAt(0).toUpperCase() + gameType.slice(1).toLowerCase();
     let gameVariantString = "";
     if (gameVariant === "jp") {

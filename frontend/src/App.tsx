@@ -45,9 +45,8 @@ const App: React.FC = () => {
     });
     const systemMode = useMediaQuery("(prefers-color-scheme: dark)") ? "dark" : "light";
     const root = window.document.documentElement;
-    root.setAttribute("data-bs-theme", systemMode);
     const [mode, setMode] = React.useState<"light" | "dark">(systemMode);
-
+    root.setAttribute("data-bs-theme", mode);
     const colorMode = {
         toggleColorMode: (mode: "light" | "dark" | "system") => {
             if (mode === "system") {
@@ -55,8 +54,8 @@ const App: React.FC = () => {
                 root.setAttribute("data-bs-theme", systemMode);
                 return;
             }
-            setMode(mode);
             root.setAttribute("data-bs-theme", mode);
+            setMode(mode);
         },
     };
     const theme = createTheme({
