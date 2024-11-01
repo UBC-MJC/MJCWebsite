@@ -12,6 +12,7 @@ import { findPlayerByUsernameOrEmail } from "../player.service";
 
 export type EloDict = { [key: string]: number };
 const MAX_GAME_COUNT = 120;
+const CHOMBO_ELO_DEDUCTION = 15;
 
 abstract class GameService {
     public readonly gameDatabase: any;
@@ -248,7 +249,7 @@ abstract class GameService {
             return {
                 id: player.playerId,
                 username: usernameDict[player.playerId],
-                elo: player._sum.eloChange - player._sum.chomboCount,
+                elo: player._sum.eloChange - CHOMBO_ELO_DEDUCTION * player._sum.chomboCount,
                 gameCount: player._count.eloChange,
             };
         });
@@ -343,6 +344,18 @@ abstract class GameService {
     abstract isEligible(player: Player): boolean;
     abstract getQualifiedPlayers(gameType: GameType): Promise<Player[]>;
     abstract getUserStatistics(seasonId: string, playerId: string): Promise<any>;
+
+    public async setChombo(gameId: number, playerId: string, chomboCount: number): Promise<any> {
+        return await this.playerGameDatabase.updateMany({
+            where: {
+                gameId: gameId,
+                playerId: playerId,
+            },
+            data: {
+                chomboCount: chomboCount,
+            },
+        });
+    }
 }
 
 export { GameService };

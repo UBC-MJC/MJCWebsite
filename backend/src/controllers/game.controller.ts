@@ -252,6 +252,22 @@ const recalcSeasonHandler = async (
     }
 };
 
+const setChomboHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const gameVariant: string = req.params.gameVariant;
+    const { playerId, chomboCount } = req.body;
+    const gameId = Number(req.params.id);
+    if (isNaN(gameId)) {
+        return next(createError.NotFound("Game id is not a number"));
+    }
+    try {
+        const gameService = getGameService(gameVariant);
+        const result = await gameService.setChombo(gameId, playerId, chomboCount);
+        res.status(201).json(result);
+    } catch (error: any) {
+        console.error("Error in setChomboHandler:", error);
+        next(createError.BadRequest(error.message));
+    }
+};
 export {
     getGamesHandler,
     getGameHandler,
@@ -262,4 +278,5 @@ export {
     createRoundHandler,
     deleteLastRoundHandler,
     recalcSeasonHandler,
+    setChomboHandler,
 };
