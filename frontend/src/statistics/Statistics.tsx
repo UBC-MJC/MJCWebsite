@@ -22,7 +22,7 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const playersOptions = mapPlayerNameToOption(playersResult.data);
     return (
         <div>
-            <h1 className="my-4">Statistics</h1>
+            <h1 className="my-4">Round Statistics</h1>
             <Container>
                 <Row className="mb-4">
                     <Col>
@@ -74,7 +74,7 @@ const DisplayStatistics: FC<{
                 <Col>{divideWithDefault(stats.dealInPoint, stats.dealInCount).toFixed(0)}</Col>
             </Row>
             <Row className="mb-4">
-                <Col>Agari %</Col>
+                <Col>Win %</Col>
                 <Col>{divideWithDefault(100 * stats.winCount, stats.totalRounds).toFixed(2)}%</Col>
                 <Col>Avg Agari size</Col>
                 <Col>{divideWithDefault(stats.winPoint, stats.winCount).toFixed()}</Col>

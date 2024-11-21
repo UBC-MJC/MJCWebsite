@@ -142,9 +142,7 @@ const Game: FC = () => {
         if (!game) {
             return [];
         }
-        const orderedPlayers = game.players.slice();
-
-        return orderedPlayers as GamePlayer[];
+        return game.players.slice();
     };
     const isRecording = (game: Game): boolean => {
         return (

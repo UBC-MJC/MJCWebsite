@@ -11,18 +11,10 @@ type Setting = {
 type GamePlayer = {
     id: string;
     username: string;
+    fullName: string;
     trueWind: string;
     score: number;
 };
-
-interface IGame {
-    game_id: number;
-    created_at: string;
-}
-
-interface GameProps {
-    game: IGame;
-}
 
 type GameType = "RANKED" | "PLAY_OFF" | "TOURNEY" | "CASUAL";
 
@@ -56,6 +48,7 @@ type PlayerAPIDataType = {
 
 type PlayerNamesDataType = {
     playerId: string;
+    fullName: string;
     username: string;
 };
 
@@ -97,7 +90,7 @@ type Game = {
     status: string;
     recordedById: string;
     createdAt: string;
-    players: any[];
+    players: GamePlayer[];
     rounds: (JapaneseRound | HongKongRound)[];
     eloDeltas: EloDeltaObject;
     currentRound: PartialJapaneseRound;

@@ -21,14 +21,44 @@ import {
     addPaoSelfDraw,
     addSelfDraw,
     createJapaneseRoundRequest,
-    generateJapaneseCurrentScore,
     generateOverallScoreDelta,
 } from "../controller/JapaneseRound";
 import { validateJapaneseRound, validateTransaction } from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
-import riichiStick from "../../../assets/riichiStick.png";
 import PointsInput from "../../common/PointsInput";
 import { Button, ToggleButton, FormControlLabel, Switch } from "@mui/material";
+import { Footer } from "./Footer";
+
+function getTransaction(
+    game: Game,
+    transactionType: JapaneseTransactionType,
+    roundActions: JapaneseActions,
+    hand: JapaneseHandInput,
+) {
+    const dealerIndex = game.currentRound.roundNumber - 1;
+    switch (transactionType) {
+        case JapaneseTransactionType.DEAL_IN:
+            return addDealIn(roundActions.WINNER!, roundActions.LOSER!, dealerIndex, hand);
+        case JapaneseTransactionType.SELF_DRAW:
+            return addSelfDraw(roundActions.WINNER!, dealerIndex, hand);
+        case JapaneseTransactionType.INROUND_RYUUKYOKU:
+            return addInRoundRyuukyoku();
+        case JapaneseTransactionType.DEAL_IN_PAO:
+            return addPaoDealIn(
+                roundActions.WINNER!,
+                roundActions.LOSER!,
+                roundActions.PAO!,
+                dealerIndex,
+                hand,
+            );
+        case JapaneseTransactionType.SELF_DRAW_PAO:
+            return addPaoSelfDraw(roundActions.WINNER!, roundActions.PAO!, dealerIndex, hand);
+        case JapaneseTransactionType.NAGASHI_MANGAN:
+            return addNagashiMangan(roundActions.WINNER!, dealerIndex);
+        default:
+            return null;
+    }
+}
 
 const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     enableRecording,
@@ -115,34 +145,8 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         setHand(newHand);
     };
 
-    function getTransaction(): JapaneseTransaction | null {
-        const dealerIndex = game.currentRound!.roundNumber! - 1;
-        switch (transactionType) {
-            case JapaneseTransactionType.DEAL_IN:
-                return addDealIn(roundActions.WINNER!, roundActions.LOSER!, dealerIndex, hand);
-            case JapaneseTransactionType.SELF_DRAW:
-                return addSelfDraw(roundActions.WINNER!, dealerIndex, hand);
-            case JapaneseTransactionType.INROUND_RYUUKYOKU:
-                return addInRoundRyuukyoku();
-            case JapaneseTransactionType.DEAL_IN_PAO:
-                return addPaoDealIn(
-                    roundActions.WINNER!,
-                    roundActions.LOSER!,
-                    roundActions.PAO!,
-                    dealerIndex,
-                    hand,
-                );
-            case JapaneseTransactionType.SELF_DRAW_PAO:
-                return addPaoSelfDraw(roundActions.WINNER!, roundActions.PAO!, dealerIndex, hand);
-            case JapaneseTransactionType.NAGASHI_MANGAN:
-                return addNagashiMangan(roundActions.WINNER!, dealerIndex);
-            default:
-                return null;
-        }
-    }
-
     function getTransactionList(): JapaneseTransaction[] {
-        const transaction = getTransaction();
+        const transaction = getTransaction(game, transactionType, roundActions, hand);
         if (transaction !== null) {
             validateTransaction(transaction);
             return [transaction];
@@ -175,7 +179,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     const submitRound = async (transactionList: JapaneseTransaction[]) => {
         validateJapaneseRound(tenpaiList, riichiList, transactionList);
         const roundRequest: JapaneseRound = createJapaneseRoundRequest(
-            game.currentRound!,
+            game.currentRound,
             transactionList,
             tenpaiList,
             riichiList,
@@ -346,7 +350,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     </Col>
                 </Row>
 
-                {getTransactionListRender()}
+                {getTransactionListRender(transactions)}
 
                 <Button
                     color="success"
@@ -361,7 +365,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         );
     }
 
-    function getTransactionListRender() {
+    function getTransactionListRender(transactions: Transaction[]) {
         return (
             <ul>
                 {transactions.map((transaction, idx) => (
@@ -392,34 +396,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         );
     }
 
-    function getFooter() {
-        return (
-            <Container fluid className={"my-4 position-sticky bottom-0 bg-body"}>
-                <Row className={"my-1"}>
-                    <h4 className="my-2">Riichi sticks: {getRiichiStickCount()}</h4>
-                </Row>
-                <Row className={"row-cols-4 align-items-end"}>
-                    {generateJapaneseCurrentScore(game.rounds as JapaneseRound[]).map(
-                        (score, idx) => (
-                            <Col key={idx} className={"my-2"}>
-                                <div>{players[idx].username}</div>
-                                <div>
-                                    {riichiList.includes(idx) && (
-                                        <img src={riichiStick} className={"w-75"} />
-                                    )}
-                                </div>
-                                <h2 className="my-0">
-                                    {score - Number(riichiList.includes(idx)) * 1000}
-                                </h2>
-                                <div>{game.eloDeltas[players[idx].id].toFixed(1)}</div>
-                            </Col>
-                        ),
-                    )}
-                </Row>
-            </Container>
-        );
-    }
-
     return (
         <Container>
             {enableRecording && !gameOver && getRecordingInterface()}
@@ -427,7 +403,12 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
                 players={players}
             />
-            {getFooter()}
+            <Footer
+                riichiStickCount={getRiichiStickCount()}
+                game={game}
+                players={players}
+                riichiList={riichiList}
+            />
         </Container>
     );
 };

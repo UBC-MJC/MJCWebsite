@@ -153,4 +153,9 @@ table tr.footer-row td:first-child {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
+th {
+  max-width: 50px;
+  overflow: auto;
+  white-space: nowrap;
+}
 @import "../node_modules/bootstrap";
