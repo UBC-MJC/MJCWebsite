@@ -13,10 +13,10 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
     const navigate = useNavigate();
     const { player } = useContext(AuthContext);
 
-    const [eastPlayer, setEastPlayer] = useState<string | null>(null);
-    const [southPlayer, setSouthPlayer] = useState<string | null>(null);
-    const [westPlayer, setWestPlayer] = useState<string | null>(null);
-    const [northPlayer, setNorthPlayer] = useState<string | null>(null);
+    const [eastPlayer, setEastPlayer] = useState<PlayerNamesDataType | null>(null);
+    const [southPlayer, setSouthPlayer] = useState<PlayerNamesDataType | null>(null);
+    const [westPlayer, setWestPlayer] = useState<PlayerNamesDataType | null>(null);
+    const [northPlayer, setNorthPlayer] = useState<PlayerNamesDataType | null>(null);
 
     const playerNamesResult = usePlayers(gameVariant, gameType);
 
@@ -26,7 +26,12 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
         }
 
         const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
-        createGameAPI(player!.authToken, gameType, gameVariant, playerList)
+        createGameAPI(
+            player!.authToken,
+            gameType,
+            gameVariant,
+            playerList.map((playerName) => playerName?.username),
+        )
             .then((response) => {
                 navigate(`/games/${gameVariant}/${response.data.id}`);
             })
@@ -45,10 +50,9 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
         return <>Loading ... </>;
     }
     const playerNames = playerNamesResult.data
-        .map((player: PlayerNamesDataType) => player.username)
-        .sort((a, b) => a.localeCompare(b))
-        .map((name) => {
-            return { label: name };
+        .sort((a, b) => a.fullName.localeCompare(b.fullName))
+        .map((player) => {
+            return { label: `${player.fullName} @${player.username}`, value: player };
         });
     return (
         <Container>
@@ -60,8 +64,8 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playerNames}
-                            value={eastPlayer !== null ? { label: eastPlayer } : null}
-                            onChange={(event, value) => setEastPlayer(value!.label)}
+                            disableClearable
+                            onChange={(event, value) => setEastPlayer(value!.value)}
                             renderInput={(params) => (
                                 <TextField {...params} placeholder="Choose a Player" />
                             )}
@@ -74,8 +78,8 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playerNames}
-                            value={southPlayer !== null ? { label: southPlayer } : null}
-                            onChange={(event, value) => setSouthPlayer(value!.label)}
+                            disableClearable
+                            onChange={(event, value) => setSouthPlayer(value!.value)}
                             renderInput={(params) => (
                                 <TextField {...params} placeholder="Choose a Player" />
                             )}
@@ -88,8 +92,8 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playerNames}
-                            value={westPlayer !== null ? { label: westPlayer } : null}
-                            onChange={(event, value) => setWestPlayer(value!.label)}
+                            disableClearable
+                            onChange={(event, value) => setWestPlayer(value!.value)}
                             renderInput={(params) => (
                                 <TextField {...params} placeholder="Choose a Player" />
                             )}
@@ -102,8 +106,8 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playerNames}
-                            value={northPlayer !== null ? { label: northPlayer } : null}
-                            onChange={(event, value) => setNorthPlayer(value!.label)}
+                            disableClearable
+                            onChange={(event, value) => setNorthPlayer(value!.value)}
                             renderInput={(params) => (
                                 <TextField {...params} placeholder="Choose a Player" />
                             )}

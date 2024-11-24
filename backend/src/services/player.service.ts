@@ -96,6 +96,10 @@ const findAllPlayers = (): Promise<Player[]> => {
     return prisma.player.findMany({});
 };
 
+function sanitizeFullName(firstName: string, lastName: string) {
+    return `${firstName.trim()} ${lastName.trim()[0]}.`;
+}
+
 const findPlayerByUsernameOrEmail = async (token: string): Promise<Player | null> => {
     const result = await prisma.player.findUnique({
         where: {
@@ -124,4 +128,5 @@ export {
     findPlayerByUsernameOrEmail,
     findPlayerByUsernames,
     findAllPlayers,
+    sanitizeFullName,
 };
