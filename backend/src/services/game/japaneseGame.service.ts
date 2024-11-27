@@ -25,7 +25,7 @@ import {
 import { dealInQuery } from "./queries/dealInQuery";
 import { winQuery } from "./queries/winQuery";
 
-const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
+type FullJapaneseGame = Prisma.JapaneseGameGetPayload<{
     include: {
         players: {
             include: {
@@ -38,14 +38,13 @@ const fullJapaneseGame = Prisma.validator<Prisma.JapaneseGameDefaultArgs>()({
             },
         },
     },
-});
-type FullJapaneseGame = Prisma.JapaneseGameGetPayload<typeof fullJapaneseGame>;
-const fullJapaneseRound = Prisma.validator<Prisma.JapaneseRoundDefaultArgs>()({
+}>;
+type FullJapaneseRound = Prisma.JapaneseRoundGetPayload<{
     include: {
         transactions: true,
     },
-});
-type FullJapaneseRound = Prisma.JapaneseRoundGetPayload<typeof fullJapaneseRound>;
+}>;
+
 type PartialJapaneseRound = Pick<
     FullJapaneseRound,
     "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount"

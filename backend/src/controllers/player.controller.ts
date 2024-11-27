@@ -157,7 +157,7 @@ const getPlayerLeaderboardHandler = async (
     }
 };
 
-const getCurrentPlayerHandler = (req: Request, res: Response, next: NextFunction) => {
+const getCurrentPlayerHandler = (req: Request, res: Response) => {
     const token = generateToken(req.player.id);
     const { password, ...playerOmitted } = req.player;
     res.json({
@@ -175,7 +175,7 @@ const updateSettingsHandler = async (
             const { password, ...playerOmitted } = player;
             res.json({ ...playerOmitted });
         })
-        .catch((err: any) => {
+        .catch((err: Error) => {
             next(createError.InternalServerError(err.message));
         });
 };
