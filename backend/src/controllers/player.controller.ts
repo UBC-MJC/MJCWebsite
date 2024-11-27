@@ -6,7 +6,6 @@ import {
     findPlayerByUsernameOrEmail,
     requestPasswordReset,
     resetPassword,
-    sanitizeFullName,
     updatePlayer,
 } from "../services/player.service";
 import { generateToken } from "../middleware/jwt";
@@ -117,7 +116,6 @@ const getQualifiedPlayersHandler = async (
         const players = qualifiedPlayers.map((player) => {
             return {
                 playerId: player.id,
-                fullName: sanitizeFullName(player.firstName, player.lastName),
                 username: player.username,
             };
         });

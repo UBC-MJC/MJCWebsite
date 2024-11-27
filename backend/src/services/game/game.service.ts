@@ -8,7 +8,7 @@ import {
 } from "./game.util";
 import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
 import prisma from "../../db";
-import { findPlayerByUsernameOrEmail, sanitizeFullName } from "../player.service";
+import { findPlayerByUsernameOrEmail } from "../player.service";
 
 export type EloDict = { [key: string]: number };
 const MAX_GAME_COUNT = 120;
@@ -170,7 +170,6 @@ abstract class GameService {
             players: game.players.map((player: any) => {
                 return {
                     id: player.player.id,
-                    fullName: sanitizeFullName(player.player.firstName, player.player.lastName),
                     username: player.player.username,
                     trueWind: player.wind,
                 };

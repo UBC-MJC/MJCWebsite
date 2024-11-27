@@ -50,9 +50,9 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
         return <>Loading ... </>;
     }
     const playerNames = playerNamesResult.data
-        .sort((a, b) => a.fullName.localeCompare(b.fullName))
+        .sort((a, b) => a.username.localeCompare(b.username))
         .map((player) => {
-            return { label: `${player.fullName} @${player.username}`, value: player };
+            return { label: player.username, value: player };
         });
     return (
         <Container>

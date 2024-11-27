@@ -17,8 +17,7 @@ export const Footer: FC<{
             <Row className={"row-cols-4 align-items-end"}>
                 {generateJapaneseCurrentScore(game.rounds as JapaneseRound[]).map((score, idx) => (
                     <Col key={idx} className={"my-2"}>
-                        <div>@{players[idx].username}</div>
-                        <div>{players[idx].fullName}</div>
+                        <div>{players[idx].username}</div>
                         <div>
                             {riichiList.includes(idx) && (
                                 <img src={riichiStick} className={"w-75"} />

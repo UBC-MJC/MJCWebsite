@@ -11,7 +11,6 @@ type Setting = {
 type GamePlayer = {
     id: string;
     username: string;
-    fullName: string;
     trueWind: string;
     score: number;
 };
@@ -48,7 +47,6 @@ type PlayerAPIDataType = {
 
 type PlayerNamesDataType = {
     playerId: string;
-    fullName: string;
     username: string;
 };
 
