@@ -50,7 +50,7 @@ export async function createTestPlayers() {
 }
 export async function initialise() {
     const players = await createTestPlayers();
-    const season = await createSeason("testSeason", new Date(), new Date());
+    const season = await createSeason("testSeason", GameType.RANKED, new Date(), new Date());
     return { players, season };
 }
 

@@ -4,7 +4,6 @@ import createError from "http-errors";
 import {
     createSeason,
     deleteSeason,
-    findCurrentSeason,
     updateSeason,
 } from "../services/season.service";
 import { makeDummyAdmins } from "../services/admin.service";
@@ -45,10 +44,6 @@ const deletePlayerHandler = async (req: Request, res: Response): Promise<void> =
 };
 
 const createSeasonHandler = async (req: Request, res: Response): Promise<void> => {
-    if (await findCurrentSeason()) {
-        throw createError.Conflict("Season already in progress");
-    }
-
     const season = createSeasonSchema.parse(req.body?.season);
     const startDate = new Date(season.startDate);
     const endDate = new Date(season.endDate);
@@ -56,7 +51,7 @@ const createSeasonHandler = async (req: Request, res: Response): Promise<void> =
         throw createError.BadRequest("End date must be in the future");
     }
 
-    const createdSeason = await createSeason(season.name, startDate, endDate);
+    const createdSeason = await createSeason(season.name, season.type, startDate, endDate);
     res.json({ ...createdSeason });
 };
 

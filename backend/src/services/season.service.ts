@@ -1,4 +1,4 @@
-import { Prisma, Season } from "@prisma/client";
+import { GameType, Prisma, Season } from "@prisma/client";
 import prisma from "../db";
 import { NoCurrentSeasonError } from "../errors/domain.error";
 
@@ -35,19 +35,21 @@ const findAllSeasons = async (): Promise<Season[]> => {
 
 const createSeason = async (
     seasonName: string,
+    type: GameType,
     startDate: Date,
     endDate: Date,
 ): Promise<Season> => {
     return prisma.season.create({
         data: {
             name: seasonName,
+            type: type,
             startDate: startDate,
             endDate: endDate,
         },
     });
 };
 
-const updateSeason = async (season: Season): Promise<Season> => {
+const updateSeason = async (season: Omit<Season, "type">): Promise<Season> => {
     return prisma.season.update({
         where: {
             id: season.id,

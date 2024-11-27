@@ -1,7 +1,9 @@
 import { z } from "zod";
+import { GameType } from "@prisma/client";
 
 const createSeasonSchema = z.object({
     name: z.string(),
+    type: z.enum(GameType),
     startDate: z.string(),
     endDate: z.string(),
 });
