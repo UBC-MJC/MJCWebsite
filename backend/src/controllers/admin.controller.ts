@@ -4,7 +4,6 @@ import createError from "http-errors";
 import {
     createSeason,
     deleteSeason,
-    getCurrentSeason,
     updateSeason,
 } from "../services/season.service";
 import { makeDummyAdmins } from "../services/admin.service";
@@ -83,30 +82,18 @@ const createSeasonHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    getCurrentSeason()
-        .then(() => {
-            next(createError.InternalServerError("Season already in progress"));
-        })
-        .catch(() => {
-            createSeasonSchema
-                .validate(req.body.season)
-                .then((season: CreateSeasonType) => {
-                    const startDate = new Date(season.startDate);
-
-                    const endDate = new Date(season.endDate);
-                    if (endDate < new Date()) {
-                        throw new Error("End date must be in the future");
-                    }
-
-                    return createSeason(season.name, startDate, endDate);
-                })
-                .then((season) => {
-                    res.json({ ...season });
-                })
-                .catch((err: any) => {
-                    next(createError.InternalServerError(err.message));
-                });
-        });
+    try {
+        const season: CreateSeasonType = await createSeasonSchema.validate(req.body.season);
+        const startDate = new Date(season.startDate);
+        const endDate = new Date(season.endDate);
+        if (endDate < new Date()) {
+            next(createError.InternalServerError("End date must be in the future"));
+            return;
+        }
+        res.json(createSeason(season.name, season.type, startDate, endDate));
+    } catch (error: any) {
+        next(createError.InternalServerError(error.message));
+    }
 };
 
 const updateSeasonHandler = async (

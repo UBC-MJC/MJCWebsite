@@ -1,7 +1,9 @@
-import { object, string, InferType } from "yup";
+import { object, string, InferType, mixed } from "yup";
+import { GameType } from "@prisma/client";
 
 const createSeasonSchema = object({
     name: string().required(),
+    type: mixed<GameType>().required(),
     startDate: string().required(),
     endDate: string().required(),
 });

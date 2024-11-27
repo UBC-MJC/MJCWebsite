@@ -15,7 +15,7 @@ import {
     validateCreateHongKongRound,
 } from "../../validation/game.validation";
 
-const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
+type FullHongKongGame = Prisma.HongKongGameGetPayload<{
     include: {
         players: {
             include: {
@@ -28,14 +28,12 @@ const fullHongKongGame = Prisma.validator<Prisma.HongKongGameDefaultArgs>()({
             },
         },
     },
-});
-type FullHongKongGame = Prisma.HongKongGameGetPayload<typeof fullHongKongGame>;
-const fullHongKongRound = Prisma.validator<Prisma.HongKongRoundDefaultArgs>()({
+}>;
+type FullHongKongRound = Prisma.HongKongRoundGetPayload<{
     include: {
         transactions: true,
     },
-});
-type FullHongKongRound = Prisma.HongKongRoundGetPayload<typeof fullHongKongRound>;
+}>;
 
 class HongKongGameService extends GameService {
     constructor() {
