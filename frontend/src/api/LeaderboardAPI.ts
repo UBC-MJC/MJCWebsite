@@ -1,8 +1,8 @@
 import axios from "axios";
 import { baseUrl } from "./APIUtils";
 
-const getCurrentSeason = async () => {
-    return axios.get<Season>(baseUrl + "/seasons/current");
+const getCurrentSeasons = async () => {
+    return axios.get<Season[]>(baseUrl + "/seasons/current");
 };
 
 const getPlayerLeaderboard = async (gameVariant: string, gameType: GameType, seasonId: string) => {
@@ -20,4 +20,4 @@ async function getUserStatistics(playerId: string, gameVariant: string, seasonId
         totalRounds: number;
     }>(baseUrl + "/players/" + playerId + "/" + gameVariant + "/" + seasonId + "/");
 }
-export { getCurrentSeason, getPlayerLeaderboard, getUserStatistics };
+export { getCurrentSeasons, getPlayerLeaderboard, getUserStatistics };

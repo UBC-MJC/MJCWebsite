@@ -6,7 +6,7 @@ import { gameRoundString } from "./common/constants";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { useLiveGames } from "../hooks/GameHooks";
 
-export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
+export const LiveGames: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const navigate = useNavigate();
     const { isPending, error, data: liveGames } = useLiveGames(gameVariant);
 

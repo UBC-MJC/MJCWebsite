@@ -6,7 +6,7 @@ import { usePlayerLeaderboard } from "../hooks/LeaderboardHooks";
 import { mapSeasonToOption } from "../game/common/constants";
 import { Autocomplete, TextField } from "@mui/material";
 
-const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
+const Leaderboard: FC<{ gameVariant: GameVariant } > = ({ gameVariant}) => {
     const [season, setSeason] = useState<Season | undefined>();
 
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons(setSeason);
@@ -17,7 +17,7 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const seasonsOptions = mapSeasonToOption(seasons);
     return (
         <Container className="my-4" fluid="lg">
-            <h1>{getGameVariantString(gameVariant, gameType)} Leaderboard</h1>
+            <h1>{getGameVariantString(gameVariant)} Leaderboard</h1>
 
             <div className="text-start d-flex justify-content-center align-items-end">
                 <h5 className="mx-2">Season: </h5>
@@ -35,7 +35,7 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
             {season === undefined ? (
                 <h5>No season selected</h5>
             ) : (
-                <LeaderboardDisplay season={season} gameType={gameType} gameVariant={gameVariant} />
+                <LeaderboardDisplay season={season} gameType={season.gameType} gameVariant={gameVariant} />
             )}
         </Container>
     );

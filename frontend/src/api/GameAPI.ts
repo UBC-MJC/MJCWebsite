@@ -9,6 +9,7 @@ const getPlayerNames = async (gameVariant: string, gameType: GameType) => {
 
 const createGameAPI = async (
     authToken: string,
+    seasonId: string,
     gameType: GameType,
     gameVariant: GameVariant,
     players: string[],
@@ -16,6 +17,7 @@ const createGameAPI = async (
     return axios.post<{ id: string }>(
         baseUrl + `/games/${gameVariant}`,
         {
+            seasonId,
             gameType,
             players,
         },

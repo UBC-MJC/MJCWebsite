@@ -9,7 +9,7 @@ import { getGameVariantString } from "../common/Utils";
 import { usePlayers } from "../hooks/GameHooks";
 import { Autocomplete, Button, TextField } from "@mui/material";
 
-const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
+const CreateGameComponent: FC<GameCreationProp> = ({ season, gameVariant }) => {
     const navigate = useNavigate();
     const { player } = useContext(AuthContext);
 
@@ -18,7 +18,7 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
     const [westPlayer, setWestPlayer] = useState<PlayerNamesDataType | null>(null);
     const [northPlayer, setNorthPlayer] = useState<PlayerNamesDataType | null>(null);
 
-    const playerNamesResult = usePlayers(gameVariant, gameType);
+    const playerNamesResult = usePlayers(gameVariant, season.gameType);
 
     const createGame = () => {
         if (playerSelectMissing || notUnique) {
@@ -28,7 +28,8 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
         const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
         createGameAPI(
             player!.authToken,
-            gameType,
+            season.id,
+            season.gameType,
             gameVariant,
             playerList.map((playerName) => playerName?.username),
         )
@@ -40,7 +41,7 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
             });
     };
 
-    const title = `Create ${getGameVariantString(gameVariant, gameType)} Game`;
+    const title = `Create ${getGameVariantString(gameVariant, season.gameType)} Game`;
 
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
     const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4;

@@ -20,8 +20,8 @@ type GameType = "RANKED" | "PLAY_OFF" | "TOURNEY" | "CASUAL";
 type GameVariant = "jp" | "hk";
 
 type GameCreationProp = {
+    season: Season;
     gameVariant: GameVariant;
-    gameType: GameType;
 };
 
 type LoginDataType = {
@@ -67,6 +67,7 @@ type Player = {
 type Season = {
     id: string;
     name: string;
+    gameType: GameType;
     startDate: string;
     endDate: string;
 };

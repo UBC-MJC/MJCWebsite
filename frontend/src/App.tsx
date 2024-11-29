@@ -77,58 +77,34 @@ const App: React.FC = () => {
                                     <Route
                                         path="/leaderboard/jp"
                                         element={
-                                            <Leaderboard gameVariant="jp" gameType={"RANKED"} />
-                                        }
-                                    />
-                                    <Route
-                                        path="/leaderboard/jp/casual"
-                                        element={
-                                            <Leaderboard gameVariant="jp" gameType={"CASUAL"} />
+                                            <Leaderboard gameVariant="jp"/>
                                         }
                                     />
                                     <Route
                                         path="/leaderboard/hk"
                                         element={
-                                            <Leaderboard gameVariant="hk" gameType={"RANKED"} />
-                                        }
-                                    />
-                                    <Route
-                                        path="/leaderboard/hk/casual"
-                                        element={
-                                            <Leaderboard gameVariant="hk" gameType={"CASUAL"} />
+                                            <Leaderboard gameVariant="hk"/>
                                         }
                                     />
                                     <Route path="/games/:variant/:id" element={<Game />} />
                                     <Route
                                         path="/games/current/jp"
-                                        element={<LiveGames gameVariant="jp" gameType={"RANKED"} />}
+                                        element={<LiveGames gameVariant="jp"/>}
                                     />
                                     <Route
                                         path="/games/current/hk"
-                                        element={<LiveGames gameVariant="hk" gameType={"RANKED"} />}
+                                        element={<LiveGames gameVariant="hk"/>}
                                     />
                                     <Route
                                         path="/games/create/jp"
                                         element={
-                                            <CreateGame gameVariant="jp" gameType={"RANKED"} />
-                                        }
-                                    />
-                                    <Route
-                                        path="/games/create/jp/casual"
-                                        element={
-                                            <CreateGame gameVariant="jp" gameType={"CASUAL"} />
+                                            <CreateGame gameVariant="jp"/>
                                         }
                                     />
                                     <Route
                                         path="/games/create/hk"
                                         element={
-                                            <CreateGame gameVariant="hk" gameType={"RANKED"} />
-                                        }
-                                    />
-                                    <Route
-                                        path="/games/create/hk/casual"
-                                        element={
-                                            <CreateGame gameVariant="hk" gameType={"CASUAL"} />
+                                            <CreateGame gameVariant="hk"/>
                                         }
                                     />
                                     <Route path="/games" element={<GameLogs />} />

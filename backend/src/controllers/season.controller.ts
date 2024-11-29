@@ -1,21 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import { findAllSeasons, getCurrentSeason } from "../services/season.service";
+import { findAllSeasons, getCurrentSeasons } from "../services/season.service";
 import createError from "http-errors";
 
-const getCurrentSeasonHandler = async (
+const getCurrentSeasonsHandler = async (
     req: Request,
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const season = await getCurrentSeason();
-
-        res.status(200).json({
-            id: season.id,
-            name: season.name,
-            startDate: season.startDate,
-            endDate: season.endDate,
-        });
+        const seasons = await getCurrentSeasons();
+        res.status(200).json(seasons);
     } catch (error: any) {
         next(createError.InternalServerError(error.message));
     }
@@ -33,4 +27,4 @@ const getSeasonsHandler = async (
         });
 };
 
-export { getCurrentSeasonHandler, getSeasonsHandler };
+export { getCurrentSeasonsHandler, getSeasonsHandler };

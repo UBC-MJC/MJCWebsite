@@ -1,18 +1,12 @@
 import { GameType, Prisma, Season } from "@prisma/client";
 import prisma from "../db";
 
-const getCurrentSeason = async (): Promise<Season> => {
-    const seasons: Season[] = await prisma.season.findMany({
+const getCurrentSeasons = async (): Promise<Season[]> => {
+    return prisma.season.findMany({
         orderBy: {
             endDate: Prisma.SortOrder.desc,
         },
     });
-
-    if (seasons.length === 0 || seasons[0].endDate < new Date()) {
-        throw new Error("No season in progress");
-    }
-
-    return seasons[0];
 };
 
 const findAllSeasons = async (): Promise<Season[]> => {
@@ -60,4 +54,4 @@ const deleteSeason = async (id: string): Promise<Season> => {
     });
 };
 
-export { getCurrentSeason, findAllSeasons, createSeason, updateSeason, deleteSeason };
+export { getCurrentSeasons, findAllSeasons, createSeason, updateSeason, deleteSeason };

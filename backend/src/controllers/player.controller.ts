@@ -10,7 +10,7 @@ import {
 } from "../services/player.service";
 import { generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
-import { getCurrentSeason } from "../services/season.service";
+import { getCurrentSeasons } from "../services/season.service";
 import { getGameService, STARTING_ELO } from "../services/game/game.util";
 import { GameService } from "../services/game/game.service";
 import { GameType } from "@prisma/client";
@@ -136,8 +136,8 @@ const getPlayerLeaderboardHandler = async (
         if (typeof req.query.seasonId !== "undefined") {
             seasonId = req.query.seasonId as string;
         } else {
-            const season = await getCurrentSeason();
-            seasonId = season.id;
+            const seasons = await getCurrentSeasons();
+            seasonId = seasons[0].id;
         }
 
         const gameService = getGameService(gameVariant);

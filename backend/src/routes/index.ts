@@ -34,7 +34,7 @@ import {
     updatePlayerHandler,
     updateSeasonHandler,
 } from "../controllers/admin.controller";
-import { getCurrentSeasonHandler, getSeasonsHandler } from "../controllers/season.controller";
+import { getCurrentSeasonsHandler, getSeasonsHandler } from "../controllers/season.controller";
 
 const router: Router = Router();
 
@@ -63,7 +63,7 @@ router.get("/players/current", isAuthenticated, getCurrentPlayerHandler);
 router.put("/players/current/settings", isAuthenticated, updateSettingsHandler);
 router.put("/players/current/username", isAuthenticated, updateUsernameHandler);
 router.get("/players/:playerId/:gameVariant/:seasonId", getUserStatisticsHandler);
-router.get("/seasons/current", getCurrentSeasonHandler);
+router.get("/seasons/current", getCurrentSeasonsHandler);
 router.get("/seasons", getSeasonsHandler);
 
 router.get("/admin/players", isAuthenticated, isAdmin, getPlayersHandler);

@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
 import { createGameSchema } from "../validation/game.validation";
-import { getCurrentSeason } from "../services/season.service";
 import { GameFilterArgs, getGameService } from "../services/game/game.util";
 import { GameService } from "../services/game/game.service";
 import { addGameListener, sendGameUpdate } from "../services/game/liveGame.service";
@@ -89,13 +88,11 @@ const createGameHandler = async (
     next: NextFunction,
 ): Promise<void> => {
     const gameVariant: string = req.params.gameVariant;
-
+    const seasonId: string = req.params.seasonId;
     try {
         const { players, gameType } = await createGameSchema.validate(req.body);
-        const season = await getCurrentSeason();
-
         const gameService: GameService = getGameService(gameVariant);
-        const newGame = await gameService.createGame(gameType, players, req.player.id, season.id);
+        const newGame = await gameService.createGame(gameType, players, req.player.id, seasonId);
 
         res.status(201).json({
             id: newGame.id,
@@ -241,10 +238,10 @@ const recalcSeasonHandler = async (
     next: NextFunction,
 ): Promise<void> => {
     const gameVariant: string = req.params.gameVariant;
+    const seasonId: string = req.params.seasonId;
     try {
-        const seasonId = await getCurrentSeason();
         const gameService = getGameService(gameVariant);
-        const newEloStats = await gameService.recalcSeason(seasonId.id);
+        const newEloStats = await gameService.recalcSeason(seasonId);
         res.status(201).json(newEloStats);
     } catch (error: any) {
         console.error("Error in recalcAllHandler:", error);
