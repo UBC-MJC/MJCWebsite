@@ -72,6 +72,7 @@ const AdminSeason = () => {
         }
         const season: Omit<Season, "id"> = {
             name,
+            type: "RANKED",
             startDate: new Date(),
             endDate,
         };

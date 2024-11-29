@@ -1,11 +1,7 @@
 import { Request, Response } from "express";
 import { deletePlayer, findAllPlayers, updatePlayer } from "../services/player.service";
 import createError from "http-errors";
-import {
-    createSeason,
-    deleteSeason,
-    updateSeason,
-} from "../services/season.service";
+import { createSeason, deleteSeason, updateSeason } from "../services/season.service";
 import { makeDummyAdmins } from "../services/admin.service";
 import { playerSchema } from "../validation/player.validation";
 import { createSeasonSchema, updateSeasonSchema } from "../validation/season.validation";

@@ -81,11 +81,16 @@ const getLiveGamesHandler = async (req: Request, res: Response): Promise<void> =
 
 const createGameHandler = async (req: Request, res: Response): Promise<void> => {
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
-    const { players, gameType } = createGameSchema.parse(req.body);
-    const season = await getCurrentSeason();
+    const { players, gameType, seasonId } = createGameSchema.parse(req.body);
+    const selectedSeasonId = seasonId ?? (await getCurrentSeason()).id;
 
     const gameService = getGameService(gameVariant);
-    const newGame = await gameService.createGame(gameType, players, req.player.id, season.id);
+    const newGame = await gameService.createGame(
+        gameType,
+        players,
+        req.player.id,
+        selectedSeasonId,
+    );
 
     res.status(201).json({
         id: newGame.id,
@@ -177,9 +182,16 @@ const deleteLastRoundHandler = async (req: Request, res: Response): Promise<void
 
 const recalcSeasonHandler = async (req: Request, res: Response): Promise<void> => {
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
-    const seasonId = await getCurrentSeason();
+    const requestedSeasonId = req.query.seasonId;
+    if (
+        requestedSeasonId !== undefined &&
+        (typeof requestedSeasonId !== "string" || requestedSeasonId.length === 0)
+    ) {
+        throw createError.BadRequest("Invalid season id");
+    }
+    const seasonId = requestedSeasonId ?? (await getCurrentSeason()).id;
     const gameService = getGameService(gameVariant);
-    const newEloStats = await gameService.recalcSeason(seasonId.id);
+    const newEloStats = await gameService.recalcSeason(seasonId);
     res.status(201).json(newEloStats);
 };
 

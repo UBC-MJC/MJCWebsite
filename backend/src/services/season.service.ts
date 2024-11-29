@@ -2,6 +2,12 @@ import { GameType, Prisma, Season } from "@prisma/client";
 import prisma from "../db";
 import { NoCurrentSeasonError } from "../errors/domain.error";
 
+const getCurrentSeasons = async (): Promise<Season[]> => {
+    return prisma.season.findMany({
+        orderBy: { endDate: Prisma.SortOrder.desc },
+    });
+};
+
 const findCurrentSeason = async (): Promise<Season | null> => {
     const seasons: Season[] = await prisma.season.findMany({
         orderBy: {
@@ -71,6 +77,7 @@ const deleteSeason = async (id: string): Promise<Season> => {
 };
 
 export {
+    getCurrentSeasons,
     findCurrentSeason,
     getCurrentSeason,
     findAllSeasons,

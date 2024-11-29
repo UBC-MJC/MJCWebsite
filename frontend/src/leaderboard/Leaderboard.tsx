@@ -63,7 +63,11 @@ const Leaderboard = <T extends GameVariant>({ gameVariant, gameType }: GameCreat
             {!season ? (
                 <Typography variant="body1">No season selected</Typography>
             ) : (
-                <LeaderboardDisplay season={season} gameType={gameType} gameVariant={gameVariant} />
+                <LeaderboardDisplay
+                    season={season}
+                    gameType={season.type}
+                    gameVariant={gameVariant}
+                />
             )}
         </Container>
     );

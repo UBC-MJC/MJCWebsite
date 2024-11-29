@@ -1,7 +1,7 @@
 import { JapaneseTransactionType } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 
-import { JapaneseTransactionSchema } from "../../validation/game.validation";
+import { createGameSchema, JapaneseTransactionSchema } from "../../validation/game.validation";
 
 const scoreDeltas = [-1000, 0, 1000, 0];
 const hand = { dora: 0, fu: 30, han: 1 };
@@ -57,5 +57,23 @@ describe("JapaneseTransactionSchema", () => {
                 paoPlayerIndex: 0,
             }).success,
         ).toBe(false);
+    });
+});
+
+describe("createGameSchema season selection", () => {
+    const request = { gameType: "RANKED", players: ["east", "south", "west", "north"] };
+
+    it("preserves an explicitly selected season", () => {
+        expect(createGameSchema.parse({ ...request, seasonId: "selected-season" }).seasonId).toBe(
+            "selected-season",
+        );
+    });
+
+    it("accepts existing clients without a season selection", () => {
+        expect(createGameSchema.parse(request).seasonId).toBeUndefined();
+    });
+
+    it.each(["", 123, null])("rejects an invalid season selection: %s", (seasonId) => {
+        expect(createGameSchema.safeParse({ ...request, seasonId }).success).toBe(false);
     });
 });

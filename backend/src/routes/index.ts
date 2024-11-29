@@ -38,12 +38,12 @@ import {
     updatePlayerHandler,
     updateSeasonHandler,
 } from "../controllers/admin.controller";
-import { getCurrentSeasonHandler, getSeasonsHandler } from "../controllers/season.controller";
+import { getCurrentSeasonsHandler, getSeasonsHandler } from "../controllers/season.controller";
 import {
     checkInHandler,
     checkOutHandler,
     getStatusHandler,
-    getCheckedInPlayersHandler
+    getCheckedInPlayersHandler,
 } from "../controllers/checkin.controller";
 
 const router: Router = Router();
@@ -76,7 +76,7 @@ router.get(
     "/players/:playerId/:gameVariant/:seasonId/placement-history",
     getPlacementHistoryHandler,
 );
-router.get("/seasons/current", getCurrentSeasonHandler);
+router.get("/seasons/current", getCurrentSeasonsHandler);
 router.get("/seasons", getSeasonsHandler);
 
 router.get("/admin/players", isAuthenticated, isAdmin, getPlayersHandler);

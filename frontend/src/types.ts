@@ -24,6 +24,7 @@ export type GameVariant = "jp" | "hk";
 export interface GameCreationProp<T extends GameVariant> {
     gameVariant: T;
     gameType: GameType;
+    season?: Season;
 }
 
 export interface LoginDataType {
@@ -66,6 +67,7 @@ export interface Player {
 }
 
 export interface Season {
+    type: GameType;
     id: string;
     name: string;
     startDate: Date;

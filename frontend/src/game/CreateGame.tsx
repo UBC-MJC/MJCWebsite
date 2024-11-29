@@ -21,8 +21,10 @@ import type { GameCreationProp, GameVariant, Player, PlayerNamesDataType } from 
 
 const CreateGameComponent = <T extends GameVariant>({
     gameVariant,
-    gameType,
+    gameType: requestedGameType,
+    season,
 }: GameCreationProp<T>) => {
+    const gameType = season?.type ?? requestedGameType;
     const navigate = useNavigate();
 
     const [eastPlayer, setEastPlayer] = useState<PlayerNamesDataType | null>(null);
@@ -46,6 +48,7 @@ const CreateGameComponent = <T extends GameVariant>({
                 gameType,
                 gameVariant,
                 playerList.map((playerName) => playerName!.username),
+                season?.id,
             );
             navigate(`/games/${gameVariant}/${response.data.id}`);
         } catch (error) {
@@ -221,7 +224,7 @@ const hasGamePermissions = <T extends GameVariant>(
     if (player === undefined) {
         return false;
     }
-    if (props.gameType === "CASUAL") {
+    if ((props.season?.type ?? props.gameType) === "CASUAL") {
         return true; // everyone is allowed to start casual games
     }
     if (props.gameVariant === "jp") {

@@ -6,6 +6,7 @@ const gameVariantSchema = z.enum(["jp", "hk"]);
 const gameTypeSchema = z.enum(GameType);
 
 const createGameSchema = z.object({
+    seasonId: z.string().min(1).optional(),
     gameType: gameTypeSchema,
     players: z.array(z.string()).length(4),
 });

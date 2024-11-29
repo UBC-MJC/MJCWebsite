@@ -17,7 +17,7 @@ import {
 } from "../services/player.service";
 import { addAuthCookieToResponse, generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
-import { getCurrentSeason } from "../services/season.service";
+import { getCurrentSeasons } from "../services/season.service";
 import { STARTING_ELO } from "../services/game/game.util";
 import { getGameService } from "../services/game/gameService.factory";
 import { gameTypeSchema, gameVariantSchema } from "../validation/game.validation";
@@ -111,8 +111,11 @@ const getPlayerLeaderboardHandler = async (req: Request, res: Response): Promise
         if (typeof req.query.seasonId !== "undefined") {
             throw createError.BadRequest("Invalid season id");
         }
-        const season = await getCurrentSeason();
-        seasonId = season.id;
+        const seasons = await getCurrentSeasons();
+        if (seasons.length === 0) {
+            throw createError.NotFound("No season in progress");
+        }
+        seasonId = seasons[0].id;
     }
 
     const gameService = getGameService(gameVariant);
