@@ -53,7 +53,7 @@ export const Resources: FC = () => {
             </p>
             <h2>Hong Kong Mahjong</h2>
             <p>
-                <a href="https://docs.google.com/document/d/1luP0TJKwsac2XzWv9D8bNesYPI4ZJO4zaThDY2g2Z7U">
+                <a href="https://docs.google.com/document/d/1ECK29S6p-Lx63P6eMkM2bnQY7mueEout8MvZS13A4Hk">
                     Charter
                 </a>
             </p>
