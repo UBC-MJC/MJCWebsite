@@ -1,46 +1,22 @@
-import { generateJapaneseCurrentScore } from "../jp/controller/JapaneseRound";
-import { generateHongKongCurrentScore } from "../hk/controller/HongKongRound";
 import { Col, Row } from "react-bootstrap";
 import { FC } from "react";
+import { getScoresWithPlayers } from "../../common/Utils";
 
-type GameSummaryBodyProps = {
-    game: Game;
-    gameVariant: GameVariant;
-};
-
-const GameSummaryBody: FC<GameSummaryBodyProps> = ({ game, gameVariant }) => {
-    const getScoresWithPlayers = () => {
-        const scores: number[] = (() => {
-            if (gameVariant === "jp") {
-                return generateJapaneseCurrentScore(game.rounds as JapaneseRound[]);
-            } else {
-                return generateHongKongCurrentScore(game.rounds as HongKongRound[]);
-            }
-        })();
-
-        const scoresWithPlayers = scores.map((score, idx) => {
-            return {
-                username: game.players[idx].username,
-                score: score,
-            };
-        });
-        scoresWithPlayers.sort((a, b) => b.score - a.score);
-
-        return scoresWithPlayers;
-    };
-
+const GameSummaryBody: FC<{ game: Game; gameVariant: GameVariant }> = ({ game, gameVariant }) => {
     return (
         <Row>
-            {getScoresWithPlayers().map((score, idx) => (
-                <Col key={idx} xs={6} className="px-3 py-1">
-                    <div className="d-flex justify-content-between">
-                        <div>
-                            {mapIndextoPlace(idx)} - {score.username}
+            {getScoresWithPlayers(game, gameVariant)
+                .sort((a, b) => b.score - a.score)
+                .map((score, idx) => (
+                    <Col key={idx} xs={6} className="px-3 py-1">
+                        <div className="d-flex justify-content-between">
+                            <div>
+                                {mapIndextoPlace(idx)} - {score.username}
+                            </div>
+                            <div>{score.score}</div>
                         </div>
-                        <div>{score.score}</div>
-                    </div>
-                </Col>
-            ))}
+                    </Col>
+                ))}
         </Row>
     );
 };

@@ -1,4 +1,6 @@
 import { PickerData } from "react-simple-wheel-picker";
+import { generateJapaneseCurrentScore } from "../game/jp/controller/JapaneseRound";
+import { generateHongKongCurrentScore } from "../game/hk/controller/HongKongRound";
 
 const japanesePoints: PickerData[] = Array.from({ length: 13 }, (_, k) => {
     return {
@@ -117,6 +119,30 @@ const mapChineseNumerals = (num: number): string => {
 
 const range = (end: number): number[] => {
     return Array.from({ length: end }, (_, i) => i);
+};
+
+export function getRiichiStickCount(rounds: JapaneseRound[], riichiList: number[]) {
+    if (rounds.length === 0) {
+        return 0;
+    }
+    return (rounds[rounds.length - 1] as JapaneseRound).endRiichiStickCount + riichiList.length;
+}
+
+export const getScoresWithPlayers = (game: Game, gameVariant: GameVariant) => {
+    const scores: number[] = (() => {
+        if (gameVariant === "jp") {
+            return generateJapaneseCurrentScore(game.rounds as JapaneseRound[]);
+        } else {
+            return generateHongKongCurrentScore(game.rounds as HongKongRound[]);
+        }
+    })();
+
+    return scores.map((score, idx) => {
+        return {
+            username: game.players[idx].username,
+            score: score,
+        };
+    });
 };
 
 export {

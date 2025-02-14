@@ -17,6 +17,7 @@ import { validateHongKongRound } from "../controller/ValidateHongKongRound";
 import alert from "../../../common/AlertDialog";
 import PointsInput from "../../common/PointsInput";
 import { Button, ToggleButton } from "@mui/material";
+import { Footer } from "../../common/Footer";
 
 const LegacyHongKongGame: FC<LegacyGameProps> = ({
     enableRecording,
@@ -185,6 +186,7 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                 rounds={mapRoundsToModifiedRounds(game.rounds as HongKongRound[])}
                 players={players}
             />
+            <Footer game={game} gameVariant="hk" riichiList={[]}></Footer>
         </Container>
     );
 };

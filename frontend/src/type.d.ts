@@ -84,7 +84,6 @@ type AuthContextType = {
 type Game = {
     id: string;
     type: GameType;
-    gameVariant: GameVariant;
     status: string;
     recordedById: string;
     createdAt: string;
