@@ -399,6 +399,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
                 players={players}
             />
+            <Footer game={game} gameVariant={"jp"} riichiList={riichiList} />
             <Container fluid className={"my-4 bottom-0 bg-body position-sticky"}>
                 <Row className={"row-cols-4 align-items-end"}>
                     {getScoresWithPlayers(game, "jp").map(({ username, score }, idx) => (
@@ -408,7 +409,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     ))}
                 </Row>
             </Container>
-            <Footer game={game} gameVariant={"jp"} riichiList={riichiList} />
         </Container>
     );
 };
