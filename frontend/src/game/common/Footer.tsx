@@ -19,7 +19,7 @@ export const Footer: FC<{
                 </Row>
             )}
             <Row className={"row-cols-4 align-items-end"}>
-                {getScoresWithPlayers(game, gameVariant).map(({ username, score }, idx) => (
+                {getScoresWithPlayers(game, gameVariant).map(({ username, score, eloDelta }, idx) => (
                     <Col key={idx} className={"my-2"}>
                         <div>{username}</div>
                         <div>
@@ -28,7 +28,7 @@ export const Footer: FC<{
                             )}
                         </div>
                         <h2 className="my-0">{score - Number(riichiList.includes(idx)) * 1000}</h2>
-                        <div>{game.eloDeltas[game.players[idx].id].toFixed(1)}</div>
+                        <div>{eloDelta.toFixed(1)}</div>
                     </Col>
                 ))}
             </Row>

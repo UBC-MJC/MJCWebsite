@@ -138,9 +138,12 @@ export const getScoresWithPlayers = (game: Game, gameVariant: GameVariant) => {
     })();
 
     return scores.map((score, idx) => {
+        const player = game.players[idx];
+
         return {
-            username: game.players[idx].username,
+            username: player.username,
             score: score,
+            eloDelta: game.eloDeltas[player.id],
         };
     });
 };

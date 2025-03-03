@@ -400,17 +400,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 players={players}
             />
             <Footer game={game} gameVariant={"jp"} riichiList={riichiList} />
-            <Container fluid className={"my-4 bottom-0 bg-body position-sticky"}>
-                <Row className={"row-cols-4 align-items-end"}>
-                    {getScoresWithPlayers(game, "jp").map(({ username, score }, idx) => (
-                        <Col key={idx} className={"my-2"}>
-                            <div>{username}</div>
-                            <h2 className="my-0">{score - Number(riichiList.includes(idx)) * 1000}</h2>
-                            <div>{game.eloDeltas[game.players[idx].id].toFixed(1)}</div>
-                        </Col>
-                    ))}
-                </Row>
-            </Container>
         </Container>
     );
 };
