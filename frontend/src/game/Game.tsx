@@ -18,7 +18,6 @@ import { Col, Container, Row } from "react-bootstrap";
 import { gameRoundString, isGameEnd } from "./common/constants";
 import { baseUrl } from "../api/APIUtils";
 import { Button } from "@mui/material";
-import {Footer} from "./common/Footer";
 
 const Game: FC = () => {
     const { id, variant } = useParams();
@@ -195,7 +194,7 @@ const Game: FC = () => {
         );
     }
     return (
-        <Container className="min-vh-100 d-flex flex-column">
+        <div className="min-vh-100 d-flex flex-column" style={{paddingBottom: "175px"}}>
             <h1 className="mt-2">
                 {getGameVariantString(variant, game.type)} Game
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game, variant)}
@@ -239,8 +238,7 @@ const Game: FC = () => {
                     </Row>
                 </Container>
             )}
-            <Footer game={game} gameVariant={variant} riichiList={[]} />
-        </Container>
+        </div>
     );
 };
 

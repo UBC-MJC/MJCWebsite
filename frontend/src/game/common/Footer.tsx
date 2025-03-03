@@ -9,7 +9,7 @@ export const Footer: FC<{
     riichiList: number[];
 }> = ({ game, gameVariant, riichiList }) => {
     return (
-        <Container className={"position-fixed bottom-0 w-100 bg-light mt-auto"}>
+        <Container className={"position-fixed bottom-0 left-0 w-100 mt-auto bg-body z-2"} style={{transform: "translate(calc(50vw - 50%))"}}>
             {gameVariant === "jp" && (
                 <Row className={"mt-2"}>
                     <h5 className={"my-0"}>
