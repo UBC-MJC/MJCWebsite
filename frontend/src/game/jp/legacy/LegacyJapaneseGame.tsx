@@ -404,7 +404,9 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 <Row className={"row-cols-4 align-items-end"}>
                     {getScoresWithPlayers(game, "jp").map(({ username, score }, idx) => (
                         <Col key={idx} className={"my-2"}>
+                            <div>{username}</div>
                             <h2 className="my-0">{score - Number(riichiList.includes(idx)) * 1000}</h2>
+                            <div>{game.eloDeltas[game.players[idx].id].toFixed(1)}</div>
                         </Col>
                     ))}
                 </Row>
