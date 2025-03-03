@@ -399,7 +399,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
                 players={players}
             />
-            <Container fluid className={"my-4 bottom-0 bg-body"}>
+            <Container fluid className={"my-4 position-sticky bottom-0 bg-body"}>
                 <Row className={"row-cols-4 align-items-end"}>
                     {getScoresWithPlayers(game, "jp").map(({ username, score, eloDelta }, idx) => (
                         <Col key={idx} className={"my-2"}>
