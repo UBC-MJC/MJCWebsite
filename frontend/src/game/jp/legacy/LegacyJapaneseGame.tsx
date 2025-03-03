@@ -136,6 +136,11 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 break;
         }
         setRoundActions(newRoundActions);
+
+        if (type !== JapaneseTransactionType.DECK_OUT && type !== JapaneseTransactionType.NAGASHI_MANGAN) {
+            setTenpaiList([]);
+        }
+
         setTransactionType(type);
         if (!showPointInput(transactionType)) {
             setHand(JP_UNDEFINED_HAND);
