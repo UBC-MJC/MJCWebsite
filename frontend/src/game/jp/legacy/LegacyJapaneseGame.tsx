@@ -402,7 +402,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 />
                 {/*<Footer game={game} gameVariant={"jp"} riichiList={riichiList} />*/}
             </Container>
-            <Footer game={game} gameVariant={"jp"} riichiList={riichiList} />
+            {/*<Footer game={game} gameVariant={"jp"} riichiList={riichiList} />*/}
             {/*<Container className={"my-4 position-sticky bottom-0 bg-body"}>*/}
             {/*    <Row className={"row-cols-4 align-items-end"}>*/}
             {/*        {getScoresWithPlayers(game, "jp").map(({ username, score, eloDelta }, idx) => (*/}

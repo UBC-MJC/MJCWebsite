@@ -18,6 +18,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import { gameRoundString, isGameEnd } from "./common/constants";
 import { baseUrl } from "../api/APIUtils";
 import { Button } from "@mui/material";
+import {Footer} from "./common/Footer";
 
 const Game: FC = () => {
     const { id, variant } = useParams();
@@ -238,6 +239,12 @@ const Game: FC = () => {
                     </Row>
                 </Container>
             )}
+            {/*<Container className={"my-4 position-fixed bottom-0 bg-body"}>*/}
+            {/*    TESTINGTESTINGTESTINGTESTING*/}
+            {/*    TESTINGTESTINGTESTINGTESTING*/}
+            {/*    TESTINGTESTINGTESTINGTESTING*/}
+            {/*</Container>*/}
+            <Footer game={game} gameVariant={variant} riichiList={[]} />
         </>
     );
 };
