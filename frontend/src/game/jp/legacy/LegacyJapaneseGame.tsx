@@ -392,14 +392,16 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     }
 
     return (
-        <Container>
-            {enableRecording && !gameOver && getRecordingInterface()}
-            <LegacyJapaneseGameTable
-                rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
-                players={players}
-            />
+        <>
+            <Container>
+                {enableRecording && !gameOver && getRecordingInterface()}
+                <LegacyJapaneseGameTable
+                    rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
+                    players={players}
+                />
+            </Container>
             <Footer game={game} gameVariant={"jp"} riichiList={riichiList} />
-        </Container>
+        </>
     );
 };
 
