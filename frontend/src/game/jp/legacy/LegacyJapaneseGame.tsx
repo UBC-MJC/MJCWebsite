@@ -400,6 +400,22 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 players={players}
             />
             <Footer game={game} gameVariant={"jp"} riichiList={riichiList} />
+            <Container fluid className={"my-4 position-sticky bottom-0 bg-body"}>
+                <Row className={"row-cols-4 align-items-end"}>
+                    {getScoresWithPlayers(game, "jp").map(({ username, score, eloDelta }, idx) => (
+                        <Col key={idx} className={"my-2"}>
+                            <div>{username}</div>
+                            <div>
+                                {riichiList.includes(idx) && (
+                                    <img src={riichiStick} className={"w-75"} />
+                                )}
+                            </div>
+                            <h2 className="my-0">{score - Number(riichiList.includes(idx)) * 1000}</h2>
+                            <div>{eloDelta}</div>
+                        </Col>
+                    ))}
+                </Row>
+            </Container>
         </Container>
     );
 };
