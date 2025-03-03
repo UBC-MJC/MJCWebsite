@@ -9,16 +9,16 @@ export const Footer: FC<{
     riichiList: number[];
 }> = ({ game, gameVariant, riichiList }) => {
     return (
-        <Container fluid className={"my-4 position-sticky bottom-0 bg-body"}>
+        <Container className={"position-fixed bottom-0 w-100 bg-light mt-auto"}>
             {gameVariant === "jp" && (
-                <Row className={"my-1"}>
-                    <h4 className="my-2">
+                <Row className={"mt-2"}>
+                    <h5 className={"my-0"}>
                         Riichi sticks:{" "}
                         {getRiichiStickCount(game.rounds as JapaneseRound[], riichiList)}
-                    </h4>
+                    </h5>
                 </Row>
             )}
-            <Row className={"row-cols-4 align-items-end"}>
+            <Row className={"row-cols-4 align-items-end mb-2"}>
                 {getScoresWithPlayers(game, gameVariant).map(({ username, score, eloDelta }, idx) => (
                     <Col key={idx} className={"my-2"}>
                         <div>{username}</div>

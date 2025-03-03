@@ -195,7 +195,7 @@ const Game: FC = () => {
         );
     }
     return (
-        <>
+        <Container className="min-vh-100 d-flex flex-column">
             <h1 className="mt-2">
                 {getGameVariantString(variant, game.type)} Game
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game, variant)}
@@ -239,13 +239,8 @@ const Game: FC = () => {
                     </Row>
                 </Container>
             )}
-            {/*<Container className={"my-4 position-fixed bottom-0 bg-body"}>*/}
-            {/*    TESTINGTESTINGTESTINGTESTING*/}
-            {/*    TESTINGTESTINGTESTINGTESTING*/}
-            {/*    TESTINGTESTINGTESTINGTESTING*/}
-            {/*</Container>*/}
             <Footer game={game} gameVariant={variant} riichiList={[]} />
-        </>
+        </Container>
     );
 };
 
