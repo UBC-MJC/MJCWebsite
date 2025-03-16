@@ -2,6 +2,7 @@ import React, { FC, useContext, useState } from "react";
 import { Container, Button, Box, TextField, Typography, Autocomplete } from "@mui/material";
 import { AuthContext } from "../common/AuthContext";
 import { setChomboAPI } from "../api/GameAPI";
+import { usePlayers } from "../hooks/GameHooks";
 
 const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Riichi", value: "jp" },
@@ -19,10 +20,25 @@ const AdminChombo: FC = () => {
         return <>No player logged in</>;
     }
 
+    const playersResult = usePlayers(gameVariant, "CASUAL");
+    if (!playersResult.isSuccess) {
+        return <>Loading ...</>;
+    }
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await setChomboAPI(player.authToken, gameId, gameVariant, playerId, chomboCount);
+            const response = await setChomboAPI(
+                player.authToken,
+                gameId,
+                gameVariant,
+                playerId,
+                chomboCount,
+            );
+            if (response.data.count === 0) {
+                alert("No chombo count updated!");
+                return;
+            }
             alert("Chombo count updated successfully!");
         } catch (error) {
             console.error("Failed to update chombo count:", error);
@@ -34,19 +50,8 @@ const AdminChombo: FC = () => {
         <Container maxWidth="lg" className="my-4">
             <form onSubmit={handleSubmit}>
                 <Box mb={2}>
-                    <TextField
-                        label="Game ID"
-                        type="number"
-                        value={gameId}
-                        onChange={(e) => setGameId(Number(e.target.value))}
-                        fullWidth
-                    />
-                </Box>
-                <Box mb={2}>
                     <Autocomplete
-                        isOptionEqualToValue={(option, value) =>
-                            option.label === value.label
-                        }
+                        isOptionEqualToValue={(option, value) => option.label === value.label}
                         options={gameVariants}
                         defaultValue={gameVariants[0]}
                         onChange={(event, value) => setGameVariant(value!.value)}
@@ -57,10 +62,22 @@ const AdminChombo: FC = () => {
                 </Box>
                 <Box mb={2}>
                     <TextField
-                        label="Player ID"
-                        value={playerId}
-                        onChange={(e) => setPlayerId(e.target.value)}
+                        label="Game ID"
+                        type="number"
+                        value={gameId}
+                        onChange={(e) => setGameId(Number(e.target.value))}
                         fullWidth
+                    />
+                </Box>
+                <Box mb={2}>
+                    <Autocomplete
+                        isOptionEqualToValue={(option, value) => option.label === value.label}
+                        options={playersResult.data.map((player) => ({
+                            label: player.username,
+                            value: player.playerId,
+                        }))}
+                        onChange={(event, value) => setPlayerId(value!.value)}
+                        renderInput={(params) => <TextField {...params} placeholder="Username" />}
                     />
                 </Box>
                 <Box mb={2}>
@@ -78,5 +95,5 @@ const AdminChombo: FC = () => {
             </form>
         </Container>
     );
-}
+};
 export default AdminChombo;

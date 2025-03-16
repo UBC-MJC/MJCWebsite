@@ -1,5 +1,12 @@
 import React, { FC, useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } from "@mui/material";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Button,
+} from "@mui/material";
 
 type ModifySeasonModalProps = {
     show: boolean;

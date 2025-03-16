@@ -146,7 +146,6 @@ export function findHeadbumpWinner(transactions: JapaneseTransaction[]) {
     return getClosestWinner(loser, winners);
 }
 
-
 function getClosestWinner(loserLocalPos: number, winners: Set<number>) {
     let [closestWinnerIndex] = winners;
     for (const winnerIndex of winners) {
