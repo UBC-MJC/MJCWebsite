@@ -126,7 +126,7 @@ function reduceScoreDeltas(transactions: HongKongTransaction[]): number[] {
 }
 
 export function generateOverallScoreDelta(concludedGame: HongKongRound) {
-    return addScoreDeltas(reduceScoreDeltas(concludedGame.transactions), getEmptyScoreDelta());
+    return reduceScoreDeltas(concludedGame.transactions);
 }
 
 const generateHongKongCurrentScore = (rounds: HongKongRound[]) => {

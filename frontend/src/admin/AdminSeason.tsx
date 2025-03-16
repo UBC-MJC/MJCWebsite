@@ -1,6 +1,20 @@
 import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
-import { Table as BTable, Form, Card, Container, Col } from "react-bootstrap";
+import {
+    Table as MuiTable,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Card,
+    CardContent,
+    CardHeader,
+    Container,
+    Grid,
+    Button,
+} from "@mui/material";
 import {
     CellContext,
     ColumnDef,
@@ -20,7 +34,6 @@ import {
     updateSeasonMutation,
     useSeasons,
 } from "../hooks/AdminHooks";
-import { Button } from "@mui/material";
 
 declare module "@tanstack/table-core" {
     interface TableMeta<TData extends RowData> {
@@ -46,7 +59,7 @@ const EditableStringCell = (cellContext: CellContext<Season, any>) => {
     };
 
     if (row.id === table.options.meta?.seasonsEditableRowId) {
-        return <Form.Control defaultValue={initialValue} onChange={onChange} />;
+        return <TextField defaultValue={initialValue} onChange={onChange} />;
     }
     return <>{initialValue}</>;
 };
@@ -125,7 +138,7 @@ const AdminSeason: FC = () => {
         setEditableRowId(undefined);
         setEditedSeason(undefined);
     };
-    const seasons = data ?? []; // WTF is this syntax???
+    const seasons = data ?? [];
 
     const table: Table<Season> = useReactTable({
         data: seasons,
@@ -152,8 +165,8 @@ const AdminSeason: FC = () => {
             const currentSeason = seasons[0];
             return (
                 <>
-                    <Card.Body>
-                        <Card.Title>{currentSeason.name}</Card.Title>
+                    <CardContent>
+                        <h3>{currentSeason.name}</h3>
                         <div className="mb-2">
                             Start Date: {new Date(currentSeason.startDate).toDateString()}
                         </div>
@@ -163,7 +176,7 @@ const AdminSeason: FC = () => {
                         <Button variant="contained" onClick={handleUpdateSeasonModalShow}>
                             Edit
                         </Button>
-                    </Card.Body>
+                    </CardContent>
                     <ModifySeasonModal
                         show={showUpdateSeasonModal}
                         season={currentSeason}
@@ -176,12 +189,12 @@ const AdminSeason: FC = () => {
         }
         return (
             <>
-                <Card.Body>
+                <CardContent>
                     <p>No current season</p>
                     <Button variant="contained" onClick={handleCreateSeasonModalShow}>
                         Create Season
                     </Button>
-                </Card.Body>
+                </CardContent>
                 <ModifySeasonModal
                     show={showCreateSeasonModal}
                     season={getDefaultSeason()}
@@ -195,49 +208,47 @@ const AdminSeason: FC = () => {
 
     return (
         <>
-            <Container fluid>
-                <Col xs sm={6} className="mx-auto">
-                    <Card border="dark" className="my-4">
-                        <Card.Header as="h3">Current Season</Card.Header>
-                        {getCurrentSeasonPanel()}
-                    </Card>
-                </Col>
+            <Container>
+                <Grid container justifyContent="center">
+                    <Grid item xs={12} sm={6}>
+                        <Card variant="outlined" className="my-4">
+                            <CardHeader title="Current Season" />
+                            {getCurrentSeasonPanel()}
+                        </Card>
+                    </Grid>
+                </Grid>
             </Container>
             <div>
                 <h2 className="mt-5">All Seasons</h2>
-                <BTable
-                    striped
-                    borderless
-                    hover
-                    responsive
-                    className="text-start text-nowrap align-middle"
-                >
-                    <thead>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <th key={header.id}>
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext(),
-                                        )}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody>
-                        {table.getRowModel().rows.map((row) => (
-                            <tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                    <td key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </BTable>
+                <TableContainer>
+                    <MuiTable>
+                        <TableHead>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <TableCell key={header.id}>
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext(),
+                                            )}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))}
+                        </TableHead>
+                        <TableBody>
+                            {table.getRowModel().rows.map((row) => (
+                                <TableRow key={row.id}>
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </MuiTable>
+                </TableContainer>
             </div>
         </>
     );

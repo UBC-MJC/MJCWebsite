@@ -203,10 +203,7 @@ function generateTenpaiScoreDeltas(tenpais: number[]) {
 }
 
 export function generateOverallScoreDelta(concludedRound: JapaneseRound) {
-    const rawScoreDeltas = addScoreDeltas(
-        reduceScoreDeltas(concludedRound.transactions),
-        getEmptyScoreDelta(),
-    );
+    const rawScoreDeltas = reduceScoreDeltas(concludedRound.transactions);
     for (const id of concludedRound.riichis) {
         rawScoreDeltas[id] -= RIICHI_STICK_VALUE;
     }

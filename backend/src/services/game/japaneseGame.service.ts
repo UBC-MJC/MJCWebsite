@@ -351,10 +351,7 @@ function getClosestWinner(loserLocalPos: number, winners: Set<number>) {
 }
 
 export function generateOverallScoreDelta(concludedRound: ConcludedJapaneseRoundT) {
-    const rawScoreDeltas = addScoreDeltas(
-        reduceScoreDeltas(concludedRound.transactions),
-        getEmptyScoreDelta(),
-    );
+    const rawScoreDeltas = reduceScoreDeltas(concludedRound.transactions);
     for (const id of concludedRound.riichis) {
         rawScoreDeltas[id] -= RIICHI_STICK_VALUE;
     }

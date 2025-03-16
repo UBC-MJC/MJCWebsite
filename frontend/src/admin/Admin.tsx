@@ -1,20 +1,32 @@
 import React, { FC } from "react";
 import { withPlayerCondition } from "../common/withPlayerCondition";
-import { Container, Tabs, Tab } from "react-bootstrap";
+import { Container, Tabs, Tab, Box } from "@mui/material";
 import AdminPlayers from "./AdminPlayers";
 import AdminSeason from "./AdminSeason";
-
+import AdminChombo from "./AdminChombo";
 const AdminComponent: FC = () => {
+    const [value, setValue] = React.useState(0);
+
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setValue(newValue);
+    };
+
     return (
-        <Container fluid="lg" className="my-4">
-            <Tabs variant="tabs" defaultActiveKey="players">
-                <Tab eventKey="players" title="Players">
-                    <AdminPlayers />
-                </Tab>
-                <Tab eventKey="season" title="Season">
-                    <AdminSeason />
-                </Tab>
+        <Container maxWidth="lg" className="my-4">
+            <Tabs value={value} onChange={handleChange} variant="fullWidth">
+                <Tab label="Players" />
+                <Tab label="Season" />
+                <Tab label="Chombo" />
             </Tabs>
+            <Box hidden={value !== 0}>
+                <AdminPlayers />
+            </Box>
+            <Box hidden={value !== 1}>
+                <AdminSeason />
+            </Box>
+            <Box hidden={value !== 2}>
+                <AdminChombo />
+            </Box>
         </Container>
     );
 };
