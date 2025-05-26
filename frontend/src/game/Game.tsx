@@ -194,8 +194,8 @@ const Game: FC = () => {
         );
     }
     return (
-        <div className="min-vh-100 d-flex flex-column" style={{ paddingBottom: "175px" }}>
-            <h1 className="mt-2">
+        <div  }}>
+            <h1 >
                 {getGameVariantString(variant, game.type)} Game
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game, variant)}
             </h1>
@@ -207,7 +207,7 @@ const Game: FC = () => {
                             <Button
                                 variant="contained"
                                 color="error"
-                                className="mb-2 w-100"
+                                
                                 disabled={game.rounds.length == 0}
                                 onClick={() => handleDeleteRound()}
                             >
@@ -218,7 +218,7 @@ const Game: FC = () => {
                             <Button
                                 variant="contained"
                                 color="error"
-                                className="mb-2 w-100"
+                                
                                 onClick={() => handleDeleteGame()}
                             >
                                 Delete Game
@@ -228,7 +228,7 @@ const Game: FC = () => {
                             <Button
                                 variant="contained"
                                 color="success"
-                                className="mb-2 w-100"
+                                
                                 disabled={!isGameEnd(game, variant)}
                                 onClick={() => handleSubmitGame()}
                             >

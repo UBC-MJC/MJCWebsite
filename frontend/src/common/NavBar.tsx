@@ -10,11 +10,11 @@ const NavBar: FC = () => {
         <Navbar bg="info" expand="md">
             <Container fluid>
                 <Navbar.Brand as={Link} to="/">
-                    <h3 className="m-0">UBC Mahjong Club</h3>
+                    <h3 >UBC Mahjong Club</h3>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto">
+                    <Nav >
                         <NavDropdown title="Leaderboard" id="leaderboard-nav-dropdown">
                             <NavDropdown.Item as={Link} to="/leaderboard/jp">
                                 {getGameVariantString("jp")}

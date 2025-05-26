@@ -28,7 +28,7 @@ const PlayerButtonRow = <T extends string>({
                         whiteSpace: "nowrap",
                         // textOverflow: "ellipsis"
                     }}
-                    className="mx-1 my-1"
+                    
                     value={player.id}
                     selected={labelPlayerIds.includes(idx)}
                     onChange={() => onChange(idx, label)}

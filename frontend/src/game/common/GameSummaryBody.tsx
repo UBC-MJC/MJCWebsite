@@ -8,8 +8,8 @@ const GameSummaryBody: FC<{ game: Game; gameVariant: GameVariant }> = ({ game, g
             {getScoresWithPlayers(game, gameVariant)
                 .sort((a, b) => b.score - a.score)
                 .map((score, idx) => (
-                    <Col key={idx} xs={6} className="px-3 py-1">
-                        <div className="d-flex justify-content-between">
+                    <Col key={idx} xs={6} >
+                        <div >
                             <div>
                                 {mapIndextoPlace(idx)} - {score.username}
                             </div>

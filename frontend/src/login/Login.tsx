@@ -41,11 +41,11 @@ const Login: React.FC = () => {
     };
 
     return (
-        <Container className="my-5 d-flex flex-column" style={{ maxWidth: "540px" }}>
+        <Container>
             <Card body>
                 <h2>UBC Mahjong Club Login</h2>
                 <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicUsername" className="my-4">
+                    <Form.Group controlId="formBasicUsername" >
                         <Form.Control
                             required
                             placeholder="Username or Email"
@@ -58,7 +58,7 @@ const Login: React.FC = () => {
                         </Form.Control.Feedback>
                     </Form.Group>
 
-                    <Form.Group controlId="formBasicPassword" className="my-4">
+                    <Form.Group controlId="formBasicPassword" >
                         <Form.Control
                             required
                             type="password"
@@ -72,13 +72,13 @@ const Login: React.FC = () => {
                         </Form.Control.Feedback>
                     </Form.Group>
 
-                    <div className="d-grid my-4">
+                    <div >
                         <Button variant="contained" type="submit">
                             Login
                         </Button>
                     </div>
 
-                    <div className="d-flex justify-content-between mx-2">
+                    <div >
                         <p>
                             Not a member? <a href="/register">Register</a>
                         </p>
@@ -86,7 +86,7 @@ const Login: React.FC = () => {
                     </div>
                 </Form>
             </Card>
-            <Button className="my-4 mx-auto w-25" href="/">
+            <Button >
                 Back
             </Button>
         </Container>

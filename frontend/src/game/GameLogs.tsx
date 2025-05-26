@@ -73,7 +73,7 @@ const GameLogs: FC = () => {
         const numPages = Math.ceil(games.length / MAX_GAMES_PER_PAGE);
 
         return (
-            <Pagination className="justify-content-center" size="lg">
+            <Pagination >
                 <Pagination.Prev
                     disabled={pagination === 1}
                     onClick={() => setPagination(pagination - 1)}
@@ -107,11 +107,11 @@ const GameLogs: FC = () => {
     return (
         <>
             <Container>
-                <h1 className="my-4">Game Logs</h1>
+                <h1 >Game Logs</h1>
                 <Row>
-                    <Col xs={12} lg={4} className="mb-4">
+                    <Col xs={12} lg={4} >
                         <h3>Game Variant</h3>
-                        <div className="text-start">
+                        <div >
                             <Autocomplete
                                 isOptionEqualToValue={(option, value) =>
                                     option.label === value.label
@@ -125,9 +125,9 @@ const GameLogs: FC = () => {
                             />
                         </div>
                     </Col>
-                    <Col xs={12} lg={4} className="mb-4">
+                    <Col xs={12} lg={4} >
                         <h3>Season</h3>
-                        <div className="text-start">
+                        <div >
                             <Autocomplete
                                 isOptionEqualToValue={(option, value) =>
                                     option.label === value.label
@@ -140,9 +140,9 @@ const GameLogs: FC = () => {
                             />
                         </div>
                     </Col>
-                    <Col xs={12} lg={4} className="mb-4">
+                    <Col xs={12} lg={4} >
                         <h3>Players</h3>
-                        <div className="text-start">
+                        <div >
                             <Autocomplete
                                 isOptionEqualToValue={(option, value) =>
                                     option.label === value.label
@@ -164,7 +164,7 @@ const GameLogs: FC = () => {
                     </Col>
                 </Row>
                 <Button
-                    className="my-2 mx-auto"
+                    
                     variant={"contained"}
                     disabled={disableQueryButton()}
                     onClick={getGames}
@@ -175,8 +175,8 @@ const GameLogs: FC = () => {
             <Container>
                 <Row>
                     {getPaginatedGames().map((game, idx) => (
-                        <Col key={idx} className="text-center my-2" xs={12}>
-                            <Card className="game-card" onClick={() => navigateToGame(game.id)}>
+                        <Col key={idx}  xs={12}>
+                            <Card  onClick={() => navigateToGame(game.id)}>
                                 <Card.Body>
                                     <GameSummaryBody game={game} gameVariant={queryGameVariant} />
                                 </Card.Body>
@@ -184,7 +184,7 @@ const GameLogs: FC = () => {
                         </Col>
                     ))}
                 </Row>
-                <Row className="my-2">{getPagination()}</Row>
+                <Row >{getPagination()}</Row>
             </Container>
         </>
     );

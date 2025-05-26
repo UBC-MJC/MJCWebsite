@@ -10,7 +10,7 @@ const IconButton: FC<IconButtonProps> = ({ children, disabled = false, onClick }
     return (
         <Button
             // variant="link"
-            className="d-inline-flex align-items-center icon-button"
+            
             disabled={disabled}
             onClick={onClick}
         >

@@ -20,7 +20,7 @@ import { Button } from "@mui/material";
 
 const booleanToCheckmark = (value: boolean) => {
     return value ? (
-        <div className="d-flex align-items-center justify-content-center">
+        <div >
             <FaCheck />
         </div>
     ) : (
@@ -54,7 +54,7 @@ const EditableBooleanCell = (cellContext: CellContext<Player, any>) => {
 
     if (row.id === table.options.meta?.playersEditableRowId) {
         return (
-            <Form.Check className="text-center" defaultChecked={initialValue} onChange={onChange} />
+            <Form.Check  defaultChecked={initialValue} onChange={onChange} />
         );
     }
     return booleanToCheckmark(initialValue);
@@ -74,15 +74,15 @@ const playerColumns: ColumnDef<Player, any>[] = [
         header: "Email",
     }),
     columnHelper.accessor("admin", {
-        header: () => <div className="text-center">Admin</div>,
+        header: () => <div >Admin</div>,
         cell: EditableBooleanCell,
     }),
     columnHelper.accessor("japaneseQualified", {
-        header: () => <div className="text-center">JP Ranked</div>,
+        header: () => <div >JP Ranked</div>,
         cell: EditableBooleanCell,
     }),
     columnHelper.accessor("hongKongQualified", {
-        header: () => <div className="text-center">HK Ranked</div>,
+        header: () => <div >HK Ranked</div>,
         cell: EditableBooleanCell,
     }),
     columnHelper.display({
@@ -176,7 +176,7 @@ const AdminPlayers: FC = () => {
                 borderless
                 hover
                 responsive
-                className="my-4 text-start text-nowrap align-middle"
+                
             >
                 <thead>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -204,7 +204,7 @@ const AdminPlayers: FC = () => {
                     ))}
                 </tbody>
             </BTable>
-            <div className="my-4">
+            <div >
                 <Button variant="outlined" onClick={makeTestAdmins}>
                     Make Test Admins
                 </Button>
@@ -254,7 +254,7 @@ const PlayerRowActions: FC<PlayerRowActionsProps> = ({ context }) => {
     };
 
     return (
-        <div className="d-flex flex-row-reverse">
+        <div >
             {rowIsEditable ? (
                 <>
                     <IconButton onClick={() => exitRow()}>

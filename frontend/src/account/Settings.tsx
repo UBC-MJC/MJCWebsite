@@ -50,9 +50,9 @@ const Settings: FC = () => {
     const colorMode = React.useContext(ColorModeContext);
 
     return (
-        <Container fluid className={"my-4"}>
+        <Container>
             <h1>Settings</h1>
-            <Col xs sm={3} className="mx-auto">
+            <Col xs sm={3} >
                 <FormControlLabel
                     label="Legacy Display Game"
                     defaultChecked={settings.legacyDisplayGame}
@@ -68,7 +68,7 @@ const Settings: FC = () => {
                 <Button onClick={() => colorMode.toggleColorMode("dark")}>Dark</Button>
                 <Button onClick={() => colorMode.toggleColorMode("system")}>System</Button>
             </ButtonGroup>
-            <Row className="pt-2 d-flex justify-content-center">
+            <Row >
                 <Button
                     onClick={() => setShowUpdateUsernameModal(true)}
                     variant="contained"
@@ -147,7 +147,7 @@ const UpdateUsernameModal: FC<UpdateUsernameModalProps> = ({ show, handleClose, 
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button className={"mx-2"} variant="contained" onClick={onClose}>
+                    <Button onClick={onClose}>
                         Close
                     </Button>
                     <Button variant="contained" type="submit">

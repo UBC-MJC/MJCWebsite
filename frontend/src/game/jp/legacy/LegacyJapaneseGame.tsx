@@ -285,7 +285,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     const getRecordingInterface = () => {
         return (
             <>
-                <Col xs sm={3} className="mx-auto">
+                <Col xs sm={3} >
                     <FormControlLabel
                         control={
                             <Switch onChange={(e, checked) => setMultipleHandInputMode(checked)} />
@@ -293,12 +293,12 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         label="Multiple Transactions"
                     />
                 </Col>
-                <Row className="gx-2">
+                <Row >
                     {getActions().map((button, idx) => (
                         <Col key={idx} xs={4}>
                             <ToggleButton
                                 key={idx}
-                                className="my-1 w-100"
+                                
                                 value={button.value}
                                 id={button.name}
                                 selected={transactionType === button.value}
@@ -309,7 +309,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         </Col>
                     ))}
                 </Row>
-                <Row className="my-4">
+                <Row >
                     <Col>
                         <PlayerButtonRow
                             players={players}
@@ -320,7 +320,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     </Col>
                 </Row>
                 {getJapaneseLabels().map(([label, labelPlayerIds]) => (
-                    <Row key={label} className="my-4">
+                    <Row key={label} >
                         <Col>
                             <PlayerButtonRow
                                 players={players}
@@ -345,7 +345,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 <Button
                     color="success"
                     variant="contained"
-                    className="my-4 w-50"
+                    
                     disabled={gameOver}
                     onClick={submitSingleTransactionRound}
                 >
@@ -355,11 +355,11 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         }
         return (
             <>
-                <Row className={"gx-1"}>
+                <Row>
                     <Col>
                         <Button
                             variant="contained"
-                            className="my-4 w-100"
+                            
                             disabled={gameOver}
                             onClick={addTransaction}
                         >
@@ -370,7 +370,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         <Button
                             color="warning"
                             variant="contained"
-                            className="my-4 w-100"
+                            
                             disabled={gameOver || transactions.length === 0}
                             onClick={deleteLastTransaction}
                         >
@@ -384,7 +384,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 <Button
                     color="success"
                     variant="contained"
-                    className="my-4 w-50"
+                    
                     disabled={gameOver || transactions.length === 0}
                     onClick={submitAllTransactionRound}
                 >

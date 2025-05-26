@@ -1,7 +1,7 @@
 import { FC } from "react";
 export const Resources: FC = () => {
     return (
-        <div className={"my-4"}>
+        <div >
             <h1>Study resources</h1>
             <h2>Riichi Mahjong</h2>
             <p>

@@ -30,12 +30,12 @@ export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
     }
     return (
         <>
-            <h1 className="my-4">Live {getGameVariantString(gameVariant, "")} Games</h1>
+            <h1 )} Games</h1>
             <Container>
                 <Row>
                     {liveGames.map((game, idx) => (
-                        <Col key={idx} className="text-center my-2" xs={12} lg={6}>
-                            <Card className="game-card" onClick={() => navigateToGame(game.id)}>
+                        <Col key={idx}  xs={12} lg={6}>
+                            <Card  onClick={() => navigateToGame(game.id)}>
                                 <Card.Header style={{ fontSize: 18 }}>
                                     {getCardHeader(game)}
                                 </Card.Header>

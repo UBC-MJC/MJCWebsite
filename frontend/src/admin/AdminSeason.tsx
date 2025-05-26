@@ -167,10 +167,10 @@ const AdminSeason: FC = () => {
                 <>
                     <CardContent>
                         <h3>{currentSeason.name}</h3>
-                        <div className="mb-2">
+                        <div >
                             Start Date: {new Date(currentSeason.startDate).toDateString()}
                         </div>
-                        <div className="mb-2">
+                        <div >
                             End Date: {new Date(currentSeason.endDate).toDateString()}
                         </div>
                         <Button variant="contained" onClick={handleUpdateSeasonModalShow}>
@@ -211,7 +211,7 @@ const AdminSeason: FC = () => {
             <Container>
                 <Grid container justifyContent="center">
                     <Grid item xs={12} sm={6}>
-                        <Card variant="outlined" className="my-4">
+                        <Card variant="outlined" >
                             <CardHeader title="Current Season" />
                             {getCurrentSeasonPanel()}
                         </Card>
@@ -219,7 +219,7 @@ const AdminSeason: FC = () => {
                 </Grid>
             </Container>
             <div>
-                <h2 className="mt-5">All Seasons</h2>
+                <h2 >All Seasons</h2>
                 <TableContainer>
                     <MuiTable>
                         <TableHead>
@@ -280,7 +280,7 @@ const SeasonRowActions: FC<SeasonRowActionsProps> = ({ context }) => {
     };
 
     return (
-        <div className="d-flex flex-row-reverse">
+        <div >
             {rowIsEditable ? (
                 <>
                     <IconButton onClick={() => exitRow()}>

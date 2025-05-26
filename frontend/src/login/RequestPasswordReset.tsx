@@ -32,11 +32,11 @@ const RequestPasswordReset: FC = () => {
     };
 
     return (
-        <Container className="my-5 d-flex flex-column" style={{ maxWidth: "540px" }}>
+        <Container >
             <Card body>
                 <h2>Request Password Reset</h2>
                 <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicUsername" className="my-4">
+                    <Form.Group controlId="formBasicUsername" >
                         <Form.Control
                             required
                             placeholder="Username Or Email"
@@ -45,14 +45,14 @@ const RequestPasswordReset: FC = () => {
                         />
                     </Form.Group>
 
-                    <div className="d-grid my-4">
+                    <div >
                         <Button variant="contained" type="submit" disabled={isWaiting}>
                             Request Password Reset
                         </Button>
                     </div>
                 </Form>
             </Card>
-            <Button className="my-4 mx-auto w-25" href="/login">
+            <Button >
                 Back
             </Button>
         </Container>

@@ -11,7 +11,7 @@ type ListToggleButtonProps = {
 //         <Col key={idx} xs={4}>
 //             <ToggleButton
 //                 key={idx}
-//                 className="my-1 w-100"
+//                 
 //                 value={button.value}
 //                 id={button.name}
 //                 selected={transactionType === button.value}

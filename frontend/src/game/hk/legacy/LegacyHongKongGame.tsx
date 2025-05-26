@@ -122,12 +122,12 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
     const getRecordingInterface = () => {
         return (
             <>
-                <Row className="gx-2">
+                <Row >
                     {HK_TRANSACTION_TYPE_BUTTONS.map((button, idx) => (
                         <Col key={idx} xs={4}>
                             <ToggleButton
                                 key={idx}
-                                className="my-1 w-100"
+                                
                                 value={button.value}
                                 id={button.name}
                                 selected={transactionType === button.value}
@@ -139,7 +139,7 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                     ))}
                 </Row>
                 {getHongKongLabels().map(([label, labelPlayerIds]) => (
-                    <Row key={label} className="my-4">
+                    <Row key={label} >
                         <Col>
                             <PlayerButtonRow
                                 players={players}
@@ -156,7 +156,7 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                 <Button
                     color="success"
                     variant="contained"
-                    className="mt-4 w-50"
+                    
                     disabled={gameOver}
                     onClick={submitRound}
                 >

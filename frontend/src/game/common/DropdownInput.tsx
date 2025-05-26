@@ -11,11 +11,11 @@ type DropdownInputProps = {
 const DropdownInput: FC<DropdownInputProps> = ({ label, data, onChange }) => {
     const options = transformToSelectOptions(data);
     return (
-        <Col style={{ maxWidth: "120px", minWidth: "15%" }} className={"mx-2"}>
+        <Col>
             <Row>
                 <h6>{label}:</h6>
             </Row>
-            <Row className="text-start">
+            <Row >
                 <Autocomplete
                     isOptionEqualToValue={(option, value) => option.label === value.label}
                     size={"small"}

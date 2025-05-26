@@ -56,11 +56,11 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
         });
     return (
         <Container>
-            <h1 className="my-4">{title}</h1>
+            <h1 >{title}</h1>
             <Row>
-                <Col xs={12} md={6} lg={3} className="mb-4">
+                <Col xs={12} md={6} lg={3} >
                     <h3>East</h3>
-                    <div className="text-start">
+                    <div >
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playerNames}
@@ -72,9 +72,9 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                         />
                     </div>
                 </Col>
-                <Col xs={12} md={6} lg={3} className="mb-4">
+                <Col xs={12} md={6} lg={3} >
                     <h3>South</h3>
-                    <div className="text-start">
+                    <div >
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playerNames}
@@ -86,9 +86,9 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                         />
                     </div>
                 </Col>
-                <Col xs={12} md={6} lg={3} className="mb-4">
+                <Col xs={12} md={6} lg={3} >
                     <h3>West</h3>
-                    <div className="text-start">
+                    <div >
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playerNames}
@@ -100,9 +100,9 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                         />
                     </div>
                 </Col>
-                <Col xs={12} md={6} lg={3} className="mb-4">
+                <Col xs={12} md={6} lg={3} >
                     <h3>North</h3>
-                    <div className="text-start">
+                    <div >
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playerNames}
@@ -116,7 +116,7 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                 </Col>
             </Row>
             <Button
-                className="my-4 mx-auto"
+                
                 variant="contained"
                 disabled={playerSelectMissing || notUnique}
                 onClick={createGame}

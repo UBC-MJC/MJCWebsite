@@ -12,7 +12,7 @@ const AdminComponent: FC = () => {
     };
 
     return (
-        <Container maxWidth="lg" className="my-4">
+        <Container>
             <Tabs value={value} onChange={handleChange} variant="fullWidth">
                 <Tab label="Players" />
                 <Tab label="Season" />

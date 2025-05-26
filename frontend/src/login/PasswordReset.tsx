@@ -52,7 +52,7 @@ const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
 
     if (!playerId || !token) {
         return (
-            <Container className="my-5 d-flex flex-column" style={{ maxWidth: "540px" }}>
+            <Container >
                 <Card body>
                     <h2>Invalid Request</h2>
                     <p>The link you have requested has been expired.</p>
@@ -62,12 +62,12 @@ const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
     }
 
     return (
-        <Container className="my-5 d-flex flex-column" style={{ maxWidth: "540px" }}>
+        <Container>
             <Card body>
                 <h2>Reset Password</h2>
                 {error && <Alert variant="danger">{error}</Alert>}
                 <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicPassword" className="my-4">
+                    <Form.Group controlId="formBasicPassword" >
                         <Form.Control
                             required
                             type="password"
@@ -77,7 +77,7 @@ const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
                         />
                     </Form.Group>
 
-                    <Form.Group controlId="formBasicConfirmPassword" className="my-4">
+                    <Form.Group controlId="formBasicConfirmPassword" >
                         <Form.Control
                             required
                             type="password"
@@ -87,7 +87,7 @@ const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
                         />
                     </Form.Group>
 
-                    <div className="d-grid my-4">
+                    <div >
                         <Button variant="contained" type="submit" disabled={isWaiting}>
                             Reset Password
                         </Button>

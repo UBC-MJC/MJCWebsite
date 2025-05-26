@@ -5,7 +5,7 @@ import { Table as BTable } from "react-bootstrap";
 function TableDisplay(props: { table: Table<any>; currentScoreRow: (string | number)[] }) {
     const { table, currentScoreRow } = props;
     return (
-        <BTable striped borderless responsive className="my-4 text-nowrap align-middle">
+        <BTable striped borderless responsive >
             <thead>
                 {table.getHeaderGroups().map((headerGroup) => (
                     <tr key={headerGroup.id}>
@@ -28,9 +28,9 @@ function TableDisplay(props: { table: Table<any>; currentScoreRow: (string | num
                     </tr>
                 ))}
 
-                <tr className="footer-row" key="current-score">
+                <tr >
                     {currentScoreRow.map((value, idx) => (
-                        <td className={idx === 0 ? "footer-label" : ""} key={idx}>
+                        <td >
                             {value}
                         </td>
                     ))}

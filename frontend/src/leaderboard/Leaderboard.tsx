@@ -12,15 +12,15 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons(setSeason);
 
     if (!seasonsSuccess) {
-        return <h5 className="my-3">Loading...</h5>;
+        return <h5 >Loading...</h5>;
     }
     const seasonsOptions = mapSeasonToOption(seasons);
     return (
-        <Container className="my-4" fluid="lg">
+        <Container>
             <h1>{getGameVariantString(gameVariant, gameType)} Leaderboard</h1>
 
-            <div className="text-start d-flex justify-content-center align-items-end">
-                <h5 className="mx-2">Season: </h5>
+            <div >
+                <h5 >Season: </h5>
                 <Autocomplete
                     isOptionEqualToValue={(option, value) => option.label === value.label}
                     options={seasonsOptions}
@@ -55,7 +55,7 @@ const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; sea
             <h5>
                 {season.name} season ends {new Date(season.endDate).toDateString()}
             </h5>
-            <Table striped responsive hover className="text-nowrap">
+            <Table striped responsive hover >
                 <thead>
                     <tr>
                         <th>#</th>

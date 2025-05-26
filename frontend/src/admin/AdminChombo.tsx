@@ -47,7 +47,7 @@ const AdminChombo: FC = () => {
     };
 
     return (
-        <Container maxWidth="lg" className="my-4">
+        <Container>
             <form onSubmit={handleSubmit}>
                 <Box mb={2}>
                     <Autocomplete

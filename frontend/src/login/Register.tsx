@@ -62,11 +62,11 @@ const Register: React.FC = () => {
     };
 
     return (
-        <Container className="my-5 d-flex flex-column" style={{ maxWidth: "600px" }}>
+        <Container >
             <Card body>
                 <h2>UBC Mahjong Club Register</h2>
                 <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicUsername" className="my-4">
+                    <Form.Group controlId="formBasicUsername" >
                         <Form.Control
                             required
                             placeholder="Username"
@@ -79,7 +79,7 @@ const Register: React.FC = () => {
                         </Form.Control.Feedback>
                     </Form.Group>
 
-                    <Row className="my-4">
+                    <Row >
                         <Form.Group as={Col} controlId="formBasicFirstName">
                             <Form.Control
                                 type="text"
@@ -106,7 +106,7 @@ const Register: React.FC = () => {
                         </Form.Group>
                     </Row>
 
-                    <Form.Group controlId="formBasicEmail" className="my-4">
+                    <Form.Group controlId="formBasicEmail" >
                         <Form.Control
                             required
                             type="email"
@@ -118,7 +118,7 @@ const Register: React.FC = () => {
                         <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
                     </Form.Group>
 
-                    <Form.Group controlId="formBasicPassword" className="my-4">
+                    <Form.Group controlId="formBasicPassword" >
                         <Form.Control
                             required
                             type="password"
@@ -132,20 +132,20 @@ const Register: React.FC = () => {
                         </Form.Control.Feedback>
                     </Form.Group>
 
-                    <div className="d-grid my-4">
+                    <div >
                         <Button variant="contained" type="submit">
                             Sign Up
                         </Button>
                     </div>
 
-                    <div className="d-flex justify-content-center mx-2">
+                    <div >
                         <p>
                             Have an account? <a href="/login">Login</a>
                         </p>
                     </div>
                 </Form>
             </Card>
-            <Button className="my-4 mx-auto w-25" href="/login">
+            <Button >
                 Back
             </Button>
         </Container>
