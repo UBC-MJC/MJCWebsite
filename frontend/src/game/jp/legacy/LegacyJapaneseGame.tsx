@@ -306,16 +306,14 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         </ToggleButton>
                     ))}
                 </Stack>
-                <Stack direction="row" spacing={2}>
-                    <PlayerButtonRow
-                        players={players}
-                        label={"RIICHI"}
-                        labelPlayerIds={riichiList}
-                        onChange={riichiOnChange}
-                    />
-                </Stack>
+                <PlayerButtonRow
+                    players={players}
+                    label={"RIICHI"}
+                    labelPlayerIds={riichiList}
+                    onChange={riichiOnChange}
+                />
                 {getJapaneseLabels().map(([label, labelPlayerIds]) => (
-                    <Stack direction="row" spacing={2} key={label}>
+                    <Stack direction="column" spacing={2} key={label}>
                         <PlayerButtonRow
                             players={players}
                             label={label as JapaneseLabel}

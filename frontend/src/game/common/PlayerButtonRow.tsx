@@ -1,5 +1,5 @@
 import React from "react";
-import { ToggleButton } from "@mui/material";
+import { Stack, ToggleButton } from "@mui/material";
 
 type PlayerButtonRow<T extends string> = {
     players: GamePlayer[];
@@ -16,7 +16,8 @@ const PlayerButtonRow = <T extends string>({
 }: PlayerButtonRow<T>) => {
     return (
         <>
-            <h5>{label[0] + label.slice(1).toLowerCase()}:</h5>
+        <h5>{label[0] + label.slice(1).toLowerCase()}:</h5>
+        <Stack direction="row" spacing={1}>
             {players.map((player, idx) => (
                 <ToggleButton
                     key={idx}
@@ -29,6 +30,7 @@ const PlayerButtonRow = <T extends string>({
                     {player.username}
                 </ToggleButton>
             ))}
+        </Stack>
         </>
     );
 };

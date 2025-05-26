@@ -20,38 +20,36 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const seasonsOptions = mapSeasonToOption(seasonsResult.data);
     const playersOptions = mapPlayerNameToOption(playersResult.data);
     return (
-        <div>
+        <Stack direction="column" spacing={2}>
             <Typography variant="h4" gutterBottom>
                 Round Statistics
             </Typography>
-            <Container>
-                <Stack direction="row" spacing={4}>
-                    <Stack direction="column" spacing={2} flex={1}>
-                        <Typography variant="h6">Season</Typography>
-                        <Autocomplete
-                            isOptionEqualToValue={(option, value) => option.label === value.label}
-                            options={seasonsOptions}
-                            onChange={(event, value) => setSeason(value!.value)}
-                            renderInput={(params) => (
-                                <TextField {...params} placeholder="Default: this season" />
-                            )}
-                        />
-                    </Stack>
-                    <Stack direction="column" spacing={2} flex={1}>
-                        <Typography variant="h6">Players</Typography>
-                        <Autocomplete
-                            isOptionEqualToValue={(option, value) => option.label === value.label}
-                            options={playersOptions}
-                            onChange={(event, value) => setPlayerId(value!.value)}
-                            renderInput={(params) => (
-                                <TextField {...params} placeholder="Default: your stats" />
-                            )}
-                        />
-                    </Stack>
+            <Stack direction="row" spacing={4}>
+                <Stack direction="column" spacing={2} flex={1}>
+                    <Typography variant="h6">Season</Typography>
+                    <Autocomplete
+                        isOptionEqualToValue={(option, value) => option.label === value.label}
+                        options={seasonsOptions}
+                        onChange={(event, value) => setSeason(value!.value)}
+                        renderInput={(params) => (
+                            <TextField {...params} placeholder="Default: this season" />
+                        )}
+                    />
                 </Stack>
-                <DisplayStatistics playerId={playerId} gameVariant={gameVariant} season={season} />
-            </Container>
-        </div>
+                <Stack direction="column" spacing={2} flex={1}>
+                    <Typography variant="h6">Players</Typography>
+                    <Autocomplete
+                        isOptionEqualToValue={(option, value) => option.label === value.label}
+                        options={playersOptions}
+                        onChange={(event, value) => setPlayerId(value!.value)}
+                        renderInput={(params) => (
+                            <TextField {...params} placeholder="Default: your stats" />
+                        )}
+                    />
+                </Stack>
+            </Stack>
+            <DisplayStatistics playerId={playerId} gameVariant={gameVariant} season={season} />
+        </Stack>
     );
 };
 
@@ -65,7 +63,7 @@ const DisplayStatistics: FC<{
         return <>Loading ...</>;
     }
     return (
-        <Stack direction="column" spacing={2} mt={4}>
+        <>
             <Stack direction="row" spacing={2}>
                 <Typography flex={1}>Deal-in %</Typography>
                 <Typography flex={1}>
@@ -86,7 +84,7 @@ const DisplayStatistics: FC<{
                     {divideWithDefault(stats.winPoint, stats.winCount).toFixed()}
                 </Typography>
             </Stack>
-        </Stack>
+        </>
     );
 };
 function divideWithDefault(numerator: number, denominator: number, defaultValue = 0) {

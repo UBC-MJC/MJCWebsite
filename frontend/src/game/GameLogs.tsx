@@ -101,7 +101,7 @@ const GameLogs: FC = () => {
 
     return (
         <>
-            <Container>
+            <Stack direction="column" spacing={2}>
                 <h1>Game Logs</h1>
                 <Stack direction="row" spacing={2}>
                     <Stack direction="column" spacing={1}>
@@ -146,21 +146,17 @@ const GameLogs: FC = () => {
                 <Button variant={"contained"} disabled={disableQueryButton()} onClick={getGames}>
                     Search Games
                 </Button>
-            </Container>
-            <Container>
-                <Stack direction="column" spacing={2}>
-                    {getPaginatedGames().map((game, idx) => (
-                        <Box key={idx} onClick={() => navigateToGame(game.id)}>
-                            <Card variant="outlined">
-                                <Box p={2}>
-                                    <GameSummaryBody game={game} gameVariant={queryGameVariant} />
-                                </Box>
-                            </Card>
-                        </Box>
-                    ))}
-                </Stack>
-                {getPagination()}
-            </Container>
+                {getPaginatedGames().map((game, idx) => (
+                    <Box key={idx} onClick={() => navigateToGame(game.id)}>
+                        <Card variant="outlined">
+                            <Box p={2}>
+                                <GameSummaryBody game={game} gameVariant={queryGameVariant} />
+                            </Box>
+                        </Card>
+                    </Box>
+                ))}
+            </Stack>
+            {getPagination()}
         </>
     );
 };

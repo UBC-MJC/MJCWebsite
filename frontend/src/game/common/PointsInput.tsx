@@ -10,8 +10,10 @@ type PointsInputProps = {
 
 const PointsInput: FC<PointsInputProps> = ({ pointsWheel, onChange }) => {
     return (
+        <>
+        <h5>Hand:</h5>
         <Stack direction="row" alignItems="center" spacing={2}>
-            <h5>Hand:</h5>
+            
             {pointsWheel.map((wheel) => (
                 <DropdownInput
                     key={wheel.value}
@@ -21,6 +23,7 @@ const PointsInput: FC<PointsInputProps> = ({ pointsWheel, onChange }) => {
                 />
             ))}
         </Stack>
+        </>
     );
 };
 export default PointsInput;
