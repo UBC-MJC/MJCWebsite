@@ -1,6 +1,12 @@
 import React, { FC, useState } from "react";
-import { Form, Modal } from "react-bootstrap";
-import { Button } from "@mui/material";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Button,
+} from "@mui/material";
 
 type ModifySeasonModalProps = {
     show: boolean;
@@ -72,52 +78,45 @@ const ModifySeasonModal: FC<ModifySeasonModalProps> = ({
     };
 
     return (
-        <Modal show={show} onHide={onClose}>
-            <Modal.Header closeButton>
-                <Modal.Title>{actionString}</Modal.Title>
-            </Modal.Header>
-            <Form noValidate onSubmit={submitSeason}>
-                <Modal.Body>
-                    <Form.Group>
-                        <Form.Label>Season Name</Form.Label>
-                        <Form.Control
-                            required
-                            size="lg"
-                            type="text"
-                            placeholder="Season Name"
-                            defaultValue={season.name}
-                            isInvalid={!!errors.seasonName}
-                            onChange={(e) => setSeasonName(e.target.value)}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.seasonName}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group className="mt-4">
-                        <Form.Label>End Date</Form.Label>
-                        <Form.Control
-                            size="lg"
-                            type="date"
-                            defaultValue={endDate.substring(0, 10)}
-                            isInvalid={!!errors.endDate}
-                            onChange={onEndDateChange}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.endDate}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                </Modal.Body>
-
-                <Modal.Footer>
-                    <Button className={"mx-2"} variant="contained" onClick={onClose}>
+        <Dialog open={show} onClose={onClose}>
+            <DialogTitle>{actionString}</DialogTitle>
+            <form noValidate onSubmit={submitSeason}>
+                <DialogContent>
+                    <TextField
+                        required
+                        fullWidth
+                        margin="dense"
+                        label="Season Name"
+                        type="text"
+                        value={seasonName}
+                        error={!!errors.seasonName}
+                        helperText={errors.seasonName}
+                        onChange={(e) => setSeasonName(e.target.value)}
+                    />
+                    <TextField
+                        fullWidth
+                        margin="dense"
+                        label="End Date"
+                        type="date"
+                        value={endDate.substring(0, 10)}
+                        error={!!errors.endDate}
+                        helperText={errors.endDate}
+                        onChange={onEndDateChange}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={onClose} color="primary">
                         Close
                     </Button>
-                    <Button variant="contained" type="submit">
+                    <Button type="submit" color="primary">
                         {actionString}
                     </Button>
-                </Modal.Footer>
-            </Form>
-        </Modal>
+                </DialogActions>
+            </form>
+        </Dialog>
     );
 };
 

@@ -194,7 +194,7 @@ const Game: FC = () => {
         );
     }
     return (
-        <div className="min-vh-100 d-flex flex-column" style={{paddingBottom: "175px"}}>
+        <div className="min-vh-100 d-flex flex-column" style={{ paddingBottom: "175px" }}>
             <h1 className="mt-2">
                 {getGameVariantString(variant, game.type)} Game
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game, variant)}

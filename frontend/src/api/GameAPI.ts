@@ -84,7 +84,7 @@ const setChomboAPI = async (
     playerId: string,
     chomboCount: number,
 ) => {
-    return axios.post<Game>(
+    return axios.post<{ count: number }>(
         baseUrl + `/games/${gameVariant}/${gameId}/chombo`,
         {
             playerId: playerId,
