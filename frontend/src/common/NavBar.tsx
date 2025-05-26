@@ -35,11 +35,10 @@ const NavBar: FC = () => {
     return (
         <AppBar position="static" color="info">
             <Toolbar>
-                <Typography variant="h6" component={Link} to="/">
+                <Typography  component={Link} to="/">
                     UBC Mahjong Club
                 </Typography>
                 <Box>
-                    {/* Leaderboard Dropdown */}
                     <Button color="inherit" onClick={handleMenuOpen(setAnchorElLeaderboard)}>
                         Leaderboard
                     </Button>

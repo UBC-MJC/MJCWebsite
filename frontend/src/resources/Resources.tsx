@@ -1,7 +1,7 @@
 import { FC } from "react";
 export const Resources: FC = () => {
     return (
-        <div>
+        <>
             <h1>Study resources</h1>
             <h2>Riichi Mahjong</h2>
             <p>
@@ -57,6 +57,6 @@ export const Resources: FC = () => {
                     Charter
                 </a>
             </p>
-        </div>
+        </>
     );
 };

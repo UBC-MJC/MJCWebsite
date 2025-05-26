@@ -73,7 +73,7 @@ const Settings: FC = () => {
                     }
                 />
             </Stack>
-            <ButtonGroup variant="contained" aria-label="Basic button group">
+            <ButtonGroup aria-label="Basic button group">
                 <Button onClick={() => colorMode.toggleColorMode("light")}>Light</Button>
                 <Button onClick={() => colorMode.toggleColorMode("dark")}>Dark</Button>
                 <Button onClick={() => colorMode.toggleColorMode("system")}>System</Button>

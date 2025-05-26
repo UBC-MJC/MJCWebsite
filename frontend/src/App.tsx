@@ -20,7 +20,7 @@ import PasswordReset from "./login/PasswordReset";
 import { Resources } from "./resources/Resources";
 import GameLogs from "./game/GameLogs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
+import { Container, createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 
 const useQuery = () => {
     const { search } = useLocation();

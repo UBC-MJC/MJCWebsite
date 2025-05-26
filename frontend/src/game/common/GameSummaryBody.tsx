@@ -1,21 +1,21 @@
 import { FC } from "react";
-import Stack from "@mui/material/Stack";
 import { getScoresWithPlayers } from "../../common/Utils";
+import { Grid } from "@mui/material";
 
 const GameSummaryBody: FC<{ game: Game; gameVariant: GameVariant }> = ({ game, gameVariant }) => {
     return (
-        <Stack direction="row" spacing={2} width="100%">
+        <Grid container>
             {getScoresWithPlayers(game, gameVariant)
                 .sort((a, b) => b.score - a.score)
                 .map((score, idx) => (
-                    <Stack key={idx} direction="column" spacing={1} flex={1}>
+                    <Grid size={6} flex={1} minWidth="50%">
                         <div>
                             {mapIndextoPlace(idx)} - {score.username}
                         </div>
                         <div>{score.score}</div>
-                    </Stack>
+                    </Grid>
                 ))}
-        </Stack>
+        </Grid>
     );
 };
 

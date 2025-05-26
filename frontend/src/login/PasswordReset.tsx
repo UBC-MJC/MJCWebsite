@@ -63,7 +63,7 @@ const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
             <Container maxWidth="sm">
                 <Card>
                     <CardContent>
-                        <Typography variant="h5" gutterBottom>
+                        <Typography gutterBottom>
                             Invalid Request
                         </Typography>
                         <Typography>The link you have requested has been expired.</Typography>
@@ -77,7 +77,7 @@ const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
         <Container maxWidth="sm">
             <Card>
                 <CardContent>
-                    <Typography variant="h5" gutterBottom>
+                    <Typography gutterBottom>
                         Reset Password
                     </Typography>
                     {error && <Alert severity="error">{error}</Alert>}

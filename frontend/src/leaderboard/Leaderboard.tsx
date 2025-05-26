@@ -28,13 +28,13 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     }
     const seasonsOptions = mapSeasonToOption(seasons);
     return (
-        <Container maxWidth="md">
-            <Typography variant="h4" gutterBottom>
+        <>
+            <h1>
                 {getGameVariantString(gameVariant, gameType)} Leaderboard
-            </Typography>
+            </h1>
 
             <Box mb={3}>
-                <Typography variant="h6" component="span">
+                <Typography  component="span">
                     Season:
                 </Typography>
                 <Autocomplete
@@ -48,11 +48,11 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
             </Box>
 
             {season === undefined ? (
-                <Typography variant="h6">No season selected</Typography>
+                <Typography >No season selected</Typography>
             ) : (
                 <LeaderboardDisplay season={season} gameType={gameType} gameVariant={gameVariant} />
             )}
-        </Container>
+        </>
     );
 };
 
@@ -67,7 +67,7 @@ const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; sea
     }
     return (
         <>
-            <Typography variant="h6" gutterBottom>
+            <Typography  gutterBottom>
                 {season.name} season ends {new Date(season.endDate).toDateString()}
             </Typography>
             <TableContainer component={Paper}>

@@ -34,7 +34,7 @@ const RequestPasswordReset: FC = () => {
         <Container>
             <Card>
                 <CardContent>
-                    <Typography variant="h5" component="h2" gutterBottom>
+                    <Typography component="h2" gutterBottom>
                         Request Password Reset
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate>

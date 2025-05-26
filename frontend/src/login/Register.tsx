@@ -63,7 +63,7 @@ const Register: React.FC = () => {
     return (
         <Container maxWidth="sm">
             <Card>
-                <Typography variant="h5" gutterBottom>
+                <Typography gutterBottom>
                     UBC Mahjong Club Register
                 </Typography>
                 <Box component="form" noValidate onSubmit={handleSubmit}>

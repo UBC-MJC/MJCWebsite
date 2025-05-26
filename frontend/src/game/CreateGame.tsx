@@ -54,13 +54,13 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
             return { label: player.username, value: player };
         });
     return (
-        <Container>
-            <Typography variant="h4" component="h1" gutterBottom>
+        <>
+            <h1>
                 {title}
-            </Typography>
+            </h1>
             <Stack direction="row" spacing={2}>
                 <Stack direction="column" spacing={1} flex={1}>
-                    <Typography variant="h6">East</Typography>
+                    <Typography >East</Typography>
                     <Autocomplete
                         isOptionEqualToValue={(option, value) => option.label === value.label}
                         options={playerNames}
@@ -72,7 +72,7 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                     />
                 </Stack>
                 <Stack direction="column" spacing={1} flex={1}>
-                    <Typography variant="h6">South</Typography>
+                    <Typography >South</Typography>
                     <Autocomplete
                         isOptionEqualToValue={(option, value) => option.label === value.label}
                         options={playerNames}
@@ -84,7 +84,7 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                     />
                 </Stack>
                 <Stack direction="column" spacing={1} flex={1}>
-                    <Typography variant="h6">West</Typography>
+                    <Typography >West</Typography>
                     <Autocomplete
                         isOptionEqualToValue={(option, value) => option.label === value.label}
                         options={playerNames}
@@ -96,7 +96,7 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                     />
                 </Stack>
                 <Stack direction="column" spacing={1} flex={1}>
-                    <Typography variant="h6">North</Typography>
+                    <Typography >North</Typography>
                     <Autocomplete
                         isOptionEqualToValue={(option, value) => option.label === value.label}
                         options={playerNames}
@@ -115,7 +115,7 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
             >
                 Create Game
             </Button>
-        </Container>
+        </>
     );
 };
 

@@ -30,7 +30,7 @@ export const Footer: FC<{
                                     <img src={riichiStick} alt="Riichi Stick" />
                                 )}
                             </div>
-                            <Typography variant="h4">
+                            <Typography>
                                 {score - Number(riichiList.includes(idx)) * 1000}
                             </Typography>
                             <Typography>{eloDelta.toFixed(1)}</Typography>

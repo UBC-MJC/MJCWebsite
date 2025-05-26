@@ -20,13 +20,13 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const seasonsOptions = mapSeasonToOption(seasonsResult.data);
     const playersOptions = mapPlayerNameToOption(playersResult.data);
     return (
-        <Stack direction="column" spacing={2}>
-            <Typography variant="h4" gutterBottom>
+        <>
+            <h1>
                 Round Statistics
-            </Typography>
+            </h1>
             <Stack direction="row" spacing={4}>
                 <Stack direction="column" spacing={2} flex={1}>
-                    <Typography variant="h6">Season</Typography>
+                    <Typography >Season</Typography>
                     <Autocomplete
                         isOptionEqualToValue={(option, value) => option.label === value.label}
                         options={seasonsOptions}
@@ -37,7 +37,7 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
                     />
                 </Stack>
                 <Stack direction="column" spacing={2} flex={1}>
-                    <Typography variant="h6">Players</Typography>
+                    <Typography >Players</Typography>
                     <Autocomplete
                         isOptionEqualToValue={(option, value) => option.label === value.label}
                         options={playersOptions}
@@ -49,7 +49,7 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
                 </Stack>
             </Stack>
             <DisplayStatistics playerId={playerId} gameVariant={gameVariant} season={season} />
-        </Stack>
+        </>
     );
 };
 

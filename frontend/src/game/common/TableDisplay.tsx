@@ -1,55 +1,57 @@
 import { flexRender, Table } from "@tanstack/react-table";
 import React from "react";
-import Stack from "@mui/material/Stack";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
+import TableMUI from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 
 function TableDisplay(props: { table: Table<any>; currentScoreRow: (string | number)[] }) {
     const { table, currentScoreRow } = props;
     return (
-        <Paper elevation={1}>
-            <Stack direction="column" spacing={1}>
-                {/* Table Header */}
-                <Stack direction="column">
+        <TableContainer component={Paper} elevation={1}>
+            <TableMUI size="small">
+                <TableHead>
                     {table.getHeaderGroups().map((headerGroup) => (
-                        <Stack direction="row" key={headerGroup.id}>
+                        <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
-                                <Stack direction="column" key={header.id}>
+                                <TableCell key={header.id}>
                                     <Typography variant="subtitle2">
                                         {flexRender(
                                             header.column.columnDef.header,
                                             header.getContext(),
                                         )}
                                     </Typography>
-                                </Stack>
+                                </TableCell>
                             ))}
-                        </Stack>
+                        </TableRow>
                     ))}
-                </Stack>
-                {/* Table Body */}
-                <Stack direction="column" spacing={0}>
+                </TableHead>
+                <TableBody>
                     {table.getRowModel().rows.map((row) => (
-                        <Stack direction="row" key={row.id}>
+                        <TableRow key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Stack direction="column" key={cell.id}>
+                                <TableCell key={cell.id}>
                                     <Typography variant="body2">
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </Typography>
-                                </Stack>
+                                </TableCell>
                             ))}
-                        </Stack>
+                        </TableRow>
                     ))}
-                    {/* Current Score Row */}
-                    <Stack direction="row">
+                    <TableRow>
                         {currentScoreRow.map((value, idx) => (
-                            <Stack direction="column" key={idx}>
+                            <TableCell key={idx}>
                                 <Typography variant="body2">{value}</Typography>
-                            </Stack>
+                            </TableCell>
                         ))}
-                    </Stack>
-                </Stack>
-            </Stack>
-        </Paper>
+                    </TableRow>
+                </TableBody>
+            </TableMUI>
+        </TableContainer>
     );
 }
 

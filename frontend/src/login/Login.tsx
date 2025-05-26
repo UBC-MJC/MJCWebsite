@@ -51,7 +51,7 @@ const Login: React.FC = () => {
         <Container maxWidth="sm">
             <Card>
                 <CardContent>
-                    <Typography variant="h5" component="h2" gutterBottom>
+                    <Typography component="h2" gutterBottom>
                         UBC Mahjong Club Login
                     </Typography>
                     <Box component="form" noValidate onSubmit={handleSubmit}>
