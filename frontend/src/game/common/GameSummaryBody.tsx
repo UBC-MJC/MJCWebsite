@@ -1,23 +1,21 @@
-import { Col, Row } from "react-bootstrap";
 import { FC } from "react";
+import Stack from "@mui/material/Stack";
 import { getScoresWithPlayers } from "../../common/Utils";
 
 const GameSummaryBody: FC<{ game: Game; gameVariant: GameVariant }> = ({ game, gameVariant }) => {
     return (
-        <Row>
+        <Stack direction="row" spacing={2} width="100%">
             {getScoresWithPlayers(game, gameVariant)
                 .sort((a, b) => b.score - a.score)
                 .map((score, idx) => (
-                    <Col key={idx} xs={6} >
-                        <div >
-                            <div>
-                                {mapIndextoPlace(idx)} - {score.username}
-                            </div>
-                            <div>{score.score}</div>
+                    <Stack key={idx} direction="column" spacing={1} flex={1}>
+                        <div>
+                            {mapIndextoPlace(idx)} - {score.username}
                         </div>
-                    </Col>
+                        <div>{score.score}</div>
+                    </Stack>
                 ))}
-        </Row>
+        </Stack>
     );
 };
 

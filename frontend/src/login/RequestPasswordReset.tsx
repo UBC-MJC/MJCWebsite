@@ -1,9 +1,8 @@
 import React, { FC, useState } from "react";
-import { Card, Container, Form } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { submitRequestPasswordResetAPI } from "../api/AccountAPI";
 import alert from "../common/AlertDialog";
-import { Button } from "@mui/material";
+import { Button, Card, CardContent, Container, TextField, Typography, Box } from "@mui/material";
 
 const RequestPasswordReset: FC = () => {
     const [username, setUsername] = useState("");
@@ -32,29 +31,37 @@ const RequestPasswordReset: FC = () => {
     };
 
     return (
-        <Container >
-            <Card body>
-                <h2>Request Password Reset</h2>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicUsername" >
-                        <Form.Control
+        <Container>
+            <Card>
+                <CardContent>
+                    <Typography variant="h5" component="h2" gutterBottom>
+                        Request Password Reset
+                    </Typography>
+                    <Box component="form" onSubmit={handleSubmit} noValidate>
+                        <TextField
                             required
-                            placeholder="Username Or Email"
+                            fullWidth
+                            margin="normal"
+                            label="Username Or Email"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                         />
-                    </Form.Group>
-
-                    <div >
-                        <Button variant="contained" type="submit" disabled={isWaiting}>
-                            Request Password Reset
-                        </Button>
-                    </div>
-                </Form>
+                        <Box mt={2}>
+                            <Button
+                                variant="contained"
+                                type="submit"
+                                disabled={isWaiting}
+                                fullWidth
+                            >
+                                Request Password Reset
+                            </Button>
+                        </Box>
+                    </Box>
+                </CardContent>
             </Card>
-            <Button >
-                Back
-            </Button>
+            <Box mt={2}>
+                <Button fullWidth>Back</Button>
+            </Box>
         </Container>
     );
 };

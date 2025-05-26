@@ -1,8 +1,14 @@
 import React, { FC } from "react";
 import PropTypes from "prop-types";
-import { Modal } from "react-bootstrap";
 import { confirmable, createConfirmation } from "react-confirm";
-import { Button } from "@mui/material";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    Typography,
+} from "@mui/material";
 
 const ConfirmationDialog: FC<any> = ({
     show,
@@ -17,20 +23,21 @@ const ConfirmationDialog: FC<any> = ({
     cancelButtonStyle,
     ...options
 }) => {
-    const header = title ? (
-        <Modal.Header>
-            <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
-    ) : undefined;
     return (
-        <Modal size="sm" show={show} onHide={() => proceed(false)} backdrop="static" centered>
-            {header}
-            <Modal.Body>{confirmation}</Modal.Body>
-            <Modal.Footer>
-                <Button onClick={() => proceed(false)}>{cancelText}</Button>
-                <Button onClick={() => proceed(true)}>{okText}</Button>
-            </Modal.Footer>
-        </Modal>
+        <Dialog open={show} onClose={() => proceed(false)} fullWidth maxWidth="xs">
+            {title && <DialogTitle>{title}</DialogTitle>}
+            <DialogContent>
+                <Typography>{confirmation}</Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => proceed(false)} color={cancelButtonStyle} variant="outlined">
+                    {cancelText}
+                </Button>
+                <Button onClick={() => proceed(true)} color={okButtonStyle} variant="contained">
+                    {okText}
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 };
 
@@ -40,27 +47,14 @@ ConfirmationDialog.propTypes = {
     confirmation: PropTypes.string, // arguments of your confirm function
     okText: PropTypes.string,
     cancelText: PropTypes.string,
-    okButtonStyle: PropTypes.oneOf([
-        "primary",
-        "secondary",
-        "success",
-        "danger",
-        "warning",
-        "info",
-        "light",
-        "dark",
-        "link",
-    ]),
+    okButtonStyle: PropTypes.oneOf(["primary", "secondary", "success", "error", "warning", "info"]),
     cancelButtonStyle: PropTypes.oneOf([
         "primary",
         "secondary",
         "success",
-        "danger",
+        "error",
         "warning",
         "info",
-        "light",
-        "dark",
-        "link",
     ]),
     show: PropTypes.bool, // from confirmable.
     proceed: PropTypes.func, // from confirmable.

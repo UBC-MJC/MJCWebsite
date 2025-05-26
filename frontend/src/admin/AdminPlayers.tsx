@@ -2,7 +2,6 @@ import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
 import { AxiosError } from "axios";
 import { makeDummyAdminsAPI, recalcSeasonAPI, removeQualificationAPI } from "../api/AdminAPI";
-import { Form, Table as BTable } from "react-bootstrap";
 import {
     CellContext,
     ColumnDef,
@@ -16,11 +15,21 @@ import { FaBan, FaCheck, FaEdit, FaSave, FaTrash } from "react-icons/fa";
 import IconButton from "../common/IconButton";
 import confirmDialog from "../common/ConfirmationDialog";
 import { deletePlayerMutation, savePlayerMutation, useAdminPlayers } from "../hooks/AdminHooks";
-import { Button } from "@mui/material";
+import {
+    Button,
+    Checkbox,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+} from "@mui/material";
 
 const booleanToCheckmark = (value: boolean) => {
     return value ? (
-        <div >
+        <div>
             <FaCheck />
         </div>
     ) : (
@@ -53,9 +62,7 @@ const EditableBooleanCell = (cellContext: CellContext<Player, any>) => {
     };
 
     if (row.id === table.options.meta?.playersEditableRowId) {
-        return (
-            <Form.Check  defaultChecked={initialValue} onChange={onChange} />
-        );
+        return <Checkbox defaultChecked={initialValue} onChange={onChange} />;
     }
     return booleanToCheckmark(initialValue);
 };
@@ -74,15 +81,15 @@ const playerColumns: ColumnDef<Player, any>[] = [
         header: "Email",
     }),
     columnHelper.accessor("admin", {
-        header: () => <div >Admin</div>,
+        header: () => <div>Admin</div>,
         cell: EditableBooleanCell,
     }),
     columnHelper.accessor("japaneseQualified", {
-        header: () => <div >JP Ranked</div>,
+        header: () => <div>JP Ranked</div>,
         cell: EditableBooleanCell,
     }),
     columnHelper.accessor("hongKongQualified", {
-        header: () => <div >HK Ranked</div>,
+        header: () => <div>HK Ranked</div>,
         cell: EditableBooleanCell,
     }),
     columnHelper.display({
@@ -171,45 +178,42 @@ const AdminPlayers: FC = () => {
     if (error) return <>{"An error has occurred: " + error.message}</>;
     return (
         <>
-            <BTable
-                striped
-                borderless
-                hover
-                responsive
-                
-            >
-                <thead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <th key={header.id}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody>
-                    {table.getRowModel().rows.map((row) => (
-                        <tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <td key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </BTable>
-            <div >
+            <TableContainer component={Paper}>
+                <Table size="small">
+                    <TableHead>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <TableCell key={header.id}>
+                                        {flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext(),
+                                        )}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHead>
+                    <TableBody>
+                        {table.getRowModel().rows.map((row) => (
+                            <TableRow key={row.id} hover>
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <div style={{ marginTop: 16, display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <Button variant="outlined" onClick={makeTestAdmins}>
                     Make Test Admins
                 </Button>
                 <Button
-                    color={"warning"}
+                    color="warning"
+                    variant="outlined"
                     onClick={() => {
                         removeQualificationAPI(player?.authToken);
                     }}
@@ -254,7 +258,7 @@ const PlayerRowActions: FC<PlayerRowActionsProps> = ({ context }) => {
     };
 
     return (
-        <div >
+        <div>
             {rowIsEditable ? (
                 <>
                     <IconButton onClick={() => exitRow()}>

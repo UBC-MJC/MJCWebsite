@@ -1,5 +1,4 @@
 import React, { FC, useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
 import LegacyHongKongGameTable, { ModifiedHongKongRound } from "./LegacyHongKongGameTable";
 import {
     HK_TRANSACTION_TYPE_BUTTONS,
@@ -16,7 +15,7 @@ import { createHongKongRoundRequest, generateOverallScoreDelta } from "../contro
 import { validateHongKongRound } from "../controller/ValidateHongKongRound";
 import alert from "../../../common/AlertDialog";
 import PointsInput from "../../common/PointsInput";
-import { Button, ToggleButton } from "@mui/material";
+import { Button, ToggleButton, Stack, Container as MuiContainer } from "@mui/material";
 import { Footer } from "../../common/Footer";
 
 const LegacyHongKongGame: FC<LegacyGameProps> = ({
@@ -122,41 +121,37 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
     const getRecordingInterface = () => {
         return (
             <>
-                <Row >
+                <Stack direction="row" spacing={2}>
                     {HK_TRANSACTION_TYPE_BUTTONS.map((button, idx) => (
-                        <Col key={idx} xs={4}>
-                            <ToggleButton
-                                key={idx}
-                                
-                                value={button.value}
-                                id={button.name}
-                                selected={transactionType === button.value}
-                                onChange={(event, value) => transactionTypeOnChange(value)}
-                            >
-                                {button.name}
-                            </ToggleButton>
-                        </Col>
+                        <ToggleButton
+                            key={idx}
+                            value={button.value}
+                            id={button.name}
+                            selected={transactionType === button.value}
+                            onChange={(event, value) => transactionTypeOnChange(value)}
+                        >
+                            {button.name}
+                        </ToggleButton>
                     ))}
-                </Row>
-                {getHongKongLabels().map(([label, labelPlayerIds]) => (
-                    <Row key={label} >
-                        <Col>
+                </Stack>
+                <Stack direction="column" spacing={2}>
+                    {getHongKongLabels().map(([label, labelPlayerIds]) => (
+                        <Stack direction="row" key={label}>
                             <PlayerButtonRow
                                 players={players}
                                 label={label}
                                 labelPlayerIds={labelPlayerIds}
                                 onChange={actionOnChange}
                             />
-                        </Col>
-                    </Row>
-                ))}
+                        </Stack>
+                    ))}
+                </Stack>
                 {showPointInput() && (
                     <PointsInput pointsWheel={hongKongPointsWheel} onChange={handOnChange} />
                 )}
                 <Button
                     color="success"
                     variant="contained"
-                    
                     disabled={gameOver}
                     onClick={submitRound}
                 >
@@ -180,14 +175,14 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
     };
 
     return (
-        <Container>
+        <MuiContainer>
             {enableRecording && !gameOver && getRecordingInterface()}
             <LegacyHongKongGameTable
                 rounds={mapRoundsToModifiedRounds(game.rounds as HongKongRound[])}
                 players={players}
             />
             <Footer game={game} gameVariant="hk" riichiList={[]}></Footer>
-        </Container>
+        </MuiContainer>
     );
 };
 

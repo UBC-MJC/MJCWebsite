@@ -1,94 +1,205 @@
-import React, { FC, useContext } from "react";
-import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
+import React, { FC, useContext, useState } from "react";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import IconButton from "@mui/material/IconButton";
+// import MenuIcon from "@mui/icons-material/Menu";
 import { AuthContext } from "./AuthContext";
 import { Link } from "react-router-dom";
 import { getGameVariantString } from "./Utils";
 
 const NavBar: FC = () => {
     const { player, logout } = useContext(AuthContext);
+
+    // State for each dropdown menu
+    const [anchorElLeaderboard, setAnchorElLeaderboard] = useState<null | HTMLElement>(null);
+    const [anchorElRecord, setAnchorElRecord] = useState<null | HTMLElement>(null);
+    const [anchorElLive, setAnchorElLive] = useState<null | HTMLElement>(null);
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+
+    const handleMenuOpen =
+        (setter: React.Dispatch<React.SetStateAction<HTMLElement | null>>) =>
+        (event: React.MouseEvent<HTMLElement>) => {
+            setter(event.currentTarget);
+        };
+
+    const handleMenuClose =
+        (setter: React.Dispatch<React.SetStateAction<HTMLElement | null>>) => () => {
+            setter(null);
+        };
+
     return (
-        <Navbar bg="info" expand="md">
-            <Container fluid>
-                <Navbar.Brand as={Link} to="/">
-                    <h3 >UBC Mahjong Club</h3>
-                </Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav >
-                        <NavDropdown title="Leaderboard" id="leaderboard-nav-dropdown">
-                            <NavDropdown.Item as={Link} to="/leaderboard/jp">
-                                {getGameVariantString("jp")}
-                            </NavDropdown.Item>
-                            <NavDropdown.Item as={Link} to="/leaderboard/jp/casual">
-                                {getGameVariantString("jp", "CASUAL")}
-                            </NavDropdown.Item>
-                            <NavDropdown.Item as={Link} to="/leaderboard/hk">
-                                {getGameVariantString("hk")}
-                            </NavDropdown.Item>
-                            <NavDropdown.Item as={Link} to="/leaderboard/hk/casual">
-                                {getGameVariantString("hk", "CASUAL")}
-                            </NavDropdown.Item>
-                        </NavDropdown>
-                        {player && (
-                            <NavDropdown title="Record Game" id="record-game-nav-dropdown">
+        <AppBar position="static" color="info">
+            <Toolbar>
+                <Typography variant="h6" component={Link} to="/">
+                    UBC Mahjong Club
+                </Typography>
+                <Box>
+                    {/* Leaderboard Dropdown */}
+                    <Button color="inherit" onClick={handleMenuOpen(setAnchorElLeaderboard)}>
+                        Leaderboard
+                    </Button>
+                    <Menu
+                        anchorEl={anchorElLeaderboard}
+                        open={Boolean(anchorElLeaderboard)}
+                        onClose={handleMenuClose(setAnchorElLeaderboard)}
+                    >
+                        <MenuItem
+                            component={Link}
+                            to="/leaderboard/jp"
+                            onClick={handleMenuClose(setAnchorElLeaderboard)}
+                        >
+                            {getGameVariantString("jp")}
+                        </MenuItem>
+                        <MenuItem
+                            component={Link}
+                            to="/leaderboard/jp/casual"
+                            onClick={handleMenuClose(setAnchorElLeaderboard)}
+                        >
+                            {getGameVariantString("jp", "CASUAL")}
+                        </MenuItem>
+                        <MenuItem
+                            component={Link}
+                            to="/leaderboard/hk"
+                            onClick={handleMenuClose(setAnchorElLeaderboard)}
+                        >
+                            {getGameVariantString("hk")}
+                        </MenuItem>
+                        <MenuItem
+                            component={Link}
+                            to="/leaderboard/hk/casual"
+                            onClick={handleMenuClose(setAnchorElLeaderboard)}
+                        >
+                            {getGameVariantString("hk", "CASUAL")}
+                        </MenuItem>
+                    </Menu>
+
+                    {/* Record Game Dropdown */}
+                    {player && (
+                        <>
+                            <Button color="inherit" onClick={handleMenuOpen(setAnchorElRecord)}>
+                                Record Game
+                            </Button>
+                            <Menu
+                                anchorEl={anchorElRecord}
+                                open={Boolean(anchorElRecord)}
+                                onClose={handleMenuClose(setAnchorElRecord)}
+                            >
                                 {player.japaneseQualified && (
-                                    <NavDropdown.Item as={Link} to="/games/create/jp">
+                                    <MenuItem
+                                        component={Link}
+                                        to="/games/create/jp"
+                                        onClick={handleMenuClose(setAnchorElRecord)}
+                                    >
                                         {getGameVariantString("jp")}
-                                    </NavDropdown.Item>
+                                    </MenuItem>
                                 )}
-                                <NavDropdown.Item as={Link} to="/games/create/jp/casual">
+                                <MenuItem
+                                    component={Link}
+                                    to="/games/create/jp/casual"
+                                    onClick={handleMenuClose(setAnchorElRecord)}
+                                >
                                     {getGameVariantString("jp", "CASUAL")}
-                                </NavDropdown.Item>
+                                </MenuItem>
                                 {player.hongKongQualified && (
-                                    <NavDropdown.Item as={Link} to="/games/create/hk">
+                                    <MenuItem
+                                        component={Link}
+                                        to="/games/create/hk"
+                                        onClick={handleMenuClose(setAnchorElRecord)}
+                                    >
                                         {getGameVariantString("hk")}
-                                    </NavDropdown.Item>
+                                    </MenuItem>
                                 )}
-                                <NavDropdown.Item as={Link} to="/games/create/hk/casual">
+                                <MenuItem
+                                    component={Link}
+                                    to="/games/create/hk/casual"
+                                    onClick={handleMenuClose(setAnchorElRecord)}
+                                >
                                     {getGameVariantString("hk", "CASUAL")}
-                                </NavDropdown.Item>
-                            </NavDropdown>
-                        )}
-                        <NavDropdown title={"Live Games"} id="live-games-nav-dropdown">
-                            <NavDropdown.Item as={Link} to="/games/current/jp">
-                                {getGameVariantString("jp", "")}
-                            </NavDropdown.Item>
-                            <NavDropdown.Item as={Link} to="/games/current/hk">
-                                {getGameVariantString("hk", "")}
-                            </NavDropdown.Item>
-                        </NavDropdown>
-                        <Nav.Link as={Link} to="/games">
-                            Logs
-                        </Nav.Link>
-                        <Nav.Link as={Link} to="/stats/jp">
-                            Stats
-                        </Nav.Link>
-                        <Nav.Link as={Link} to="/resources">
-                            Resources
-                        </Nav.Link>
-                    </Nav>
-                    <Nav>
-                        {player && player.admin && (
-                            <Nav.Link as={Link} to="/admin">
-                                Admin
-                            </Nav.Link>
-                        )}
-                        {player ? (
-                            <NavDropdown title={player.username} id="record-game-nav-dropdown">
-                                <NavDropdown.Item as={Link} to="/settings">
+                                </MenuItem>
+                            </Menu>
+                        </>
+                    )}
+
+                    {/* Live Games Dropdown */}
+                    <Button color="inherit" onClick={handleMenuOpen(setAnchorElLive)}>
+                        Live Games
+                    </Button>
+                    <Menu
+                        anchorEl={anchorElLive}
+                        open={Boolean(anchorElLive)}
+                        onClose={handleMenuClose(setAnchorElLive)}
+                    >
+                        <MenuItem
+                            component={Link}
+                            to="/games/current/jp"
+                            onClick={handleMenuClose(setAnchorElLive)}
+                        >
+                            {getGameVariantString("jp", "")}
+                        </MenuItem>
+                        <MenuItem
+                            component={Link}
+                            to="/games/current/hk"
+                            onClick={handleMenuClose(setAnchorElLive)}
+                        >
+                            {getGameVariantString("hk", "")}
+                        </MenuItem>
+                    </Menu>
+
+                    <Button color="inherit" component={Link} to="/games">
+                        Logs
+                    </Button>
+                    <Button color="inherit" component={Link} to="/stats/jp">
+                        Stats
+                    </Button>
+                    <Button color="inherit" component={Link} to="/resources">
+                        Resources
+                    </Button>
+                    {player && player.admin && (
+                        <Button color="inherit" component={Link} to="/admin">
+                            Admin
+                        </Button>
+                    )}
+                    {player ? (
+                        <>
+                            <Button color="inherit" onClick={handleMenuOpen(setAnchorElUser)}>
+                                {player.username}
+                            </Button>
+                            <Menu
+                                anchorEl={anchorElUser}
+                                open={Boolean(anchorElUser)}
+                                onClose={handleMenuClose(setAnchorElUser)}
+                            >
+                                <MenuItem
+                                    component={Link}
+                                    to="/settings"
+                                    onClick={handleMenuClose(setAnchorElUser)}
+                                >
                                     Settings
-                                </NavDropdown.Item>
-                                <NavDropdown.Item onClick={logout}>Log Out</NavDropdown.Item>
-                            </NavDropdown>
-                        ) : (
-                            <Nav.Link as={Link} to="/login">
-                                Login
-                            </Nav.Link>
-                        )}
-                    </Nav>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => {
+                                        logout();
+                                        setAnchorElUser(null);
+                                    }}
+                                >
+                                    Log Out
+                                </MenuItem>
+                            </Menu>
+                        </>
+                    ) : (
+                        <Button color="inherit" component={Link} to="/login">
+                            Login
+                        </Button>
+                    )}
+                </Box>
+                {/* Mobile menu icon (optional, not implemented here) */}
+            </Toolbar>
+        </AppBar>
     );
 };
 

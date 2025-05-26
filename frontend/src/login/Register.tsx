@@ -1,8 +1,7 @@
 import React, { useContext, useState } from "react";
-import { Card, Container, Form, Row, Col } from "react-bootstrap";
 import { AuthContext } from "../common/AuthContext";
 import { AxiosError } from "axios";
-import { Button } from "@mui/material";
+import { Button, Card, Container, Stack, TextField, Typography, Box } from "@mui/material";
 
 const isEmail = (email: string) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
 
@@ -62,92 +61,79 @@ const Register: React.FC = () => {
     };
 
     return (
-        <Container >
-            <Card body>
-                <h2>UBC Mahjong Club Register</h2>
-                <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicUsername" >
-                        <Form.Control
+        <Container maxWidth="sm">
+            <Card>
+                <Typography variant="h5" gutterBottom>
+                    UBC Mahjong Club Register
+                </Typography>
+                <Box component="form" noValidate onSubmit={handleSubmit}>
+                    <Stack spacing={2}>
+                        <TextField
                             required
-                            placeholder="Username"
+                            label="Username"
                             value={username}
-                            isInvalid={errors.username}
+                            error={Boolean(errors.username)}
+                            helperText={errors.username}
                             onChange={(e) => setUsername(e.target.value)}
+                            fullWidth
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.username}
-                        </Form.Control.Feedback>
-                    </Form.Group>
 
-                    <Row >
-                        <Form.Group as={Col} controlId="formBasicFirstName">
-                            <Form.Control
-                                type="text"
-                                placeholder="First name"
+                        <Stack direction="row" spacing={2}>
+                            <TextField
+                                required
+                                label="First name"
                                 value={firstName}
-                                isInvalid={errors.firstName}
+                                error={Boolean(errors.firstName)}
+                                helperText={errors.firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
+                                fullWidth
                             />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.firstName}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group as={Col} controlId="formBasicLastName">
-                            <Form.Control
-                                type="text"
-                                placeholder="Last name"
+                            <TextField
+                                required
+                                label="Last name"
                                 value={lastName}
-                                isInvalid={errors.lastName}
+                                error={Boolean(errors.lastName)}
+                                helperText={errors.lastName}
                                 onChange={(e) => setLastName(e.target.value)}
+                                fullWidth
                             />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.lastName}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                    </Row>
+                        </Stack>
 
-                    <Form.Group controlId="formBasicEmail" >
-                        <Form.Control
+                        <TextField
                             required
+                            label="Email"
                             type="email"
-                            placeholder="Email"
                             value={email}
-                            isInvalid={errors.email}
+                            error={Boolean(errors.email)}
+                            helperText={errors.email}
                             onChange={(e) => setEmail(e.target.value)}
+                            fullWidth
                         />
-                        <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
-                    </Form.Group>
 
-                    <Form.Group controlId="formBasicPassword" >
-                        <Form.Control
+                        <TextField
                             required
+                            label="Password"
                             type="password"
-                            placeholder="Password"
                             value={password}
-                            isInvalid={errors.password}
+                            error={Boolean(errors.password)}
+                            helperText={errors.password}
                             onChange={(e) => setPassword(e.target.value)}
+                            fullWidth
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.password}
-                        </Form.Control.Feedback>
-                    </Form.Group>
 
-                    <div >
                         <Button variant="contained" type="submit">
                             Sign Up
                         </Button>
-                    </div>
 
-                    <div >
-                        <p>
+                        <Typography variant="body2">
                             Have an account? <a href="/login">Login</a>
-                        </p>
-                    </div>
-                </Form>
+                        </Typography>
+                    </Stack>
+                </Box>
             </Card>
-            <Button >
-                Back
-            </Button>
+            <Box mt={2} display="flex" justifyContent="center">
+                <Button>Back</Button>
+            </Box>
         </Container>
     );
 };

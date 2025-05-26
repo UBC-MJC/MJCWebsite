@@ -1,11 +1,10 @@
 import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
-import { Col, Container, Row } from "react-bootstrap";
 import { useSeasons } from "../hooks/AdminHooks";
 import { usePlayers } from "../hooks/GameHooks";
 import { mapPlayerNameToOption, mapSeasonToOption } from "../game/common/constants";
 import { useStatistics } from "../hooks/LeaderboardHooks";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, TextField, Stack, Container, Typography } from "@mui/material";
 
 const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const [playerId, setPlayerId] = useState<string | undefined>(
@@ -22,11 +21,13 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const playersOptions = mapPlayerNameToOption(playersResult.data);
     return (
         <div>
-            <h1 >Round Statistics</h1>
+            <Typography variant="h4" gutterBottom>
+                Round Statistics
+            </Typography>
             <Container>
-                <Row >
-                    <Col>
-                        <h3>Season</h3>
+                <Stack direction="row" spacing={4}>
+                    <Stack direction="column" spacing={2} flex={1}>
+                        <Typography variant="h6">Season</Typography>
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={seasonsOptions}
@@ -35,9 +36,9 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
                                 <TextField {...params} placeholder="Default: this season" />
                             )}
                         />
-                    </Col>
-                    <Col>
-                        <h3>Players</h3>
+                    </Stack>
+                    <Stack direction="column" spacing={2} flex={1}>
+                        <Typography variant="h6">Players</Typography>
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playersOptions}
@@ -46,8 +47,8 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
                                 <TextField {...params} placeholder="Default: your stats" />
                             )}
                         />
-                    </Col>
-                </Row>
+                    </Stack>
+                </Stack>
                 <DisplayStatistics playerId={playerId} gameVariant={gameVariant} season={season} />
             </Container>
         </div>
@@ -64,22 +65,28 @@ const DisplayStatistics: FC<{
         return <>Loading ...</>;
     }
     return (
-        <>
-            <Row >
-                <Col>Deal-in %</Col>
-                <Col>
+        <Stack direction="column" spacing={2} mt={4}>
+            <Stack direction="row" spacing={2}>
+                <Typography flex={1}>Deal-in %</Typography>
+                <Typography flex={1}>
                     {divideWithDefault(100 * stats.dealInCount, stats.totalRounds).toFixed(2)}%
-                </Col>
-                <Col>Avg Deal-in size</Col>
-                <Col>{divideWithDefault(stats.dealInPoint, stats.dealInCount).toFixed(0)}</Col>
-            </Row>
-            <Row >
-                <Col>Win %</Col>
-                <Col>{divideWithDefault(100 * stats.winCount, stats.totalRounds).toFixed(2)}%</Col>
-                <Col>Avg Agari size</Col>
-                <Col>{divideWithDefault(stats.winPoint, stats.winCount).toFixed()}</Col>
-            </Row>
-        </>
+                </Typography>
+                <Typography flex={1}>Avg Deal-in size</Typography>
+                <Typography flex={1}>
+                    {divideWithDefault(stats.dealInPoint, stats.dealInCount).toFixed(0)}
+                </Typography>
+            </Stack>
+            <Stack direction="row" spacing={2}>
+                <Typography flex={1}>Win %</Typography>
+                <Typography flex={1}>
+                    {divideWithDefault(100 * stats.winCount, stats.totalRounds).toFixed(2)}%
+                </Typography>
+                <Typography flex={1}>Avg Agari size</Typography>
+                <Typography flex={1}>
+                    {divideWithDefault(stats.winPoint, stats.winCount).toFixed()}
+                </Typography>
+            </Stack>
+        </Stack>
     );
 };
 function divideWithDefault(numerator: number, denominator: number, defaultValue = 0) {

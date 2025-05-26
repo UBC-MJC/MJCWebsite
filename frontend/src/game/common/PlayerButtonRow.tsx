@@ -22,13 +22,6 @@ const PlayerButtonRow = <T extends string>({
                     key={idx}
                     id={`name-${label}-${idx}`}
                     color={getVariant(label)}
-                    sx={{
-                        maxWidth: "22.5%",
-                        overflow: "clip",
-                        whiteSpace: "nowrap",
-                        // textOverflow: "ellipsis"
-                    }}
-                    
                     value={player.id}
                     selected={labelPlayerIds.includes(idx)}
                     onChange={() => onChange(idx, label)}

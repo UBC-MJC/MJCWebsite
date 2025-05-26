@@ -1,7 +1,12 @@
 import React, { FC } from "react";
 import PropTypes from "prop-types";
-import { Modal, Button } from "react-bootstrap";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
 import { confirmable, createConfirmation } from "react-confirm";
+
 const Alert: FC<any> = ({
     show,
     proceed,
@@ -13,28 +18,29 @@ const Alert: FC<any> = ({
     okButtonStyle,
     ...options
 }) => {
-    const header = title ? (
-        <Modal.Header>
-            <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
-    ) : undefined;
     return (
-        <Modal
-            size="sm"
-            show={show}
-            onHide={() => proceed()}
-            keyboard={true}
-            backdrop="static"
-            centered
-        >
-            {header}
-            <Modal.Body>{confirmation}</Modal.Body>
-            <Modal.Footer>
-                <Button variant={okButtonStyle} onClick={() => proceed()}>
+        <Dialog open={!!show} onClose={() => proceed()} fullWidth maxWidth="xs">
+            {title && <DialogTitle>{title}</DialogTitle>}
+            <DialogContent>{confirmation}</DialogContent>
+            <DialogActions>
+                <Button
+                    variant={okButtonStyle === "text" ? "text" : "contained"}
+                    color={
+                        okButtonStyle === "primary" ||
+                        okButtonStyle === "secondary" ||
+                        okButtonStyle === "error" ||
+                        okButtonStyle === "info" ||
+                        okButtonStyle === "success" ||
+                        okButtonStyle === "warning"
+                            ? okButtonStyle
+                            : "primary"
+                    }
+                    onClick={() => proceed()}
+                >
                     {okText}
                 </Button>
-            </Modal.Footer>
-        </Modal>
+            </DialogActions>
+        </Dialog>
     );
 };
 
@@ -47,12 +53,10 @@ Alert.propTypes = {
         "primary",
         "secondary",
         "success",
-        "danger",
+        "error",
         "warning",
         "info",
-        "light",
-        "dark",
-        "link",
+        "text",
     ]),
     show: PropTypes.bool, // from confirmable.
     proceed: PropTypes.func, // from confirmable.

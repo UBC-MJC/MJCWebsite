@@ -1,10 +1,22 @@
 import React, { FC, useState } from "react";
 import { getGameVariantString } from "../common/Utils";
-import { Container, Table } from "react-bootstrap";
 import { useSeasons } from "../hooks/AdminHooks";
 import { usePlayerLeaderboard } from "../hooks/LeaderboardHooks";
 import { mapSeasonToOption } from "../game/common/constants";
-import { Autocomplete, TextField } from "@mui/material";
+import {
+    Autocomplete,
+    TextField,
+    Container,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Typography,
+    Box,
+} from "@mui/material";
 
 const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const [season, setSeason] = useState<Season | undefined>();
@@ -12,28 +24,31 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons(setSeason);
 
     if (!seasonsSuccess) {
-        return <h5 >Loading...</h5>;
+        return <Typography variant="h5">Loading...</Typography>;
     }
     const seasonsOptions = mapSeasonToOption(seasons);
     return (
-        <Container>
-            <h1>{getGameVariantString(gameVariant, gameType)} Leaderboard</h1>
+        <Container maxWidth="md">
+            <Typography variant="h4" gutterBottom>
+                {getGameVariantString(gameVariant, gameType)} Leaderboard
+            </Typography>
 
-            <div >
-                <h5 >Season: </h5>
+            <Box mb={3}>
+                <Typography variant="h6" component="span">
+                    Season:
+                </Typography>
                 <Autocomplete
                     isOptionEqualToValue={(option, value) => option.label === value.label}
                     options={seasonsOptions}
-                    sx={{ width: "200px" }}
-                    onChange={(event, value) => setSeason(value!.value)}
+                    onChange={(event, value) => setSeason(value?.value)}
                     renderInput={(params) => (
-                        <TextField {...params} placeholder="Default: this season" />
+                        <TextField {...params} placeholder="Default: this season" size="small" />
                     )}
                 />
-            </div>
+            </Box>
 
             {season === undefined ? (
-                <h5>No season selected</h5>
+                <Typography variant="h6">No season selected</Typography>
             ) : (
                 <LeaderboardDisplay season={season} gameType={gameType} gameVariant={gameVariant} />
             )}
@@ -48,35 +63,35 @@ const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; sea
 }) => {
     const { isSuccess, data: leaderboard } = usePlayerLeaderboard(gameVariant, gameType, season);
     if (!isSuccess) {
-        return <h5>Loading ...</h5>;
+        return <Typography variant="h5">Loading ...</Typography>;
     }
     return (
         <>
-            <h5>
+            <Typography variant="h6" gutterBottom>
                 {season.name} season ends {new Date(season.endDate).toDateString()}
-            </h5>
-            <Table striped responsive hover >
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Player</th>
-                        <th>ELO</th>
-                        <th>Games</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {leaderboard.map((player, index) => {
-                        return (
-                            <tr key={player.username}>
-                                <td>{index + 1}</td>
-                                <td>{player.username}</td>
-                                <td>{player.elo}</td>
-                                <td>{player.gameCount}</td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </Table>
+            </Typography>
+            <TableContainer component={Paper}>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>#</TableCell>
+                            <TableCell>Player</TableCell>
+                            <TableCell>ELO</TableCell>
+                            <TableCell>Games</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {leaderboard.map((player, index) => (
+                            <TableRow key={player.username}>
+                                <TableCell>{index + 1}</TableCell>
+                                <TableCell>{player.username}</TableCell>
+                                <TableCell>{player.elo}</TableCell>
+                                <TableCell>{player.gameCount}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </>
     );
 };

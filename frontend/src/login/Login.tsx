@@ -1,13 +1,20 @@
 import React, { useContext, useState } from "react";
-import { Container, Form, Card } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { AuthContext } from "../common/AuthContext";
-import { Button } from "@mui/material";
+import {
+    Container,
+    Box,
+    Card,
+    CardContent,
+    Typography,
+    TextField,
+    Button,
+    Link,
+} from "@mui/material";
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-
     const [errors, setErrors] = useState<any>({});
 
     const { login } = useContext(AuthContext);
@@ -41,54 +48,58 @@ const Login: React.FC = () => {
     };
 
     return (
-        <Container>
-            <Card body>
-                <h2>UBC Mahjong Club Login</h2>
-                <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicUsername" >
-                        <Form.Control
+        <Container maxWidth="sm">
+            <Card>
+                <CardContent>
+                    <Typography variant="h5" component="h2" gutterBottom>
+                        UBC Mahjong Club Login
+                    </Typography>
+                    <Box component="form" noValidate onSubmit={handleSubmit}>
+                        <TextField
+                            fullWidth
+                            margin="normal"
                             required
-                            placeholder="Username or Email"
+                            label="Username or Email"
                             value={username}
-                            isInvalid={errors.username}
+                            error={Boolean(errors.username)}
+                            helperText={errors.username}
                             onChange={(e) => setUsername(e.target.value)}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.username}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
-                    <Form.Group controlId="formBasicPassword" >
-                        <Form.Control
+                        <TextField
+                            fullWidth
+                            margin="normal"
                             required
                             type="password"
-                            placeholder="Password"
+                            label="Password"
                             value={password}
-                            isInvalid={errors.password}
+                            error={Boolean(errors.password)}
+                            helperText={errors.password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.password}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
-                    <div >
-                        <Button variant="contained" type="submit">
-                            Login
-                        </Button>
-                    </div>
-
-                    <div >
-                        <p>
-                            Not a member? <a href="/register">Register</a>
-                        </p>
-                        <a href="/request-password-reset">Forgot password?</a>
-                    </div>
-                </Form>
+                        <Box mt={2} mb={2}>
+                            <Button variant="contained" type="submit" fullWidth>
+                                Login
+                            </Button>
+                        </Box>
+                        <Box display="flex" flexDirection="column" alignItems="center">
+                            <Typography variant="body2">
+                                Not a member?{" "}
+                                <Link href="/register" underline="hover">
+                                    Register
+                                </Link>
+                            </Typography>
+                            <Link href="/request-password-reset" underline="hover" variant="body2">
+                                Forgot password?
+                            </Link>
+                        </Box>
+                    </Box>
+                </CardContent>
             </Card>
-            <Button >
-                Back
-            </Button>
+            <Box mt={2} display="flex" justifyContent="center">
+                <Button variant="outlined" href="/">
+                    Back
+                </Button>
+            </Box>
         </Container>
     );
 };

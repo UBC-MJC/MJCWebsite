@@ -1,9 +1,19 @@
 import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
-import { Container, Col, Row, Modal, Form } from "react-bootstrap";
 import { updateSettingsAPI, updateUsernameAPI } from "../api/AccountAPI";
 import { AxiosError } from "axios";
-import { ButtonGroup, Button, FormControlLabel, Switch } from "@mui/material";
+import {
+    ButtonGroup,
+    Button,
+    FormControlLabel,
+    Switch,
+    Stack,
+    TextField,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+} from "@mui/material";
 import { ColorModeContext } from "../App";
 
 const Settings: FC = () => {
@@ -50,25 +60,25 @@ const Settings: FC = () => {
     const colorMode = React.useContext(ColorModeContext);
 
     return (
-        <Container>
+        <Stack spacing={3}>
             <h1>Settings</h1>
-            <Col xs sm={3} >
+            <Stack direction="column" spacing={2}>
                 <FormControlLabel
                     label="Legacy Display Game"
-                    defaultChecked={settings.legacyDisplayGame}
                     control={
                         <Switch
+                            checked={settings.legacyDisplayGame}
                             onChange={(e, checked) => handleToggle(checked, "legacyDisplayGame")}
                         />
                     }
                 />
-            </Col>
+            </Stack>
             <ButtonGroup variant="contained" aria-label="Basic button group">
                 <Button onClick={() => colorMode.toggleColorMode("light")}>Light</Button>
                 <Button onClick={() => colorMode.toggleColorMode("dark")}>Dark</Button>
                 <Button onClick={() => colorMode.toggleColorMode("system")}>System</Button>
             </ButtonGroup>
-            <Row >
+            <Stack direction="row" spacing={2}>
                 <Button
                     onClick={() => setShowUpdateUsernameModal(true)}
                     variant="contained"
@@ -76,13 +86,13 @@ const Settings: FC = () => {
                 >
                     Update Username
                 </Button>
-            </Row>
+            </Stack>
             <UpdateUsernameModal
                 show={showUpdateUsernameModal}
                 handleClose={() => setShowUpdateUsernameModal(false)}
                 handleSubmit={updateUsername}
             />
-        </Container>
+        </Stack>
     );
 };
 
@@ -110,7 +120,6 @@ const UpdateUsernameModal: FC<UpdateUsernameModalProps> = ({ show, handleClose, 
     const findErrors = () => {
         const newErrors: any = {};
         if (updatedUsername.length < 2 || updatedUsername.length > 20) {
-            console.log("asdasd");
             newErrors["username"] = "Username must be between 2 and 20 characters";
         }
 
@@ -123,39 +132,29 @@ const UpdateUsernameModal: FC<UpdateUsernameModalProps> = ({ show, handleClose, 
     };
 
     return (
-        <Modal show={show} onHide={onClose}>
-            <Modal.Header closeButton>
-                <Modal.Title>Update Username</Modal.Title>
-            </Modal.Header>
-            <Form noValidate onSubmit={submitUsername}>
-                <Modal.Body>
-                    <Form.Group>
-                        <Form.Label>Season Name</Form.Label>
-                        <Form.Control
-                            required
-                            size="lg"
-                            type="text"
-                            placeholder="New Username"
-                            defaultValue={""}
-                            isInvalid={!!errors.username}
-                            onChange={(e) => setUpdatedUsername(e.target.value)}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.username}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                </Modal.Body>
-
-                <Modal.Footer>
-                    <Button onClick={onClose}>
-                        Close
-                    </Button>
+        <Dialog open={show} onClose={onClose}>
+            <DialogTitle>Update Username</DialogTitle>
+            <form noValidate onSubmit={submitUsername}>
+                <DialogContent>
+                    <TextField
+                        required
+                        fullWidth
+                        label="New Username"
+                        value={updatedUsername}
+                        error={!!errors.username}
+                        helperText={errors.username}
+                        onChange={(e) => setUpdatedUsername(e.target.value)}
+                        margin="normal"
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={onClose}>Close</Button>
                     <Button variant="contained" type="submit">
                         Update
                     </Button>
-                </Modal.Footer>
-            </Form>
-        </Modal>
+                </DialogActions>
+            </form>
+        </Dialog>
     );
 };
 

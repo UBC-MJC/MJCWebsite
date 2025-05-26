@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { PickerData } from "react-simple-wheel-picker";
-import { Col, Row } from "react-bootstrap";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, TextField, Stack } from "@mui/material";
+
 type DropdownInputProps = {
     label: string;
     data: PickerData[];
@@ -11,11 +11,11 @@ type DropdownInputProps = {
 const DropdownInput: FC<DropdownInputProps> = ({ label, data, onChange }) => {
     const options = transformToSelectOptions(data);
     return (
-        <Col>
-            <Row>
+        <Stack direction="column">
+            <Stack direction="row">
                 <h6>{label}:</h6>
-            </Row>
-            <Row >
+            </Stack>
+            <Stack direction="row">
                 <Autocomplete
                     isOptionEqualToValue={(option, value) => option.label === value.label}
                     size={"small"}
@@ -23,8 +23,8 @@ const DropdownInput: FC<DropdownInputProps> = ({ label, data, onChange }) => {
                     onChange={(event, value) => onChange(value!.label)}
                     renderInput={(params) => <TextField {...params} placeholder={label} />}
                 />
-            </Row>
-        </Col>
+            </Stack>
+        </Stack>
     );
 };
 

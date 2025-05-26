@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Row } from "react-bootstrap";
+import Stack from "@mui/material/Stack";
 import { PointWheelComponent } from "../../common/Utils";
 import DropdownInput from "./DropdownInput";
 
@@ -10,7 +10,7 @@ type PointsInputProps = {
 
 const PointsInput: FC<PointsInputProps> = ({ pointsWheel, onChange }) => {
     return (
-        <Row >
+        <Stack direction="row" alignItems="center" spacing={2}>
             <h5>Hand:</h5>
             {pointsWheel.map((wheel) => (
                 <DropdownInput
@@ -20,7 +20,7 @@ const PointsInput: FC<PointsInputProps> = ({ pointsWheel, onChange }) => {
                     onChange={(value) => onChange(wheel.value, value)}
                 />
             ))}
-        </Row>
+        </Stack>
     );
 };
 export default PointsInput;

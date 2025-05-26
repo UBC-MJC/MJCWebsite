@@ -10,7 +10,7 @@ const IconButton: FC<IconButtonProps> = ({ children, disabled = false, onClick }
     return (
         <Button
             // variant="link"
-            
+
             disabled={disabled}
             onClick={onClick}
         >

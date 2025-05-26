@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import Stack from "@mui/material/Stack";
 import LegacyJapaneseGameTable, { ModifiedJapaneseRound } from "./LegacyJapaneseGameTable";
 import {
     isGameEnd,
@@ -26,7 +26,7 @@ import {
 import { validateJapaneseRound, validateTransaction } from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
 import PointsInput from "../../common/PointsInput";
-import { Button, ToggleButton, FormControlLabel, Switch } from "@mui/material";
+import { Button, ToggleButton, FormControlLabel, Switch, Container } from "@mui/material";
 import { Footer } from "../../common/Footer";
 
 function getTransaction(
@@ -284,59 +284,52 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
 
     const getRecordingInterface = () => {
         return (
-            <>
-                <Col xs sm={3} >
+            <Stack spacing={2} direction="column">
+                <Stack direction="row" spacing={2}>
                     <FormControlLabel
                         control={
                             <Switch onChange={(e, checked) => setMultipleHandInputMode(checked)} />
                         }
                         label="Multiple Transactions"
                     />
-                </Col>
-                <Row >
+                </Stack>
+                <Stack direction="row" spacing={2}>
                     {getActions().map((button, idx) => (
-                        <Col key={idx} xs={4}>
-                            <ToggleButton
-                                key={idx}
-                                
-                                value={button.value}
-                                id={button.name}
-                                selected={transactionType === button.value}
-                                onChange={(event, value) => transactionTypeOnChange(value)}
-                            >
-                                {button.name}
-                            </ToggleButton>
-                        </Col>
+                        <ToggleButton
+                            key={idx}
+                            value={button.value}
+                            id={button.name}
+                            selected={transactionType === button.value}
+                            onChange={(event, value) => transactionTypeOnChange(value)}
+                        >
+                            {button.name}
+                        </ToggleButton>
                     ))}
-                </Row>
-                <Row >
-                    <Col>
+                </Stack>
+                <Stack direction="row" spacing={2}>
+                    <PlayerButtonRow
+                        players={players}
+                        label={"RIICHI"}
+                        labelPlayerIds={riichiList}
+                        onChange={riichiOnChange}
+                    />
+                </Stack>
+                {getJapaneseLabels().map(([label, labelPlayerIds]) => (
+                    <Stack direction="row" spacing={2} key={label}>
                         <PlayerButtonRow
                             players={players}
-                            label={"RIICHI"}
-                            labelPlayerIds={riichiList}
-                            onChange={riichiOnChange}
+                            label={label as JapaneseLabel}
+                            labelPlayerIds={labelPlayerIds}
+                            onChange={actionOnChange}
                         />
-                    </Col>
-                </Row>
-                {getJapaneseLabels().map(([label, labelPlayerIds]) => (
-                    <Row key={label} >
-                        <Col>
-                            <PlayerButtonRow
-                                players={players}
-                                label={label as JapaneseLabel}
-                                labelPlayerIds={labelPlayerIds}
-                                onChange={actionOnChange}
-                            />
-                        </Col>
-                    </Row>
+                    </Stack>
                 ))}
                 {showPointInput(transactionType) && (
                     <PointsInput pointsWheel={japanesePointsWheel} onChange={handOnChange} />
                 )}
 
                 {getTransactionMatters()}
-            </>
+            </Stack>
         );
     };
     function getTransactionMatters() {
@@ -345,7 +338,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 <Button
                     color="success"
                     variant="contained"
-                    
                     disabled={gameOver}
                     onClick={submitSingleTransactionRound}
                 >
@@ -354,43 +346,32 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
             );
         }
         return (
-            <>
-                <Row>
-                    <Col>
-                        <Button
-                            variant="contained"
-                            
-                            disabled={gameOver}
-                            onClick={addTransaction}
-                        >
-                            Add Transaction
-                        </Button>
-                    </Col>
-                    <Col>
-                        <Button
-                            color="warning"
-                            variant="contained"
-                            
-                            disabled={gameOver || transactions.length === 0}
-                            onClick={deleteLastTransaction}
-                        >
-                            Delete Last Transaction
-                        </Button>
-                    </Col>
-                </Row>
+            <Stack spacing={2} direction="column">
+                <Stack direction="row" spacing={2}>
+                    <Button variant="contained" disabled={gameOver} onClick={addTransaction}>
+                        Add Transaction
+                    </Button>
+                    <Button
+                        color="warning"
+                        variant="contained"
+                        disabled={gameOver || transactions.length === 0}
+                        onClick={deleteLastTransaction}
+                    >
+                        Delete Last Transaction
+                    </Button>
+                </Stack>
 
                 {getTransactionListRender(transactions)}
 
                 <Button
                     color="success"
                     variant="contained"
-                    
                     disabled={gameOver || transactions.length === 0}
                     onClick={submitAllTransactionRound}
                 >
                     Submit Round
                 </Button>
-            </>
+            </Stack>
         );
     }
 

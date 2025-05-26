@@ -1,42 +1,55 @@
 import { flexRender, Table } from "@tanstack/react-table";
 import React from "react";
-import { Table as BTable } from "react-bootstrap";
+import Stack from "@mui/material/Stack";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
 function TableDisplay(props: { table: Table<any>; currentScoreRow: (string | number)[] }) {
     const { table, currentScoreRow } = props;
     return (
-        <BTable striped borderless responsive >
-            <thead>
-                {table.getHeaderGroups().map((headerGroup) => (
-                    <tr key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
-                            <th key={header.id}>
-                                {flexRender(header.column.columnDef.header, header.getContext())}
-                            </th>
-                        ))}
-                    </tr>
-                ))}
-            </thead>
-            <tbody>
-                {table.getRowModel().rows.map((row) => (
-                    <tr key={row.id}>
-                        {row.getVisibleCells().map((cell) => (
-                            <td key={cell.id}>
-                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </td>
-                        ))}
-                    </tr>
-                ))}
-
-                <tr >
-                    {currentScoreRow.map((value, idx) => (
-                        <td >
-                            {value}
-                        </td>
+        <Paper elevation={1}>
+            <Stack direction="column" spacing={1}>
+                {/* Table Header */}
+                <Stack direction="column">
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <Stack direction="row" key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <Stack direction="column" key={header.id}>
+                                    <Typography variant="subtitle2">
+                                        {flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext(),
+                                        )}
+                                    </Typography>
+                                </Stack>
+                            ))}
+                        </Stack>
                     ))}
-                </tr>
-            </tbody>
-        </BTable>
+                </Stack>
+                {/* Table Body */}
+                <Stack direction="column" spacing={0}>
+                    {table.getRowModel().rows.map((row) => (
+                        <Stack direction="row" key={row.id}>
+                            {row.getVisibleCells().map((cell) => (
+                                <Stack direction="column" key={cell.id}>
+                                    <Typography variant="body2">
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </Typography>
+                                </Stack>
+                            ))}
+                        </Stack>
+                    ))}
+                    {/* Current Score Row */}
+                    <Stack direction="row">
+                        {currentScoreRow.map((value, idx) => (
+                            <Stack direction="column" key={idx}>
+                                <Typography variant="body2">{value}</Typography>
+                            </Stack>
+                        ))}
+                    </Stack>
+                </Stack>
+            </Stack>
+        </Paper>
     );
 }
 

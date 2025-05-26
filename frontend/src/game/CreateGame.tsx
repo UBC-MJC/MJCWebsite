@@ -1,13 +1,12 @@
 import React, { FC, useContext, useState } from "react";
 import { createGameAPI } from "../api/GameAPI";
-import { Col, Container, Row } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { AuthContext } from "../common/AuthContext";
 import { withPlayerCondition } from "../common/withPlayerCondition";
 import { useNavigate } from "react-router-dom";
 import { getGameVariantString } from "../common/Utils";
 import { usePlayers } from "../hooks/GameHooks";
-import { Autocomplete, Button, TextField } from "@mui/material";
+import { Autocomplete, Button, TextField, Stack, Container, Typography } from "@mui/material";
 
 const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const navigate = useNavigate();
@@ -56,67 +55,60 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
         });
     return (
         <Container>
-            <h1 >{title}</h1>
-            <Row>
-                <Col xs={12} md={6} lg={3} >
-                    <h3>East</h3>
-                    <div >
-                        <Autocomplete
-                            isOptionEqualToValue={(option, value) => option.label === value.label}
-                            options={playerNames}
-                            disableClearable
-                            onChange={(event, value) => setEastPlayer(value!.value)}
-                            renderInput={(params) => (
-                                <TextField {...params} placeholder="Choose a Player" />
-                            )}
-                        />
-                    </div>
-                </Col>
-                <Col xs={12} md={6} lg={3} >
-                    <h3>South</h3>
-                    <div >
-                        <Autocomplete
-                            isOptionEqualToValue={(option, value) => option.label === value.label}
-                            options={playerNames}
-                            disableClearable
-                            onChange={(event, value) => setSouthPlayer(value!.value)}
-                            renderInput={(params) => (
-                                <TextField {...params} placeholder="Choose a Player" />
-                            )}
-                        />
-                    </div>
-                </Col>
-                <Col xs={12} md={6} lg={3} >
-                    <h3>West</h3>
-                    <div >
-                        <Autocomplete
-                            isOptionEqualToValue={(option, value) => option.label === value.label}
-                            options={playerNames}
-                            disableClearable
-                            onChange={(event, value) => setWestPlayer(value!.value)}
-                            renderInput={(params) => (
-                                <TextField {...params} placeholder="Choose a Player" />
-                            )}
-                        />
-                    </div>
-                </Col>
-                <Col xs={12} md={6} lg={3} >
-                    <h3>North</h3>
-                    <div >
-                        <Autocomplete
-                            isOptionEqualToValue={(option, value) => option.label === value.label}
-                            options={playerNames}
-                            disableClearable
-                            onChange={(event, value) => setNorthPlayer(value!.value)}
-                            renderInput={(params) => (
-                                <TextField {...params} placeholder="Choose a Player" />
-                            )}
-                        />
-                    </div>
-                </Col>
-            </Row>
+            <Typography variant="h4" component="h1" gutterBottom>
+                {title}
+            </Typography>
+            <Stack direction="row" spacing={2}>
+                <Stack direction="column" spacing={1} flex={1}>
+                    <Typography variant="h6">East</Typography>
+                    <Autocomplete
+                        isOptionEqualToValue={(option, value) => option.label === value.label}
+                        options={playerNames}
+                        disableClearable
+                        onChange={(event, value) => setEastPlayer(value!.value)}
+                        renderInput={(params) => (
+                            <TextField {...params} placeholder="Choose a Player" />
+                        )}
+                    />
+                </Stack>
+                <Stack direction="column" spacing={1} flex={1}>
+                    <Typography variant="h6">South</Typography>
+                    <Autocomplete
+                        isOptionEqualToValue={(option, value) => option.label === value.label}
+                        options={playerNames}
+                        disableClearable
+                        onChange={(event, value) => setSouthPlayer(value!.value)}
+                        renderInput={(params) => (
+                            <TextField {...params} placeholder="Choose a Player" />
+                        )}
+                    />
+                </Stack>
+                <Stack direction="column" spacing={1} flex={1}>
+                    <Typography variant="h6">West</Typography>
+                    <Autocomplete
+                        isOptionEqualToValue={(option, value) => option.label === value.label}
+                        options={playerNames}
+                        disableClearable
+                        onChange={(event, value) => setWestPlayer(value!.value)}
+                        renderInput={(params) => (
+                            <TextField {...params} placeholder="Choose a Player" />
+                        )}
+                    />
+                </Stack>
+                <Stack direction="column" spacing={1} flex={1}>
+                    <Typography variant="h6">North</Typography>
+                    <Autocomplete
+                        isOptionEqualToValue={(option, value) => option.label === value.label}
+                        options={playerNames}
+                        disableClearable
+                        onChange={(event, value) => setNorthPlayer(value!.value)}
+                        renderInput={(params) => (
+                            <TextField {...params} placeholder="Choose a Player" />
+                        )}
+                    />
+                </Stack>
+            </Stack>
             <Button
-                
                 variant="contained"
                 disabled={playerSelectMissing || notUnique}
                 onClick={createGame}

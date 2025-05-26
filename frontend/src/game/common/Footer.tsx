@@ -1,5 +1,7 @@
 import React, { FC } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import Stack from "@mui/material/Stack";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
 import riichiStick from "../../assets/riichiStick.png";
 import { getRiichiStickCount, getScoresWithPlayers } from "../../common/Utils";
 
@@ -11,31 +13,31 @@ export const Footer: FC<{
     return (
         <Container>
             {gameVariant === "jp" && (
-                <Row>
-                    <h5>
+                <Stack direction="row" alignItems="center" mb={2}>
+                    <Typography variant="h5">
                         Riichi sticks:{" "}
                         {getRiichiStickCount(game.rounds as JapaneseRound[], riichiList)}
-                    </h5>
-                </Row>
+                    </Typography>
+                </Stack>
             )}
-            <Row>
+            <Stack direction="row" spacing={2}>
                 {getScoresWithPlayers(game, gameVariant).map(
                     ({ username, score, eloDelta }, idx) => (
-                        <Col key={idx}>
-                            <div>{username}</div>
+                        <Stack direction="column" alignItems="center" key={idx} spacing={1}>
+                            <Typography>{username}</Typography>
                             <div>
                                 {riichiList.includes(idx) && (
-                                    <img src={riichiStick} />
+                                    <img src={riichiStick} alt="Riichi Stick" />
                                 )}
                             </div>
-                            <h2 >
+                            <Typography variant="h4">
                                 {score - Number(riichiList.includes(idx)) * 1000}
-                            </h2>
-                            <div>{eloDelta.toFixed(1)}</div>
-                        </Col>
+                            </Typography>
+                            <Typography>{eloDelta.toFixed(1)}</Typography>
+                        </Stack>
                     ),
                 )}
-            </Row>
+            </Stack>
         </Container>
     );
 };

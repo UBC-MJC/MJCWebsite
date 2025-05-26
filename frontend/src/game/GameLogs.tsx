@@ -1,14 +1,22 @@
 import React, { FC, useCallback, useState } from "react";
 import { getGamesAPI } from "../api/GameAPI";
 import { AxiosError } from "axios";
-import { Card, Col, Container, Pagination, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import alert from "../common/AlertDialog";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { mapPlayerNameToOption, mapSeasonToOption } from "./common/constants";
 import { useSeasons } from "../hooks/AdminHooks";
 import { usePlayers } from "../hooks/GameHooks";
-import { Autocomplete, Button, TextField } from "@mui/material";
+import {
+    Autocomplete,
+    Button,
+    TextField,
+    Stack,
+    Box,
+    Card,
+    Pagination,
+    Container,
+} from "@mui/material";
 
 const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Riichi", value: "jp" },
@@ -73,29 +81,16 @@ const GameLogs: FC = () => {
         const numPages = Math.ceil(games.length / MAX_GAMES_PER_PAGE);
 
         return (
-            <Pagination >
-                <Pagination.Prev
-                    disabled={pagination === 1}
-                    onClick={() => setPagination(pagination - 1)}
+            <Stack direction="row" justifyContent="center" mt={2}>
+                <Pagination
+                    count={numPages}
+                    page={pagination}
+                    onChange={(_, value) => setPagination(value)}
+                    showFirstButton
+                    showLastButton
+                    color="primary"
                 />
-                {pagination !== 1 && (
-                    <Pagination.Item onClick={() => setPagination(1)}>{1}</Pagination.Item>
-                )}
-                {pagination > 2 && <Pagination.Ellipsis disabled />}
-
-                <Pagination.Item active>{pagination}</Pagination.Item>
-
-                {pagination < numPages - 1 && <Pagination.Ellipsis disabled />}
-                {pagination !== numPages && (
-                    <Pagination.Item onClick={() => setPagination(numPages)}>
-                        {numPages}
-                    </Pagination.Item>
-                )}
-                <Pagination.Next
-                    disabled={pagination === numPages}
-                    onClick={() => setPagination(pagination + 1)}
-                />
-            </Pagination>
+            </Stack>
         );
     };
     if (!seasonsResult.isSuccess || !playersResult.isSuccess) {
@@ -107,84 +102,64 @@ const GameLogs: FC = () => {
     return (
         <>
             <Container>
-                <h1 >Game Logs</h1>
-                <Row>
-                    <Col xs={12} lg={4} >
+                <h1>Game Logs</h1>
+                <Stack direction="row" spacing={2}>
+                    <Stack direction="column" spacing={1}>
                         <h3>Game Variant</h3>
-                        <div >
-                            <Autocomplete
-                                isOptionEqualToValue={(option, value) =>
-                                    option.label === value.label
-                                }
-                                options={gameVariants}
-                                defaultValue={gameVariants[0]}
-                                onChange={(event, value) => setQueryGameVariant(value!.value)}
-                                renderInput={(params) => (
-                                    <TextField {...params} placeholder="Choose a variant" />
-                                )}
-                            />
-                        </div>
-                    </Col>
-                    <Col xs={12} lg={4} >
+                        <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.label === value.label}
+                            options={gameVariants}
+                            defaultValue={gameVariants[0]}
+                            onChange={(event, value) => setQueryGameVariant(value!.value)}
+                            renderInput={(params) => (
+                                <TextField {...params} placeholder="Choose a variant" />
+                            )}
+                        />
+                    </Stack>
+                    <Stack direction="column" spacing={1}>
                         <h3>Season</h3>
-                        <div >
-                            <Autocomplete
-                                isOptionEqualToValue={(option, value) =>
-                                    option.label === value.label
-                                }
-                                options={seasonsOptions}
-                                onChange={(event, value) => setSeason(value!.value)}
-                                renderInput={(params) => (
-                                    <TextField {...params} placeholder="Default: this season" />
-                                )}
-                            />
-                        </div>
-                    </Col>
-                    <Col xs={12} lg={4} >
+                        <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.label === value.label}
+                            options={seasonsOptions}
+                            onChange={(event, value) => setSeason(value!.value)}
+                            renderInput={(params) => (
+                                <TextField {...params} placeholder="Default: this season" />
+                            )}
+                        />
+                    </Stack>
+                    <Stack direction="column" spacing={1}>
                         <h3>Players</h3>
-                        <div >
-                            <Autocomplete
-                                isOptionEqualToValue={(option, value) =>
-                                    option.label === value.label
-                                }
-                                options={playersOptions}
-                                multiple
-                                disableCloseOnSelect
-                                onChange={(event, value) =>
-                                    setQueryPlayers(value!.map((player) => player.value))
-                                }
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        placeholder="Leave blank for all players"
-                                    />
-                                )}
-                            />
-                        </div>
-                    </Col>
-                </Row>
-                <Button
-                    
-                    variant={"contained"}
-                    disabled={disableQueryButton()}
-                    onClick={getGames}
-                >
+                        <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.label === value.label}
+                            options={playersOptions}
+                            multiple
+                            disableCloseOnSelect
+                            onChange={(event, value) =>
+                                setQueryPlayers(value!.map((player) => player.value))
+                            }
+                            renderInput={(params) => (
+                                <TextField {...params} placeholder="Leave blank for all players" />
+                            )}
+                        />
+                    </Stack>
+                </Stack>
+                <Button variant={"contained"} disabled={disableQueryButton()} onClick={getGames}>
                     Search Games
                 </Button>
             </Container>
             <Container>
-                <Row>
+                <Stack direction="column" spacing={2}>
                     {getPaginatedGames().map((game, idx) => (
-                        <Col key={idx}  xs={12}>
-                            <Card  onClick={() => navigateToGame(game.id)}>
-                                <Card.Body>
+                        <Box key={idx} onClick={() => navigateToGame(game.id)}>
+                            <Card variant="outlined">
+                                <Box p={2}>
                                     <GameSummaryBody game={game} gameVariant={queryGameVariant} />
-                                </Card.Body>
+                                </Box>
                             </Card>
-                        </Col>
+                        </Box>
                     ))}
-                </Row>
-                <Row >{getPagination()}</Row>
+                </Stack>
+                {getPagination()}
             </Container>
         </>
     );

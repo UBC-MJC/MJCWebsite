@@ -1,10 +1,18 @@
 import React, { FC, useState } from "react";
-import { Card, Container, Form, Alert } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { submitPasswordResetAPI } from "../api/AccountAPI";
 import alert from "../common/AlertDialog";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
+import {
+    Container,
+    Card,
+    CardContent,
+    Typography,
+    TextField,
+    Alert,
+    Button,
+    Box,
+} from "@mui/material";
 
 type PasswordResetProps = {
     playerId: string | null;
@@ -52,47 +60,60 @@ const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
 
     if (!playerId || !token) {
         return (
-            <Container >
-                <Card body>
-                    <h2>Invalid Request</h2>
-                    <p>The link you have requested has been expired.</p>
+            <Container maxWidth="sm">
+                <Card>
+                    <CardContent>
+                        <Typography variant="h5" gutterBottom>
+                            Invalid Request
+                        </Typography>
+                        <Typography>The link you have requested has been expired.</Typography>
+                    </CardContent>
                 </Card>
             </Container>
         );
     }
 
     return (
-        <Container>
-            <Card body>
-                <h2>Reset Password</h2>
-                {error && <Alert variant="danger">{error}</Alert>}
-                <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicPassword" >
-                        <Form.Control
+        <Container maxWidth="sm">
+            <Card>
+                <CardContent>
+                    <Typography variant="h5" gutterBottom>
+                        Reset Password
+                    </Typography>
+                    {error && <Alert severity="error">{error}</Alert>}
+                    <Box component="form" noValidate onSubmit={handleSubmit}>
+                        <TextField
+                            margin="normal"
                             required
+                            fullWidth
                             type="password"
-                            placeholder="New Password"
+                            label="New Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="new-password"
                         />
-                    </Form.Group>
-
-                    <Form.Group controlId="formBasicConfirmPassword" >
-                        <Form.Control
+                        <TextField
+                            margin="normal"
                             required
+                            fullWidth
                             type="password"
-                            placeholder="Confirm Password"
+                            label="Confirm Password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
+                            autoComplete="new-password"
                         />
-                    </Form.Group>
-
-                    <div >
-                        <Button variant="contained" type="submit" disabled={isWaiting}>
-                            Reset Password
-                        </Button>
-                    </div>
-                </Form>
+                        <Box>
+                            <Button
+                                variant="contained"
+                                type="submit"
+                                disabled={isWaiting}
+                                fullWidth
+                            >
+                                Reset Password
+                            </Button>
+                        </Box>
+                    </Box>
+                </CardContent>
             </Card>
         </Container>
     );

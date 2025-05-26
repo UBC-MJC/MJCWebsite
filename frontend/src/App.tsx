@@ -1,6 +1,5 @@
 import React from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import "./App.scss";
 import WithoutNav from "./common/WithoutNav";
 import WithNav from "./common/WithNav";
 import { AuthContextProvider } from "./common/AuthContext";
@@ -34,6 +33,14 @@ export const ColorModeContext = React.createContext({
     },
 });
 
+/*
+$primary: #870E06;
+$secondary: #0B3413;
+$tertiary: #07092D;
+$danger: #CC1009;
+$info: #F0B733;
+$light: #F2F2F2;
+*/
 const App: React.FC = () => {
     const query = useQuery();
     const queryClient = new QueryClient({
@@ -70,7 +77,7 @@ const App: React.FC = () => {
                 <QueryClientProvider client={queryClient}>
                     <AuthContextProvider>
                         <CssBaseline />
-                        <main >
+                        <main>
                             <Routes>
                                 <Route element={<WithNav />}>
                                     <Route path="/" element={<Home />} />
