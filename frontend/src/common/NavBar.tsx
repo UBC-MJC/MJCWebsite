@@ -11,6 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import { AuthContext } from "./AuthContext";
 import { Link } from "react-router-dom";
 import { getGameVariantString } from "./Utils";
+import { Container } from "@mui/material";
 
 const NavBar: FC = () => {
     const { player, logout } = useContext(AuthContext);
@@ -23,9 +24,9 @@ const NavBar: FC = () => {
 
     const handleMenuOpen =
         (setter: React.Dispatch<React.SetStateAction<HTMLElement | null>>) =>
-        (event: React.MouseEvent<HTMLElement>) => {
-            setter(event.currentTarget);
-        };
+            (event: React.MouseEvent<HTMLElement>) => {
+                setter(event.currentTarget);
+            };
 
     const handleMenuClose =
         (setter: React.Dispatch<React.SetStateAction<HTMLElement | null>>) => () => {
@@ -33,12 +34,14 @@ const NavBar: FC = () => {
         };
 
     return (
-        <AppBar position="static" color="info">
-            <Toolbar>
-                <Typography  component={Link} to="/">
-                    UBC Mahjong Club
-                </Typography>
-                <Box>
+        <AppBar color="info" position="sticky">
+            <Container sx={{ flexGrow: 1 }}>
+                <Toolbar>
+                    <Box paddingRight={1}>
+                        <Typography variant="h6" color="textPrimary" component={Link} to="/">
+                        UBC Mahjong Club
+                    </Typography>
+                    </Box>
                     <Button color="inherit" onClick={handleMenuOpen(setAnchorElLeaderboard)}>
                         Leaderboard
                     </Button>
@@ -158,6 +161,7 @@ const NavBar: FC = () => {
                     <Button color="inherit" component={Link} to="/resources">
                         Resources
                     </Button>
+                    <Box sx={{ flexGrow: 1 }} />
                     {player && player.admin && (
                         <Button color="inherit" component={Link} to="/admin">
                             Admin
@@ -195,9 +199,10 @@ const NavBar: FC = () => {
                             Login
                         </Button>
                     )}
-                </Box>
-                {/* Mobile menu icon (optional, not implemented here) */}
-            </Toolbar>
+
+                    {/* Mobile menu icon (optional, not implemented here) */}
+                </Toolbar>
+            </Container>
         </AppBar>
     );
 };

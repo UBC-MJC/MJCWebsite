@@ -10,7 +10,7 @@ const Home: FC = () => {
                 Register for <a href="https://forms.gle/sw9CnSsokeyJB6pK6">Vancouver Riichi Open</a>{" "}
                 today!
             </h2>
-            <img src={logo} width="100%"/>
+            <img src={logo} width="50%"/>
             <p>Club room location: Room 3206B, The Nest</p>
             <p>The University of British Columbia, Vancouver, BC</p>
             <p>

@@ -154,6 +154,7 @@ const GameLogs: FC = () => {
                         </Card>
                     </Box>
                 ))}
+
             {getPagination()}
         </>
     );

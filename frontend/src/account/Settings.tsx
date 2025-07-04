@@ -13,8 +13,8 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    useColorScheme,
 } from "@mui/material";
-import { ColorModeContext } from "../App";
 
 const Settings: FC = () => {
     const { player, reloadPlayer } = useContext(AuthContext);
@@ -57,8 +57,8 @@ const Settings: FC = () => {
     if (typeof player === "undefined") {
         return <h1>Not Logged In</h1>;
     }
-    const colorMode = React.useContext(ColorModeContext);
-
+    const { mode, setMode } = useColorScheme();
+    
     return (
         <Stack spacing={3}>
             <h1>Settings</h1>
@@ -74,9 +74,9 @@ const Settings: FC = () => {
                 />
             </Stack>
             <ButtonGroup aria-label="Basic button group">
-                <Button onClick={() => colorMode.toggleColorMode("light")}>Light</Button>
-                <Button onClick={() => colorMode.toggleColorMode("dark")}>Dark</Button>
-                <Button onClick={() => colorMode.toggleColorMode("system")}>System</Button>
+                <Button onClick={() => setMode("light")}>Light</Button>
+                <Button onClick={() => setMode("dark")}>Dark</Button>
+                <Button onClick={() => setMode("system")}>System</Button>
             </ButtonGroup>
             <Stack direction="row" spacing={2}>
                 <Button

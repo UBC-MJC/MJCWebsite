@@ -11,9 +11,9 @@ type DropdownInputProps = {
 const DropdownInput: FC<DropdownInputProps> = ({ label, data, onChange }) => {
     const options = transformToSelectOptions(data);
     return (
-        <Stack direction="column">
+        <Stack direction="column" alignItems="center">
             <Stack direction="row">
-                <h6>{label}:</h6>
+                <h5>{label}:</h5>
             </Stack>
             <Stack direction="row">
                 <Autocomplete

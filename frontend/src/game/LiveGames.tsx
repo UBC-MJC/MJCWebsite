@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Card, CardHeader, CardContent, Container, Stack } from "@mui/material";
+import { Card, CardHeader, CardContent, Container, Stack, Grid, Box, styled, Paper } from "@mui/material";
 import { getGameVariantString } from "../common/Utils";
 import { useNavigate } from "react-router-dom";
 import { gameRoundString } from "./common/constants";
@@ -31,16 +31,20 @@ export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
     return (
         <>
             <h1>{getGameVariantString(gameVariant)} Games</h1>
-            <Stack direction="row" spacing={2} flexWrap="wrap">
-                {liveGames.map((game, idx) => (
-                    <Card sx={{width: "45%"}} onClick={() => navigateToGame(game.id)}>
-                        <CardHeader title={getCardHeader(game)} />
-                        <CardContent>
-                            <GameSummaryBody game={game} gameVariant={gameVariant} />
-                        </CardContent>
-                    </Card>
-                ))}
-            </Stack>
+            <Box>
+                <Grid container spacing={1} columns={{ xs: 4, sm: 8, md: 12 }}>
+                    {liveGames.map((game, index) => (
+                        <Grid key={index} size={4}>
+                            <Card onClick={() => navigateToGame(game.id)}>
+                                <CardHeader title={getCardHeader(game)} />
+                                <CardContent>
+                                    <GameSummaryBody game={game} gameVariant={gameVariant} />
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+            </Box>
         </>
     );
 };

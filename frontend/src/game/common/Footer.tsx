@@ -4,6 +4,7 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import riichiStick from "../../assets/riichiStick.png";
 import { getRiichiStickCount, getScoresWithPlayers } from "../../common/Utils";
+import { Box } from "@mui/material";
 
 export const Footer: FC<{
     game: Game;
@@ -11,7 +12,7 @@ export const Footer: FC<{
     riichiList: number[];
 }> = ({ game, gameVariant, riichiList }) => {
     return (
-        <Container>
+        <Box position="sticky" bottom={0}>
             {gameVariant === "jp" && (
                 <Stack direction="row" alignItems="center" mb={2}>
                     <Typography variant="h5">
@@ -38,6 +39,6 @@ export const Footer: FC<{
                     ),
                 )}
             </Stack>
-        </Container>
+        </Box>
     );
 };

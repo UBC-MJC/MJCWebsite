@@ -26,7 +26,7 @@ import {
 import { validateJapaneseRound, validateTransaction } from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
 import PointsInput from "../../common/PointsInput";
-import { Button, ToggleButton, FormControlLabel, Switch, Container } from "@mui/material";
+import { Button, ToggleButton, FormControlLabel, Switch, Container, Grid } from "@mui/material";
 import { Footer } from "../../common/Footer";
 
 function getTransaction(
@@ -284,7 +284,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
 
     const getRecordingInterface = () => {
         return (
-            <Stack spacing={2} direction="column">
+            <Stack spacing={2} direction="column" alignItems="center">
                 <Stack direction="row" spacing={2}>
                     <FormControlLabel
                         control={
@@ -293,8 +293,9 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         label="Multiple Transactions"
                     />
                 </Stack>
-                <Stack direction="row" spacing={2}>
+                <Grid container spacing={1}>
                     {getActions().map((button, idx) => (
+                        <Grid>
                         <ToggleButton
                             key={idx}
                             value={button.value}
@@ -304,8 +305,9 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                         >
                             {button.name}
                         </ToggleButton>
+                        </Grid>
                     ))}
-                </Stack>
+                </Grid>
                 <PlayerButtonRow
                     players={players}
                     label={"RIICHI"}
@@ -313,14 +315,12 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     onChange={riichiOnChange}
                 />
                 {getJapaneseLabels().map(([label, labelPlayerIds]) => (
-                    <Stack direction="column" spacing={2} key={label}>
                         <PlayerButtonRow
                             players={players}
                             label={label as JapaneseLabel}
                             labelPlayerIds={labelPlayerIds}
                             onChange={actionOnChange}
                         />
-                    </Stack>
                 ))}
                 {showPointInput(transactionType) && (
                     <PointsInput pointsWheel={japanesePointsWheel} onChange={handOnChange} />
@@ -375,13 +375,13 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
 
     return (
         <>
-            <Container>
+            <Stack direction="column" alignItems="center">
                 {enableRecording && !gameOver && getRecordingInterface()}
                 <LegacyJapaneseGameTable
                     rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
                     players={players}
                 />
-            </Container>
+            </Stack>
             <Footer game={game} gameVariant={"jp"} riichiList={riichiList} />
         </>
     );

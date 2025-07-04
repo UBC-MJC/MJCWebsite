@@ -206,7 +206,7 @@ const AdminSeason: FC = () => {
         <>
             <Container>
                 <Grid container justifyContent="center">
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={6}>
                         <Card variant="outlined">
                             <CardHeader title="Current Season" />
                             {getCurrentSeasonPanel()}
