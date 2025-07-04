@@ -8,13 +8,13 @@ import {
     Button,
 } from "@mui/material";
 
-type ModifySeasonModalProps = {
+interface ModifySeasonModalProps {
     show: boolean;
     season: Season;
     handleClose: () => void;
     handleSubmit: (season: Season) => void;
     actionString: string;
-};
+}
 
 const ModifySeasonModal: FC<ModifySeasonModalProps> = ({
     show,

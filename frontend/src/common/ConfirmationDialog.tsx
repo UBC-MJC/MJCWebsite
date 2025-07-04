@@ -7,15 +7,10 @@ import { Button } from "@mui/material";
 const ConfirmationDialog: FC<any> = ({
     show,
     proceed,
-    dismiss,
-    cancel,
     confirmation,
     title,
     okText,
     cancelText,
-    okButtonStyle,
-    cancelButtonStyle,
-    ...options
 }) => {
     const header = title ? (
         <Modal.Header>

@@ -10,10 +10,10 @@ import { addScoreDeltas } from "../../jp/controller/JapaneseRound";
 import { generateOverallScoreDelta } from "../controller/HongKongRound";
 import { getHongKongStartingScore } from "../../common/constants";
 import TableDisplay from "../../common/TableDisplay";
-type LegacyGameTableProps = {
+interface LegacyGameTableProps {
     rounds: ModifiedHongKongRound[];
     players: GamePlayer[];
-};
+}
 
 export type ModifiedHongKongRound = HongKongRound & { scoreDeltas: number[] };
 

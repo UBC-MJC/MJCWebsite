@@ -46,11 +46,11 @@ const hongKongPointsWheel: PointWheelComponent[] = [
     { label: "Points", value: "points", data: hongKongPoints },
 ];
 
-export type PointWheelComponent = {
+export interface PointWheelComponent {
     label: string;
     value: string;
     data: PickerData[];
-};
+}
 
 const japaneseRoundLabels = [
     { name: "Round Winner", value: "win" },

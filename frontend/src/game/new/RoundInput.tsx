@@ -3,13 +3,13 @@ import { hongKongRoundLabels, japaneseRoundLabels } from "../../common/Utils";
 import { Col, Container, Row, ToggleButton } from "react-bootstrap";
 import RoundInputFigure from "./RoundInputFigure";
 
-type RoundInputProps = {
+interface RoundInputProps {
     gameVariant: GameVariant;
     players: any[];
     roundValue: RoundValue;
     onChange: (value: RoundValue) => void;
     isLegacy?: boolean;
-};
+}
 
 const NewRoundInput: FC<RoundInputProps> = ({ gameVariant, players }) => {
     const [roundValue, setRoundValue] = useState(() => {

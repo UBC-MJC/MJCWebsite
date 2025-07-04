@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { loginAPICall, registerAPICall } from "../api/AuthAPI";
 import { getCurrentPlayer } from "../api/AccountAPI";
 
-type ChildProps = {
+interface ChildProps {
     children: ReactNode;
-};
+}
 
 const notInstantiated = () => {
     return Promise.reject();

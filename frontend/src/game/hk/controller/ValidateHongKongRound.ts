@@ -10,7 +10,7 @@ const validateHongKongRound = (transactions: HongKongTransaction[]) => {
         (prev, current) => prev + Math.abs(current),
         0,
     );
-    if (hand! === -1) {
+    if (hand === -1) {
         throw new Error("Hand unset");
     }
     if (totalScoreDelta !== 0) {

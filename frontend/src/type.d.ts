@@ -1,56 +1,56 @@
-type LeaderboardType = {
+interface LeaderboardType {
     username: string;
     elo: string;
     gameCount: string;
-};
+}
 
-type Setting = {
+interface Setting {
     legacyDisplayGame: boolean;
-};
+}
 
-type GamePlayer = {
+interface GamePlayer {
     id: string;
     username: string;
     trueWind: string;
     score: number;
-};
+}
 
 type GameType = "RANKED" | "PLAY_OFF" | "TOURNEY" | "CASUAL";
 
 type GameVariant = "jp" | "hk";
 
-type GameCreationProp = {
+interface GameCreationProp {
     gameVariant: GameVariant;
     gameType: GameType;
-};
+}
 
-type LoginDataType = {
+interface LoginDataType {
     username: string;
     password: string;
-};
+}
 
-type RegisterDataType = {
+interface RegisterDataType {
     username: string;
     email: string;
     firstName: string;
     lastName: string;
     password: string;
-};
+}
 
-type ResetPasswordDataType = {
+interface ResetPasswordDataType {
     email: string;
-};
+}
 
-type PlayerAPIDataType = {
+interface PlayerAPIDataType {
     player: Player;
-};
+}
 
-type PlayerNamesDataType = {
+interface PlayerNamesDataType {
     playerId: string;
     username: string;
-};
+}
 
-type Player = {
+interface Player {
     id: string;
     authToken: string;
     username: string;
@@ -62,26 +62,26 @@ type Player = {
     hongKongQualified: boolean;
     createdAt: string;
     legacyDisplayGame: boolean;
-};
+}
 
-type Season = {
+interface Season {
     id: string;
     name: string;
     startDate: string;
     endDate: string;
-};
+}
 
 type SeasonsAPIDataType = Season[];
 
-type AuthContextType = {
+interface AuthContextType {
     player: Player | undefined;
     login: (loginData: LoginDataType) => Promise<void>;
     register: (registerData: RegisterDataType) => Promise<void>;
     logout: () => Promise<void>;
     reloadPlayer: () => Promise<void>;
-};
+}
 
-type Game = {
+interface Game {
     id: string;
     type: GameType;
     status: string;
@@ -91,28 +91,24 @@ type Game = {
     rounds: (JapaneseRound | HongKongRound)[];
     eloDeltas: EloDeltaObject;
     currentRound: PartialJapaneseRound;
-};
+}
 
-type EloDeltaObject = {
-    [key: string]: number;
-};
+type EloDeltaObject = Record<string, number>;
 
-type RoundType = {
+interface RoundType {
     name: string;
     value: string;
     selectors: string[];
-};
+}
 
-type PlayerActions = {
-    [key: string]: string[];
-};
+type PlayerActions = Record<string, string[]>;
 
-type RoundValue = {
+interface RoundValue {
     type: RoundType;
     playerActions: PlayerActions;
-};
+}
 
-type JapaneseRound = {
+interface JapaneseRound {
     roundNumber: number;
     roundWind: string;
     roundCount: number;
@@ -122,19 +118,19 @@ type JapaneseRound = {
     riichis: number[];
     tenpais: number[];
     transactions: JapaneseTransaction[];
-};
+}
 
 type PartialJapaneseRound = Pick<
     JapaneseRound,
     "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount"
 >;
 
-type JapaneseTransaction = {
+interface JapaneseTransaction {
     transactionType: JapaneseTransactionType;
     scoreDeltas: number[];
     hand?: JapaneseHandInput;
     paoPlayerIndex?: number;
-};
+}
 
 type Transaction = JapaneseTransaction | HongKongTransaction;
 
@@ -146,28 +142,28 @@ type JapaneseTransactionType =
     | "NAGASHI_MANGAN"
     | "INROUND_RYUUKYOKU";
 
-type JapaneseHandInput = {
+interface JapaneseHandInput {
     han: number;
     fu: number;
     dora: number;
-};
+}
 
-type HongKongRound = {
+interface HongKongRound {
     id: string;
     roundNumber: number;
     roundWind: string;
     roundCount: number;
     transactions: HongKongTransaction[];
-};
+}
 
 type PartialHongKongRound = Pick<HongKongRound, "roundCount" | "roundNumber" | "roundWind">;
 
-type HongKongTransaction = {
+interface HongKongTransaction {
     id?: string;
     transactionType: HongKongTransactionType;
     scoreDeltas: number[];
     hand?: HongKongHandInput;
-};
+}
 
 type HongKongHandInput = number;
 
@@ -178,15 +174,15 @@ type HongKongTransactionType =
     | "SELF_DRAW_PAO"
     | "RESHUFFLE";
 
-type OptionsType<T> = {
+interface OptionsType<T> {
     label: string;
     value: T;
-};
+}
 
-type StatisticsType = {
+interface StatisticsType {
     totalRounds: number;
     dealInCount: number;
     dealInPoint: number;
     winCount: number;
     winPoint: number;
-};
+}

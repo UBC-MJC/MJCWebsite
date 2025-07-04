@@ -2,11 +2,11 @@ import React, { FC } from "react";
 import { PickerData } from "react-simple-wheel-picker";
 import { Col, Row } from "react-bootstrap";
 import { Autocomplete, TextField } from "@mui/material";
-type DropdownInputProps = {
+interface DropdownInputProps {
     label: string;
     data: PickerData[];
     onChange: (value: any) => void;
-};
+}
 
 const DropdownInput: FC<DropdownInputProps> = ({ label, data, onChange }) => {
     const options = transformToSelectOptions(data);

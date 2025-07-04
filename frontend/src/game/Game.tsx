@@ -242,11 +242,11 @@ const Game: FC = () => {
     );
 };
 
-export type LegacyGameProps = {
+export interface LegacyGameProps {
     enableRecording: boolean;
     players: GamePlayer[];
     game: Game;
     handleSubmitRound: (roundRequest: any) => Promise<void>;
-};
+}
 
 export default Game;

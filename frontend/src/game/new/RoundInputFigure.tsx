@@ -3,9 +3,9 @@ import { Col, Container, Ratio, Row } from "react-bootstrap";
 import GamePlayerGridCell from "./GamePlayerGridCell";
 import riichiStick from "../../assets/riichiStick.png";
 
-type RoundInputFigureProps = {
+interface RoundInputFigureProps {
     players: any[];
-};
+}
 const RoundInputFigure: FC<RoundInputFigureProps> = ({ players }) => {
     return (
         <Row className="justify-content-center">

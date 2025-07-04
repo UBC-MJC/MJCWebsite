@@ -1,10 +1,10 @@
 import { FC } from "react";
 import WheelPicker, { PickerData } from "react-simple-wheel-picker";
 
-type CustomizedWheelPickerProps = {
+interface CustomizedWheelPickerProps {
     data: PickerData[];
     onChange: (item: PickerData) => void;
-};
+}
 
 const CustomizedWheelPicker: FC<CustomizedWheelPickerProps> = ({ data, onChange }) => {
     return (

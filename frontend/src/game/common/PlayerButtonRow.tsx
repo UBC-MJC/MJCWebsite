@@ -1,12 +1,12 @@
 import React from "react";
 import { ToggleButton } from "@mui/material";
 
-type PlayerButtonRow<T extends string> = {
+interface PlayerButtonRow<T extends string> {
     players: GamePlayer[];
     label: T;
     labelPlayerIds: (number | undefined)[];
     onChange: (playerIndex: number, label: T) => void;
-};
+}
 
 const PlayerButtonRow = <T extends string>({
     players,

@@ -153,7 +153,17 @@ abstract class GameService {
     }
     abstract createRound(game: any, roundRequest: any): Promise<any>;
     abstract deleteRound(id: string): Promise<void>;
-    public async mapGameObject(game: any): Promise<any> {
+    public async mapGameObject(game: any): Promise<{
+        id: number;
+        type: GameType;
+        status: GameStatus;
+        recordedById: string;
+        createdAt: Date;
+        players: { id: string; username: string; trueWind: Wind }[];
+        rounds: any[];
+        eloDeltas: { [key: string]: number };
+        currentRound: any;
+    }> {
         const nextRound = this.getNextRound(game);
         const playerScores = this.getGameFinalScore(game);
         const eloDeltas = await this.getPlayerEloDeltas(game, playerScores);
@@ -215,7 +225,15 @@ abstract class GameService {
 
     abstract getNextRound(game: any): any;
     public async getAllPlayerElos(seasonId: string, gameType: GameType): Promise<any[]> {
-        const result = await this.playerGameDatabase.groupBy({
+        const result: {
+            playerId: string,
+            _sum: {
+                eloChange: number;
+                chomboCount: number;
+            }, _count: {
+                eloChange: number;
+            }
+        }[] = await this.playerGameDatabase.groupBy({
             by: "playerId",
             _sum: {
                 eloChange: true,
@@ -241,18 +259,16 @@ abstract class GameService {
         if (result === undefined) {
             throw new Error("getAllPlayerElos result undefined, seasonId = " + seasonId);
         }
-        const usernameDict: any = {};
+        const usernameDict: Record<string, string> = {};
         for (const playerObj of allPlayers) {
             usernameDict[playerObj.id] = playerObj.username;
         }
-        return result.map((player: any) => {
-            return {
-                id: player.playerId,
-                username: usernameDict[player.playerId],
-                elo: player._sum.eloChange - CHOMBO_ELO_DEDUCTION * player._sum.chomboCount,
-                gameCount: player._count.eloChange,
-            };
-        });
+        return result.map((player) => ({
+            id: player.playerId,
+            username: usernameDict[player.playerId],
+            elo: player._sum.eloChange - CHOMBO_ELO_DEDUCTION * player._sum.chomboCount,
+            gameCount: player._count.eloChange,
+        }));
     }
 
     public async getSelectedPlayerElos(

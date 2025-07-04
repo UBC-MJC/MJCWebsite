@@ -6,10 +6,10 @@ import alert from "../common/AlertDialog";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 
-type PasswordResetProps = {
+interface PasswordResetProps {
     playerId: string | null;
     token: string | null;
-};
+}
 
 const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
     const navigate = useNavigate();
