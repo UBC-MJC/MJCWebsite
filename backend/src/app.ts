@@ -14,11 +14,9 @@ if (process.env.NODE_ENV !== "production") {
     dotenv.config({ path: `${__dirname}/../../../.env.development` });
 }
 
-declare global {
-    namespace Express {
-        export interface Request {
-            player: Player;
-        }
+declare module "express-serve-static-core" {
+    interface Request {
+        player: Player;
     }
 }
 

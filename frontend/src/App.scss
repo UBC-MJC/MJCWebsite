@@ -58,28 +58,6 @@ $light: #F2F2F2;
   transition: opacity 0.2s ease;
 }
 
-.table-responsive::-webkit-scrollbar {
-  -webkit-appearance: none;
-}
-
-.table-responsive::-webkit-scrollbar:vertical {
-  width: 12px;
-}
-
-.table-responsive::-webkit-scrollbar:horizontal {
-  height: 12px;
-}
-
-.table-responsive::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 10px;
-  //border: 2px solid $light;
-}
-
-.table-responsive::-webkit-scrollbar-track {
-  border-radius: 10px;
-  //background-color: $light;
-}
 
 .game-round-input {
   border: 1px solid black;
@@ -135,13 +113,6 @@ $light: #F2F2F2;
   -ms-overflow-style: none;
 }
 
-table tr.footer-row {
-  border-top: black 1px solid;
-}
-
-table tr.footer-row td:first-child {
-  font-weight: bold;
-}
 
 .game-card {
   cursor: pointer;
@@ -153,9 +124,4 @@ table tr.footer-row td:first-child {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
-th {
-  max-width: 50px;
-  overflow: auto;
-  white-space: nowrap;
-}
 @import "../node_modules/bootstrap";

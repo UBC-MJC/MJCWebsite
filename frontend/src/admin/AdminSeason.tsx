@@ -209,14 +209,10 @@ const AdminSeason: FC = () => {
     return (
         <>
             <Container>
-                <Grid container justifyContent="center">
-                    <Grid item xs={12} sm={6}>
-                        <Card variant="outlined" className="my-4">
-                            <CardHeader title="Current Season" />
-                            {getCurrentSeasonPanel()}
-                        </Card>
-                    </Grid>
-                </Grid>
+                <Card variant="outlined" className="my-4">
+                    <CardHeader title="Current Season" />
+                    {getCurrentSeasonPanel()}
+                </Card>
             </Container>
             <div>
                 <h2 className="mt-5">All Seasons</h2>
@@ -257,9 +253,9 @@ const AdminSeason: FC = () => {
     );
 };
 
-type SeasonRowActionsProps = {
+interface SeasonRowActionsProps {
     context: CellContext<Season, any>;
-};
+}
 const SeasonRowActions: FC<SeasonRowActionsProps> = ({ context }) => {
     const meta = context.table.options.meta!;
     const rowIsEditable = context.row.id === meta.seasonsEditableRowId;

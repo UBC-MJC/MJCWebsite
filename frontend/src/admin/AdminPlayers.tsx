@@ -227,9 +227,9 @@ const AdminPlayers: FC = () => {
     );
 };
 
-type PlayerRowActionsProps = {
+interface PlayerRowActionsProps {
     context: CellContext<Player, any>;
-};
+}
 const PlayerRowActions: FC<PlayerRowActionsProps> = ({ context }) => {
     const meta = context.table.options!.meta!;
     const rowIsEditable = context.row.id === meta.playersEditableRowId;

@@ -25,9 +25,7 @@ enum JapaneseTransactionType {
     DECK_OUT = "DECK_OUT", // Not really a transaction; here for convenience's sake
 }
 
-export type JapaneseActions = {
-    [key in JapaneseLabel]?: number;
-};
+export type JapaneseActions = Partial<Record<JapaneseLabel, number>>;
 
 type JapaneseActionButtons = {
     name: string;
@@ -60,7 +58,7 @@ const JP_SINGLE_ACTION_BUTTONS: JapaneseActionButtons = [
     { name: "Deck Out", value: JapaneseTransactionType.DECK_OUT },
 ];
 
-const JP_LABEL_MAP: { [key in JapaneseLabel]: string } = {
+const JP_LABEL_MAP: Record<JapaneseLabel, string> = {
     WINNER: "Winner",
     LOSER: "Loser",
     TENPAI: "Tenpai",
@@ -87,9 +85,7 @@ enum HongKongTransactionType {
     DECK_OUT = "DECK_OUT", // not a transaction
 }
 
-export type HongKongActions = {
-    [key in HongKongLabel]?: number;
-};
+export type HongKongActions = Partial<Record<HongKongLabel, number>>;
 
 type HongKongTransactionTypeButtons = {
     name: string;
@@ -116,7 +112,7 @@ const HK_TRANSACTION_TYPE_BUTTONS: HongKongTransactionTypeButtons = [
     },
 ];
 
-const HK_LABEL_MAP: { [key in HongKongLabel]: string } = {
+const HK_LABEL_MAP: Record<HongKongLabel, string> = {
     WINNER: "Winner",
     LOSER: "Loser",
     PAO: "Pao Player",
@@ -194,7 +190,7 @@ export function mapPlayerNameToOption(
     );
 }
 
-export function sortOptions(options: OptionsType<any>[]) {
+export function sortOptions(options: OptionsType<string>[]) {
     return options.sort((a, b) => a.label.localeCompare(b.label));
 }
 
@@ -212,7 +208,7 @@ export function mapLeaderboardToOneDecimal(leaderboards: LeaderboardType[]) {
         const elo = Number(player.elo);
         return {
             ...player,
-            elo: elo.toFixed(1),
+            displayElo: (elo - 15 * player.chomboCount).toFixed(1),
         };
     });
 }

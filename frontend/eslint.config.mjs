@@ -2,6 +2,8 @@
 
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
+import reactPlugin from 'eslint-plugin-react';
+import * as reactHooks from 'eslint-plugin-react-hooks';
 
 export default tseslint.config(
     eslint.configs.recommended,
@@ -9,18 +11,28 @@ export default tseslint.config(
     tseslint.configs.stylistic,
     {
         files: ['**/*.ts', '**/*.tsx'],
-        ignores: ['__mocks__/**', 'dist/**', 'node_modules/**'],
+        plugins: {
+            react: reactPlugin,
+            reactHooks: reactHooks,
+        },
         languageOptions: {
+            ...reactPlugin.configs.flat.recommended.languageOptions,
             parserOptions: {
                 projectService: true,
-                tsconfigRootDir: import.meta.dirname,
             },
+
         },
         rules: {
+            ...reactPlugin.configs.flat['jsx-runtime'].rules,
             'no-console': 'warn',
             '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/no-unused-vars': 'warn',
 
+        },
+        settings: {
+            react: {
+                version: 'detect', // Automatically detect the React version
+            },
         },
     },
 

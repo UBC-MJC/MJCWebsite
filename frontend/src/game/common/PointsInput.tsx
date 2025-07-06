@@ -3,10 +3,10 @@ import { Row } from "react-bootstrap";
 import { PointWheelComponent } from "../../common/Utils";
 import DropdownInput from "./DropdownInput";
 
-type PointsInputProps = {
+interface PointsInputProps {
     pointsWheel: PointWheelComponent[];
     onChange: (label: string, value: number) => void;
-};
+}
 
 const PointsInput: FC<PointsInputProps> = ({ pointsWheel, onChange }) => {
     return (

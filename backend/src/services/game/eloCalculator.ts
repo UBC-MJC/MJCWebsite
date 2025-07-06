@@ -1,12 +1,12 @@
 import { WIND_ORDER } from "./game.util";
 import { Wind } from "@prisma/client";
 
-type EloCalculatorInput = {
+interface EloCalculatorInput {
     id: string;
     score: number;
     elo: number;
     wind: Wind;
-};
+}
 
 const getEloChanges = (
     playerInformation: EloCalculatorInput[],

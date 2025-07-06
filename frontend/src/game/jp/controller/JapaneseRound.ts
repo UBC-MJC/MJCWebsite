@@ -165,7 +165,7 @@ function getFinalRiichiSticks(
     ];
 
     for (const transaction of transactions) {
-        if (winningTransactions.includes(<JapaneseTransactionType>transaction.transactionType)) {
+        if (winningTransactions.includes((transaction.transactionType as JapaneseTransactionType))) {
             return 0;
         }
     }

@@ -1,31 +1,25 @@
 import { GameStatus, GameType, Player, Wind } from "@prisma/client";
-import { findPlayerByUsernameOrEmail } from "../player.service";
 import { EloCalculatorInput } from "./eloCalculator";
 import { Transaction } from "../../validation/game.validation";
 import { JapaneseGameService } from "./japaneseGame.service";
 import { HongKongGameService } from "./hongKongGame.service";
 import { EloDict, GameService } from "./game.service";
-type GameFilterArgs = {
+interface GameFilterArgs {
     seasonId?: string;
     playerIds?: string[];
     gameType?: GameType;
     gameStatus?: GameStatus;
-};
+}
 
 const WIND_ORDER: Wind[] = ["EAST", "SOUTH", "WEST", "NORTH"];
+export type GameVariant = "jp" | "hk";
 
-const GAME_CONSTANTS = {
-    jp: {
-        STARTING_SCORE: 25000,
-        DIVIDING_CONSTANT: 1000,
-        SCORE_ADJUSTMENT: [55000, 25000, -5000, -75000],
-    },
-    hk: {
-        STARTING_SCORE: 750,
-        DIVIDING_CONSTANT: 5,
-        SCORE_ADJUSTMENT: [100, 0, 0, -100],
-    },
-} as const;
+export type TupleOfFour<T> = [T, T, T, T];
+export interface Constants {
+    STARTING_SCORE: number;
+    DIVIDING_CONSTANT: number;
+    SCORE_ADJUSTMENT: TupleOfFour<number>;
+}
 
 export const NUM_PLAYERS = 4;
 
@@ -51,8 +45,13 @@ const generatePlayerQuery = (playerList: Player[]) => {
     });
 };
 
-const generateGameQuery = (filter: GameFilterArgs): any => {
-    const query: any = {};
+const generateGameQuery = (filter: GameFilterArgs) => {
+    const query: {
+        seasonId?: string;
+        type?: GameType;
+        status?: GameStatus;
+        AND?: { players: { some: { playerId: string } } }[];
+    } = {};
     if (typeof filter.seasonId !== "undefined") {
         query.seasonId = filter.seasonId;
     }
@@ -126,7 +125,7 @@ const getWind = (index: number): Wind => {
 export const getNextRoundWind = (wind: Wind): Wind => {
     return getWind((WIND_ORDER.indexOf(wind) + 1) % NUM_PLAYERS);
 };
-const getGameService = (gameVariant: string): GameService => {
+const getGameService = (gameVariant: GameVariant): GameService => {
     switch (gameVariant) {
         case "jp":
             return new JapaneseGameService() as GameService;
@@ -142,7 +141,6 @@ export {
     generateGameQuery,
     createEloCalculatorInputs,
     getWind,
-    GAME_CONSTANTS,
     WIND_ORDER,
     Wind,
     GameFilterArgs,

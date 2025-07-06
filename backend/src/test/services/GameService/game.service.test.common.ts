@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { initialise } from "../util";
-import { getGameService } from "../../../src/services/game/game.util";
+import { getGameService } from "../../../services/game/game.util";
 import { GameStatus, GameType, Wind } from "@prisma/client";
 
-export function testGameServiceCommon(gameVariant: string) {
+export function testGameServiceCommon(gameVariant) {
     return describe("Common Game Service Tests", () => {
         const gameService = getGameService(gameVariant);
         let initState;

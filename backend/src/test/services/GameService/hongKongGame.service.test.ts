@@ -1,10 +1,10 @@
 import { it, describe, expect, beforeEach, vi } from "vitest";
-import { getGameService } from "../../../src/services/game/game.util";
-import prisma from "../../../src/db";
+import { getGameService } from "../../../services/game/game.util";
+import prisma from "../../../db";
 import { testGameServiceCommon } from "./game.service.test.common";
 import { initialise, initialiseGame } from "../util";
 import { HongKongTransactionType, Wind } from "@prisma/client";
-import { generateOverallScoreDelta } from "../../../src/services/game/hongKongGame.service";
+import { generateOverallScoreDelta } from "../../../services/game/hongKongGame.service";
 vi.mock("@prisma/client");
 describe("Hong Kong Game Service Tests", async () => {
     const gameService = getGameService("hk");

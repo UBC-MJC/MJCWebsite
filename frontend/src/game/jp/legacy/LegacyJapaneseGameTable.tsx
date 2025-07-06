@@ -9,10 +9,10 @@ import { mapChineseNumerals, mapWindToCharacter } from "../../../common/Utils";
 import { generateJapaneseCurrentScore } from "../controller/JapaneseRound";
 import TableDisplay from "../../common/TableDisplay";
 
-type LegacyGameTableProps = {
+interface LegacyGameTableProps {
     rounds: ModifiedJapaneseRound[];
     players: GamePlayer[];
-};
+}
 
 export type ModifiedJapaneseRound = JapaneseRound & { scoreDeltas: number[] };
 

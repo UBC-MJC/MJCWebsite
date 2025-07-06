@@ -30,7 +30,7 @@ const useQuery = () => {
 };
 export const ColorModeContext = React.createContext({
     toggleColorMode: (e: "light" | "dark" | "system") => {
-        e;
+        void 0;
     },
 });
 

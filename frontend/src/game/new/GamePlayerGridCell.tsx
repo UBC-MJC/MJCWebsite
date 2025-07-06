@@ -1,9 +1,9 @@
 import { FC } from "react";
 import { Badge } from "react-bootstrap";
 
-type GamePlayerGridCellProps = {
+interface GamePlayerGridCellProps {
     player: any;
-};
+}
 
 const GamePlayerGridCell: FC<GamePlayerGridCellProps> = ({ player }) => {
     return (

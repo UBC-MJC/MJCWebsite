@@ -1,10 +1,10 @@
 import React, { FC, useState } from "react";
 import { getGameVariantString } from "../common/Utils";
-import { Container, Table } from "react-bootstrap";
 import { useSeasons } from "../hooks/AdminHooks";
 import { usePlayerLeaderboard } from "../hooks/LeaderboardHooks";
 import { mapSeasonToOption } from "../game/common/constants";
-import { Autocomplete, TextField } from "@mui/material";
+import { GridColDef, DataGrid } from "@mui/x-data-grid";
+import { Autocomplete, Box, Stack, TextField } from "@mui/material";
 
 const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const [season, setSeason] = useState<Season | undefined>();
@@ -16,31 +16,58 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     }
     const seasonsOptions = mapSeasonToOption(seasons);
     return (
-        <Container className="my-4" fluid="lg">
-            <h1>{getGameVariantString(gameVariant, gameType)} Leaderboard</h1>
-
-            <div className="text-start d-flex justify-content-center align-items-end">
-                <h5 className="mx-2">Season: </h5>
+        <Box>
+            <Stack spacing={1} margin="auto" width={"80%"} maxWidth="800px">
+                <h1>{getGameVariantString(gameVariant, gameType)} Leaderboard</h1>
+                <h5>Season: </h5>
                 <Autocomplete
                     isOptionEqualToValue={(option, value) => option.label === value.label}
                     options={seasonsOptions}
-                    sx={{ width: "200px" }}
                     onChange={(event, value) => setSeason(value!.value)}
                     renderInput={(params) => (
                         <TextField {...params} placeholder="Default: this season" />
                     )}
                 />
-            </div>
 
-            {season === undefined ? (
-                <h5>No season selected</h5>
-            ) : (
-                <LeaderboardDisplay season={season} gameType={gameType} gameVariant={gameVariant} />
-            )}
-        </Container>
+                {season === undefined ? (
+                    <h5>No season selected</h5>
+                ) : (
+                    <LeaderboardDisplay
+                        season={season}
+                        gameType={gameType}
+                        gameVariant={gameVariant}
+                    />
+                )}
+            </Stack>
+        </Box>
     );
 };
 
+const columns: GridColDef[] = [
+    {
+        field: "username",
+        headerName: "Player",
+        flex: 1.5,
+    },
+    {
+        field: "displayElo",
+        headerName: "Elo",
+        type: "number",
+        flex: 1,
+    },
+    {
+        field: "gameCount",
+        headerName: "Games",
+        type: "number",
+        flex: 1,
+    },
+    {
+        field: "chomboCount",
+        headerName: "Chombos",
+        type: "number",
+        flex: 0.5,
+    },
+];
 const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; season: Season }> = ({
     gameVariant,
     gameType,
@@ -55,28 +82,9 @@ const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; sea
             <h5>
                 {season.name} season ends {new Date(season.endDate).toDateString()}
             </h5>
-            <Table striped responsive hover className="text-nowrap">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Player</th>
-                        <th>ELO</th>
-                        <th>Games</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {leaderboard.map((player, index) => {
-                        return (
-                            <tr key={player.username}>
-                                <td>{index + 1}</td>
-                                <td>{player.username}</td>
-                                <td>{player.elo}</td>
-                                <td>{player.gameCount}</td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </Table>
+            <Box>
+                <DataGrid rows={leaderboard} columns={columns} />
+            </Box>
         </>
     );
 };

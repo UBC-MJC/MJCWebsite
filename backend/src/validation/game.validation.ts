@@ -24,7 +24,7 @@ const JapaneseTransactionSchema = object({
 const ConcludedJapaneseRoundSchema = object({
     roundCount: number().required(),
     roundWind: mixed<Wind>().required(),
-    roundNumber: number().required(),
+    roundNumber: number().integer().min(0).max(3).required(),
     bonus: number().required(),
     startRiichiStickCount: number().required(),
     endRiichiStickCount: number().required(),
@@ -42,7 +42,7 @@ const HongKongTransactionSchema = object({
 const ConcludedHongKongRoundSchema = object({
     roundCount: number().required(),
     roundWind: mixed<Wind>().required(),
-    roundNumber: number().required(),
+    roundNumber: number().integer().min(0).max(3).required(),
     transactions: array().of(HongKongTransactionSchema).min(0).required(),
 });
 

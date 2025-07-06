@@ -1,10 +1,10 @@
-type ListToggleButtonProps = {
+interface ListToggleButtonProps {
     key: number;
     name: string;
     value: string;
     checked: boolean;
     onChange: (value: string) => void;
-};
+}
 
 // const ListToggleButton = (gameButtons: ListToggleButtonProps[], transactionType: string, transactionTypeOnChange: (any) => void) => {
 //     return gameButtons.map((button, idx) => (

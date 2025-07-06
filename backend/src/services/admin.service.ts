@@ -1,7 +1,7 @@
 import prisma from "../db";
 import bcrypt from "bcryptjs";
 
-const makeDummyAdmins = async (): Promise<any> => {
+const makeDummyAdmins = async () => {
     return prisma.player.createMany({
         data: [
             {

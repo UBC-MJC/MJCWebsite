@@ -86,15 +86,15 @@ const Settings: FC = () => {
     );
 };
 
-type UpdateUsernameModalProps = {
+interface UpdateUsernameModalProps {
     show: boolean;
     handleClose: () => void;
     handleSubmit: (username: string) => void;
-};
+}
 
 const UpdateUsernameModal: FC<UpdateUsernameModalProps> = ({ show, handleClose, handleSubmit }) => {
     const [updatedUsername, setUpdatedUsername] = useState("");
-    const [errors, setErrors] = useState<any>({});
+    const [errors, setErrors] = useState<{ username?: string }>({});
 
     const submitUsername = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -108,9 +108,8 @@ const UpdateUsernameModal: FC<UpdateUsernameModalProps> = ({ show, handleClose, 
     };
 
     const findErrors = () => {
-        const newErrors: any = {};
+        const newErrors: { username?: string } = {};
         if (updatedUsername.length < 2 || updatedUsername.length > 20) {
-            console.log("asdasd");
             newErrors["username"] = "Username must be between 2 and 20 characters";
         }
 

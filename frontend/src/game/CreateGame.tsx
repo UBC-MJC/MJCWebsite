@@ -127,7 +127,7 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
     );
 };
 
-const hasGamePermissions = (player: Player | undefined, props: any): boolean => {
+const hasGamePermissions = (player: Player | undefined, props: GameCreationProp): boolean => {
     if (player === undefined) {
         return false;
     }

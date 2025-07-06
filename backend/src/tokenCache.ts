@@ -1,6 +1,4 @@
-type TokenCache = {
-    [key: string]: string;
-};
+type TokenCache = Record<string, string>;
 
 const tokenCache: TokenCache = {};
 

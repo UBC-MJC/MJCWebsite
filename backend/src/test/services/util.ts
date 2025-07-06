@@ -1,7 +1,7 @@
-import prisma from "../../src/db";
-import { createSeason } from "../../src/services/season.service";
+import prisma from "../../db";
+import { createSeason } from "../../services/season.service";
 import { GameType } from "@prisma/client";
-import { GameService } from "../../src/services/game/game.service";
+import { GameService } from "../../services/game/game.service";
 
 export async function createTestPlayers() {
     const players = [
@@ -59,7 +59,7 @@ export async function initialiseGame(
     seasonID: string,
     state: any = {},
     playerUsernames: string[] = ["testUser1", "testUser2", "testUser3", "testUser4"],
-    recordingPlayerID: string = "test1",
+    recordingPlayerID = "test1",
 ) {
     const initGame = await gameService.createGame(
         GameType.RANKED,
