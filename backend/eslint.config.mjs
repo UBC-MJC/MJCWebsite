@@ -6,8 +6,10 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
     eslint.configs.recommended,
     tseslint.configs.recommended,
+    tseslint.configs.stylistic,
     {
         files: ['**/*.ts', '**/*.tsx'],
+        ignores: ['__mocks__/**', 'dist/**', 'node_modules/**'],
         languageOptions: {
             parserOptions: {
                 projectService: true,

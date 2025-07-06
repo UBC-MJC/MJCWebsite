@@ -190,7 +190,7 @@ export function mapPlayerNameToOption(
     );
 }
 
-export function sortOptions(options: OptionsType<any>[]) {
+export function sortOptions(options: OptionsType<string>[]) {
     return options.sort((a, b) => a.label.localeCompare(b.label));
 }
 
@@ -208,7 +208,7 @@ export function mapLeaderboardToOneDecimal(leaderboards: LeaderboardType[]) {
         const elo = Number(player.elo);
         return {
             ...player,
-            elo: elo.toFixed(1),
+            displayElo: (elo - 15 * player.chomboCount).toFixed(1),
         };
     });
 }

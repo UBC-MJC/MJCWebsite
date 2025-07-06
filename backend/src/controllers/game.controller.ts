@@ -2,14 +2,14 @@ import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
 import { createGameSchema } from "../validation/game.validation";
 import { getCurrentSeason } from "../services/season.service";
-import { GameFilterArgs, getGameService } from "../services/game/game.util";
-import { GameService } from "../services/game/game.service";
+import { GameFilterArgs, GameVariant, getGameService } from "../services/game/game.util";
 import { addGameListener, sendGameUpdate } from "../services/game/liveGame.service";
+import { GameStatus, GameType } from "@prisma/client";
 
 const getGamesHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const gameVariant = req.params.gameVariant;
-        const gameService: GameService = getGameService(gameVariant);
+        const gameVariant = req.params.gameVariant as GameVariant;
+        const gameService = getGameService(gameVariant);
 
         const query: GameFilterArgs = {
             seasonId: req.query.seasonId?.toString(),
@@ -17,8 +17,8 @@ const getGamesHandler = async (req: Request, res: Response, next: NextFunction):
                 req.query.playerIds === "" || typeof req.query.playerIds === "undefined"
                     ? undefined
                     : req.query.playerIds.toString().split(","),
-            gameType: "RANKED",
-            gameStatus: "FINISHED",
+            gameType: GameType.RANKED,
+            gameStatus: GameStatus.FINISHED,
         };
 
         const games = await gameService.getGames(query);
@@ -37,12 +37,12 @@ const getGameHandler = async (
     addListener = false,
 ): Promise<void> => {
     const id = Number(req.params.id);
-    const gameVariant = req.params.gameVariant;
+    const gameVariant = req.params.gameVariant as GameVariant;
     if (isNaN(id)) {
         return next(createError.NotFound("Game id is not a number"));
     }
 
-    const gameService: GameService = getGameService(gameVariant);
+    const gameService = getGameService(gameVariant);
 
     try {
         const newGame = await gameService.getGame(id);
@@ -68,11 +68,11 @@ const getLiveGamesHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant = req.params.gameVariant;
-    const gameService: GameService = getGameService(gameVariant);
+    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameService = getGameService(gameVariant);
     try {
         const filter: GameFilterArgs = {
-            gameStatus: "IN_PROGRESS",
+            gameStatus: GameStatus.IN_PROGRESS,
         };
         const liveGames = await gameService.getGames(filter);
         const result = await Promise.all(liveGames.map((game) => gameService.mapGameObject(game)));
@@ -88,13 +88,13 @@ const createGameHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant: string = req.params.gameVariant;
+    const gameVariant = req.params.gameVariant as GameVariant;
 
     try {
         const { players, gameType } = await createGameSchema.validate(req.body);
         const season = await getCurrentSeason();
 
-        const gameService: GameService = getGameService(gameVariant);
+        const gameService = getGameService(gameVariant);
         const newGame = await gameService.createGame(gameType, players, req.player.id, season.id);
 
         res.status(201).json({
@@ -110,18 +110,18 @@ const deleteGameHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant: string = req.params.gameVariant;
+    const gameVariant = req.params.gameVariant as GameVariant;
     const gameId = Number(req.params.id);
     if (isNaN(gameId)) {
         return next(createError.NotFound("Game id is not a number"));
     }
 
-    const gameService: GameService = getGameService(gameVariant);
+    const gameService = getGameService(gameVariant);
     try {
         const game = await gameService.getGame(gameId);
         if (!game) {
             return next(createError.NotFound("Game not found"));
-        } else if (game.status !== "IN_PROGRESS") {
+        } else if (game.status !== GameStatus.IN_PROGRESS) {
             return next(createError.BadRequest("Game is not in progress"));
         } else if (game.recordedById !== req.player.id) {
             return next(createError.Forbidden("You are not the recorder of this game"));
@@ -140,18 +140,18 @@ const submitGameHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant: string = req.params.gameVariant;
+    const gameVariant = req.params.gameVariant as GameVariant;
     const gameId = Number(req.params.id);
     if (isNaN(gameId)) {
         return next(createError.NotFound("Game id is not a number"));
     }
 
-    const gameService: GameService = getGameService(gameVariant);
+    const gameService = getGameService(gameVariant);
     try {
         const game = await gameService.getGame(gameId);
         if (!game) {
             return next(createError.NotFound("Game not found"));
-        } else if (game.status !== "IN_PROGRESS") {
+        } else if (game.status !== GameStatus.IN_PROGRESS) {
             return next(createError.BadRequest("Game is not in progress"));
         } else if (game.recordedById !== req.player.id) {
             return next(createError.Forbidden("You are not the recorder of this game"));
@@ -170,19 +170,19 @@ const createRoundHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant: string = req.params.gameVariant;
+    const gameVariant = req.params.gameVariant as GameVariant;
     const gameId = Number(req.params.id);
     if (isNaN(gameId)) {
         return next(createError.NotFound("Game id is not a number"));
     }
     const { roundRequest } = req.body;
 
-    const gameService: GameService = getGameService(gameVariant);
+    const gameService = getGameService(gameVariant);
     try {
         const game = await gameService.getGame(gameId);
         if (!game) {
             return next(createError.NotFound("Game not found"));
-        } else if (game.status !== "IN_PROGRESS") {
+        } else if (game.status !== GameStatus.IN_PROGRESS) {
             return next(createError.BadRequest("Game is not in progress"));
         } else if (game.recordedById !== req.player.id) {
             return next(createError.Forbidden("You are not the recorder of this game"));
@@ -204,18 +204,18 @@ const deleteLastRoundHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant: string = req.params.gameVariant;
+    const gameVariant = req.params.gameVariant as GameVariant;
     const gameId = Number(req.params.id);
     if (isNaN(gameId)) {
         return next(createError.NotFound("Game id is not a number"));
     }
 
-    const gameService: GameService = getGameService(gameVariant);
+    const gameService = getGameService(gameVariant);
     try {
         const game = await gameService.getGame(gameId);
         if (!game) {
             return next(createError.NotFound("Game not found"));
-        } else if (game.status !== "IN_PROGRESS") {
+        } else if (game.status !== GameStatus.IN_PROGRESS) {
             return next(createError.BadRequest("Game is not in progress"));
         } else if (game.recordedById !== req.player.id) {
             return next(createError.Forbidden("You are not the recorder of this game"));
@@ -240,7 +240,7 @@ const recalcSeasonHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant: string = req.params.gameVariant;
+    const gameVariant = req.params.gameVariant as GameVariant;
     try {
         const seasonId = await getCurrentSeason();
         const gameService = getGameService(gameVariant);
@@ -253,7 +253,7 @@ const recalcSeasonHandler = async (
 };
 
 const setChomboHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const gameVariant: string = req.params.gameVariant;
+    const gameVariant = req.params.gameVariant as GameVariant;
     const { playerId, chomboCount } = req.body;
     const gameId = Number(req.params.id);
     if (isNaN(gameId)) {

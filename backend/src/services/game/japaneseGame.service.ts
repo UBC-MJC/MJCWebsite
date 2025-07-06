@@ -8,7 +8,6 @@ import {
 } from "@prisma/client";
 import {
     addScoreDeltas,
-    GAME_CONSTANTS,
     getEmptyScoreDelta,
     getNextRoundWind,
     NUM_PLAYERS,
@@ -55,7 +54,11 @@ export const RIICHI_STICK_VALUE = 1000;
 
 class JapaneseGameService extends GameService {
     constructor() {
-        super(prisma.japaneseGame, prisma.japanesePlayerGame, GAME_CONSTANTS["jp"]);
+        super(prisma.japaneseGame, prisma.japanesePlayerGame, {
+            STARTING_SCORE: 25000,
+            DIVIDING_CONSTANT: 1000,
+            SCORE_ADJUSTMENT: [55000, 25000, -5000, -75000],
+        });
     }
 
     public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<any> {
@@ -371,7 +374,7 @@ export function generateOverallScoreDelta(concludedRound: ConcludedJapaneseRound
     return riichiDeltas;
 }
 
-function transformTransaction(transaction: JapaneseTransactionT): any {
+function transformTransaction(transaction: JapaneseTransactionT) {
     return {
         ...transaction.hand,
         paoPlayerIndex: transaction.paoPlayerIndex,
@@ -390,7 +393,7 @@ function transformDBTransaction(dbTransaction: JapaneseTransaction): JapaneseTra
         dbTransaction.player2ScoreChange,
         dbTransaction.player3ScoreChange,
     ];
-    let result: any = {
+    let result: JapaneseTransactionT = {
         scoreDeltas: scoreDeltas,
         transactionType: dbTransaction.transactionType,
     };
@@ -411,10 +414,10 @@ function transformDBTransaction(dbTransaction: JapaneseTransaction): JapaneseTra
             paoPlayerIndex: dbTransaction.paoPlayerIndex,
         };
     }
-    return result as JapaneseTransactionT;
+    return result;
 }
 
-function transformConcludedRound(concludedRound: ConcludedJapaneseRoundT): any {
+function transformConcludedRound(concludedRound: ConcludedJapaneseRoundT) {
     return {
         roundCount: concludedRound.roundCount,
         roundWind: concludedRound.roundWind,

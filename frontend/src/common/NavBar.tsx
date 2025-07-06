@@ -17,13 +17,13 @@ const NavBar: FC = () => {
                     <Nav className="me-auto">
                         <NavDropdown title="Leaderboard" id="leaderboard-nav-dropdown">
                             <NavDropdown.Item as={Link} to="/leaderboard/jp">
-                                {getGameVariantString("jp")}
+                                {getGameVariantString("jp", "RANKED")}
                             </NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/leaderboard/jp/casual">
                                 {getGameVariantString("jp", "CASUAL")}
                             </NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/leaderboard/hk">
-                                {getGameVariantString("hk")}
+                                {getGameVariantString("hk", "RANKED")}
                             </NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/leaderboard/hk/casual">
                                 {getGameVariantString("hk", "CASUAL")}
@@ -33,7 +33,7 @@ const NavBar: FC = () => {
                             <NavDropdown title="Record Game" id="record-game-nav-dropdown">
                                 {player.japaneseQualified && (
                                     <NavDropdown.Item as={Link} to="/games/create/jp">
-                                        {getGameVariantString("jp")}
+                                        {getGameVariantString("jp", "RANKED")}
                                     </NavDropdown.Item>
                                 )}
                                 <NavDropdown.Item as={Link} to="/games/create/jp/casual">
@@ -41,7 +41,7 @@ const NavBar: FC = () => {
                                 </NavDropdown.Item>
                                 {player.hongKongQualified && (
                                     <NavDropdown.Item as={Link} to="/games/create/hk">
-                                        {getGameVariantString("hk")}
+                                        {getGameVariantString("hk", "RANKED")}
                                     </NavDropdown.Item>
                                 )}
                                 <NavDropdown.Item as={Link} to="/games/create/hk/casual">
@@ -51,10 +51,10 @@ const NavBar: FC = () => {
                         )}
                         <NavDropdown title={"Live Games"} id="live-games-nav-dropdown">
                             <NavDropdown.Item as={Link} to="/games/current/jp">
-                                {getGameVariantString("jp", "")}
+                                {getGameVariantString("jp")}
                             </NavDropdown.Item>
                             <NavDropdown.Item as={Link} to="/games/current/hk">
-                                {getGameVariantString("hk", "")}
+                                {getGameVariantString("hk")}
                             </NavDropdown.Item>
                         </NavDropdown>
                         <Nav.Link as={Link} to="/games">

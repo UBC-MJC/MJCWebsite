@@ -29,7 +29,9 @@ const useQuery = () => {
     return React.useMemo(() => new URLSearchParams(search), [search]);
 };
 export const ColorModeContext = React.createContext({
-    toggleColorMode: (e: "light" | "dark" | "system") => { console.warn("Color mode context not initialized") },
+    toggleColorMode: (e: "light" | "dark" | "system") => {
+        void 0;
+    },
 });
 
 const App: React.FC = () => {

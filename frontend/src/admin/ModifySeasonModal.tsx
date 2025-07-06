@@ -26,7 +26,10 @@ const ModifySeasonModal: FC<ModifySeasonModalProps> = ({
     const [seasonName, setSeasonName] = useState<string>(season.name);
     const [endDate, setEndDate] = useState<string>(season.endDate);
 
-    const [errors, setErrors] = useState<any>({});
+    const [errors, setErrors] = useState<{
+        seasonName?: string;
+        endDate?: string;
+    }>({});
 
     const submitSeason = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -52,7 +55,10 @@ const ModifySeasonModal: FC<ModifySeasonModalProps> = ({
     };
 
     const findErrors = () => {
-        const newErrors: any = {};
+        const newErrors: {
+            seasonName?: string;
+            endDate?: string;
+        } = {};
         if (!seasonName) {
             newErrors["seasonName"] = "Season name is required";
         }

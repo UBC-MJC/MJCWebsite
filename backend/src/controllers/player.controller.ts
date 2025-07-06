@@ -11,8 +11,7 @@ import {
 import { generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
 import { getCurrentSeason } from "../services/season.service";
-import { getGameService, STARTING_ELO } from "../services/game/game.util";
-import { GameService } from "../services/game/game.service";
+import { GameVariant, getGameService, STARTING_ELO } from "../services/game/game.util";
 import { GameType } from "@prisma/client";
 
 const registerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -107,7 +106,7 @@ const getQualifiedPlayersHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant = req.params.gameVariant;
+    const gameVariant = req.params.gameVariant as GameVariant;
     try {
         const gameService = getGameService(gameVariant);
         const qualifiedPlayers = await gameService.getQualifiedPlayers(
@@ -130,7 +129,7 @@ const getPlayerLeaderboardHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant = req.params.gameVariant;
+    const gameVariant = req.params.gameVariant as GameVariant;
     try {
         let seasonId: string;
         if (typeof req.query.seasonId !== "undefined") {
@@ -200,8 +199,8 @@ async function getUserStatisticsHandler(
     res: Response,
     next: NextFunction,
 ): Promise<void> {
-    const gameVariant: string = req.params.gameVariant;
-    const gameService: GameService = getGameService(gameVariant);
+    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameService = getGameService(gameVariant);
     const playerId: string = req.params.playerId;
     const seasonId: string = req.params.seasonId;
     const result = await gameService.getUserStatistics(seasonId, playerId);

@@ -3,7 +3,6 @@ import { GameType, HongKongTransaction, Player, Prisma, Wind } from "@prisma/cli
 import { GameService } from "./game.service";
 import {
     addScoreDeltas,
-    GAME_CONSTANTS,
     getEmptyScoreDelta,
     getNextRoundWind,
     reduceScoreDeltas,
@@ -39,14 +38,18 @@ type FullHongKongRound = Prisma.HongKongRoundGetPayload<typeof fullHongKongRound
 
 class HongKongGameService extends GameService {
     constructor() {
-        super(prisma.hongKongGame, prisma.hongKongPlayerGame, GAME_CONSTANTS["hk"]);
+        super(prisma.hongKongGame, prisma.hongKongPlayerGame, {
+            STARTING_SCORE: 750,
+            DIVIDING_CONSTANT: 5,
+            SCORE_ADJUSTMENT: [100, 0, 0, -100],
+        });
     }
 
     public async createRound(game: FullHongKongGame, roundRequest: any): Promise<any> {
         validateCreateHongKongRound(roundRequest, game);
         const concludedRound = roundRequest as ConcludedHongKongRoundT;
 
-        const query: any = {
+        const query = {
             data: {
                 game: {
                     connect: {
@@ -92,7 +95,7 @@ class HongKongGameService extends GameService {
         };
     }
 
-    public getNextRound(game: FullHongKongGame): any {
+    public getNextRound(game: FullHongKongGame) {
         if (game.rounds.length === 0) {
             return getFirstHongKongRound();
         }
@@ -155,7 +158,7 @@ class HongKongGameService extends GameService {
         const wins = [];
         for (const i in WIND_ORDER) {
             // Note: have to use unsafe for performance
-            const attributeName = "player" + i + "ScoreChange";
+            const attributeName = `player${i}ScoreChange`;
             const windDealIn = await prisma.$queryRawUnsafe<
                 { dealInPoint: number; count: number }[]
             >(
@@ -215,7 +218,7 @@ export function generateOverallScoreDelta(concludedGame: ConcludedHongKongRoundT
     return addScoreDeltas(reduceScoreDeltas(concludedGame.transactions), getEmptyScoreDelta());
 }
 
-const getFirstHongKongRound = (): any => {
+const getFirstHongKongRound = () => {
     return {
         roundCount: 1,
         roundNumber: 1,
@@ -257,7 +260,7 @@ function transformDBTransaction(dbTransaction: HongKongTransaction): HongKongTra
         dbTransaction.player2ScoreChange,
         dbTransaction.player3ScoreChange,
     ];
-    let result: any = {
+    let result: HongKongTransactionT = {
         scoreDeltas: scoreDeltas,
         transactionType: dbTransaction.transactionType,
     };
@@ -267,7 +270,7 @@ function transformDBTransaction(dbTransaction: HongKongTransaction): HongKongTra
             hand: dbTransaction.hand,
         };
     }
-    return result as HongKongTransactionT;
+    return result;
 }
 export { FullHongKongRound, HongKongGameService };
 export { FullHongKongGame };

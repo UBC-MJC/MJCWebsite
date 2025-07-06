@@ -30,7 +30,7 @@ export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
     }
     return (
         <>
-            <h1 className="my-4">Live {getGameVariantString(gameVariant, "")} Games</h1>
+            <h1 className="my-4">Live {getGameVariantString(gameVariant)} Games</h1>
             <Container>
                 <Row>
                     {liveGames.map((game, idx) => (

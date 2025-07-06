@@ -84,18 +84,14 @@ const validateGameVariant = (gameVariant: string | undefined): gameVariant is Ga
     return typeof gameVariant !== "undefined" && (gameVariant === "jp" || gameVariant === "hk");
 };
 
-const getGameVariantString = (
-    gameVariant: GameVariant,
-    gameType: GameType | "" = "RANKED",
-): string => {
-    const capitalizedGameType = gameType.charAt(0).toUpperCase() + gameType.slice(1).toLowerCase();
-    let gameVariantString = "";
-    if (gameVariant === "jp") {
-        gameVariantString = capitalizedGameType + " Riichi";
-    } else if (gameVariant === "hk") {
-        gameVariantString = capitalizedGameType + " Hong Kong";
+const getGameVariantString = (gameVariant: GameVariant, gameType?: GameType): string => {
+    if (gameType === undefined) {
+        return gameVariant === "jp" ? "Riichi" : "Hong Kong";
     }
-    return gameVariantString.trim();
+    const capitalizedGameType = gameType.charAt(0).toUpperCase() + gameType.slice(1).toLowerCase();
+    return gameVariant === "jp"
+        ? `Riichi ${capitalizedGameType}`
+        : `Hong Kong ${capitalizedGameType}`;
 };
 
 const mapWindToCharacter = (wind: string): string => {

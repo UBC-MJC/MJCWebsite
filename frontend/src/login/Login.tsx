@@ -8,14 +8,20 @@ const Login: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const [errors, setErrors] = useState<any>({});
+    const [errors, setErrors] = useState<{
+        username?: string;
+        password?: string;
+    }>({});
 
     const { login } = useContext(AuthContext);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const newErrors: any = {};
+        const newErrors: {
+            username?: string;
+            password?: string;
+        } = {};
         if (!username) {
             newErrors["username"] = "Username is required";
         }
@@ -35,7 +41,7 @@ const Login: React.FC = () => {
             .catch((err: AxiosError) => {
                 setErrors({
                     username: " ",
-                    password: err.response?.data,
+                    password: err.response?.data as string,
                 });
             });
     };
@@ -50,7 +56,7 @@ const Login: React.FC = () => {
                             required
                             placeholder="Username or Email"
                             value={username}
-                            isInvalid={errors.username}
+                            isInvalid={!!errors.username}
                             onChange={(e) => setUsername(e.target.value)}
                         />
                         <Form.Control.Feedback type="invalid">
@@ -64,7 +70,7 @@ const Login: React.FC = () => {
                             type="password"
                             placeholder="Password"
                             value={password}
-                            isInvalid={errors.password}
+                            isInvalid={!!errors.password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                         <Form.Control.Feedback type="invalid">

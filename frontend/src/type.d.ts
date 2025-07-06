@@ -2,6 +2,7 @@ interface LeaderboardType {
     username: string;
     elo: string;
     gameCount: string;
+    chomboCount: number;
 }
 
 interface Setting {

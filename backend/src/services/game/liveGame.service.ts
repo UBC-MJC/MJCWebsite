@@ -1,13 +1,11 @@
 import { Request, Response } from "express";
 
-type ClientListener = {
+interface ClientListener {
     clientId: number;
     response: Response;
-};
+}
 
-type ClientListenerMap = {
-    [key: string]: ClientListener[];
-};
+type ClientListenerMap = Record<string, ClientListener[]>;
 
 const gameClients: ClientListenerMap = {};
 
