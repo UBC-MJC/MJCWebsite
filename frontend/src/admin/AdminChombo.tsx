@@ -1,5 +1,5 @@
 import React, { FC, useContext, useState } from "react";
-import { Container, Button, Box, TextField, Typography, Autocomplete } from "@mui/material";
+import { Container, Button, Box, TextField, Stack, Autocomplete } from "@mui/material";
 import { AuthContext } from "../common/AuthContext";
 import { setChomboAPI } from "../api/GameAPI";
 import { usePlayers } from "../hooks/GameHooks";
@@ -47,53 +47,42 @@ const AdminChombo: FC = () => {
     };
 
     return (
-        <Container maxWidth="lg" className="my-4">
-            <form onSubmit={handleSubmit}>
-                <Box mb={2}>
-                    <Autocomplete
-                        isOptionEqualToValue={(option, value) => option.label === value.label}
-                        options={gameVariants}
-                        defaultValue={gameVariants[0]}
-                        onChange={(event, value) => setGameVariant(value!.value)}
-                        renderInput={(params) => (
-                            <TextField {...params} placeholder="Choose a variant" />
-                        )}
-                    />
-                </Box>
-                <Box mb={2}>
-                    <TextField
-                        label="Game ID"
-                        type="number"
-                        value={gameId}
-                        onChange={(e) => setGameId(Number(e.target.value))}
-                        fullWidth
-                    />
-                </Box>
-                <Box mb={2}>
-                    <Autocomplete
-                        isOptionEqualToValue={(option, value) => option.label === value.label}
-                        options={playersResult.data.map((player) => ({
-                            label: player.username,
-                            value: player.playerId,
-                        }))}
-                        onChange={(event, value) => setPlayerId(value!.value)}
-                        renderInput={(params) => <TextField {...params} placeholder="Username" />}
-                    />
-                </Box>
-                <Box mb={2}>
-                    <TextField
-                        label="Chombo Count"
-                        type="number"
-                        value={chomboCount}
-                        onChange={(e) => setChomboCount(Number(e.target.value))}
-                        fullWidth
-                    />
-                </Box>
-                <Button type="submit" variant="contained" color="primary">
-                    Update Chombo Count
-                </Button>
-            </form>
-        </Container>
+        <Stack spacing={2}>
+            <Autocomplete
+                isOptionEqualToValue={(option, value) => option.label === value.label}
+                options={gameVariants}
+                defaultValue={gameVariants[0]}
+                onChange={(event, value) => setGameVariant(value!.value)}
+                renderInput={(params) => <TextField {...params} placeholder="Choose a variant" />}
+            />
+            <TextField
+                label="Game ID"
+                type="number"
+                value={gameId}
+                onChange={(e) => setGameId(Number(e.target.value))}
+                fullWidth
+            />
+            <Autocomplete
+                isOptionEqualToValue={(option, value) => option.label === value.label}
+                options={playersResult.data.map((player) => ({
+                    label: player.username,
+                    value: player.playerId,
+                }))}
+                onChange={(event, value) => setPlayerId(value!.value)}
+                renderInput={(params) => <TextField {...params} placeholder="Username" />}
+            />
+            <TextField
+                label="Chombo Count"
+                type="number"
+                value={chomboCount}
+                onChange={(e) => setChomboCount(Number(e.target.value))}
+                fullWidth
+            />
+
+            <Button type="submit" variant="contained" color="primary" onClick={handleSubmit}>
+                Update Chombo Count
+            </Button>
+        </Stack>
     );
 };
 export default AdminChombo;

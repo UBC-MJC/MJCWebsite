@@ -68,8 +68,8 @@ interface Player {
 interface Season {
     id: string;
     name: string;
-    startDate: string;
-    endDate: string;
+    startDate: Date;
+    endDate: Date;
 }
 
 type SeasonsAPIDataType = Season[];
