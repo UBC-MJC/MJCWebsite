@@ -1,44 +1,64 @@
 import React, { FC } from "react";
-import { Col, Container, Row } from "react-bootstrap";
 import riichiStick from "../../assets/riichiStick.png";
-import { getRiichiStickCount, getScoresWithPlayers } from "../../common/Utils";
+import { Box, Stack } from "@mui/material";
 
 export const Footer: FC<{
-    game: Game;
-    gameVariant: GameVariant;
-    riichiList: number[];
-}> = ({ game, gameVariant, riichiList }) => {
+    scores: { username: string; score: number; eloDelta: number }[];
+    riichiList?: number[];
+    riichiStickCount?: number;
+}> = ({ scores, riichiList, riichiStickCount }) => {
+    const getInnerContent = () => {
+        if (riichiList) {
+            return (
+                <>
+                    {riichiStickCount !== undefined ? (
+                        <h5>Riichi sticks: {riichiStickCount}</h5>
+                    ) : null}
+                    <Stack direction="row" spacing={2} justifyContent={"center"} alignItems="end">
+                        {scores.map(({ username, score, eloDelta }, idx) => (
+                            <Box key={idx} width="20%">
+                                <div>{username}</div>
+                                <div>
+                                    {riichiList.includes(idx) && (
+                                        <img src={riichiStick} width="50%" />
+                                    )}
+                                </div>
+                                <h2>{score - Number(riichiList.includes(idx)) * 1000}</h2>
+                                <div>{eloDelta.toFixed(1)}</div>
+                            </Box>
+                        ))}
+                    </Stack>
+                </>
+            );
+        }
+        return (
+            <Stack direction="row" spacing={2} justifyContent={"center"}>
+                {scores.map(({ username, score, eloDelta }, idx) => (
+                    <Box key={idx}>
+                        <div>{username}</div>
+                        <h2>{score}</h2>
+                        <div>{eloDelta.toFixed(1)}</div>
+                    </Box>
+                ))}
+            </Stack>
+        );
+    };
+
     return (
-        <Container
-            className={"position-fixed bottom-0 left-0 w-100 mt-auto bg-body z-2"}
-            style={{ transform: "translate(calc(50vw - 50%))" }}
+        <Stack
+            position="fixed"
+            bgcolor="background.paper"
+            zIndex={2}
+            spacing={1}
+            width="100%"
+            left={0}
+            right={0}
+            bottom={0}
+            alignItems={"center"}
         >
-            {gameVariant === "jp" && (
-                <Row className={"mt-2"}>
-                    <h5 className={"my-0"}>
-                        Riichi sticks:{" "}
-                        {getRiichiStickCount(game.rounds as JapaneseRound[], riichiList)}
-                    </h5>
-                </Row>
-            )}
-            <Row className={"row-cols-4 align-items-end mb-2"}>
-                {getScoresWithPlayers(game, gameVariant).map(
-                    ({ username, score, eloDelta }, idx) => (
-                        <Col key={idx} className={"my-2"}>
-                            <div>{username}</div>
-                            <div>
-                                {riichiList.includes(idx) && (
-                                    <img src={riichiStick} className={"w-75"} />
-                                )}
-                            </div>
-                            <h2 className="my-0">
-                                {score - Number(riichiList.includes(idx)) * 1000}
-                            </h2>
-                            <div>{eloDelta.toFixed(1)}</div>
-                        </Col>
-                    ),
-                )}
-            </Row>
-        </Container>
+            <Box width="100%" maxWidth="100%">
+                {getInnerContent()}
+            </Box>
+        </Stack>
     );
 };

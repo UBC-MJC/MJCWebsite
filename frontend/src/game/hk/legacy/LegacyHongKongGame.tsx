@@ -10,7 +10,7 @@ import {
     isGameEnd,
 } from "../../common/constants";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
-import { hongKongPointsWheel } from "../../../common/Utils";
+import { getScoresWithPlayers, hongKongPointsWheel } from "../../../common/Utils";
 import { LegacyGameProps } from "../../Game";
 import { createHongKongRoundRequest, generateOverallScoreDelta } from "../controller/HongKongRound";
 import { validateHongKongRound } from "../controller/ValidateHongKongRound";
@@ -180,14 +180,16 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
     };
 
     return (
-        <Container>
-            {enableRecording && !gameOver && getRecordingInterface()}
-            <LegacyHongKongGameTable
-                rounds={mapRoundsToModifiedRounds(game.rounds as HongKongRound[])}
-                players={players}
-            />
-            <Footer game={game} gameVariant="hk" riichiList={[]}></Footer>
-        </Container>
+        <>
+            <Container>
+                {enableRecording && !gameOver && getRecordingInterface()}
+                <LegacyHongKongGameTable
+                    rounds={mapRoundsToModifiedRounds(game.rounds as HongKongRound[])}
+                    players={players}
+                />
+            </Container>
+            <Footer scores={getScoresWithPlayers(game, "hk")} />
+        </>
     );
 };
 

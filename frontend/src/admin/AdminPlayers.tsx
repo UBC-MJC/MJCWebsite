@@ -77,6 +77,7 @@ const AdminPlayers: FC = () => {
                 if (isInEditMode) {
                     return [
                         <GridActionsCellItem
+                            key="save"
                             icon={<Save />}
                             onClick={() =>
                                 setRowModesModel({
@@ -87,6 +88,7 @@ const AdminPlayers: FC = () => {
                             label="Save"
                         />,
                         <GridActionsCellItem
+                            key="cancel"
                             icon={<Cancel />}
                             onClick={() =>
                                 setRowModesModel({
@@ -100,6 +102,7 @@ const AdminPlayers: FC = () => {
                 }
                 return [
                     <GridActionsCellItem
+                        key="edit"
                         icon={<Edit />}
                         onClick={() =>
                             setRowModesModel({
@@ -110,6 +113,7 @@ const AdminPlayers: FC = () => {
                         label="Edit"
                     />,
                     <DeleteUserActionItem
+                        key="delete"
                         label="Delete"
                         deleteUser={() => deletePlayerMut.mutate(row.id)}
                     />,
