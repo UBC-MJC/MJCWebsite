@@ -11,7 +11,11 @@ import {
     JP_UNDEFINED_HAND,
 } from "../../common/constants";
 import PlayerButtonRow from "../../common/PlayerButtonRow";
-import { japanesePointsWheel } from "../../../common/Utils";
+import {
+    getRiichiStickCount,
+    getScoresWithPlayers,
+    japanesePointsWheel,
+} from "../../../common/Utils";
 import { LegacyGameProps } from "../../Game";
 import {
     addDealIn,
@@ -21,12 +25,13 @@ import {
     addPaoSelfDraw,
     addSelfDraw,
     createJapaneseRoundRequest,
+    generateJapaneseCurrentScore,
     generateOverallScoreDelta,
 } from "../controller/JapaneseRound";
 import { validateJapaneseRound, validateTransaction } from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
 import PointsInput from "../../common/PointsInput";
-import { Button, ToggleButton, FormControlLabel, Switch } from "@mui/material";
+import { Button, ToggleButton, FormControlLabel, Switch, Stack, Grid } from "@mui/material";
 import { Footer } from "../../common/Footer";
 
 function getTransaction(
@@ -238,41 +243,33 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     };
 
     const getJapaneseLabels = () => {
-        let labels: [JapaneseLabel, (number | undefined)[]][] = [];
+        const labelsRecord: Record<
+            JapaneseTransactionType,
+            [JapaneseLabel, (number | undefined)[]][]
+        > = {
+            [JapaneseTransactionType.DEAL_IN]: [
+                [JapaneseLabel.WINNER, [roundActions.WINNER]],
+                [JapaneseLabel.LOSER, [roundActions.LOSER]],
+            ],
+            [JapaneseTransactionType.DEAL_IN_PAO]: [
+                [JapaneseLabel.WINNER, [roundActions.WINNER]],
+                [JapaneseLabel.LOSER, [roundActions.LOSER]],
+                [JapaneseLabel.PAO, [roundActions.PAO]],
+            ],
+            [JapaneseTransactionType.SELF_DRAW]: [[JapaneseLabel.WINNER, [roundActions.WINNER]]],
+            [JapaneseTransactionType.SELF_DRAW_PAO]: [
+                [JapaneseLabel.WINNER, [roundActions.WINNER]],
+                [JapaneseLabel.PAO, [roundActions.PAO]],
+            ],
+            [JapaneseTransactionType.DECK_OUT]: [[JapaneseLabel.TENPAI, tenpaiList]],
+            [JapaneseTransactionType.NAGASHI_MANGAN]: [
+                [JapaneseLabel.WINNER, [roundActions.WINNER]],
+                [JapaneseLabel.TENPAI, tenpaiList],
+            ],
+            [JapaneseTransactionType.INROUND_RYUUKYOKU]: [[JapaneseLabel.TENPAI, tenpaiList]],
+        };
 
-        switch (transactionType) {
-            case JapaneseTransactionType.DEAL_IN:
-                labels = [
-                    [JapaneseLabel.WINNER, [roundActions.WINNER]],
-                    [JapaneseLabel.LOSER, [roundActions.LOSER]],
-                ];
-                break;
-            case JapaneseTransactionType.DEAL_IN_PAO:
-                labels = [
-                    [JapaneseLabel.WINNER, [roundActions.WINNER]],
-                    [JapaneseLabel.LOSER, [roundActions.LOSER]],
-                    [JapaneseLabel.PAO, [roundActions.PAO]],
-                ];
-                break;
-            case JapaneseTransactionType.SELF_DRAW:
-                labels = [[JapaneseLabel.WINNER, [roundActions.WINNER]]];
-                break;
-            case JapaneseTransactionType.SELF_DRAW_PAO:
-                labels = [
-                    [JapaneseLabel.WINNER, [roundActions.WINNER]],
-                    [JapaneseLabel.PAO, [roundActions.PAO]],
-                ];
-                break;
-            case JapaneseTransactionType.DECK_OUT:
-                labels = [[JapaneseLabel.TENPAI, tenpaiList]];
-                break;
-            case JapaneseTransactionType.NAGASHI_MANGAN:
-                labels = [
-                    [JapaneseLabel.WINNER, [roundActions.WINNER]],
-                    [JapaneseLabel.TENPAI, tenpaiList],
-                ];
-        }
-        return labels;
+        return labelsRecord[transactionType];
     };
 
     function getActions() {
@@ -285,20 +282,17 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
     const getRecordingInterface = () => {
         return (
             <>
-                <Col xs sm={3} className="mx-auto">
-                    <FormControlLabel
-                        control={
-                            <Switch onChange={(e, checked) => setMultipleHandInputMode(checked)} />
-                        }
-                        label="Multiple Transactions"
-                    />
-                </Col>
-                <Row className="gx-2">
+                <FormControlLabel
+                    control={
+                        <Switch onChange={(e, checked) => setMultipleHandInputMode(checked)} />
+                    }
+                    label="Multiple Transactions"
+                />
+                <Grid container spacing={1}>
                     {getActions().map((button, idx) => (
-                        <Col key={idx} xs={4}>
+                        <Grid key={idx}>
                             <ToggleButton
                                 key={idx}
-                                className="my-1 w-100"
                                 value={button.value}
                                 id={button.name}
                                 selected={transactionType === button.value}
@@ -306,30 +300,23 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                             >
                                 {button.name}
                             </ToggleButton>
-                        </Col>
+                        </Grid>
                     ))}
-                </Row>
-                <Row className="my-4">
-                    <Col>
-                        <PlayerButtonRow
-                            players={players}
-                            label={"RIICHI"}
-                            labelPlayerIds={riichiList}
-                            onChange={riichiOnChange}
-                        />
-                    </Col>
-                </Row>
+                </Grid>
+                <PlayerButtonRow
+                    players={players}
+                    label={"RIICHI"}
+                    labelPlayerIds={riichiList}
+                    onChange={riichiOnChange}
+                />
                 {getJapaneseLabels().map(([label, labelPlayerIds]) => (
-                    <Row key={label} className="my-4">
-                        <Col>
-                            <PlayerButtonRow
-                                players={players}
-                                label={label as JapaneseLabel}
-                                labelPlayerIds={labelPlayerIds}
-                                onChange={actionOnChange}
-                            />
-                        </Col>
-                    </Row>
+                    <PlayerButtonRow
+                        key={label}
+                        players={players}
+                        label={label as JapaneseLabel}
+                        labelPlayerIds={labelPlayerIds}
+                        onChange={actionOnChange}
+                    />
                 ))}
                 {showPointInput(transactionType) && (
                     <PointsInput pointsWheel={japanesePointsWheel} onChange={handOnChange} />
@@ -345,7 +332,6 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                 <Button
                     color="success"
                     variant="contained"
-                    className="my-4 w-50"
                     disabled={gameOver}
                     onClick={submitSingleTransactionRound}
                 >
@@ -355,36 +341,23 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
         }
         return (
             <>
-                <Row className={"gx-1"}>
-                    <Col>
-                        <Button
-                            variant="contained"
-                            className="my-4 w-100"
-                            disabled={gameOver}
-                            onClick={addTransaction}
-                        >
-                            Add Transaction
-                        </Button>
-                    </Col>
-                    <Col>
-                        <Button
-                            color="warning"
-                            variant="contained"
-                            className="my-4 w-100"
-                            disabled={gameOver || transactions.length === 0}
-                            onClick={deleteLastTransaction}
-                        >
-                            Delete Last Transaction
-                        </Button>
-                    </Col>
-                </Row>
-
+                <Stack direction="row" spacing={1}>
+                    <Button variant="contained" disabled={gameOver} onClick={addTransaction}>
+                        Add Transaction
+                    </Button>
+                    <Button
+                        color="warning"
+                        variant="contained"
+                        disabled={gameOver || transactions.length === 0}
+                        onClick={deleteLastTransaction}
+                    >
+                        Delete Last Transaction
+                    </Button>
+                </Stack>
                 {getTransactionListRender(transactions)}
-
                 <Button
                     color="success"
                     variant="contained"
-                    className="my-4 w-50"
                     disabled={gameOver || transactions.length === 0}
                     onClick={submitAllTransactionRound}
                 >
@@ -396,14 +369,18 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
 
     return (
         <>
-            <Container>
+            <Stack alignItems="center" spacing={2}>
                 {enableRecording && !gameOver && getRecordingInterface()}
                 <LegacyJapaneseGameTable
                     rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
                     players={players}
                 />
-            </Container>
-            <Footer game={game} gameVariant={"jp"} riichiList={riichiList} />
+            </Stack>
+            <Footer
+                scores={getScoresWithPlayers(game, "jp")}
+                riichiList={riichiList}
+                riichiStickCount={getRiichiStickCount(game.rounds as JapaneseRound[], riichiList)}
+            />
         </>
     );
 };

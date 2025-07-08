@@ -22,7 +22,7 @@ import { Resources } from "./resources/Resources";
 import GameLogs from "./game/GameLogs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
-
+import { enUS } from "@mui/x-date-pickers/locales";
 const useQuery = () => {
     const { search } = useLocation();
 
@@ -58,11 +58,14 @@ const App: React.FC = () => {
             setMode(mode);
         },
     };
-    const theme = createTheme({
-        palette: {
-            mode: mode,
+    const theme = createTheme(
+        {
+            palette: {
+                mode: mode,
+            },
         },
-    });
+        enUS,
+    );
 
     return (
         <ColorModeContext.Provider value={colorMode}>

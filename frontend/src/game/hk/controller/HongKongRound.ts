@@ -15,7 +15,6 @@ const createHongKongRoundRequest = (
     point: HongKongHandInput,
     currentRound: PartialHongKongRound,
 ) => {
-    const result: any = currentRound;
     const transactions: HongKongTransaction[] = [];
     switch (roundType) {
         case HongKongTransactionType.DEAL_IN:
@@ -35,8 +34,10 @@ const createHongKongRoundRequest = (
             transactions.push(addPaoSelfDraw(roundActions.WINNER!, roundActions.PAO!, point));
             break;
     }
-    result.transactions = transactions;
-    return result;
+    return {
+        ...currentRound,
+        transactions,
+    };
 };
 
 const calculateHandValue = (multiplier: number, point: number): number => {

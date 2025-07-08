@@ -118,7 +118,6 @@ const updateSeasonHandler = async (
     if (!id) {
         return next(createError.BadRequest("Invalid season id"));
     }
-
     updateSeasonSchema
         .validate(req.body.season)
         .then((season: UpdateSeasonType) => {

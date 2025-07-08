@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { withPlayerCondition } from "../common/withPlayerCondition";
-import { Container, Tabs, Tab, Box } from "@mui/material";
+import { Container, Tabs, Tab } from "@mui/material";
 import AdminPlayers from "./AdminPlayers";
 import AdminSeason from "./AdminSeason";
 import AdminChombo from "./AdminChombo";
@@ -12,21 +12,15 @@ const AdminComponent: FC = () => {
     };
 
     return (
-        <Container maxWidth="lg" className="my-4">
+        <Container maxWidth="lg">
             <Tabs value={value} onChange={handleChange} variant="fullWidth">
                 <Tab label="Players" />
                 <Tab label="Season" />
                 <Tab label="Chombo" />
             </Tabs>
-            <Box hidden={value !== 0}>
-                <AdminPlayers />
-            </Box>
-            <Box hidden={value !== 1}>
-                <AdminSeason />
-            </Box>
-            <Box hidden={value !== 2}>
-                <AdminChombo />
-            </Box>
+            {value === 0 ? <AdminPlayers /> : null}
+            {value === 1 ? <AdminSeason /> : null}
+            {value === 2 ? <AdminChombo /> : null}
         </Container>
     );
 };

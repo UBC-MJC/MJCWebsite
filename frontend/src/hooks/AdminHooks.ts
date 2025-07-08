@@ -16,8 +16,14 @@ export function useSeasons(setSeason: (season: Season) => void = () => null) {
         queryKey: seasonsKey,
         queryFn: async () => {
             const seasonsResponse = await getSeasonsAPI();
-            const seasons = seasonsResponse.data;
-            if (seasons.length > 0 && new Date(seasons[0].endDate) > new Date()) {
+            const seasons = seasonsResponse.data.map((season) => ({
+                ...season,
+                startDate: new Date(season.startDate),
+                endDate: new Date(season.endDate),
+            }));
+            seasons.sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
+            // Set the first season as the current season if it has not ended
+            if (seasons.length > 0 && seasons[0].endDate > new Date()) {
                 setSeason(seasons[0]);
             }
             return seasons;
@@ -28,7 +34,7 @@ export function useSeasons(setSeason: (season: Season) => void = () => null) {
 export function createSeasonMutation(player: Player) {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (createSeasonRequest: Partial<Season>) =>
+        mutationFn: (createSeasonRequest: Omit<Season, "id">) =>
             createSeasonAdminAPI(player.authToken, createSeasonRequest),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: seasonsKey }); // TODO: return the updated seasons
@@ -43,19 +49,6 @@ export function updateSeasonMutation(player: Player) {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (updatedSeason: Season) => updateSeasonAPI(player.authToken, updatedSeason),
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: seasonsKey }); // TODO: return the updated seasons
-        },
-        onError: (error: AxiosError) => {
-            console.log("Error updating season: ", error.response?.data);
-        },
-    });
-}
-
-export function saveSeasonMutation(player: Player) {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (editedSeason: Season) => updateSeasonAPI(player.authToken, editedSeason),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: seasonsKey }); // TODO: return the updated seasons
         },

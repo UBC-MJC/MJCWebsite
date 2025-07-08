@@ -14,10 +14,9 @@ import alert from "../common/AlertDialog";
 import confirmDialog from "../common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
-import { Col, Container, Row } from "react-bootstrap";
 import { gameRoundString, isGameEnd } from "./common/constants";
 import { baseUrl } from "../api/APIUtils";
-import { Button } from "@mui/material";
+import { Button, Stack, Container } from "@mui/material";
 
 const Game: FC = () => {
     const { id, variant } = useParams();
@@ -194,51 +193,42 @@ const Game: FC = () => {
         );
     }
     return (
-        <div className="min-vh-100 d-flex flex-column" style={{ paddingBottom: "175px" }}>
-            <h1 className="mt-2">
+        <Container sx={{ width: "100%", paddingBottom: "10rem", position: "relative" }}>
+            <h1>
                 {getGameVariantString(variant, game.type)} Game
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game, variant)}
             </h1>
             {getLegacyDisplayGame(game)}
             {isRecording(game) && (
-                <Container>
-                    <Row>
-                        <Col sm>
-                            <Button
-                                variant="contained"
-                                color="error"
-                                className="mb-2 w-100"
-                                disabled={game.rounds.length == 0}
-                                onClick={() => handleDeleteRound()}
-                            >
-                                Delete last Hand
-                            </Button>
-                        </Col>
-                        <Col sm>
-                            <Button
-                                variant="contained"
-                                color="error"
-                                className="mb-2 w-100"
-                                onClick={() => handleDeleteGame()}
-                            >
-                                Delete Game
-                            </Button>
-                        </Col>
-                        <Col sm>
-                            <Button
-                                variant="contained"
-                                color="success"
-                                className="mb-2 w-100"
-                                disabled={!isGameEnd(game, variant)}
-                                onClick={() => handleSubmitGame()}
-                            >
-                                Submit Game
-                            </Button>
-                        </Col>
-                    </Row>
-                </Container>
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    width="75%"
+                    margin="auto"
+                    justifyContent={"center"}
+                >
+                    <Button
+                        variant="contained"
+                        color="error"
+                        disabled={game.rounds.length == 0}
+                        onClick={() => handleDeleteRound()}
+                    >
+                        Delete last Hand
+                    </Button>
+                    <Button variant="contained" color="error" onClick={() => handleDeleteGame()}>
+                        Delete Game
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="success"
+                        disabled={!isGameEnd(game, variant)}
+                        onClick={() => handleSubmitGame()}
+                    >
+                        Submit Game
+                    </Button>
+                </Stack>
             )}
-        </div>
+        </Container>
     );
 };
 

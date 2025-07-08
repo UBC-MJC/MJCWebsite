@@ -1,5 +1,5 @@
 import React from "react";
-import { ToggleButton } from "@mui/material";
+import { Container, Stack, ToggleButton } from "@mui/material";
 
 interface PlayerButtonRow<T extends string> {
     players: GamePlayer[];
@@ -17,25 +17,32 @@ const PlayerButtonRow = <T extends string>({
     return (
         <>
             <h5>{label[0] + label.slice(1).toLowerCase()}:</h5>
-            {players.map((player, idx) => (
-                <ToggleButton
-                    key={idx}
-                    id={`name-${label}-${idx}`}
-                    color={getVariant(label)}
-                    sx={{
-                        maxWidth: "22.5%",
-                        overflow: "clip",
-                        whiteSpace: "nowrap",
-                        // textOverflow: "ellipsis"
-                    }}
-                    className="mx-1 my-1"
-                    value={player.id}
-                    selected={labelPlayerIds.includes(idx)}
-                    onChange={() => onChange(idx, label)}
-                >
-                    {player.username}
-                </ToggleButton>
-            ))}
+            <Stack
+                direction="row"
+                spacing={1}
+                alignContent={"center"}
+                maxWidth={"100%"}
+                justifyContent={"center"}
+            >
+                {players.map((player, idx) => (
+                    <ToggleButton
+                        key={idx}
+                        id={`name-${label}-${idx}`}
+                        color={getVariant(label)}
+                        sx={{
+                            maxWidth: "22.5%",
+                            overflow: "clip",
+                            whiteSpace: "nowrap",
+                            // textOverflow: "ellipsis"
+                        }}
+                        value={player.id}
+                        selected={labelPlayerIds.includes(idx)}
+                        onChange={() => onChange(idx, label)}
+                    >
+                        {player.username}
+                    </ToggleButton>
+                ))}
+            </Stack>
         </>
     );
 };
