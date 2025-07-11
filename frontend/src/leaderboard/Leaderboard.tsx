@@ -83,7 +83,17 @@ const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; sea
                 {season.name} season ends {new Date(season.endDate).toDateString()}
             </h5>
             <Box>
-                <DataGrid rows={leaderboard} columns={columns} />
+                <DataGrid
+                    rows={leaderboard}
+                    columns={columns}
+                    initialState={{
+                        columns: {
+                            columnVisibilityModel: {
+                                chomboCount: false,
+                            },
+                        },
+                    }}
+                />
             </Box>
         </>
     );

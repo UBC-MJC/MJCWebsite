@@ -1,5 +1,4 @@
 import React, { FC, useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
 import LegacyJapaneseGameTable, { ModifiedJapaneseRound } from "./LegacyJapaneseGameTable";
 import {
     isGameEnd,
@@ -25,13 +24,12 @@ import {
     addPaoSelfDraw,
     addSelfDraw,
     createJapaneseRoundRequest,
-    generateJapaneseCurrentScore,
     generateOverallScoreDelta,
 } from "../controller/JapaneseRound";
 import { validateJapaneseRound, validateTransaction } from "../controller/ValidateJapaneseRound";
 import alert from "../../../common/AlertDialog";
 import PointsInput from "../../common/PointsInput";
-import { Button, ToggleButton, FormControlLabel, Switch, Stack, Grid } from "@mui/material";
+import { Button, ToggleButton, FormControlLabel, Switch, Stack, Grid, Box } from "@mui/material";
 import { Footer } from "../../common/Footer";
 
 function getTransaction(
@@ -375,6 +373,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
                     players={players}
                 />
+                <Box paddingBottom={2} />
             </Stack>
             <Footer
                 scores={getScoresWithPlayers(game, "jp")}
