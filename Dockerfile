@@ -1,4 +1,4 @@
-FROM node:18 AS ui-build
+FROM node:22-alpine AS ui-build
 WORKDIR /usr/src/frontend
 COPY frontend/package*.json .
 COPY frontend/tsconfig.json .
@@ -6,7 +6,7 @@ RUN npm install
 COPY frontend .
 RUN npm run build
 
-FROM node:18 AS server-build
+FROM node:22-alpine AS server-build
 WORKDIR /root
 COPY backend/package*.json .
 COPY backend/tsconfig.json .
