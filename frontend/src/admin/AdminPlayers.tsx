@@ -170,6 +170,8 @@ const AdminPlayers: FC = () => {
                     rows={data}
                     columns={playerColumns}
                     rowModesModel={rowModesModel}
+                    autosizeOnMount
+                    hideFooter
                     onRowModesModelChange={(newModel) => setRowModesModel(newModel)}
                     processRowUpdate={(updatedRow, originalRow) => {
                         if (updatedRow === originalRow) {

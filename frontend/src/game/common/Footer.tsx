@@ -34,7 +34,7 @@ export const Footer: FC<{
         return (
             <Stack direction="row" spacing={2} justifyContent={"center"}>
                 {scores.map(({ username, score, eloDelta }, idx) => (
-                    <Box key={idx}>
+                    <Box key={idx} width="20%">
                         <div>{username}</div>
                         <h2>{score}</h2>
                         <div>{eloDelta.toFixed(1)}</div>

@@ -1,10 +1,5 @@
 import { FC } from "react";
-import {
-    ColumnDef,
-    createColumnHelper,
-    getCoreRowModel,
-    useReactTable,
-} from "@tanstack/react-table";
+import { GridColDef } from "@mui/x-data-grid";
 import { mapChineseNumerals, mapWindToCharacter } from "../../../common/Utils";
 import { generateJapaneseCurrentScore } from "../controller/JapaneseRound";
 import TableDisplay from "../../common/TableDisplay";
@@ -16,10 +11,6 @@ interface LegacyGameTableProps {
 
 export type ModifiedJapaneseRound = JapaneseRound & { scoreDeltas: number[] };
 
-const getCurrentScoreRow = (rounds: JapaneseRound[]) => {
-    return ["Score", ...generateJapaneseCurrentScore(rounds)];
-};
-
 function getRowString(row: ModifiedJapaneseRound) {
     return `${mapWindToCharacter(row.roundWind)}${mapChineseNumerals(row.roundNumber)}局 ${
         row.bonus
@@ -27,59 +18,48 @@ function getRowString(row: ModifiedJapaneseRound) {
 }
 
 const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {
-    const columnHelper = createColumnHelper<ModifiedJapaneseRound>();
-
-    const roundColumns: ColumnDef<ModifiedJapaneseRound, any>[] = [
-        columnHelper.accessor((row) => getRowString(row), {
-            id: "round",
-            header: "Round",
-        }),
-        columnHelper.accessor(
-            (row) => {
-                return row.scoreDeltas[0];
-            },
-            {
-                id: "eastScore",
-                header: players[0].username,
-            },
-        ),
-        columnHelper.accessor(
-            (row) => {
-                return row.scoreDeltas[1];
-            },
-            {
-                id: "southScore",
-                header: players[1].username,
-            },
-        ),
-        columnHelper.accessor(
-            (row) => {
-                return row.scoreDeltas[2];
-            },
-            {
-                id: "westScore",
-                header: players[2].username,
-            },
-        ),
-        columnHelper.accessor(
-            (row) => {
-                return row.scoreDeltas[3];
-            },
-            {
-                id: "northScore",
-                header: players[3].username,
-            },
-        ),
+    const columns: GridColDef<ModifiedJapaneseRound>[] = [
+        {
+            field: "round",
+            headerName: "Round",
+            flex: 1.5,
+            valueGetter: (_, row: ModifiedJapaneseRound) => getRowString(row),
+        },
+        {
+            field: "eastScore",
+            headerName: players[0].username,
+            flex: 1,
+            valueGetter: (_, row: ModifiedJapaneseRound) => row.scoreDeltas[0],
+            type: "number",
+            sortable: false,
+        },
+        {
+            field: "southScore",
+            headerName: players[1].username,
+            flex: 1,
+            valueGetter: (_, row: ModifiedJapaneseRound) => row.scoreDeltas[1],
+            type: "number",
+            sortable: false,
+        },
+        {
+            field: "westScore",
+            headerName: players[2].username,
+            flex: 1,
+            valueGetter: (_, row: ModifiedJapaneseRound) => row.scoreDeltas[2],
+            type: "number",
+            sortable: false,
+        },
+        {
+            field: "northScore",
+            headerName: players[3].username,
+            flex: 1,
+            valueGetter: (_, row: ModifiedJapaneseRound) => row.scoreDeltas[3],
+            type: "number",
+            sortable: false,
+        },
     ];
 
-    const table = useReactTable({
-        data: rounds,
-        columns: roundColumns,
-        getCoreRowModel: getCoreRowModel(),
-        getRowId: (row, idx) => idx.toString(),
-    });
-
-    return <TableDisplay table={table} currentScoreRow={getCurrentScoreRow(rounds)} />;
+    return <TableDisplay<ModifiedJapaneseRound> rounds={rounds} columns={columns} />;
 };
 
 export default LegacyJapaneseGameTable;
