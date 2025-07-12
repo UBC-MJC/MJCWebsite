@@ -144,11 +144,7 @@ const Game: FC = () => {
         return game.players.slice();
     };
     const isRecording = (game: Game): boolean => {
-        return (
-            typeof player !== "undefined" &&
-            game.status === "IN_PROGRESS" &&
-            game.recordedById === player.id
-        );
+        return typeof player !== "undefined" && game.recordedById === player.id;
     };
 
     const getLegacyDisplayGame = (game: Game) => {
@@ -199,40 +195,35 @@ const Game: FC = () => {
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game, variant)}
             </h1>
             {getLegacyDisplayGame(game)}
-            {isRecording(game) ||
-                (player?.admin && (
-                    <Stack
-                        direction="row"
-                        spacing={2}
-                        width="75%"
-                        margin="auto"
-                        justifyContent={"center"}
+            {game.status === "IN_PROGRESS" && (isRecording(game) || player?.admin) && (
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    width="75%"
+                    margin="auto"
+                    justifyContent={"center"}
+                >
+                    <Button
+                        variant="contained"
+                        color="error"
+                        disabled={game.rounds.length == 0}
+                        onClick={() => handleDeleteRound()}
                     >
-                        <Button
-                            variant="contained"
-                            color="error"
-                            disabled={game.rounds.length == 0}
-                            onClick={() => handleDeleteRound()}
-                        >
-                            Delete last Hand
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            onClick={() => handleDeleteGame()}
-                        >
-                            Delete Game
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="success"
-                            disabled={!isGameEnd(game, variant)}
-                            onClick={() => handleSubmitGame()}
-                        >
-                            Submit Game
-                        </Button>
-                    </Stack>
-                ))}
+                        Delete last Hand
+                    </Button>
+                    <Button variant="contained" color="error" onClick={() => handleDeleteGame()}>
+                        Delete Game
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="success"
+                        disabled={!isGameEnd(game, variant)}
+                        onClick={() => handleSubmitGame()}
+                    >
+                        Submit Game
+                    </Button>
+                </Stack>
+            )}
         </Container>
     );
 };
