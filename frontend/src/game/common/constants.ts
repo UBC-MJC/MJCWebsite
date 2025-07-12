@@ -208,7 +208,7 @@ export function mapLeaderboardToOneDecimal(leaderboards: LeaderboardType[]) {
         const elo = Number(player.elo);
         return {
             ...player,
-            index: index,
+            index: index + 1,
             displayElo: (elo - 15 * player.chomboCount).toFixed(1),
         };
     });

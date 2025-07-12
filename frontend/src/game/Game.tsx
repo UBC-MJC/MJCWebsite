@@ -199,35 +199,40 @@ const Game: FC = () => {
                 {game.status === "IN_PROGRESS" && " - " + gameRoundString(game, variant)}
             </h1>
             {getLegacyDisplayGame(game)}
-            {isRecording(game) && (
-                <Stack
-                    direction="row"
-                    spacing={2}
-                    width="75%"
-                    margin="auto"
-                    justifyContent={"center"}
-                >
-                    <Button
-                        variant="contained"
-                        color="error"
-                        disabled={game.rounds.length == 0}
-                        onClick={() => handleDeleteRound()}
+            {isRecording(game) ||
+                (player?.admin && (
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        width="75%"
+                        margin="auto"
+                        justifyContent={"center"}
                     >
-                        Delete last Hand
-                    </Button>
-                    <Button variant="contained" color="error" onClick={() => handleDeleteGame()}>
-                        Delete Game
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="success"
-                        disabled={!isGameEnd(game, variant)}
-                        onClick={() => handleSubmitGame()}
-                    >
-                        Submit Game
-                    </Button>
-                </Stack>
-            )}
+                        <Button
+                            variant="contained"
+                            color="error"
+                            disabled={game.rounds.length == 0}
+                            onClick={() => handleDeleteRound()}
+                        >
+                            Delete last Hand
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => handleDeleteGame()}
+                        >
+                            Delete Game
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="success"
+                            disabled={!isGameEnd(game, variant)}
+                            onClick={() => handleSubmitGame()}
+                        >
+                            Submit Game
+                        </Button>
+                    </Stack>
+                ))}
         </Container>
     );
 };

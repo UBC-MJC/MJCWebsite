@@ -16,7 +16,7 @@ import { createHongKongRoundRequest, generateOverallScoreDelta } from "../contro
 import { validateHongKongRound } from "../controller/ValidateHongKongRound";
 import alert from "../../../common/AlertDialog";
 import PointsInput from "../../common/PointsInput";
-import { Button, ToggleButton } from "@mui/material";
+import { Box, Button, ToggleButton } from "@mui/material";
 import { Footer } from "../../common/Footer";
 
 const LegacyHongKongGame: FC<LegacyGameProps> = ({
@@ -187,6 +187,7 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
                     rounds={mapRoundsToModifiedRounds(game.rounds as HongKongRound[])}
                     players={players}
                 />
+                <Box marginBottom={2} />
             </Container>
             <Footer scores={getScoresWithPlayers(game, "hk")} />
         </>

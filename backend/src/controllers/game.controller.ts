@@ -123,7 +123,7 @@ const deleteGameHandler = async (
             return next(createError.NotFound("Game not found"));
         } else if (game.status !== GameStatus.IN_PROGRESS) {
             return next(createError.BadRequest("Game is not in progress"));
-        } else if (game.recordedById !== req.player.id) {
+        } else if (game.recordedById !== req.player.id && !req.player.admin) {
             return next(createError.Forbidden("You are not the recorder of this game"));
         }
 
