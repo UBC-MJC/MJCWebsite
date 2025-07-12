@@ -1,4 +1,4 @@
-FROM node:18 AS ui-build
+FROM node:22-alpine AS ui-build
 WORKDIR /usr/src/frontend
 COPY frontend/package*.json .
 COPY frontend/tsconfig.json .

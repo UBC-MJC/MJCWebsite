@@ -45,6 +45,12 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
 
 const columns: GridColDef[] = [
     {
+        field: "index",
+        headerName: "#",
+        type: "number",
+        flex: 0.5,
+    },
+    {
         field: "username",
         headerName: "Player",
         flex: 1.5,
@@ -83,7 +89,7 @@ const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; sea
                 {season.name} season ends {new Date(season.endDate).toDateString()}
             </h5>
             <Box>
-                <DataGrid
+                <DataGrid<(typeof leaderboard)[0]>
                     rows={leaderboard}
                     columns={columns}
                     initialState={{

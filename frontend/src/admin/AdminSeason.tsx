@@ -149,7 +149,7 @@ const AdminSeason: FC = () => {
             </Card>
             <h2>All Seasons</h2>
             <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-                <DataGrid
+                <DataGrid<Season>
                     columns={playerColumns}
                     rows={seasons}
                     processRowUpdate={(updatedRow, originalRow) => {

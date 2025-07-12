@@ -204,10 +204,11 @@ export function mapLeaderboardToOneDecimal(leaderboards: LeaderboardType[]) {
     const playerElos = leaderboards.sort((a, b) => {
         return Number(b.elo) - Number(a.elo);
     });
-    return playerElos.map((player) => {
+    return playerElos.map((player, index) => {
         const elo = Number(player.elo);
         return {
             ...player,
+            index: index,
             displayElo: (elo - 15 * player.chomboCount).toFixed(1),
         };
     });

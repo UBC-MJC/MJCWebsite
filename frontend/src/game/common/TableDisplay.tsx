@@ -5,11 +5,12 @@ function TableDisplay<T extends GridValidRowModel>(props: {
 }) {
     const { rounds, columns } = props;
     return (
-        <DataGrid
+        <DataGrid<T>
             rows={rounds}
             columns={columns}
             getRowId={(round) => round.roundCount}
             disableColumnMenu
+            disableColumnSorting
             disableColumnResize
             hideFooter
             sx={{ width: "100%" }}

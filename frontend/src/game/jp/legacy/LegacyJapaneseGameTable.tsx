@@ -31,7 +31,6 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
             flex: 1,
             valueGetter: (_, row: ModifiedJapaneseRound) => row.scoreDeltas[0],
             type: "number",
-            sortable: false,
         },
         {
             field: "southScore",
@@ -39,7 +38,6 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
             flex: 1,
             valueGetter: (_, row: ModifiedJapaneseRound) => row.scoreDeltas[1],
             type: "number",
-            sortable: false,
         },
         {
             field: "westScore",
@@ -47,7 +45,6 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
             flex: 1,
             valueGetter: (_, row: ModifiedJapaneseRound) => row.scoreDeltas[2],
             type: "number",
-            sortable: false,
         },
         {
             field: "northScore",
@@ -55,7 +52,6 @@ const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
             flex: 1,
             valueGetter: (_, row: ModifiedJapaneseRound) => row.scoreDeltas[3],
             type: "number",
-            sortable: false,
         },
     ];
 

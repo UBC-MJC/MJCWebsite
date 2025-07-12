@@ -23,7 +23,6 @@ const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
             flex: 1,
             valueGetter: (_, row) => row.scoreDeltas[0],
             type: "number",
-            sortable: false,
         },
         {
             field: "southScore",
@@ -31,7 +30,6 @@ const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
             flex: 1,
             valueGetter: (_, row) => row.scoreDeltas[1],
             type: "number",
-            sortable: false,
         },
         {
             field: "westScore",
@@ -39,7 +37,6 @@ const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
             flex: 1,
             valueGetter: (_, row) => row.scoreDeltas[2],
             type: "number",
-            sortable: false,
         },
         {
             field: "northScore",
@@ -47,7 +44,6 @@ const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) 
             flex: 1,
             valueGetter: (_, row) => row.scoreDeltas[3],
             type: "number",
-            sortable: false,
         },
     ];
 
