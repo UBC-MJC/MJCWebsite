@@ -1,4 +1,5 @@
 interface LeaderboardType {
+    id: string;
     username: string;
     elo: string;
     gameCount: string;
@@ -82,18 +83,22 @@ interface AuthContextType {
     reloadPlayer: () => Promise<void>;
 }
 
-interface Game {
+interface Game<T extends GameVariant> {
     id: string;
     type: GameType;
     status: string;
     recordedById: string;
     createdAt: string;
     players: GamePlayer[];
-    rounds: (JapaneseRound | HongKongRound)[];
+    rounds: RoundByVariant<T>[];
     eloDeltas: EloDeltaObject;
-    currentRound: PartialJapaneseRound;
+    currentRound: PartialRoundByVariant<T>;
 }
 
+type RoundByVariant<T extends GameVariant> = T extends "jp" ? JapaneseRound : HongKongRound;
+type PartialRoundByVariant<T extends GameVariant> = T extends "jp"
+    ? PartialJapaneseRound
+    : PartialHongKongRound;
 type EloDeltaObject = Record<string, number>;
 
 interface RoundType {

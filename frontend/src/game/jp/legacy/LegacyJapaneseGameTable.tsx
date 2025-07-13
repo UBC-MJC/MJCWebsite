@@ -11,7 +11,7 @@ interface LegacyGameTableProps {
 
 export type ModifiedJapaneseRound = JapaneseRound & { scoreDeltas: number[] };
 
-function getRowString(row: ModifiedJapaneseRound) {
+export function getRowString(row: PartialJapaneseRound) {
     return `${mapWindToCharacter(row.roundWind)}${mapChineseNumerals(row.roundNumber)}局 ${
         row.bonus
     }本場`;

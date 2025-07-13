@@ -17,14 +17,14 @@ const gameVariants: { label: string; value: GameVariant }[] = [
 
 const MAX_GAMES_PER_PAGE = 12;
 
-const GameLogs: FC = () => {
+const GameLogs = <T extends GameVariant>() => {
     const navigate = useNavigate();
     const [queryGameVariant, setQueryGameVariant] = useState<GameVariant>(gameVariants[0].value);
     const [season, setSeason] = useState<Season | undefined>();
     const [queryPlayers, setQueryPlayers] = useState<string[]>([]);
 
     const [loading, setLoading] = useState(false);
-    const [games, setGames] = useState<Game[]>([]);
+    const [games, setGames] = useState<Game<T>[]>([]);
     const [pagination, setPagination] = useState<number>(1);
 
     const seasonsResult = useSeasons(setSeason);

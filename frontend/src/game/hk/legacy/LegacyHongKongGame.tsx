@@ -19,12 +19,12 @@ import PointsInput from "../../common/PointsInput";
 import { Box, Button, ToggleButton } from "@mui/material";
 import { Footer } from "../../common/Footer";
 
-const LegacyHongKongGame: FC<LegacyGameProps> = ({
+const LegacyHongKongGame = ({
     enableRecording,
     players,
     game,
     handleSubmitRound,
-}) => {
+}: LegacyGameProps<"hk">) => {
     const [transactionType, setTransactionType] = useState<HongKongTransactionType>(
         HongKongTransactionType.DEAL_IN,
     );
@@ -184,7 +184,7 @@ const LegacyHongKongGame: FC<LegacyGameProps> = ({
             <Container>
                 {enableRecording && !gameOver && getRecordingInterface()}
                 <LegacyHongKongGameTable
-                    rounds={mapRoundsToModifiedRounds(game.rounds as HongKongRound[])}
+                    rounds={mapRoundsToModifiedRounds(game.rounds)}
                     players={players}
                 />
                 <Box marginBottom={2} />

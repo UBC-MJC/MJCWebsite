@@ -25,20 +25,16 @@ export function useStatistics(
 ) {
     return useQuery({
         queryKey: ["Statistics", playerId, gameVariant, season],
-        queryFn: season
-            ? async () => {
-                  if (playerId === undefined) {
-                      return {
-                          dealInCount: 0,
-                          dealInPoint: 0,
-                          totalRounds: 0,
-                          winCount: 0,
-                          winPoint: 0,
-                      };
+        queryFn:
+            season && playerId
+                ? async () => {
+                      const statsResponse = await getUserStatistics(
+                          playerId,
+                          gameVariant,
+                          season.id,
+                      );
+                      return statsResponse.data;
                   }
-                  const statsResponse = await getUserStatistics(playerId, gameVariant, season.id);
-                  return statsResponse.data;
-              }
-            : skipToken,
+                : skipToken,
     });
 }

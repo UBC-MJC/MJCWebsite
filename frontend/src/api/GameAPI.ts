@@ -23,12 +23,16 @@ const createGameAPI = async (
     );
 };
 
-const getGameAPI = async (gameId: number, gameVariant: GameVariant) => {
-    return axios.get<Game>(baseUrl + `/games/${gameVariant}/${gameId}`);
+const getGameAPI = async <T extends GameVariant>(gameId: number, gameVariant: GameVariant) => {
+    return axios.get<Game<T>>(baseUrl + `/games/${gameVariant}/${gameId}`);
 };
 
-const getGamesAPI = async (gameVariant: GameVariant, seasonId: string, playerIds: string[]) => {
-    return axios.get<Game[]>(baseUrl + `/games/${gameVariant}`, {
+const getGamesAPI = async <T extends GameVariant>(
+    gameVariant: GameVariant,
+    seasonId: string,
+    playerIds: string[],
+) => {
+    return axios.get<Game<T>[]>(baseUrl + `/games/${gameVariant}`, {
         params: {
             seasonId: seasonId,
             playerIds: playerIds.join(","),
@@ -36,8 +40,8 @@ const getGamesAPI = async (gameVariant: GameVariant, seasonId: string, playerIds
     });
 };
 
-const getLiveGamesAPI = async (gameVariant: GameVariant) => {
-    return axios.get<Game[]>(baseUrl + `/games/${gameVariant}/live`);
+const getLiveGamesAPI = async <T extends GameVariant>(gameVariant: GameVariant) => {
+    return axios.get<Game<T>[]>(baseUrl + `/games/${gameVariant}/live`);
 };
 
 const deleteGameAPI = async (authToken: string, gameId: number, gameVariant: GameVariant) => {
@@ -55,13 +59,13 @@ const submitGameAPI = async (authToken: string, gameId: number, gameVariant: Gam
     );
 };
 
-const addRoundAPI = async (
+const addRoundAPI = async <T extends GameVariant>(
     authToken: string,
     gameId: number,
     gameVariant: GameVariant,
     round: any,
 ) => {
-    return axios.post<Game>(
+    return axios.post<Game<T>>(
         baseUrl + `/games/${gameVariant}/${gameId}/rounds`,
         {
             roundRequest: round,
@@ -70,8 +74,12 @@ const addRoundAPI = async (
     );
 };
 
-const deleteRoundAPI = async (authToken: string, gameId: number, gameVariant: GameVariant) => {
-    return axios.delete<Game>(
+const deleteRoundAPI = async <T extends GameVariant>(
+    authToken: string,
+    gameId: number,
+    gameVariant: GameVariant,
+) => {
+    return axios.delete<Game<T>>(
         baseUrl + `/games/${gameVariant}/${gameId}/rounds`,
         getAuthConfig(authToken),
     );

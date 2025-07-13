@@ -4,11 +4,19 @@ import { useSeasons } from "../hooks/AdminHooks";
 import { usePlayerLeaderboard } from "../hooks/LeaderboardHooks";
 import { mapSeasonToOption } from "../game/common/constants";
 import { GridColDef, DataGrid } from "@mui/x-data-grid";
-import { Autocomplete, Box, Stack, TextField } from "@mui/material";
+import {
+    Autocomplete,
+    Box,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Stack,
+    TextField,
+} from "@mui/material";
+import { DisplayStatistics } from "../statistics/Statistics";
 
 const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const [season, setSeason] = useState<Season | undefined>();
-
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons(setSeason);
 
     if (!seasonsSuccess) {
@@ -80,9 +88,11 @@ const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; sea
     season,
 }) => {
     const { isSuccess, data: leaderboard } = usePlayerLeaderboard(gameVariant, gameType, season);
+    const [player, setPlayer] = useState<LeaderboardType | undefined>(undefined);
     if (!isSuccess) {
         return <h5>Loading ...</h5>;
     }
+    //
     return (
         <>
             <h5>
@@ -99,8 +109,19 @@ const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; sea
                             },
                         },
                     }}
+                    onRowDoubleClick={(params) => setPlayer(params.row)}
                 />
             </Box>
+            <Dialog open={player !== undefined} onClose={() => setPlayer(undefined)}>
+                <DialogTitle>Statistics for {player?.username}</DialogTitle>
+                <DialogContent>
+                    <DisplayStatistics
+                        playerId={player?.id}
+                        gameVariant={gameVariant}
+                        season={season}
+                    />
+                </DialogContent>
+            </Dialog>
         </>
     );
 };

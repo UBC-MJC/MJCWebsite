@@ -33,7 +33,7 @@ import { Button, ToggleButton, FormControlLabel, Switch, Stack, Grid, Box } from
 import { Footer } from "../../common/Footer";
 
 function getTransaction(
-    game: Game,
+    game: Game<"jp">,
     transactionType: JapaneseTransactionType,
     roundActions: JapaneseActions,
     hand: JapaneseHandInput,
@@ -92,12 +92,12 @@ const mapRoundsToModifiedRounds = (rounds: JapaneseRound[]): ModifiedJapaneseRou
     });
 };
 
-const LegacyJapaneseGame: FC<LegacyGameProps> = ({
+const LegacyJapaneseGame = ({
     enableRecording,
     players,
     game,
     handleSubmitRound,
-}) => {
+}: LegacyGameProps<"jp">) => {
     const [transactionType, setTransactionType] = useState<JapaneseTransactionType>(
         JapaneseTransactionType.DEAL_IN,
     );
@@ -311,7 +311,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
                     <PlayerButtonRow
                         key={label}
                         players={players}
-                        label={label as JapaneseLabel}
+                        label={label}
                         labelPlayerIds={labelPlayerIds}
                         onChange={actionOnChange}
                     />
@@ -370,7 +370,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
             <Stack alignItems="center" spacing={2}>
                 {enableRecording && !gameOver && getRecordingInterface()}
                 <LegacyJapaneseGameTable
-                    rounds={mapRoundsToModifiedRounds(game.rounds as JapaneseRound[])}
+                    rounds={mapRoundsToModifiedRounds(game.rounds)}
                     players={players}
                 />
                 <Box paddingBottom={2} />
@@ -378,7 +378,7 @@ const LegacyJapaneseGame: FC<LegacyGameProps> = ({
             <Footer
                 scores={getScoresWithPlayers(game, "jp")}
                 riichiList={riichiList}
-                riichiStickCount={getRiichiStickCount(game.rounds as JapaneseRound[], riichiList)}
+                riichiStickCount={getRiichiStickCount(game.rounds, riichiList)}
             />
         </>
     );

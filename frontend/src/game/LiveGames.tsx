@@ -10,7 +10,7 @@ export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
     const navigate = useNavigate();
     const { isPending, error, data: liveGames } = useLiveGames(gameVariant);
 
-    const getCardHeader = (game: Game) => {
+    const getCardHeader = (game: Game<typeof gameVariant>) => {
         return (
             <div style={{ fontWeight: "bold" }}>
                 {getGameVariantString(gameVariant, game.type)} Game {game.id} -{" "}
