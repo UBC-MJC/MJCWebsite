@@ -121,10 +121,13 @@ export function getRiichiStickCount(rounds: JapaneseRound[], riichiList: number[
     if (rounds.length === 0) {
         return 0;
     }
-    return (rounds[rounds.length - 1] as JapaneseRound).endRiichiStickCount + riichiList.length;
+    return rounds[rounds.length - 1].endRiichiStickCount + riichiList.length;
 }
 
-export const getScoresWithPlayers = (game: Game, gameVariant: GameVariant) => {
+export const getScoresWithPlayers = <T extends GameVariant>(
+    game: Game<T>,
+    gameVariant: GameVariant,
+) => {
     const scores: number[] = (() => {
         if (gameVariant === "jp") {
             return generateJapaneseCurrentScore(game.rounds as JapaneseRound[]);

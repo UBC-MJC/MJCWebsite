@@ -18,13 +18,13 @@ import { gameRoundString, isGameEnd } from "./common/constants";
 import { baseUrl } from "../api/APIUtils";
 import { Button, Stack, Container } from "@mui/material";
 
-const Game: FC = () => {
+const Game: FC = <T extends GameVariant>() => {
     const { id, variant } = useParams();
     const { player } = useContext(AuthContext);
     const navigate = useNavigate();
     const gameId = Number(id);
 
-    const [game, setGame] = useState<Game | undefined>(undefined);
+    const [game, setGame] = useState<Game<T> | undefined>(undefined);
     const [listening, setListening] = useState(false);
 
     if (isNaN(gameId) || !validateGameVariant(variant)) {
@@ -143,17 +143,17 @@ const Game: FC = () => {
         }
         return game.players.slice();
     };
-    const isRecording = (game: Game): boolean => {
+    const isRecording = (game: Game<T>): boolean => {
         return typeof player !== "undefined" && game.recordedById === player.id;
     };
 
-    const getLegacyDisplayGame = (game: Game) => {
+    const getLegacyDisplayGame = (game: Game<T>) => {
         if (variant === "jp") {
             return (
                 <LegacyJapaneseGame
                     enableRecording={isRecording(game)}
                     players={getOrderedPlayers()}
-                    game={game}
+                    game={game as Game<"jp">}
                     handleSubmitRound={handleSubmitRound}
                 />
             );
@@ -162,7 +162,7 @@ const Game: FC = () => {
                 <LegacyHongKongGame
                     enableRecording={isRecording(game)}
                     players={getOrderedPlayers()}
-                    game={game}
+                    game={game as Game<"hk">}
                     handleSubmitRound={handleSubmitRound}
                 />
             );
@@ -228,10 +228,10 @@ const Game: FC = () => {
     );
 };
 
-export interface LegacyGameProps {
+export interface LegacyGameProps<T extends GameVariant> {
     enableRecording: boolean;
     players: GamePlayer[];
-    game: Game;
+    game: Game<T>;
     handleSubmitRound: (roundRequest: any) => Promise<void>;
 }
 

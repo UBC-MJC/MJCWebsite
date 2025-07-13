@@ -1,8 +1,13 @@
 import { Col, Row } from "react-bootstrap";
-import { FC } from "react";
 import { getScoresWithPlayers } from "../../common/Utils";
 
-const GameSummaryBody: FC<{ game: Game; gameVariant: GameVariant }> = ({ game, gameVariant }) => {
+const GameSummaryBody = <T extends GameVariant>({
+    game,
+    gameVariant,
+}: {
+    game: Game<T>;
+    gameVariant: GameVariant;
+}) => {
     return (
         <Row>
             {getScoresWithPlayers(game, gameVariant)

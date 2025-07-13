@@ -1,6 +1,7 @@
 import { isJapaneseGameEnd } from "../jp/controller/JapaneseRound";
 import { isHongKongGameEnd } from "../hk/controller/HongKongRound";
 import { mapWindToCharacter } from "../../common/Utils";
+import { getRowString } from "../jp/legacy/LegacyJapaneseGameTable";
 
 enum Wind {
     EAST = "EAST",
@@ -120,7 +121,7 @@ const HK_LABEL_MAP: Record<HongKongLabel, string> = {
 
 const HK_UNDEFINED_HAND: HongKongHandInput = -1;
 
-const isGameEnd = (game: Game, variant: GameVariant): boolean => {
+const isGameEnd = <T extends GameVariant>(game: Game<T>, variant: GameVariant): boolean => {
     if (variant === "jp") {
         return isJapaneseGameEnd(
             game.currentRound as PartialJapaneseRound,
@@ -136,16 +137,14 @@ const isGameEnd = (game: Game, variant: GameVariant): boolean => {
     }
 };
 
-const gameRoundString = (game: Game, variant: GameVariant) => {
+const gameRoundString = <T extends GameVariant>(game: Game<T>, variant: GameVariant) => {
     if (typeof game.currentRound === "undefined") {
         return "End of Game";
     }
 
     const lastRound = game.currentRound;
     if (variant === "jp") {
-        return `${mapWindToCharacter(lastRound.roundWind)} ${lastRound.roundNumber} Bonus ${
-            lastRound.bonus
-        }`;
+        return getRowString(lastRound as PartialJapaneseRound);
     } else if (variant === "hk") {
         return `${mapWindToCharacter(lastRound.roundWind)} ${lastRound.roundNumber}`;
     }
