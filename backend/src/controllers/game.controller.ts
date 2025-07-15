@@ -91,7 +91,7 @@ const createGameHandler = async (
     const gameVariant = req.params.gameVariant as GameVariant;
 
     try {
-        const { players, gameType } = await createGameSchema.validate(req.body);
+        const { players, gameType } = createGameSchema.parse(req.body);
         const season = await getCurrentSeason();
 
         const gameService = getGameService(gameVariant);

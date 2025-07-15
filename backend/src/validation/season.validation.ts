@@ -1,20 +1,20 @@
-import { object, string, InferType } from "yup";
+import { z } from "zod";
 
-const createSeasonSchema = object({
-    name: string().required(),
-    startDate: string().required(),
-    endDate: string().required(),
+const createSeasonSchema = z.object({
+    name: z.string(),
+    startDate: z.string(),
+    endDate: z.string(),
 });
 
-type CreateSeasonType = InferType<typeof createSeasonSchema>;
+type CreateSeasonType = z.infer<typeof createSeasonSchema>;
 
-const updateSeasonSchema = object({
-    id: string().required(),
-    name: string().required(),
-    startDate: string().required(),
-    endDate: string().required(),
+const updateSeasonSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    startDate: z.string(),
+    endDate: z.string(),
 });
 
-type UpdateSeasonType = InferType<typeof updateSeasonSchema>;
+type UpdateSeasonType = z.infer<typeof updateSeasonSchema>;
 
 export { createSeasonSchema, CreateSeasonType, updateSeasonSchema, UpdateSeasonType };
