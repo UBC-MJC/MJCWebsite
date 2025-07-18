@@ -12,7 +12,7 @@ export function roundQuery(seasonId, playerId) {
                 and pg.gameId = g.id
                 and g.seasonId = ${seasonId}
                 and pg.playerId = ${playerId}
-              union
+              union all
               select sum(player1Riichi) as riichiCount
               from JapaneseRound r,
                    JapanesePlayerGame pg,
@@ -22,7 +22,7 @@ export function roundQuery(seasonId, playerId) {
                 and pg.gameId = g.id
                 and g.seasonId = ${seasonId}
                 and pg.playerId = ${playerId}
-              union
+              union all
               select sum(player2Riichi) as riichiCount
               from JapaneseRound r,
                    JapanesePlayerGame pg,
@@ -32,7 +32,7 @@ export function roundQuery(seasonId, playerId) {
                 and pg.gameId = g.id
                 and g.seasonId = ${seasonId}
                 and pg.playerId = ${playerId}
-              union
+              union all
               select sum(player3Riichi) as riichiCount
               from JapaneseRound r,
                    JapanesePlayerGame pg,
