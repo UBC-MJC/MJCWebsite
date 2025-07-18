@@ -79,6 +79,19 @@ export const DisplayStatistics: FC<{
                 <Grid size={6}>
                     Avg Agari size: {divideWithDefault(stats.winPoint, stats.winCount).toFixed(0)}
                 </Grid>
+                <Grid size={6}>
+                    Riichi Rate:{" "}
+                    {divideWithDefault(100 * stats.riichiCount, stats.totalRounds).toFixed(2)}%
+                </Grid>
+                <Grid size={6}>
+                    Riichi Win Rate:{" "}
+                    {divideWithDefault(100 * stats.winRiichiCount, stats.riichiCount).toFixed(2)}%
+                </Grid>
+                <Grid size={6}>
+                    Riichi Deal-in Rate:{" "}
+                    {divideWithDefault(100 * stats.dealInRiichiCount, stats.riichiCount).toFixed(2)}
+                    %
+                </Grid>
             </Grid>
         </>
     );

@@ -2,9 +2,10 @@ import { Prisma } from "@prisma/client";
 
 export function dealInQuery(seasonId, playerId) {
     return Prisma.sql`
-        select sum(dealInPoint) as dealInPoint, sum(count) as count
+        select sum(dealInPoint) as dealInPoint, sum(riichiCount) as riichiCount, sum(count) as count
         from (select -sum(t.player0ScoreChange) as dealInPoint,
-                     count(r.id)              as count
+                     sum(player0Riichi)         as riichiCount,
+                     count(r.id)                as count
               from JapaneseTransaction t,
                    JapaneseRound r,
                    JapanesePlayerGame pg,
@@ -20,7 +21,8 @@ export function dealInQuery(seasonId, playerId) {
                 and pg.playerId = ${playerId}
               union
               select -sum(t.player1ScoreChange) as dealInPoint,
-                     count(r.id)              as count
+                     sum(player1Riichi)         as riichiCount,
+                     count(r.id)                as count
               from JapaneseTransaction t,
                    JapaneseRound r,
                    JapanesePlayerGame pg,
@@ -36,7 +38,8 @@ export function dealInQuery(seasonId, playerId) {
                 and pg.playerId = ${playerId}
               union
               select -sum(t.player2ScoreChange) as dealInPoint,
-                     count(r.id)              as count
+                     sum(player2Riichi)         as riichiCount,
+                     count(r.id)                as count
               from JapaneseTransaction t,
                    JapaneseRound r,
                    JapanesePlayerGame pg,
@@ -52,7 +55,8 @@ export function dealInQuery(seasonId, playerId) {
                 and pg.playerId = ${playerId}
               union
               select -sum(t.player3ScoreChange) as dealInPoint,
-                     count(r.id)              as count
+                     sum(player3Riichi)         as riichiCount,
+                     count(r.id)                as count
               from JapaneseTransaction t,
                    JapaneseRound r,
                    JapanesePlayerGame pg,
@@ -65,6 +69,6 @@ export function dealInQuery(seasonId, playerId) {
                 and pg.wind = 'NORTH'
                 and pg.gameId = g.id
                 and g.seasonId = ${seasonId}
-                and pg.playerId = ${playerId} ) DEALINS
+                and pg.playerId = ${playerId}) DEALINS
     `;
 }

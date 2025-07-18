@@ -9,13 +9,8 @@ import {
 } from "../services/season.service";
 import { makeDummyAdmins } from "../services/admin.service";
 import { Season } from "@prisma/client";
-import { playerSchema, PlayerType } from "../validation/player.validation";
-import {
-    createSeasonSchema,
-    CreateSeasonType,
-    updateSeasonSchema,
-    UpdateSeasonType,
-} from "../validation/season.validation";
+import { playerSchema } from "../validation/player.validation";
+import { createSeasonSchema, updateSeasonSchema } from "../validation/season.validation";
 import prisma from "../db";
 
 const getPlayersHandler = async (
