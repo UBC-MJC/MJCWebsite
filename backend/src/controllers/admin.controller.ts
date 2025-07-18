@@ -45,17 +45,14 @@ const updatePlayerHandler = async (
     if (!id) {
         next(createError.BadRequest("Invalid player id"));
     }
-
-    playerSchema
-        .validate(req.body.player)
-        .then((player: PlayerType) => updatePlayer(id, player))
-        .then((player) => {
-            const { password, ...playerOmitted } = player;
-            res.json({ ...playerOmitted });
-        })
-        .catch((err: any) => {
-            next(createError.InternalServerError(err.message));
-        });
+    try {
+        const player = playerSchema.parse(req.body.player);
+        const updatedPlayer = await updatePlayer(id, player);
+        const { password: _, ...playerOmitted } = updatedPlayer;
+        res.json(playerOmitted);
+    } catch (err: any) {
+        next(createError.InternalServerError(err.message));
+    }
 };
 
 const deletePlayerHandler = async (
@@ -83,30 +80,25 @@ const createSeasonHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    getCurrentSeason()
-        .then(() => {
-            next(createError.InternalServerError("Season already in progress"));
-        })
-        .catch(() => {
-            createSeasonSchema
-                .validate(req.body.season)
-                .then((season: CreateSeasonType) => {
-                    const startDate = new Date(season.startDate);
-
-                    const endDate = new Date(season.endDate);
-                    if (endDate < new Date()) {
-                        throw new Error("End date must be in the future");
-                    }
-
-                    return createSeason(season.name, startDate, endDate);
-                })
-                .then((season) => {
-                    res.json({ ...season });
-                })
-                .catch((err: any) => {
-                    next(createError.InternalServerError(err.message));
-                });
-        });
+    try {
+        await getCurrentSeason();
+        next(createError.InternalServerError("Season already in progress"));
+        return;
+    } catch (_) {
+        void 0;
+    }
+    try {
+        const season = createSeasonSchema.parse(req.body.season);
+        const startDate = new Date(season.startDate);
+        const endDate = new Date(season.endDate);
+        if (endDate < new Date()) {
+            throw new Error("End date must be in the future");
+        }
+        const createdSeason = await createSeason(season.name, startDate, endDate);
+        res.json({ ...createdSeason });
+    } catch (err: any) {
+        next(createError.InternalServerError(err.message));
+    }
 };
 
 const updateSeasonHandler = async (
@@ -118,23 +110,18 @@ const updateSeasonHandler = async (
     if (!id) {
         return next(createError.BadRequest("Invalid season id"));
     }
-    updateSeasonSchema
-        .validate(req.body.season)
-        .then((season: UpdateSeasonType) => {
-            const updateSeasonObject: Season = {
-                id: id,
-                name: season.name,
-                startDate: new Date(season.startDate),
-                endDate: new Date(season.endDate),
-            };
-            return updateSeason(updateSeasonObject);
-        })
-        .then((season) => {
-            res.json({ ...season });
-        })
-        .catch((err: any) => {
-            next(createError.InternalServerError(err.message));
-        });
+    try {
+        const parsedSeason = updateSeasonSchema.parse(req.body.season);
+        const updateSeasonObject = {
+            id: id,
+            name: parsedSeason.name,
+            startDate: new Date(parsedSeason.startDate),
+            endDate: new Date(parsedSeason.endDate),
+        };
+        res.json(updateSeason(updateSeasonObject));
+    } catch (err: any) {
+        next(createError.InternalServerError(err.message));
+    }
 };
 
 const deleteSeasonHandler = async (

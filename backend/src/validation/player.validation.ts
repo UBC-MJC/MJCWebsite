@@ -1,33 +1,33 @@
-import { object, string, InferType, boolean } from "yup";
+import { z } from "zod";
 
-const playerSchema = object({
-    id: string().required(),
-    firstName: string().required(),
-    lastName: string().required(),
-    username: string().required(),
-    email: string().email().required(),
-    admin: boolean().required(),
-    japaneseQualified: boolean().required(),
-    hongKongQualified: boolean().required(),
+const playerSchema = z.object({
+    id: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+    username: z.string(),
+    email: z.email(),
+    admin: z.boolean(),
+    japaneseQualified: z.boolean(),
+    hongKongQualified: z.boolean(),
 });
 
-type PlayerType = InferType<typeof playerSchema>;
+type PlayerType = z.infer<typeof playerSchema>;
 
-const registerSchema = object({
-    firstName: string().required(),
-    lastName: string().required(),
-    username: string().required(),
-    email: string().email().required(),
-    password: string().required(),
+const registerSchema = z.object({
+    firstName: z.string(),
+    lastName: z.string(),
+    username: z.string(),
+    email: z.email(),
+    password: z.string(),
 });
 
-type RegisterType = InferType<typeof registerSchema>;
+type RegisterType = z.infer<typeof registerSchema>;
 
-const loginSchema = object({
-    username: string().required(),
-    password: string().required(),
+const loginSchema = z.object({
+    username: z.string(),
+    password: z.string(),
 });
 
-type LoginType = InferType<typeof loginSchema>;
+type LoginType = z.infer<typeof loginSchema>;
 
 export { playerSchema, PlayerType, registerSchema, RegisterType, loginSchema, LoginType };
