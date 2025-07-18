@@ -19,7 +19,7 @@ export function dealInQuery(seasonId, playerId) {
                 and pg.gameId = g.id
                 and g.seasonId = ${seasonId}
                 and pg.playerId = ${playerId}
-              union
+              union all
               select -sum(t.player1ScoreChange) as dealInPoint,
                      sum(player1Riichi)         as riichiCount,
                      count(r.id)                as count
@@ -36,7 +36,7 @@ export function dealInQuery(seasonId, playerId) {
                 and pg.gameId = g.id
                 and g.seasonId = ${seasonId}
                 and pg.playerId = ${playerId}
-              union
+              union all
               select -sum(t.player2ScoreChange) as dealInPoint,
                      sum(player2Riichi)         as riichiCount,
                      count(r.id)                as count
@@ -53,7 +53,7 @@ export function dealInQuery(seasonId, playerId) {
                 and pg.gameId = g.id
                 and g.seasonId = ${seasonId}
                 and pg.playerId = ${playerId}
-              union
+              union all
               select -sum(t.player3ScoreChange) as dealInPoint,
                      sum(player3Riichi)         as riichiCount,
                      count(r.id)                as count

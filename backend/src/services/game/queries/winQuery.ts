@@ -17,7 +17,7 @@ export function winQuery(seasonId, playerId) {
                 and pg.gameId = g.id
                 and g.seasonId = ${seasonId}
                 and pg.playerId = ${playerId}
-              union
+              union all
               select sum(t.player1ScoreChange) as winPoint,
                      sum(player1Riichi)        as riichiCount,
                      count(r.id)               as count
@@ -32,7 +32,7 @@ export function winQuery(seasonId, playerId) {
                 and pg.gameId = g.id
                 and g.seasonId = ${seasonId}
                 and pg.playerId = ${playerId}
-              union
+              union all
               select sum(t.player2ScoreChange) as winPoint,
                      sum(player2Riichi)        as riichiCount,
                      count(r.id)               as count
@@ -47,7 +47,7 @@ export function winQuery(seasonId, playerId) {
                 and pg.gameId = g.id
                 and g.seasonId = ${seasonId}
                 and pg.playerId = ${playerId}
-              union
+              union all
               select sum(t.player3ScoreChange) as winPoint,
                      sum(player3Riichi)        as riichiCount,
                      count(r.id)               as count
