@@ -23,6 +23,7 @@ import {
 } from "../../validation/game.validation";
 import { dealInQuery } from "./queries/dealInQuery";
 import { winQuery } from "./queries/winQuery";
+import { roundQuery } from "./queries/roundQuery";
 
 type FullJapaneseGame = Prisma.JapaneseGameGetPayload<{
     include: {
@@ -215,7 +216,12 @@ class JapaneseGameService extends GameService {
     }
 
     public async getUserStatistics(seasonId: string, playerId: string): Promise<any> {
-        const [[total], [totalDealIns], [totalWins]] = await Promise.all([
+        const [
+            [{ count: totalRounds }],
+            [{ riichiCount }],
+            [{ count: dealInCount, riichiCount: dealInRiichiCount, dealInPoint }],
+            [{ count: winCount, riichiCount: winRiichiCount, winPoint }],
+        ] = await Promise.all([
             prisma.$queryRaw<
                 {
                     count: number;
@@ -230,23 +236,33 @@ class JapaneseGameService extends GameService {
                and pg.playerId = ${playerId}`,
             prisma.$queryRaw<
                 {
+                    riichiCount: number;
+                }[]
+            >(roundQuery(seasonId, playerId)),
+            prisma.$queryRaw<
+                {
                     dealInPoint: number;
+                    riichiCount: number;
                     count: number;
                 }[]
             >(dealInQuery(seasonId, playerId)),
             prisma.$queryRaw<
                 {
                     winPoint: number;
+                    riichiCount: number;
                     count: number;
                 }[]
             >(winQuery(seasonId, playerId)),
         ]);
         return {
-            totalRounds: Number(total.count),
-            dealInCount: Number(totalDealIns.count),
-            dealInPoint: Number(totalDealIns.dealInPoint),
-            winCount: Number(totalWins.count),
-            winPoint: Number(totalWins.winPoint),
+            totalRounds: Number(totalRounds),
+            dealInCount: Number(dealInCount),
+            dealInPoint: Number(dealInPoint),
+            dealInRiichiCount: Number(dealInRiichiCount),
+            winCount: Number(winCount),
+            winPoint: Number(winPoint),
+            winRiichiCount: Number(winRiichiCount),
+            riichiCount: Number(riichiCount),
         };
     }
 }

@@ -2,8 +2,9 @@ import { Prisma } from "@prisma/client";
 
 export function winQuery(seasonId, playerId) {
     return Prisma.sql`
-        select sum(winPoint) as winPoint, sum(count) as count
+        select sum(winPoint) as winPoint, sum(riichiCount) as riichiCount, sum(count) as count
         from (select sum(t.player0ScoreChange) as winPoint,
+                     sum(player0Riichi)        as riichiCount,
                      count(r.id)               as count
               from JapaneseTransaction t,
                    JapaneseRound r,
@@ -18,6 +19,7 @@ export function winQuery(seasonId, playerId) {
                 and pg.playerId = ${playerId}
               union
               select sum(t.player1ScoreChange) as winPoint,
+                     sum(player1Riichi)        as riichiCount,
                      count(r.id)               as count
               from JapaneseTransaction t,
                    JapaneseRound r,
@@ -32,6 +34,7 @@ export function winQuery(seasonId, playerId) {
                 and pg.playerId = ${playerId}
               union
               select sum(t.player2ScoreChange) as winPoint,
+                     sum(player2Riichi)        as riichiCount,
                      count(r.id)               as count
               from JapaneseTransaction t,
                    JapaneseRound r,
@@ -46,6 +49,7 @@ export function winQuery(seasonId, playerId) {
                 and pg.playerId = ${playerId}
               union
               select sum(t.player3ScoreChange) as winPoint,
+                     sum(player3Riichi)        as riichiCount,
                      count(r.id)               as count
               from JapaneseTransaction t,
                    JapaneseRound r,

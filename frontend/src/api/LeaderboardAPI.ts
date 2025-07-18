@@ -15,6 +15,9 @@ async function getUserStatistics(playerId: string, gameVariant: string, seasonId
     return axios.get<{
         dealInCount: number;
         dealInPoint: number;
+        dealInRiichiCount: number;
+        riichiCount: number;
+        winRiichiCount: number;
         winCount: number;
         winPoint: number;
         totalRounds: number;

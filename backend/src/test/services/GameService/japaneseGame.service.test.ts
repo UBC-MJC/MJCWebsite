@@ -52,7 +52,7 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN,
-                        hand: { fu: 30, han: 1 },
+                        hand: { dora: 0, fu: 30, han: 1 },
                         scoreDeltas: [-1000, 0, 1000, 0],
                     },
                 ],
@@ -89,7 +89,7 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN,
-                        hand: { fu: 30, han: 1 },
+                        hand: { dora: 0, fu: 30, han: 1 },
                         scoreDeltas: [1500, 0, -1500, 0],
                     },
                 ],
@@ -126,7 +126,7 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN,
-                        hand: { fu: 30, han: 2 },
+                        hand: { dora: 0, fu: 30, han: 2 },
                         scoreDeltas: [2900, -2900, 0, 0],
                     },
                 ],
@@ -164,12 +164,12 @@ describe("Japanese Game Service Tests", async () => {
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN,
                         scoreDeltas: [8000, 0, -8000, 0],
-                        hand: { fu: 30, han: 5 },
+                        hand: { dora: 0, fu: 30, han: 5 },
                     },
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN,
                         scoreDeltas: [0, 12000, -12000, 0],
-                        hand: { fu: 30, han: 6 },
+                        hand: { dora: 0, fu: 30, han: 6 },
                     },
                 ],
             };
@@ -206,12 +206,12 @@ describe("Japanese Game Service Tests", async () => {
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN,
                         scoreDeltas: [0, 0, 12000, -12000],
-                        hand: { fu: 30, han: 6 },
+                        hand: { dora: 0, fu: 30, han: 6 },
                     },
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN,
                         scoreDeltas: [0, 2300, 0, -2300],
-                        hand: { fu: 30, han: 2 },
+                        hand: { dora: 0, fu: 30, han: 2 },
                     },
                 ],
             };
@@ -248,12 +248,12 @@ describe("Japanese Game Service Tests", async () => {
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN,
                         scoreDeltas: [0, -18000, 0, 18000],
-                        hand: { fu: 30, han: 6 },
+                        hand: { dora: 0, fu: 30, han: 6 },
                     },
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN,
                         scoreDeltas: [0, -2300, 2300, 0],
-                        hand: { fu: 30, han: 2 },
+                        hand: { dora: 0, fu: 30, han: 2 },
                     },
                 ],
             };
@@ -290,12 +290,12 @@ describe("Japanese Game Service Tests", async () => {
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN,
                         scoreDeltas: [0, 2300, 0, -2300],
-                        hand: { fu: 30, han: 2 },
+                        hand: { dora: 0, fu: 30, han: 2 },
                     },
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN,
                         scoreDeltas: [0, 0, 12000, -12000],
-                        hand: { fu: 30, han: 6 },
+                        hand: { dora: 0, fu: 30, han: 6 },
                     },
                 ],
             };
@@ -332,7 +332,7 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [
                     {
                         transactionType: JapaneseTransactionType.SELF_DRAW,
-                        hand: { fu: 30, han: 3 },
+                        hand: { dora: 0, fu: 30, han: 3 },
                         scoreDeltas: [-2000, 6000, -2000, -2000],
                     },
                 ],
@@ -369,7 +369,7 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [
                     {
                         transactionType: JapaneseTransactionType.SELF_DRAW,
-                        hand: { fu: 30, han: 3 },
+                        hand: { dora: 0, fu: 30, han: 3 },
                         scoreDeltas: [-1000, -2000, -1000, 4000],
                     },
                 ],
@@ -530,6 +530,7 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [
                     {
                         hand: {
+                            dora: 0,
                             fu: 30,
                             han: 3,
                         },
@@ -717,6 +718,7 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [
                     {
                         hand: {
+                            dora: 0,
                             fu: 30,
                             han: 3,
                         },
@@ -811,6 +813,7 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [
                     {
                         hand: {
+                            dora: 0,
                             fu: 30,
                             han: 1,
                         },
@@ -851,6 +854,7 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [
                     {
                         hand: {
+                            dora: 0,
                             fu: 30,
                             han: 8,
                         },
@@ -891,6 +895,7 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [
                     {
                         hand: {
+                            dora: 0,
                             fu: 30,
                             han: 8,
                         },
@@ -1158,13 +1163,13 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [
                     {
                         transactionType: JapaneseTransactionType.SELF_DRAW_PAO,
-                        hand: { fu: 40, han: 13 },
+                        hand: { dora: 0, fu: 40, han: 13 },
                         paoTarget: 0,
                         scoreDeltas: [-48000, 0, 0, 48000],
                     },
                     {
                         transactionType: JapaneseTransactionType.SELF_DRAW,
-                        hand: { fu: 30, han: 13 },
+                        hand: { dora: 0, fu: 30, han: 13 },
                         scoreDeltas: [-16100, -16100, -16100, 48300],
                     },
                 ],
@@ -1200,13 +1205,13 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN_PAO,
-                        hand: { fu: 40, han: 13 },
+                        hand: { dora: 0, fu: 40, han: 13 },
                         paoTarget: 0,
                         scoreDeltas: [-24000, -24000, 0, 48000],
                     },
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN,
-                        hand: { fu: 30, han: 13 },
+                        hand: { dora: 0, fu: 30, han: 13 },
                         scoreDeltas: [0, -48300, 0, 48300],
                     },
                 ],
