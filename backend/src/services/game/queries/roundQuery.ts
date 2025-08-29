@@ -2,45 +2,18 @@ import { Prisma } from "@prisma/client";
 
 export function roundQuery(seasonId, playerId) {
     return Prisma.sql`
-        select sum(riichiCount) as riichiCount
-        from (select sum(player0Riichi) as riichiCount
-              from JapaneseRound r,
-                   JapanesePlayerGame pg,
-                   JapaneseGame g
-              where pg.gameId = r.gameId
-                and pg.wind = 'EAST'
-                and pg.gameId = g.id
-                and g.seasonId = ${seasonId}
-                and pg.playerId = ${playerId}
-              union all
-              select sum(player1Riichi) as riichiCount
-              from JapaneseRound r,
-                   JapanesePlayerGame pg,
-                   JapaneseGame g
-              where pg.gameId = r.gameId
-                and pg.wind = 'SOUTH'
-                and pg.gameId = g.id
-                and g.seasonId = ${seasonId}
-                and pg.playerId = ${playerId}
-              union all
-              select sum(player2Riichi) as riichiCount
-              from JapaneseRound r,
-                   JapanesePlayerGame pg,
-                   JapaneseGame g
-              where pg.gameId = r.gameId
-                and pg.wind = 'WEST'
-                and pg.gameId = g.id
-                and g.seasonId = ${seasonId}
-                and pg.playerId = ${playerId}
-              union all
-              select sum(player3Riichi) as riichiCount
-              from JapaneseRound r,
-                   JapanesePlayerGame pg,
-                   JapaneseGame g
-              where pg.gameId = r.gameId
-                and pg.wind = 'NORTH'
-                and pg.gameId = g.id
-                and g.seasonId = ${seasonId}
-                and pg.playerId = ${playerId}) ROUND
-    `;
+     SELECT SUM(
+          CASE pg.wind 
+               WHEN 'EAST' THEN r.player0Riichi
+               WHEN 'SOUTH' THEN r.player1Riichi
+               WHEN 'WEST' THEN r.player2Riichi
+               WHEN 'NORTH' THEN r.player3Riichi
+          END
+     ) as riichiCount
+     FROM JapaneseRound r
+     JOIN JapanesePlayerGame pg ON pg.gameId = r.gameId
+     JOIN JapaneseGame g ON g.id = pg.gameId
+     WHERE g.seasonId = ${seasonId}
+     AND pg.playerId = ${playerId}
+`;
 }
