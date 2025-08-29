@@ -6,7 +6,7 @@ RUN npm install
 COPY frontend .
 RUN npm run build
 
-FROM node:18 AS server-build
+FROM node:22-alpine AS server-build
 WORKDIR /root
 COPY backend/package*.json .
 COPY backend/tsconfig.json .
