@@ -201,7 +201,9 @@ export function mapSeasonToOption(seasons: Season[]): OptionsType<Season>[] {
 
 export function mapLeaderboardToOneDecimal(leaderboards: LeaderboardType[]) {
     const playerElos = leaderboards.sort((a, b) => {
-        return Number(b.elo) - Number(a.elo);
+        return (
+            Number(b.elo) - 15 * Number(b.chomboCount) - Number(a.elo) + 15 * Number(a.chomboCount)
+        );
     });
     return playerElos.map((player, index) => {
         const elo = Number(player.elo);
