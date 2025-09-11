@@ -6,7 +6,6 @@ import {
     getEmptyScoreDelta,
     getNextRoundWind,
     reduceScoreDeltas,
-    WIND_ORDER,
 } from "./game.util";
 import {
     ConcludedHongKongRoundT,
@@ -100,13 +99,13 @@ class HongKongGameService extends GameService {
         const previousRound: ConcludedHongKongRoundT = this.transformDBRound(
             game.rounds[game.rounds.length - 1],
         );
-        if (dealershipRetains(previousRound)) {
-            return {
-                roundCount: previousRound.roundCount + 1,
-                roundNumber: previousRound.roundNumber,
-                roundWind: previousRound.roundWind,
-            };
-        }
+        // if (dealershipRetains(previousRound)) {
+        //     return {
+        //         roundCount: previousRound.roundCount + 1,
+        //         roundNumber: previousRound.roundNumber,
+        //         roundWind: previousRound.roundWind,
+        //     };
+        // }
         return {
             roundCount: previousRound.roundCount + 1,
             roundNumber: previousRound.roundNumber === 4 ? 1 : previousRound.roundNumber + 1,
