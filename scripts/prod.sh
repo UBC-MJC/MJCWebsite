@@ -45,6 +45,8 @@ cd "$BACKEND_DIR"
 echo "Installing backend dependencies..."
 npm install
 
+echo "Building backend..."
+npm run build
 
 # Generate Prisma client
 echo "Generating Prisma client..."
