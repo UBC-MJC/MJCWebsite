@@ -8,11 +8,9 @@ import { Player } from "@prisma/client";
 import * as fs from "fs";
 import * as https from "https";
 
-console.log("NODE_ENV:", process.env.NODE_ENV);
+dotenv.config({ path: `${__dirname}/../../.env` });
 
-if (process.env.NODE_ENV !== "production") {
-    dotenv.config({ path: `${__dirname}/../../../.env.development` });
-}
+console.log("NODE_ENV:", process.env.NODE_ENV);
 
 declare module "express-serve-static-core" {
     interface Request {
@@ -51,15 +49,17 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     next();
 });
 
-const PORT: string | number = process.env.PORT || 80;
+const DEV_PORT: string | number = process.env.PORT || 4000;
+const HTTP_PORT: number = process.env.HTTP_PORT ? parseInt(process.env.HTTP_PORT) : 8080;
+const HTTPS_PORT: number = process.env.HTTPS_PORT ? parseInt(process.env.HTTPS_PORT) : 8443;
 
 if (process.env.NODE_ENV === "production") {
     const httpApp = express();
     httpApp.get("*", (req, res) => {
         res.redirect("https://" + req.headers.host + req.url);
     });
-    httpApp.listen(80, () => {
-        console.log("HTTP Server running on port 80");
+    httpApp.listen(HTTP_PORT, () => {
+        console.log(`HTTP Server running on port ${HTTP_PORT}`);
     });
 
     const privateKey = fs.readFileSync(path.join(__dirname, "../certificate/mjcserver.key"));
@@ -67,9 +67,9 @@ if (process.env.NODE_ENV === "production") {
     const ca = fs.readFileSync(path.join(__dirname, "../certificate/GandiCert.pem"));
 
     const credentials = { key: privateKey, cert: certificate, ca: ca };
-    https.createServer(credentials, app).listen(443, () => {
-        console.log("HTTPS Server running on port 443");
+    https.createServer(credentials, app).listen(HTTPS_PORT, () => {
+        console.log(`HTTPS Server running on port ${HTTPS_PORT}`);
     });
 } else {
-    app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+    app.listen(DEV_PORT, () => console.log(`Server running on http://localhost:${DEV_PORT}`));
 }

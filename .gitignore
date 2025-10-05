@@ -147,3 +147,5 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
+
+.claude/
