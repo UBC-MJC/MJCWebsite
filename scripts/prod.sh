@@ -70,8 +70,8 @@ echo ""
 echo "Production build completed successfully!"
 echo "Build artifacts are in: $BUILD_DIR"
 echo ""
-echo "Starting production server..."
-echo "Server logs: $LOG_FILE"
-
-cd "$BUILD_DIR"
-npm run start >> "$LOG_FILE" 2>&1
+echo "To start the production server, run:"
+echo "  sudo systemctl start mjc-website"
+echo ""
+echo "Or to start manually:"
+echo "  ./scripts/start.sh"
