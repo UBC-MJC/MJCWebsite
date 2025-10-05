@@ -29,7 +29,7 @@ echo "Building frontend..."
 cd "$FRONTEND_DIR"
 
 echo "Installing frontend dependencies..."
-npm install
+npm ci
 
 echo "Running frontend build..."
 npm run build
@@ -43,7 +43,7 @@ echo "Preparing backend..."
 cd "$BACKEND_DIR"
 
 echo "Installing backend dependencies..."
-npm install
+npm ci
 
 echo "Building backend..."
 npm run build
