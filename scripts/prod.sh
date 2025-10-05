@@ -66,6 +66,12 @@ if [ -d "$BACKEND_DIR/prisma" ]; then
     cp -r "$BACKEND_DIR/prisma" "$BUILD_DIR/"
 fi
 
+# Copy .env.production as .env for Prisma (if it exists in project root)
+if [ -f "$PROJECT_ROOT/.env.production" ]; then
+    echo "Copying .env.production as .env for Prisma..."
+    cp "$PROJECT_ROOT/.env.production" "$BUILD_DIR/.env"
+fi
+
 echo ""
 echo "Production build completed successfully!"
 echo "Build artifacts are in: $BUILD_DIR"

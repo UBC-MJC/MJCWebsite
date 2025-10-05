@@ -1,7 +1,7 @@
 {
     "scripts": {
         "build": "tsc",
-        "start": "node ./dist/app.js",
+        "start": "node ./dist/js/app.js",
         "dev": "nodemon ./src/app.ts",
         "test": "vitest",
         "coverage": "vitest run --coverage",
