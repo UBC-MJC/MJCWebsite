@@ -15,7 +15,6 @@ StandardError=append:/path/to/MJCWebsite/logs/systemd-error.log
 
 # Environment
 Environment="NODE_ENV=production"
-EnvironmentFile=/path/to/MJCWebsite/.env
 
 [Install]
 WantedBy=multi-user.target

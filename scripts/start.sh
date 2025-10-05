@@ -19,4 +19,4 @@ fi
 
 # Start the server with logging
 cd "$BUILD_DIR"
-exec node ./dist/app.js >> "$BACKEND_LOG" 2>&1
+exec node ./dist/js/app.js >> "$BACKEND_LOG" 2>&1
