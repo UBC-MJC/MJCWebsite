@@ -37,11 +37,11 @@ app.use(bodyParser.json());
 
 app.use("/api", router);
 
-if (process.env.NODE_ENV === "production") {
-    app.get("*", (req, res) => {
-        res.sendFile(path.join(__dirname, "../dist/index.html"));
-    });
-}
+// if (process.env.NODE_ENV === "production") {
+//     app.get("*", (req, res) => {
+//         res.sendFile(path.join(__dirname, "../dist/index.html"));
+//     });
+// }
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     console.error("Error: ", err.message);
