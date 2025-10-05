@@ -5,6 +5,11 @@ set -e
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="$PROJECT_ROOT/build"
+LOG_DIR="$PROJECT_ROOT/logs"
+BACKEND_LOG="$LOG_DIR/backend-$(date +%Y%m%d).log"
+
+# Create logs directory if it doesn't exist
+mkdir -p "$LOG_DIR"
 
 # Check if build directory exists
 if [ ! -d "$BUILD_DIR" ]; then
@@ -12,6 +17,6 @@ if [ ! -d "$BUILD_DIR" ]; then
     exit 1
 fi
 
-# Start the server
+# Start the server with logging
 cd "$BUILD_DIR"
-exec node ./dist/app.js
+exec node ./dist/app.js >> "$BACKEND_LOG" 2>&1
