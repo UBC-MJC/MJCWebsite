@@ -1,6 +1,11 @@
-import { FC } from "react";
+import { FC, Suspense } from "react";
 import { Outlet } from "react-router";
+import LoadingFallback from "./LoadingFallback";
 
-const WithNav: FC = () => <Outlet />;
+const WithoutNav: FC = () => (
+    <Suspense fallback={<LoadingFallback minHeight="100vh" />}>
+        <Outlet />
+    </Suspense>
+);
 
-export default WithNav;
+export default WithoutNav;

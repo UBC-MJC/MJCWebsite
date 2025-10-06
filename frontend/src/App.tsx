@@ -4,30 +4,44 @@ import "./App.scss";
 import WithoutNav from "./common/WithoutNav";
 import WithNav from "./common/WithNav";
 import { AuthContextProvider } from "./common/AuthContext";
-
-import Home from "./home/Home";
-import Leaderboard from "./leaderboard/Leaderboard";
-import { LiveGames } from "./game/LiveGames";
-import CreateGame from "./game/CreateGame";
-import Game from "./game/Game";
-import Statistics from "./statistics/Statistics";
-import Login from "./login/Login";
-import Admin from "./admin/Admin";
-import Register from "./login/Register";
-import Unauthorized from "./common/Unauthorized";
-import Settings from "./account/Settings";
-import RequestPasswordReset from "./login/RequestPasswordReset";
-import PasswordReset from "./login/PasswordReset";
-import { Resources } from "./resources/Resources";
-import GameLogs from "./game/GameLogs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import { enUS } from "@mui/x-date-pickers/locales";
+
+// Lazy load route components for code splitting
+const Home = React.lazy(() => import("./home/Home"));
+const Leaderboard = React.lazy(() => import("./leaderboard/Leaderboard"));
+const LiveGames = React.lazy(() => import("./game/LiveGames").then(module => ({ default: module.LiveGames })));
+const CreateGame = React.lazy(() => import("./game/CreateGame"));
+const Game = React.lazy(() => import("./game/Game"));
+const Statistics = React.lazy(() => import("./statistics/Statistics"));
+const Login = React.lazy(() => import("./login/Login"));
+const Admin = React.lazy(() => import("./admin/Admin"));
+const Register = React.lazy(() => import("./login/Register"));
+const Unauthorized = React.lazy(() => import("./common/Unauthorized"));
+const Settings = React.lazy(() => import("./account/Settings"));
+const RequestPasswordReset = React.lazy(() => import("./login/RequestPasswordReset"));
+const PasswordReset = React.lazy(() => import("./login/PasswordReset"));
+const Resources = React.lazy(() => import("./resources/Resources").then(module => ({ default: module.Resources })));
+const GameLogs = React.lazy(() => import("./game/GameLogs"));
+
+// Create QueryClient outside component to prevent recreation on every render
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 5000,
+            retry: 1,
+            refetchOnWindowFocus: false,
+        },
+    },
+});
+
 const useQuery = () => {
     const { search } = useLocation();
 
     return React.useMemo(() => new URLSearchParams(search), [search]);
 };
+
 export const ColorModeContext = React.createContext({
     toggleColorMode: (e: "light" | "dark" | "system") => {
         void 0;
@@ -36,13 +50,6 @@ export const ColorModeContext = React.createContext({
 
 const App: React.FC = () => {
     const query = useQuery();
-    const queryClient = new QueryClient({
-        defaultOptions: {
-            queries: {
-                staleTime: 5000,
-            },
-        },
-    });
     const systemMode = useMediaQuery("(prefers-color-scheme: dark)") ? "dark" : "light";
     const root = window.document.documentElement;
     const [mode, setMode] = React.useState<"light" | "dark">(systemMode);

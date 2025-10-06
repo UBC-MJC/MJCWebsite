@@ -47,6 +47,7 @@ const Game: FC = <T extends GameVariant>() => {
     }, [gameId, navigate]);
 
     useEffect(() => {
+        // Only setup EventSource for spectators (not the recorder) watching live games
         if (
             game &&
             (!player || game.recordedById !== player.id) &&
@@ -66,6 +67,12 @@ const Game: FC = <T extends GameVariant>() => {
                 setListening(false);
             };
             setListening(true);
+
+            // Cleanup function to close EventSource when component unmounts
+            return () => {
+                eventSource.close();
+                setListening(false);
+            };
         }
     }, [listening, game, player, variant]);
 
