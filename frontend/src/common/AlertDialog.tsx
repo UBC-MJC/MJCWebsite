@@ -2,16 +2,30 @@ import React, { FC } from "react";
 import PropTypes from "prop-types";
 import { Modal, Button } from "react-bootstrap";
 import { confirmable, createConfirmation } from "react-confirm";
-const Alert: FC<any> = ({
+
+type ButtonVariant = "primary" | "secondary" | "success" | "danger" | "warning" | "info" | "light" | "dark" | "link";
+
+interface AlertProps {
+    show?: boolean;
+    proceed?: () => void;
+    dismiss?: () => void;
+    cancel?: () => void;
+    confirmation?: string;
+    title?: string;
+    okText?: string;
+    okButtonStyle?: ButtonVariant;
+}
+
+const Alert: FC<AlertProps> = ({
     show,
     proceed,
-    dismiss,
-    cancel,
+    dismiss: _dismiss,
+    cancel: _cancel,
     confirmation,
     title,
     okText,
     okButtonStyle,
-    ...options
+    ..._options
 }) => {
     const header = title ? (
         <Modal.Header>
@@ -22,7 +36,7 @@ const Alert: FC<any> = ({
         <Modal
             size="sm"
             show={show}
-            onHide={() => proceed()}
+            onHide={() => proceed?.()}
             keyboard={true}
             backdrop="static"
             centered
@@ -30,7 +44,7 @@ const Alert: FC<any> = ({
             {header}
             <Modal.Body>{confirmation}</Modal.Body>
             <Modal.Footer>
-                <Button variant={okButtonStyle} onClick={() => proceed()}>
+                <Button variant={okButtonStyle} onClick={() => proceed?.()}>
                     {okText}
                 </Button>
             </Modal.Footer>
@@ -71,9 +85,10 @@ Alert.defaultProps = {
     dismiss: undefined,
 };
 
+// @ts-expect-error - react-confirm types are incompatible with FC
 const alertLow = createConfirmation(confirmable(Alert));
 
-const alert = (message: any, options = {}) => {
+const alert = (message: string, options: Partial<AlertProps> = {}) => {
     return alertLow(Object.assign({ confirmation: message }, options));
 };
 

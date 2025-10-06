@@ -5,19 +5,19 @@ import { PickerData } from "react-simple-wheel-picker";
 
 interface PointsInputProps {
     gameVariant: GameVariant;
-    pointsValue: any;
-    onChange: (value: any) => void;
+    pointsValue: JapaneseHandInput | HongKongHandInput;
+    onChange: (value: JapaneseHandInput | HongKongHandInput) => void;
     isLegacy?: boolean;
 }
 
-const NewPointsInput: FC<PointsInputProps> = ({ gameVariant, onChange }) => {
-    const handleOnChange = (target: PickerData, label: string) => {
+const NewPointsInput: FC<PointsInputProps> = ({ gameVariant: _gameVariant, onChange: _onChange }) => {
+    const handleOnChange = (_target: PickerData, _label: string) => {
         // handleOnChange
     };
 
     return (
         <div className="d-flex justify-content-center mt-4 wheel-picker-container">
-            {japanesePointsWheel.map((wheel, idx) => (
+            {japanesePointsWheel.map((wheel, _idx) => (
                 <div key={wheel.label}>
                     <h5>{wheel.label}</h5>
                     <CustomizedWheelPicker

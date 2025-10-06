@@ -31,11 +31,13 @@ export function useSeasons(setSeason: (season: Season) => void = () => null) {
     });
 }
 
-export function createSeasonMutation(player: Player) {
+export function useCreateSeasonMutation(player?: Player) {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (createSeasonRequest: Omit<Season, "id">) =>
-            createSeasonAdminAPI(player.authToken, createSeasonRequest),
+        mutationFn: (createSeasonRequest: Omit<Season, "id">) => {
+            if (!player) throw new Error("No player authenticated");
+            return createSeasonAdminAPI(player.authToken, createSeasonRequest);
+        },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: seasonsKey }); // TODO: return the updated seasons
         },
@@ -45,10 +47,13 @@ export function createSeasonMutation(player: Player) {
     });
 }
 
-export function updateSeasonMutation(player: Player) {
+export function useUpdateSeasonMutation(player?: Player) {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (updatedSeason: Season) => updateSeasonAPI(player.authToken, updatedSeason),
+        mutationFn: (updatedSeason: Season) => {
+            if (!player) throw new Error("No player authenticated");
+            return updateSeasonAPI(player.authToken, updatedSeason);
+        },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: seasonsKey }); // TODO: return the updated seasons
         },
@@ -60,21 +65,26 @@ export function updateSeasonMutation(player: Player) {
 
 const adminPlayersKey = ["adminPlayers"];
 
-export function useAdminPlayers(adminPlayer: Player) {
+export function useAdminPlayers(adminPlayer?: Player) {
     return useQuery({
         queryKey: adminPlayersKey,
         queryFn: async () => {
+            if (!adminPlayer) throw new Error("No player authenticated");
             const response = await getPlayersAdminAPI(adminPlayer.authToken);
             return response.data.players;
         },
+        enabled: !!adminPlayer,
     });
 }
 
-export function deletePlayerMutation(player: Player) {
+export function useDeletePlayerMutation(player?: Player) {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (playerId: string) => deletePlayerAPI(player.authToken, playerId),
-        onSuccess: async (response) => {
+        mutationFn: (playerId: string) => {
+            if (!player) throw new Error("No player authenticated");
+            return deletePlayerAPI(player.authToken, playerId);
+        },
+        onSuccess: async (_response) => {
             await queryClient.invalidateQueries({ queryKey: adminPlayersKey });
         },
         onError: (error: AxiosError) => {
@@ -83,11 +93,14 @@ export function deletePlayerMutation(player: Player) {
     });
 }
 
-export function savePlayerMutation(player: Player) {
+export function useSavePlayerMutation(player?: Player) {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (editedPlayer: Player) => updatePlayerAPI(player.authToken, editedPlayer),
-        onSuccess: async (response) => {
+        mutationFn: (editedPlayer: Player) => {
+            if (!player) throw new Error("No player authenticated");
+            return updatePlayerAPI(player.authToken, editedPlayer);
+        },
+        onSuccess: async (_response) => {
             await queryClient.invalidateQueries({ queryKey: adminPlayersKey });
         },
         onError: (error: AxiosError) => {

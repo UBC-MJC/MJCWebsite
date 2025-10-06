@@ -1,4 +1,4 @@
-interface ListToggleButtonProps {
+interface _ListToggleButtonProps {
     key: number;
     name: string;
     value: string;

@@ -1,6 +1,6 @@
 const validateRound = (
     roundValue: RoundValue,
-    pointsValue: any,
+    pointsValue: JapaneseHandInput | HongKongHandInput,
     gameVariant: GameVariant,
     needPoints: boolean,
 ): void => {
@@ -20,12 +20,15 @@ const validateRound = (
     }
 };
 
-const validateJapanesePoints = (pointsValue: any): void => {
+const validateJapanesePoints = (pointsValue: JapaneseHandInput | HongKongHandInput): void => {
+    if (typeof pointsValue === "number") {
+        throw new Error("Expected Japanese hand input, got Hong Kong hand input");
+    }
     if (typeof pointsValue.fu === "undefined") {
         throw new Error("Fu is required");
     }
-    if (typeof pointsValue.points === "undefined") {
-        throw new Error("Points are required");
+    if (typeof pointsValue.han === "undefined") {
+        throw new Error("Han is required");
     }
     if (typeof pointsValue.dora === "undefined") {
         throw new Error("Dora is required");
@@ -36,9 +39,9 @@ const validateJapaneseRound = (roundValue: RoundValue): void => {
     validateRoundSelectors(roundValue);
 };
 
-const validateHongKongPoints = (pointsValue: any): void => {
-    if (typeof pointsValue.points === "undefined") {
-        throw new Error("Points are required");
+const validateHongKongPoints = (pointsValue: JapaneseHandInput | HongKongHandInput): void => {
+    if (typeof pointsValue !== "number") {
+        throw new Error("Expected Hong Kong hand input (number), got Japanese hand input");
     }
 };
 
@@ -47,7 +50,7 @@ const validateHongKongRound = (roundValue: RoundValue): void => {
 };
 
 const validateRoundSelectors = (roundValue: RoundValue): void => {
-    roundValue.type.selectors.forEach((selector: string) => {
+    roundValue.type.selectors?.forEach((selector: string) => {
         for (const key in roundValue.playerActions) {
             if (roundValue.playerActions[key].includes(selector)) {
                 return;

@@ -1,5 +1,5 @@
 import React, { FC, useContext, useState } from "react";
-import { Container, Button, Box, TextField, Stack, Autocomplete } from "@mui/material";
+import { Button, TextField, Stack, Autocomplete } from "@mui/material";
 import { AuthContext } from "../common/AuthContext";
 import { setChomboAPI } from "../api/GameAPI";
 import { usePlayers } from "../hooks/GameHooks";
@@ -15,12 +15,11 @@ const AdminChombo: FC = () => {
     const [gameVariant, setGameVariant] = useState<GameVariant>("jp");
     const [playerId, setPlayerId] = useState<string>("");
     const [chomboCount, setChomboCount] = useState<number>(0);
+    const playersResult = usePlayers(gameVariant, "CASUAL");
 
     if (!player) {
         return <>No player logged in</>;
     }
-
-    const playersResult = usePlayers(gameVariant, "CASUAL");
     if (!playersResult.isSuccess) {
         return <>Loading ...</>;
     }

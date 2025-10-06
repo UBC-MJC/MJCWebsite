@@ -5,14 +5,14 @@ import RoundInputFigure from "./RoundInputFigure";
 
 interface RoundInputProps {
     gameVariant: GameVariant;
-    players: any[];
+    players: GamePlayer[];
     roundValue: RoundValue;
     onChange: (value: RoundValue) => void;
     isLegacy?: boolean;
 }
 
 const NewRoundInput: FC<RoundInputProps> = ({ gameVariant, players }) => {
-    const [roundValue, setRoundValue] = useState(() => {
+    const [roundValue, setRoundValue] = useState<string>(() => {
         switch (gameVariant) {
             case "jp":
                 return japaneseRoundLabels[0].value;
@@ -35,7 +35,7 @@ const NewRoundInput: FC<RoundInputProps> = ({ gameVariant, players }) => {
             <Row className="justify-content-center">
                 <Col xs={12} lg={4} className="d-flex justify-content-center flex-column">
                     <Row className="justify-content-center mt-1">
-                        {getRoundLabels().map((label: any, idx: number) => (
+                        {getRoundLabels().map((label: RoundType, idx: number) => (
                             <Col key={idx} xs={6} lg={12}>
                                 <ToggleButton
                                     id={`radio-${idx}`}

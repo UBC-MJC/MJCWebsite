@@ -5,7 +5,7 @@ import { Stack } from "@mui/material";
 
 interface PointsInputProps {
     pointsWheel: PointWheelComponent[];
-    onChange: (label: string, value: number) => void;
+    onChange: (label: string, value: string) => void;
 }
 
 const PointsInput: FC<PointsInputProps> = ({ pointsWheel, onChange }) => {

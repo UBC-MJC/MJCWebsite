@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { useState } from "react";
 import LegacyJapaneseGameTable, { ModifiedJapaneseRound } from "./LegacyJapaneseGameTable";
 import {
     isGameEnd,
@@ -176,7 +176,7 @@ const LegacyJapaneseGame = ({
         }
     };
 
-    const handOnChange = (label: string, value: number) => {
+    const handOnChange = (label: string, value: string) => {
         if (label !== "han" && label !== "fu" && label !== "dora") {
             return;
         }
@@ -198,8 +198,9 @@ const LegacyJapaneseGame = ({
         try {
             const transactionList = getTransactionList();
             await submitRound(transactionList);
-        } catch (e: any) {
-            await alert(e.message);
+        } catch (e) {
+            const error = e as Error;
+            await alert(error.message);
         }
     };
 
@@ -207,8 +208,9 @@ const LegacyJapaneseGame = ({
         try {
             const transactionList = getTransactionList();
             setTransactions([...transactions, ...transactionList]);
-        } catch (e: any) {
-            await alert(e.message);
+        } catch (e) {
+            const error = e as Error;
+            await alert(error.message);
         }
     };
 
@@ -234,8 +236,9 @@ const LegacyJapaneseGame = ({
     const submitAllTransactionRound = async () => {
         try {
             await submitRound(transactions);
-        } catch (e: any) {
-            await alert(e.message);
+        } catch (e) {
+            const error = e as Error;
+            await alert(error.message);
             return;
         }
     };
@@ -282,7 +285,7 @@ const LegacyJapaneseGame = ({
             <>
                 <FormControlLabel
                     control={
-                        <Switch onChange={(e, checked) => setMultipleHandInputMode(checked)} />
+                        <Switch onChange={(_e, checked) => setMultipleHandInputMode(checked)} />
                     }
                     label="Multiple Transactions"
                 />
@@ -294,7 +297,7 @@ const LegacyJapaneseGame = ({
                                 value={button.value}
                                 id={button.name}
                                 selected={transactionType === button.value}
-                                onChange={(event, value) => transactionTypeOnChange(value)}
+                                onChange={(_event, value) => transactionTypeOnChange(value)}
                             >
                                 {button.name}
                             </ToggleButton>

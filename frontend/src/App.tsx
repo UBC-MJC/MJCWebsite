@@ -4,6 +4,7 @@ import "./App.scss";
 import WithoutNav from "./common/WithoutNav";
 import WithNav from "./common/WithNav";
 import { AuthContextProvider } from "./common/AuthContext";
+import ErrorBoundary from "./common/ErrorBoundary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import { enUS } from "@mui/x-date-pickers/locales";
@@ -43,7 +44,7 @@ const useQuery = () => {
 };
 
 export const ColorModeContext = React.createContext({
-    toggleColorMode: (e: "light" | "dark" | "system") => {
+    toggleColorMode: (_: "light" | "dark" | "system") => {
         void 0;
     },
 });
@@ -75,13 +76,14 @@ const App: React.FC = () => {
     );
 
     return (
-        <ColorModeContext.Provider value={colorMode}>
-            <ThemeProvider theme={theme}>
-                <QueryClientProvider client={queryClient}>
-                    <AuthContextProvider>
-                        <CssBaseline />
-                        <main className="App">
-                            <Routes>
+        <ErrorBoundary>
+            <ColorModeContext.Provider value={colorMode}>
+                <ThemeProvider theme={theme}>
+                    <QueryClientProvider client={queryClient}>
+                        <AuthContextProvider>
+                            <CssBaseline />
+                            <main className="App">
+                                <Routes>
                                 <Route element={<WithNav />}>
                                     <Route path="/" element={<Home />} />
                                     <Route
@@ -172,12 +174,13 @@ const App: React.FC = () => {
                                     path="*" // redirect to home if no route matches
                                     element={<Navigate to="/" replace />}
                                 />
-                            </Routes>
-                        </main>
-                    </AuthContextProvider>
-                </QueryClientProvider>
-            </ThemeProvider>
-        </ColorModeContext.Provider>
+                                </Routes>
+                            </main>
+                        </AuthContextProvider>
+                    </QueryClientProvider>
+                </ThemeProvider>
+            </ColorModeContext.Provider>
+        </ErrorBoundary>
     );
 };
 

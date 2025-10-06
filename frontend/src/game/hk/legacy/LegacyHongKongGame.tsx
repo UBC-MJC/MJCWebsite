@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import LegacyHongKongGameTable, { ModifiedHongKongRound } from "./LegacyHongKongGameTable";
 import {
@@ -73,7 +73,7 @@ const LegacyHongKongGame = ({
         setRoundActions(newRoundActions);
     };
 
-    const handOnChange = (_: string, value: number) => {
+    const handOnChange = (_: string, value: string) => {
         setHand(+value);
     };
 
@@ -86,8 +86,9 @@ const LegacyHongKongGame = ({
         );
         try {
             validateHongKongRound(roundRequest.transactions);
-        } catch (e: any) {
-            await alert(e.message);
+        } catch (e) {
+            const error = e as Error;
+            await alert(error.message);
             return;
         }
 
@@ -131,7 +132,7 @@ const LegacyHongKongGame = ({
                                 value={button.value}
                                 id={button.name}
                                 selected={transactionType === button.value}
-                                onChange={(event, value) => transactionTypeOnChange(value)}
+                                onChange={(_event, value) => transactionTypeOnChange(value)}
                             >
                                 {button.name}
                             </ToggleButton>

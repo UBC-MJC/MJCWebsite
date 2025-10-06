@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { getGamesAPI } from "../api/GameAPI";
 import { AxiosError } from "axios";
 import { Card, Col, Container, Pagination, Row } from "react-bootstrap";

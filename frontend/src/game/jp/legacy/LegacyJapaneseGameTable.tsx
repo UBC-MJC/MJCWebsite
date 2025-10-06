@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { GridColDef } from "@mui/x-data-grid";
 import { mapChineseNumerals, mapWindToCharacter } from "../../../common/Utils";
-import { generateJapaneseCurrentScore } from "../controller/JapaneseRound";
 import TableDisplay from "../../common/TableDisplay";
 
 interface LegacyGameTableProps {

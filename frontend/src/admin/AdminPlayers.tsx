@@ -2,7 +2,7 @@ import React, { FC, useContext } from "react";
 import { AuthContext } from "../common/AuthContext";
 import { AxiosError } from "axios";
 import { makeDummyAdminsAPI, recalcSeasonAPI, removeQualificationAPI } from "../api/AdminAPI";
-import { deletePlayerMutation, savePlayerMutation, useAdminPlayers } from "../hooks/AdminHooks";
+import { useDeletePlayerMutation, useSavePlayerMutation, useAdminPlayers } from "../hooks/AdminHooks";
 import {
     Button,
     Dialog,
@@ -23,11 +23,17 @@ import {
 
 const AdminPlayers: FC = () => {
     const { player } = useContext(AuthContext);
+    const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
 
+    // Call all hooks unconditionally at the top
+    const { isPending, data, error } = useAdminPlayers(player || undefined);
+    const deletePlayerMut = useDeletePlayerMutation(player || undefined);
+    const savePlayerMut = useSavePlayerMutation(player || undefined);
+
+    // Early return after all hooks
     if (!player) {
         return <>No player logged in</>;
     }
-    const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
 
     const playerColumns: GridColDef<Player>[] = [
         {
@@ -121,11 +127,6 @@ const AdminPlayers: FC = () => {
             },
         },
     ];
-    const { isPending, data, error } = useAdminPlayers(player);
-
-    const deletePlayerMut = deletePlayerMutation(player);
-
-    const savePlayerMut = savePlayerMutation(player);
 
     const makeTestAdmins = () => {
         makeDummyAdminsAPI(player.authToken).catch((err: AxiosError) => {

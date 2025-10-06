@@ -8,6 +8,7 @@ import { ColorModeContext } from "../App";
 
 const Settings: FC = () => {
     const { player, reloadPlayer } = useContext(AuthContext);
+    const colorMode = React.useContext(ColorModeContext);
 
     const [settings, setSettings] = useState<Setting>((): Setting => {
         return {
@@ -47,7 +48,6 @@ const Settings: FC = () => {
     if (typeof player === "undefined") {
         return <h1>Not Logged In</h1>;
     }
-    const colorMode = React.useContext(ColorModeContext);
 
     return (
         <Container fluid className={"my-4"}>

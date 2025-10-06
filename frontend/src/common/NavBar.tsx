@@ -1,4 +1,4 @@
-import React, { FC, useContext } from "react";
+import React, { FC, useContext, memo } from "react";
 import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { AuthContext } from "./AuthContext";
 import { Link } from "react-router-dom";
@@ -92,4 +92,4 @@ const NavBar: FC = () => {
     );
 };
 
-export default NavBar;
+export default memo(NavBar);

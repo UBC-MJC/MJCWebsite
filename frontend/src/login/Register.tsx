@@ -13,14 +13,14 @@ const Register: React.FC = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const [errors, setErrors] = useState<any>({});
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const { register } = useContext(AuthContext);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const newErrors: any = {};
+        const newErrors: Record<string, string> = {};
         if (!username) {
             newErrors["username"] = "Username is required";
         }
@@ -56,7 +56,7 @@ const Register: React.FC = () => {
             })
             .catch((err: AxiosError) => {
                 setErrors({
-                    password: err.response?.data,
+                    password: String(err.response?.data || "Registration failed"),
                 });
             });
     };
@@ -71,7 +71,7 @@ const Register: React.FC = () => {
                             required
                             placeholder="Username"
                             value={username}
-                            isInvalid={errors.username}
+                            isInvalid={!!errors.username}
                             onChange={(e) => setUsername(e.target.value)}
                         />
                         <Form.Control.Feedback type="invalid">
@@ -85,7 +85,7 @@ const Register: React.FC = () => {
                                 type="text"
                                 placeholder="First name"
                                 value={firstName}
-                                isInvalid={errors.firstName}
+                                isInvalid={!!errors.firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
                             />
                             <Form.Control.Feedback type="invalid">
@@ -97,7 +97,7 @@ const Register: React.FC = () => {
                                 type="text"
                                 placeholder="Last name"
                                 value={lastName}
-                                isInvalid={errors.lastName}
+                                isInvalid={!!errors.lastName}
                                 onChange={(e) => setLastName(e.target.value)}
                             />
                             <Form.Control.Feedback type="invalid">
@@ -112,7 +112,7 @@ const Register: React.FC = () => {
                             type="email"
                             placeholder="Email"
                             value={email}
-                            isInvalid={errors.email}
+                            isInvalid={!!errors.email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                         <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
@@ -124,7 +124,7 @@ const Register: React.FC = () => {
                             type="password"
                             placeholder="Password"
                             value={password}
-                            isInvalid={errors.password}
+                            isInvalid={!!errors.password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                         <Form.Control.Feedback type="invalid">

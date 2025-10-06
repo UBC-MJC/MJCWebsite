@@ -4,7 +4,7 @@ import { Autocomplete, TextField, Stack } from "@mui/material";
 interface DropdownInputProps {
     label: string;
     data: PickerData[];
-    onChange: (value: any) => void;
+    onChange: (value: string) => void;
 }
 
 const DropdownInput: FC<DropdownInputProps> = ({ label, data, onChange }) => {

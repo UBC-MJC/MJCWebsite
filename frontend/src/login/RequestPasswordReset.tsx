@@ -27,7 +27,7 @@ const RequestPasswordReset: FC = () => {
             })
             .catch((err: AxiosError) => {
                 setIsWaiting(false);
-                alert(err.response?.data);
+                alert(String(err.response?.data || "Password reset submission failed"));
             });
     };
 

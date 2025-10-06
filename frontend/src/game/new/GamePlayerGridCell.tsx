@@ -1,8 +1,8 @@
-import { FC } from "react";
+import { FC, memo } from "react";
 import { Badge } from "react-bootstrap";
 
 interface GamePlayerGridCellProps {
-    player: any;
+    player: GamePlayer;
 }
 
 const GamePlayerGridCell: FC<GamePlayerGridCellProps> = ({ player }) => {
@@ -16,4 +16,4 @@ const GamePlayerGridCell: FC<GamePlayerGridCellProps> = ({ player }) => {
     );
 };
 
-export default GamePlayerGridCell;
+export default memo(GamePlayerGridCell);

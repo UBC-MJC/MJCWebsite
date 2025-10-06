@@ -19,20 +19,23 @@ import { baseUrl } from "../api/APIUtils";
 import { Button, Stack, Container } from "@mui/material";
 
 const Game: FC = <T extends GameVariant>() => {
-    const { id, variant } = useParams();
+    const { id, variant: variantParam } = useParams();
     const { player } = useContext(AuthContext);
     const navigate = useNavigate();
     const gameId = Number(id);
 
+    // Validate and cast variant to GameVariant type
+    const variant = (validateGameVariant(variantParam) ? variantParam : undefined) as GameVariant | undefined;
+
     const [game, setGame] = useState<Game<T> | undefined>(undefined);
     const [listening, setListening] = useState(false);
 
-    if (isNaN(gameId) || !validateGameVariant(variant)) {
-        navigate("/games/not-found");
-        return <></>;
-    }
-
     useEffect(() => {
+        if (isNaN(gameId) || !variant) {
+            navigate("/games/not-found");
+            return;
+        }
+
         getGameAPI(gameId, variant)
             .then((response) => {
                 setGame(response.data);
@@ -44,7 +47,7 @@ const Game: FC = <T extends GameVariant>() => {
                     return;
                 }
             });
-    }, [gameId, navigate]);
+    }, [gameId, navigate, variant]);
 
     useEffect(() => {
         // Only setup EventSource for spectators (not the recorder) watching live games
@@ -76,8 +79,8 @@ const Game: FC = <T extends GameVariant>() => {
         }
     }, [listening, game, player, variant]);
 
-    const handleSubmitRound = async (roundRequest: any) => {
-        addRoundAPI(player!.authToken, gameId, variant, roundRequest)
+    const handleSubmitRound = async (roundRequest: JapaneseRound | HongKongRound) => {
+        addRoundAPI(player!.authToken, gameId, variant!, roundRequest)
             .then((response) => {
                 setGame(response.data);
             })
@@ -99,10 +102,11 @@ const Game: FC = <T extends GameVariant>() => {
         }
 
         try {
-            const response = await deleteRoundAPI(player!.authToken, gameId, variant);
+            const response = await deleteRoundAPI(player!.authToken, gameId, variant!);
             setGame(response.data);
-        } catch (e: any) {
-            await alert(`Delete Round Error: ${e.message}`);
+        } catch (e) {
+            const error = e as Error;
+            await alert(`Delete Round Error: ${error.message}`);
         }
     };
 
@@ -116,11 +120,12 @@ const Game: FC = <T extends GameVariant>() => {
         }
 
         try {
-            await deleteGameAPI(player!.authToken, gameId, variant);
+            await deleteGameAPI(player!.authToken, gameId, variant!);
             await alert(`Game Deleted`);
             navigate("/");
-        } catch (e: any) {
-            await alert(`Delete Game Error: ${e.message}`);
+        } catch (e) {
+            const error = e as Error;
+            await alert(`Delete Game Error: ${error.message}`);
         }
     };
 
@@ -134,13 +139,14 @@ const Game: FC = <T extends GameVariant>() => {
         }
 
         try {
-            await submitGameAPI(player!.authToken, gameId, variant);
+            await submitGameAPI(player!.authToken, gameId, variant!);
             await alert(`Game Submitted`);
             const tempGame = { ...game! };
             tempGame.status = "FINISHED";
             setGame(tempGame);
-        } catch (e: any) {
-            await alert(`Delete Game Error: ${e.message}`);
+        } catch (e) {
+            const error = e as Error;
+            await alert(`Delete Game Error: ${error.message}`);
         }
     };
 
@@ -239,7 +245,7 @@ export interface LegacyGameProps<T extends GameVariant> {
     enableRecording: boolean;
     players: GamePlayer[];
     game: Game<T>;
-    handleSubmitRound: (roundRequest: any) => Promise<void>;
+    handleSubmitRound: (roundRequest: RoundByVariant<T>) => Promise<void>;
 }
 
 export default Game;

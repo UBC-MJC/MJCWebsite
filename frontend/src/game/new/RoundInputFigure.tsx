@@ -4,7 +4,7 @@ import GamePlayerGridCell from "./GamePlayerGridCell";
 import riichiStick from "../../assets/riichiStick.png";
 
 interface RoundInputFigureProps {
-    players: any[];
+    players: GamePlayer[];
 }
 const RoundInputFigure: FC<RoundInputFigureProps> = ({ players }) => {
     return (

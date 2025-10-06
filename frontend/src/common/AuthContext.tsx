@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect } from "react";
+import { FC, ReactNode, useEffect, useCallback } from "react";
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAPICall, registerAPICall } from "../api/AuthAPI";
@@ -38,29 +38,29 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
         }
     }, []);
 
-    const authLogin = async (loginData: LoginDataType) => {
+    const authLogin = useCallback(async (loginData: LoginDataType) => {
         const apiResponse = await loginAPICall(loginData);
         const playerAPIData = apiResponse.data;
         localStorage.setItem("player", JSON.stringify(playerAPIData.player));
         setPlayer(playerAPIData.player);
         navigate("/");
-    };
+    }, [navigate]);
 
-    const authRegister = async (registerData: RegisterDataType) => {
+    const authRegister = useCallback(async (registerData: RegisterDataType) => {
         const apiResponse = await registerAPICall(registerData);
         const playerAPIData = apiResponse.data;
         localStorage.setItem("player", JSON.stringify(playerAPIData.player));
         setPlayer(playerAPIData.player);
         navigate("/");
-    };
+    }, [navigate]);
 
-    const authLogout = async () => {
+    const authLogout = useCallback(async () => {
         localStorage.removeItem("player");
         setPlayer(undefined);
         navigate("/login");
-    };
+    }, [navigate]);
 
-    const reloadPlayer = async () => {
+    const reloadPlayer = useCallback(async () => {
         if (typeof player === "undefined") {
             console.log("Error: Player not logged in");
             return;
@@ -69,7 +69,7 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
         const newPlayer = await getCurrentPlayer(player.authToken);
         localStorage.setItem("player", JSON.stringify(newPlayer.data.player));
         setPlayer(newPlayer.data.player);
-    };
+    }, [player]);
 
     return (
         <>

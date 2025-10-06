@@ -104,7 +104,7 @@ type EloDeltaObject = Record<string, number>;
 interface RoundType {
     name: string;
     value: string;
-    selectors: string[];
+    selectors?: string[];
 }
 
 type PlayerActions = Record<string, string[]>;
@@ -155,7 +155,7 @@ interface JapaneseHandInput {
 }
 
 interface HongKongRound {
-    id: string;
+    id?: string;
     roundNumber: number;
     roundWind: string;
     roundCount: number;

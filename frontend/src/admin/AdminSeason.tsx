@@ -11,7 +11,7 @@ import {
     DialogActions,
     TextField,
 } from "@mui/material";
-import { createSeasonMutation, updateSeasonMutation, useSeasons } from "../hooks/AdminHooks";
+import { useCreateSeasonMutation, useUpdateSeasonMutation, useSeasons } from "../hooks/AdminHooks";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -42,14 +42,18 @@ const playerColumns: GridColDef<Season>[] = [
 const AdminSeason: FC = () => {
     const { player } = useContext(AuthContext);
 
+    // Call all hooks unconditionally at the top
     const [showCreateSeasonModal, setShowCreateSeasonModal] = useState<boolean>(false);
+    const [name, setName] = useState<string>("");
+    const [endDate, setEndDate] = useState<Dayjs | null>(dayjs().add(9, "weeks").add(5, "days"));
+    const { isPending, error, data } = useSeasons();
+    const createSeasonMut = useCreateSeasonMutation(player || undefined);
+    const updateSeasonMut = useUpdateSeasonMutation(player || undefined);
+
+    // Early return after all hooks
     if (!player) {
         return <>No player logged in</>;
     }
-    const { isPending, error, data } = useSeasons();
-    const [name, setName] = useState<string>("");
-    const [endDate, setEndDate] = useState<Dayjs | null>(dayjs().add(9, "weeks").add(5, "days"));
-    const createSeasonMut = createSeasonMutation(player);
     const handleCreate = (name: string, endDate?: Date) => {
         if (!name || !endDate) {
             console.log("Error creating season: name or endDate is undefined");
@@ -63,7 +67,6 @@ const AdminSeason: FC = () => {
         createSeasonMut.mutate(season);
         setShowCreateSeasonModal(false);
     };
-    const updateSeasonMut = updateSeasonMutation(player);
     const updateSeason = (editedSeason: Season) => {
         if (typeof editedSeason === "undefined") {
             console.log("Error updating season: editedSeason is undefined");

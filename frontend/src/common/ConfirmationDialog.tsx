@@ -4,7 +4,22 @@ import { Modal } from "react-bootstrap";
 import { confirmable, createConfirmation } from "react-confirm";
 import { Button } from "@mui/material";
 
-const ConfirmationDialog: FC<any> = ({
+type ButtonVariant = "primary" | "secondary" | "success" | "danger" | "warning" | "info" | "light" | "dark" | "link";
+
+interface ConfirmationDialogProps {
+    show?: boolean;
+    proceed?: (result: boolean) => void;
+    cancel?: () => void;
+    dismiss?: () => void;
+    confirmation?: string;
+    title?: string;
+    okText?: string;
+    cancelText?: string;
+    okButtonStyle?: ButtonVariant;
+    cancelButtonStyle?: ButtonVariant;
+}
+
+const ConfirmationDialog: FC<ConfirmationDialogProps> = ({
     show,
     proceed,
     confirmation,
@@ -18,12 +33,12 @@ const ConfirmationDialog: FC<any> = ({
         </Modal.Header>
     ) : undefined;
     return (
-        <Modal size="sm" show={show} onHide={() => proceed(false)} backdrop="static" centered>
+        <Modal size="sm" show={show} onHide={() => proceed?.(false)} backdrop="static" centered>
             {header}
             <Modal.Body>{confirmation}</Modal.Body>
             <Modal.Footer>
-                <Button onClick={() => proceed(false)}>{cancelText}</Button>
-                <Button onClick={() => proceed(true)}>{okText}</Button>
+                <Button onClick={() => proceed?.(false)}>{cancelText}</Button>
+                <Button onClick={() => proceed?.(true)}>{okText}</Button>
             </Modal.Footer>
         </Modal>
     );
@@ -76,9 +91,10 @@ ConfirmationDialog.defaultProps = {
     dismiss: undefined,
 };
 
+// @ts-expect-error - react-confirm types are incompatible with FC
 const confirmLow = createConfirmation(confirmable(ConfirmationDialog));
 
-const confirmDialog = (message: any, options = {}) => {
+const confirmDialog = (message: string, options: Partial<ConfirmationDialogProps> = {}) => {
     return confirmLow(Object.assign({ confirmation: message }, options));
 };
 

@@ -1,5 +1,5 @@
-import React from "react";
-import { Container, Stack, ToggleButton } from "@mui/material";
+import React, { memo } from "react";
+import { Stack, ToggleButton } from "@mui/material";
 
 interface PlayerButtonRow<T extends string> {
     players: GamePlayer[];
@@ -54,4 +54,4 @@ function getVariant(label: string) {
     return "primary";
 }
 
-export default PlayerButtonRow;
+export default memo(PlayerButtonRow) as typeof PlayerButtonRow;

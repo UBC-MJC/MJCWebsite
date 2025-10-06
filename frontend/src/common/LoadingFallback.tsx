@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, memo } from "react";
 import { Box, CircularProgress } from "@mui/material";
 
 interface LoadingFallbackProps {
@@ -16,4 +16,4 @@ const LoadingFallback: FC<LoadingFallbackProps> = ({ minHeight = "50vh" }) => (
     </Box>
 );
 
-export default LoadingFallback;
+export default memo(LoadingFallback);

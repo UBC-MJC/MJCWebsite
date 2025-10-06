@@ -63,7 +63,7 @@ const addRoundAPI = async <T extends GameVariant>(
     authToken: string,
     gameId: number,
     gameVariant: GameVariant,
-    round: any,
+    round: RoundByVariant<T>,
 ) => {
     return axios.post<Game<T>>(
         baseUrl + `/games/${gameVariant}/${gameId}/rounds`,
