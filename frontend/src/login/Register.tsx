@@ -21,8 +21,8 @@ const Register: React.FC = () => {
         e.preventDefault();
 
         const newErrors: Record<string, string> = {};
-        if (!username) {
-            newErrors["username"] = "Username is required";
+        if (!username || username.trim().length === 0) {
+            newErrors["username"] = "Username is required (no whitespace only)";
         }
         if (!password) {
             newErrors["password"] = "Password is required";

@@ -109,8 +109,10 @@ const UpdateUsernameModal: FC<UpdateUsernameModalProps> = ({ show, handleClose, 
 
     const findErrors = () => {
         const newErrors: { username?: string } = {};
-        if (updatedUsername.length < 2 || updatedUsername.length > 20) {
-            newErrors["username"] = "Username must be between 2 and 20 characters";
+        if (updatedUsername.length < 1 || updatedUsername.length > 20) {
+            newErrors["username"] = "Username must be between 1 and 20 characters";
+        } else if (updatedUsername.trim().length === 0) {
+            newErrors["username"] = "Username cannot be whitespace only";
         }
 
         return newErrors;
