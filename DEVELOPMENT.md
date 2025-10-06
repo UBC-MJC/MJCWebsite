@@ -8,7 +8,7 @@ This guide will help you set up a local development environment for the UBC Mahj
 
 1. **Node.js** (v18 or higher) - [Download](https://nodejs.org/en/download/)
 2. **npm** (comes with Node.js)
-3. **Docker Desktop** - [Download](https://www.docker.com/products/docker-desktop/)
+3. **MySQL** (v8.0 or higher) - [Download](https://dev.mysql.com/downloads/mysql/)
 4. **Git** - [Download](https://git-scm.com/downloads)
 
 ### Windows Users - WSL Setup
@@ -24,9 +24,12 @@ For Windows development, it's recommended to use Windows Subsystem for Linux (WS
 2. **Set up Node.js on WSL:**
    Follow [Microsoft's guide](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl) to install Node.js and npm on WSL.
 
-3. **Install Docker Desktop for Windows** and enable WSL2 integration:
-   - Docker Desktop → Settings → Resources → WSL Integration
-   - Enable integration with your WSL distribution
+3. **Install MySQL on WSL:**
+   ```bash
+   sudo apt update
+   sudo apt install mysql-server
+   sudo service mysql start
+   ```
 
 ## Initial Setup
 
@@ -37,9 +40,25 @@ git clone <repository-url>
 cd MJCWebsite
 ```
 
-### 2. Create Environment Files
+### 2. Set Up MySQL Database
 
-#### Backend Environment (.env.development)
+Create a database and user for development:
+
+```bash
+# Login to MySQL
+mysql -u root -p
+
+# Create database and user
+CREATE DATABASE mahjong;
+CREATE USER 'mahjonguser'@'localhost' IDENTIFIED BY 'your_dev_password';
+GRANT ALL PRIVILEGES ON mahjong.* TO 'mahjonguser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+### 3. Create Environment Files
+
+#### Development Environment (.env.development)
 
 Create `.env.development` in the project root:
 
@@ -49,14 +68,14 @@ PORT=4000
 
 # Database Configuration
 DATABASE_DIALECT=mysql
-DATABASE_HOST=db
+DATABASE_HOST=localhost
 DATABASE_PORT=3306
 DATABASE_NAME=mahjong
 DATABASE_USER=mahjonguser
 DATABASE_PASSWORD=your_dev_password
 
 # Prisma Database URL
-DATABASE_URL=mysql://root:your_dev_password@db:3306/mahjong?schema=public
+DATABASE_URL=mysql://mahjonguser:your_dev_password@localhost:3306/mahjong?schema=public
 
 # JWT Secret (generate a random 32+ character string)
 ACCESS_TOKEN_SECRET=your_random_secret_key_here
@@ -68,7 +87,7 @@ FROM_EMAIL="UBC Mahjong" <ubcmahjongreset@zohocloud.ca>
 ```
 
 **Important:**
-- Replace `your_dev_password` with any password (same password in both places)
+- Replace `your_dev_password` with the password you set for the MySQL user
 - Replace `your_random_secret_key_here` with a random 32+ character string
 - Ask a team member for the email password
 
@@ -82,23 +101,39 @@ openssl rand -base64 32
 node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
-### 3. Install Dependencies
+### 4. Initialize the Database
 
-The Docker setup will handle dependency installation automatically, but if you need to install locally:
+Run Prisma migrations to create database tables:
 
 ```bash
-# Install backend dependencies
 cd backend
-npm install
+npx prisma migrate deploy
 
-# Install frontend dependencies
-cd ../frontend
-npm install
+# Or for development, push schema directly
+npx prisma db push
+```
+
+### 5. Create an Admin User
+
+After starting the server for the first time:
+
+1. Register a new account at [http://localhost:3000](http://localhost:3000)
+2. Find your user ID and grant admin permissions:
+
+```bash
+mysql -u mahjonguser -p
+# Enter your password
+
+USE mahjong;
+SELECT id, Username FROM Player;
+UPDATE Player SET Admin = 1 WHERE id = 1;
+# Replace '1' with your user ID
+EXIT;
 ```
 
 ## Running the Development Server
 
-### Using Docker (Recommended)
+### Start Development Servers
 
 ```bash
 # From project root
@@ -106,57 +141,35 @@ npm install
 ```
 
 This script will:
-1. Build Docker images (first time only)
-2. Start all services (frontend, backend, database)
-3. Enable hot-reloading for development
-
-**First-time setup:**
-
-If this is your first time running the application, you need to initialize the database:
-
-1. **Create database tables:**
-   - Open Docker Desktop
-   - Navigate to the backend container
-   - Open the "Exec" tab
-   - Run: `npx prisma db push`
-
-2. **Create an admin user:**
-   - Register a new account at [http://localhost:3000](http://localhost:3000)
-   - Open the database container in Docker Desktop
-   - Go to the "Exec" tab
-   - Run:
-     ```bash
-     mysql -u root -p
-     # Enter your password from .env.development
-
-     USE mahjong;
-     UPDATE Player SET Admin = 1 WHERE id = 1;
-     # Replace '1' with your user ID
-     exit
-     ```
+1. Install dependencies automatically (first time or when package.json changes)
+2. Generate Prisma client (if needed)
+3. Start both frontend and backend servers with hot-reloading
+4. Show color-coded logs for each server
 
 ### Access the Application
 
 - **Frontend:** [http://localhost:3000](http://localhost:3000)
 - **Backend API:** [http://localhost:4000](http://localhost:4000)
 
-## Docker Commands
+### Stop Development Servers
+
+Press `Ctrl+C` in the terminal running `dev.sh` - this will stop both servers gracefully.
+
+## Manual Development (Without dev.sh)
+
+If you prefer to run servers separately:
 
 ```bash
-# Start development environment
-./scripts/dev.sh
+# Terminal 1 - Backend
+cd backend
+npm install
+npx prisma generate
+npm run dev
 
-# Or manually with make commands (in backend directory):
-make build    # Build Docker images (only needed once or when dependencies change)
-make up       # Start services
-make down     # Stop services
-
-# View logs
-docker logs <container-name> -f
-
-# Rebuild after dependency changes
-make build
-make up
+# Terminal 2 - Frontend
+cd frontend
+npm install
+npm start
 ```
 
 ## Database Management
@@ -180,12 +193,13 @@ npx prisma studio
 ### Direct Database Access
 
 ```bash
-# Via Docker
-docker exec -it <db-container-name> mysql -u root -p
+# Access MySQL directly
+mysql -u mahjonguser -p
 
 # Then enter your database password
 USE mahjong;
 SHOW TABLES;
+SELECT * FROM Player;
 ```
 
 ## Project Structure
@@ -250,19 +264,44 @@ make up
 
 ## Troubleshooting
 
-### Docker Issues
+### MySQL Connection Issues
 
-If you encounter database connection or Docker issues, try these steps in order:
+If you can't connect to MySQL:
 
-1. Restart all services: `make down && make up`
-2. Switch to `origin/main` branch
-3. Restart Docker Engine
-4. Clean Docker: `docker system prune -a` (removes all unused containers/images)
-5. Restart your machine
-6. Reset Docker to factory settings (Docker Desktop → Settings → Troubleshoot)
-7. Reinstall Docker Desktop
-8. Reclone the repository
-9. Ask for help in the team chat
+1. **Check if MySQL is running:**
+   ```bash
+   # macOS
+   brew services list
+
+   # Linux/WSL
+   sudo service mysql status
+
+   # Windows
+   # Check Services app for MySQL service
+   ```
+
+2. **Start MySQL if needed:**
+   ```bash
+   # macOS
+   brew services start mysql
+
+   # Linux/WSL
+   sudo service mysql start
+
+   # Windows
+   net start MySQL80
+   ```
+
+3. **Verify credentials:**
+   - Check `.env.development` matches your MySQL user/password
+   - Try logging in manually: `mysql -u mahjonguser -p`
+
+4. **Reset MySQL password if needed:**
+   ```bash
+   mysql -u root -p
+   ALTER USER 'mahjonguser'@'localhost' IDENTIFIED BY 'new_password';
+   FLUSH PRIVILEGES;
+   ```
 
 ### Port Already in Use
 
@@ -275,11 +314,21 @@ lsof -i :4000
 kill -9 <PID>
 ```
 
-### Database Connection Errors
+### dev.sh Script Issues
 
-- Verify database container is running: `docker ps`
-- Check database credentials in `.env.development`
-- Ensure `DATABASE_HOST=db` (not `localhost` in Docker setup)
+If `dev.sh` fails to start:
+
+1. **Make script executable:**
+   ```bash
+   chmod +x scripts/dev.sh
+   ```
+
+2. **Check for syntax errors:**
+   ```bash
+   bash -n scripts/dev.sh
+   ```
+
+3. **Run servers manually** (see [Manual Development](#manual-development-without-devsh) section)
 
 ### Prisma Client Not Found
 
@@ -304,12 +353,11 @@ npx prisma generate
 - [Prisma Documentation](https://www.prisma.io/docs)
 - [React Documentation](https://react.dev)
 - [Express Documentation](https://expressjs.com)
-- [Docker Documentation](https://docs.docker.com)
+- [MySQL Documentation](https://dev.mysql.com/doc/)
+- [Vite Documentation](https://vitejs.dev)
 - [Team Development Guide](https://docs.google.com/document/d/1FmSUD-EqHhf2XEkG1CkzElLQ91N8OO2Ojf6pMJxwn-s/edit?usp=sharing)
 
 ## Getting Help
 
 - Check the [Troubleshooting](#troubleshooting) section
 - Review existing GitHub issues
-- Ask in the team chat
-- Contact the tech lead
