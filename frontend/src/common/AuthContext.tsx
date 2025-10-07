@@ -3,6 +3,7 @@ import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAPICall, registerAPICall } from "../api/AuthAPI";
 import { getCurrentPlayer } from "../api/AccountAPI";
+import { baseUrl } from "../api/APIUtils";
 
 interface ChildProps {
     children: ReactNode;
@@ -21,27 +22,27 @@ const AuthContext = createContext<AuthContextType>({
 
 const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
     const navigate = useNavigate();
-    const [player, setPlayer] = useState(() => {
-        const playerProfile = localStorage.getItem("player");
-        if (playerProfile) {
-            return JSON.parse(playerProfile);
-        }
-        return undefined;
-    });
+    const [player, setPlayer] = useState<Player | undefined>(undefined);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (typeof player !== "undefined") {
-            getCurrentPlayer(player.authToken).then((newPlayer) => {
-                localStorage.setItem("player", JSON.stringify(newPlayer.data.player));
-                setPlayer(newPlayer.data.player);
+        // Check if user is already authenticated via cookie
+        getCurrentPlayer()
+            .then((response) => {
+                setPlayer(response.data.player);
+            })
+            .catch(() => {
+                // No valid session, user is not logged in
+                setPlayer(undefined);
+            })
+            .finally(() => {
+                setLoading(false);
             });
-        }
     }, []);
 
     const authLogin = useCallback(async (loginData: LoginDataType) => {
         const apiResponse = await loginAPICall(loginData);
         const playerAPIData = apiResponse.data;
-        localStorage.setItem("player", JSON.stringify(playerAPIData.player));
         setPlayer(playerAPIData.player);
         navigate("/");
     }, [navigate]);
@@ -49,13 +50,19 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
     const authRegister = useCallback(async (registerData: RegisterDataType) => {
         const apiResponse = await registerAPICall(registerData);
         const playerAPIData = apiResponse.data;
-        localStorage.setItem("player", JSON.stringify(playerAPIData.player));
         setPlayer(playerAPIData.player);
         navigate("/");
     }, [navigate]);
 
     const authLogout = useCallback(async () => {
-        localStorage.removeItem("player");
+        try {
+            await fetch(`${baseUrl}/logout`, {
+                method: 'POST',
+                credentials: 'include',
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
         setPlayer(undefined);
         navigate("/login");
     }, [navigate]);
@@ -66,10 +73,16 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
             return;
         }
 
-        const newPlayer = await getCurrentPlayer(player.authToken);
-        localStorage.setItem("player", JSON.stringify(newPlayer.data.player));
-        setPlayer(newPlayer.data.player);
-    }, [player]);
+        try {
+            const response = await getCurrentPlayer();
+            setPlayer(response.data.player);
+        } catch (error) {
+            console.error('Error reloading player:', error);
+            // If token is invalid/expired, log out
+            setPlayer(undefined);
+            navigate("/login");
+        }
+    }, [player, navigate]);
 
     return (
         <>

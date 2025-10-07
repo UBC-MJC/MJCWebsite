@@ -4,14 +4,14 @@ import { verifyToken } from "./jwt";
 import { findPlayerById } from "../services/player.service";
 
 const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-    const { authorization } = req.headers;
+    // Try to get token from cookie first, then fall back to Authorization header for backward compatibility
+    const token = req.cookies?.authToken || req.headers.authorization?.split(" ")[1];
 
-    if (typeof authorization === "undefined") {
+    if (!token) {
         return next(createError.Unauthorized("Invalid token"));
     }
 
     try {
-        const token = authorization.split(" ")[1];
         const payloadId: string | undefined = verifyToken(token);
         if (typeof payloadId === "undefined") {
             return next(createError.Unauthorized("Invalid token"));

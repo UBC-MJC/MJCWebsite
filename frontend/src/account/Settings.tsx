@@ -23,7 +23,7 @@ const Settings: FC = () => {
             [setting]: checked,
         };
         setSettings(newSettings);
-        updateSettingsAPI(player!.authToken, newSettings)
+        updateSettingsAPI(newSettings)
             .then(() => {
                 return reloadPlayer();
             })
@@ -33,7 +33,7 @@ const Settings: FC = () => {
     };
 
     const updateUsername = async (username: string) => {
-        return updateUsernameAPI(player!.authToken, username)
+        return updateUsernameAPI(username)
             .then(() => {
                 return reloadPlayer();
             })

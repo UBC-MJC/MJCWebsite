@@ -6,6 +6,7 @@ import {
     getQualifiedPlayersHandler,
     getUserStatisticsHandler,
     loginHandler,
+    logoutHandler,
     passwordResetHandler,
     registerHandler,
     requestPasswordResetHandler,
@@ -40,6 +41,7 @@ const router: Router = Router();
 
 router.post("/register", registerHandler);
 router.post("/login", loginHandler);
+router.post("/logout", logoutHandler);
 router.post("/request-password-reset", requestPasswordResetHandler);
 router.post("/password-reset", passwordResetHandler);
 

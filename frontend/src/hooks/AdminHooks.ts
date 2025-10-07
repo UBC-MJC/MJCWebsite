@@ -36,7 +36,7 @@ export function useCreateSeasonMutation(player?: Player) {
     return useMutation({
         mutationFn: (createSeasonRequest: Omit<Season, "id">) => {
             if (!player) throw new Error("No player authenticated");
-            return createSeasonAdminAPI(player.authToken, createSeasonRequest);
+            return createSeasonAdminAPI(createSeasonRequest);
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: seasonsKey }); // TODO: return the updated seasons
@@ -52,7 +52,7 @@ export function useUpdateSeasonMutation(player?: Player) {
     return useMutation({
         mutationFn: (updatedSeason: Season) => {
             if (!player) throw new Error("No player authenticated");
-            return updateSeasonAPI(player.authToken, updatedSeason);
+            return updateSeasonAPI(updatedSeason);
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: seasonsKey }); // TODO: return the updated seasons
@@ -70,7 +70,7 @@ export function useAdminPlayers(adminPlayer?: Player) {
         queryKey: adminPlayersKey,
         queryFn: async () => {
             if (!adminPlayer) throw new Error("No player authenticated");
-            const response = await getPlayersAdminAPI(adminPlayer.authToken);
+            const response = await getPlayersAdminAPI();
             return response.data.players;
         },
         enabled: !!adminPlayer,
@@ -82,7 +82,7 @@ export function useDeletePlayerMutation(player?: Player) {
     return useMutation({
         mutationFn: (playerId: string) => {
             if (!player) throw new Error("No player authenticated");
-            return deletePlayerAPI(player.authToken, playerId);
+            return deletePlayerAPI(playerId);
         },
         onSuccess: async (_response) => {
             await queryClient.invalidateQueries({ queryKey: adminPlayersKey });
@@ -98,7 +98,7 @@ export function useSavePlayerMutation(player?: Player) {
     return useMutation({
         mutationFn: (editedPlayer: Player) => {
             if (!player) throw new Error("No player authenticated");
-            return updatePlayerAPI(player.authToken, editedPlayer);
+            return updatePlayerAPI(editedPlayer);
         },
         onSuccess: async (_response) => {
             await queryClient.invalidateQueries({ queryKey: adminPlayersKey });

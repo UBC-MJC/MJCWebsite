@@ -27,7 +27,6 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
 
         const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
         createGameAPI(
-            player!.authToken,
             gameType,
             gameVariant,
             playerList.map((playerName) => playerName?.username),

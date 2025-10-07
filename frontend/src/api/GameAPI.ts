@@ -8,7 +8,6 @@ const getPlayerNames = async (gameVariant: string, gameType: GameType) => {
 };
 
 const createGameAPI = async (
-    authToken: string,
     gameType: GameType,
     gameVariant: GameVariant,
     players: string[],
@@ -19,7 +18,7 @@ const createGameAPI = async (
             gameType,
             players,
         },
-        getAuthConfig(authToken),
+        getAuthConfig(),
     );
 };
 
@@ -44,23 +43,22 @@ const getLiveGamesAPI = async <T extends GameVariant>(gameVariant: GameVariant) 
     return axios.get<Game<T>[]>(baseUrl + `/games/${gameVariant}/live`);
 };
 
-const deleteGameAPI = async (authToken: string, gameId: number, gameVariant: GameVariant) => {
+const deleteGameAPI = async (gameId: number, gameVariant: GameVariant) => {
     return axios.delete<void>(
         baseUrl + `/games/${gameVariant}/${gameId}`,
-        getAuthConfig(authToken),
+        getAuthConfig(),
     );
 };
 
-const submitGameAPI = async (authToken: string, gameId: number, gameVariant: GameVariant) => {
+const submitGameAPI = async (gameId: number, gameVariant: GameVariant) => {
     return axios.post<void>(
         baseUrl + `/games/${gameVariant}/${gameId}`,
         {},
-        getAuthConfig(authToken),
+        getAuthConfig(),
     );
 };
 
 const addRoundAPI = async <T extends GameVariant>(
-    authToken: string,
     gameId: number,
     gameVariant: GameVariant,
     round: RoundByVariant<T>,
@@ -70,23 +68,21 @@ const addRoundAPI = async <T extends GameVariant>(
         {
             roundRequest: round,
         },
-        getAuthConfig(authToken),
+        getAuthConfig(),
     );
 };
 
 const deleteRoundAPI = async <T extends GameVariant>(
-    authToken: string,
     gameId: number,
     gameVariant: GameVariant,
 ) => {
     return axios.delete<Game<T>>(
         baseUrl + `/games/${gameVariant}/${gameId}/rounds`,
-        getAuthConfig(authToken),
+        getAuthConfig(),
     );
 };
 
 const setChomboAPI = async (
-    authToken: string,
     gameId: number,
     gameVariant: GameVariant,
     playerId: string,
@@ -98,7 +94,7 @@ const setChomboAPI = async (
             playerId: playerId,
             chomboCount: chomboCount,
         },
-        getAuthConfig(authToken),
+        getAuthConfig(),
     );
 };
 export {

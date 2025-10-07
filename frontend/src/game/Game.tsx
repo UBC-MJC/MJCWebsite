@@ -80,7 +80,7 @@ const Game: FC = <T extends GameVariant>() => {
     }, [listening, game, player, variant]);
 
     const handleSubmitRound = async (roundRequest: JapaneseRound | HongKongRound) => {
-        addRoundAPI(player!.authToken, gameId, variant!, roundRequest)
+        addRoundAPI(gameId, variant!, roundRequest)
             .then((response) => {
                 setGame(response.data);
             })
@@ -102,7 +102,7 @@ const Game: FC = <T extends GameVariant>() => {
         }
 
         try {
-            const response = await deleteRoundAPI(player!.authToken, gameId, variant!);
+            const response = await deleteRoundAPI(gameId, variant!);
             setGame(response.data);
         } catch (e) {
             const error = e as Error;
@@ -120,7 +120,7 @@ const Game: FC = <T extends GameVariant>() => {
         }
 
         try {
-            await deleteGameAPI(player!.authToken, gameId, variant!);
+            await deleteGameAPI(gameId, variant!);
             await alert(`Game Deleted`);
             navigate("/");
         } catch (e) {
@@ -139,7 +139,7 @@ const Game: FC = <T extends GameVariant>() => {
         }
 
         try {
-            await submitGameAPI(player!.authToken, gameId, variant!);
+            await submitGameAPI(gameId, variant!);
             await alert(`Game Submitted`);
             const tempGame = { ...game! };
             tempGame.status = "FINISHED";

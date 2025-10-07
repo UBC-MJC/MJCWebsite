@@ -14,6 +14,8 @@ import { getCurrentSeason } from "../services/season.service";
 import { GameVariant, getGameService, STARTING_ELO } from "../services/game/game.util";
 import { GameType } from "@prisma/client";
 
+const isProduction = () => process.env.NODE_ENV === 'production';
+
 const registerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const registerPlayerRequest = registerSchema.parse(req.body);
     try {
@@ -24,8 +26,17 @@ const registerHandler = async (req: Request, res: Response, next: NextFunction):
         }
         const token = generateToken(player.id);
         const { password: _, ...playerOmitted } = player;
+
+        // Set httpOnly cookie for security
+        res.cookie('authToken', token, {
+            httpOnly: true,
+            secure: isProduction(),
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+
         res.json({
-            player: { authToken: token, ...playerOmitted },
+            player: playerOmitted,
         });
     } catch (err: any) {
         next(createError.BadRequest(err.message));
@@ -39,8 +50,17 @@ const loginHandler = async (req: Request, res: Response, next: NextFunction): Pr
         if (player && bcrypt.compareSync(req.body.password, player.password)) {
             const token = generateToken(player.id);
             const { password, ...playerOmitted } = player;
+
+            // Set httpOnly cookie for security
+            res.cookie('authToken', token, {
+                httpOnly: true,
+                secure: isProduction(),
+                sameSite: 'strict',
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            });
+
             res.json({
-                player: { authToken: token, ...playerOmitted },
+                player: playerOmitted,
             });
         } else {
             next(createError.Unauthorized("Username or password is incorrect"));
@@ -62,10 +82,9 @@ const requestPasswordResetHandler = async (
             return;
         }
 
-        const host =
-            process.env.NODE_ENV === "production"
-                ? "https://" + req.headers.host
-                : "http://localhost:3000";
+        const host = isProduction()
+            ? "https://" + req.headers.host
+            : "http://localhost:3000";
         await requestPasswordReset(player, host);
 
         res.json({ email: player.email });
@@ -203,9 +222,23 @@ async function getUserStatisticsHandler(
     res.json(result);
 }
 
+const logoutHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        res.clearCookie('authToken', {
+            httpOnly: true,
+            secure: isProduction(),
+            sameSite: 'strict',
+        });
+        res.json({ message: 'Logged out successfully' });
+    } catch (err: any) {
+        next(createError.InternalServerError(err.message));
+    }
+};
+
 export {
     registerHandler,
     loginHandler,
+    logoutHandler,
     requestPasswordResetHandler,
     passwordResetHandler,
     getQualifiedPlayersHandler,

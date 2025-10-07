@@ -1,19 +1,19 @@
 import axios from "axios";
 import { baseUrl, getAuthConfig } from "./APIUtils";
 
-const getPlayersAdminAPI = async (authToken: string) => {
-    return axios.get<{ players: Player[] }>(baseUrl + "/admin/players", getAuthConfig(authToken));
+const getPlayersAdminAPI = async () => {
+    return axios.get<{ players: Player[] }>(baseUrl + "/admin/players", getAuthConfig());
 };
 
-const deletePlayerAPI = async (authToken: string, playerId: string) => {
-    return axios.delete<Player>(baseUrl + "/admin/players/" + playerId, getAuthConfig(authToken));
+const deletePlayerAPI = async (playerId: string) => {
+    return axios.delete<Player>(baseUrl + "/admin/players/" + playerId, getAuthConfig());
 };
 
-const updatePlayerAPI = async (authToken: string, player: Player) => {
+const updatePlayerAPI = async (player: Player) => {
     return axios.put<Player>(
         baseUrl + "/admin/players/" + player.id,
         { player },
-        getAuthConfig(authToken),
+        getAuthConfig(),
     );
 };
 
@@ -21,28 +21,28 @@ const getSeasonsAPI = async () => {
     return axios.get<SeasonsAPIDataType>(baseUrl + "/seasons");
 };
 
-const createSeasonAdminAPI = async (authToken: string, season: Partial<Season>) => {
-    return axios.post<Season>(baseUrl + "/admin/seasons", { season }, getAuthConfig(authToken));
+const createSeasonAdminAPI = async (season: Partial<Season>) => {
+    return axios.post<Season>(baseUrl + "/admin/seasons", { season }, getAuthConfig());
 };
 
-const updateSeasonAPI = async (authToken: string, season: Season) => {
+const updateSeasonAPI = async (season: Season) => {
     return axios.put<Season>(
         baseUrl + "/admin/seasons/" + season.id,
         { season },
-        getAuthConfig(authToken),
+        getAuthConfig(),
     );
 };
 
-const makeDummyAdminsAPI = async (authToken: string) => {
-    return axios.post<void>(baseUrl + "/admin/makeDummyAdmins", {}, getAuthConfig(authToken));
+const makeDummyAdminsAPI = async () => {
+    return axios.post<void>(baseUrl + "/admin/makeDummyAdmins", {}, getAuthConfig());
 };
 
-const recalcSeasonAPI = async (authToken: string, variant: GameVariant) => {
-    return axios.put<void>(baseUrl + "/admin/recalc/" + variant, {}, getAuthConfig(authToken));
+const recalcSeasonAPI = async (variant: GameVariant) => {
+    return axios.put<void>(baseUrl + "/admin/recalc/" + variant, {}, getAuthConfig());
 };
 
-export async function removeQualificationAPI(authToken: string) {
-    return axios.put<void>(`${baseUrl}/admin/removeQualification`, {}, getAuthConfig(authToken));
+export async function removeQualificationAPI() {
+    return axios.put<void>(`${baseUrl}/admin/removeQualification`, {}, getAuthConfig());
 }
 
 export {

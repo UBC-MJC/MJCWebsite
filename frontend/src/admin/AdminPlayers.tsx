@@ -129,13 +129,13 @@ const AdminPlayers: FC = () => {
     ];
 
     const makeTestAdmins = () => {
-        makeDummyAdminsAPI(player.authToken).catch((err: AxiosError) => {
+        makeDummyAdminsAPI().catch((err: AxiosError) => {
             console.log("Error making dummy admins: ", err.response?.data);
         });
     };
 
     const recalcCurrentSeasonHK = () => {
-        recalcSeasonAPI(player.authToken, "hk")
+        recalcSeasonAPI("hk")
             .then((response) => {
                 console.log("HK Recalculation Complete", response.data);
             })
@@ -145,7 +145,7 @@ const AdminPlayers: FC = () => {
     };
 
     const recalcCurrentSeasonJP = () => {
-        recalcSeasonAPI(player.authToken, "jp")
+        recalcSeasonAPI("jp")
             .then((response) => {
                 console.log("JP Recalculation Complete", response.data);
             })
@@ -190,7 +190,7 @@ const AdminPlayers: FC = () => {
                 <Button
                     color={"warning"}
                     onClick={() => {
-                        removeQualificationAPI(player?.authToken);
+                        removeQualificationAPI();
                     }}
                 >
                     Remove all qualification

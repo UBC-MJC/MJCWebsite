@@ -54,7 +54,6 @@ interface PlayerNamesDataType {
 
 interface Player {
     id: string;
-    authToken: string;
     username: string;
     email: string;
     firstName?: string;

@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 import express, { Express, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import router from "./routes";
 import path from "path";
 import { Player } from "@prisma/client";
@@ -35,6 +36,7 @@ if (process.env.NODE_ENV === "production") {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.use("/api", router);
 

@@ -28,7 +28,6 @@ const AdminChombo: FC = () => {
         event.preventDefault();
         try {
             const response = await setChomboAPI(
-                player.authToken,
                 gameId,
                 gameVariant,
                 playerId,
