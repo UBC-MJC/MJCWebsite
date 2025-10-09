@@ -1,4 +1,4 @@
-import { Col, Row } from "react-bootstrap";
+import { Box, Grid, Typography } from "@mui/material";
 import { getScoresWithPlayers } from "@/common/Utils";
 import type { Game, GameVariant } from "@/types";
 
@@ -10,20 +10,29 @@ const GameSummaryBody = <T extends GameVariant>({
     gameVariant: GameVariant;
 }) => {
     return (
-        <Row>
+        <Grid container spacing={1}>
             {getScoresWithPlayers(game, gameVariant)
                 .sort((a, b) => b.score - a.score)
                 .map((score, idx) => (
-                    <Col key={idx} xs={6} className="px-3 py-1">
-                        <div className="d-flex justify-content-between">
-                            <div>
+                    <Grid size={6} key={idx}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                py: 0.5,
+                                px: 1,
+                            }}
+                        >
+                            <Typography variant="body2">
                                 {mapIndextoPlace(idx)} - {score.username}
-                            </div>
-                            <div>{score.score}</div>
-                        </div>
-                    </Col>
+                            </Typography>
+                            <Typography variant="body2">
+                                {score.score}
+                            </Typography>
+                        </Box>
+                    </Grid>
                 ))}
-        </Row>
+        </Grid>
     );
 };
 
