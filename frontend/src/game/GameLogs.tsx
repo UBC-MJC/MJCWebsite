@@ -14,12 +14,10 @@ import {
     Chip,
     CircularProgress,
     Pagination,
-    Stack,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PeopleIcon from "@mui/icons-material/People";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import alert from "@/common/AlertDialog";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { mapPlayerNameToOption, mapSeasonToOption } from "./common/constants";
@@ -89,16 +87,6 @@ const GameLogs = <T extends GameVariant>() => {
         });
     };
 
-    const getWinner = (game: Game<T>) => {
-        const scores = game.players
-            .map((player) => ({
-                username: player.username,
-                score: player.score,
-            }))
-            .sort((a, b) => b.score - a.score);
-        return scores[0];
-    };
-
     if (!seasonsResult.isSuccess || !playersResult.isSuccess) {
         return (
             <Container maxWidth="lg" sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
@@ -113,7 +101,7 @@ const GameLogs = <T extends GameVariant>() => {
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 600}}>
+            <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 600 }}>
                 Game Logs
             </Typography>
 
@@ -219,7 +207,11 @@ const GameLogs = <T extends GameVariant>() => {
                                         }}
                                     >
                                         <Box>
-                                            <Typography variant="h6" component="div" sx={{ textAlign: 'left' }}>
+                                            <Typography
+                                                variant="h6"
+                                                component="div"
+                                                sx={{ textAlign: "left" }}
+                                            >
                                                 {getGameVariantString(queryGameVariant, game.type)}{" "}
                                                 #{game.id}
                                             </Typography>

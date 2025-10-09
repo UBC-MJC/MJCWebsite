@@ -10,13 +10,7 @@ import {
 } from "@mui/material";
 import { confirmable, createConfirmation } from "react-confirm";
 
-type ButtonVariant =
-    | "primary"
-    | "secondary"
-    | "success"
-    | "error"
-    | "warning"
-    | "info";
+type ButtonVariant = "primary" | "secondary" | "success" | "error" | "warning" | "info";
 
 interface AlertProps {
     show?: boolean;
@@ -56,9 +50,7 @@ const Alert: FC<AlertProps> = ({
         >
             {title && <DialogTitle sx={{ color: "text.primary" }}>{title}</DialogTitle>}
             <DialogContent>
-                <DialogContentText sx={{ color: "text.primary" }}>
-                    {confirmation}
-                </DialogContentText>
+                <DialogContentText sx={{ color: "text.primary" }}>{confirmation}</DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button
@@ -79,14 +71,7 @@ Alert.propTypes = {
     title: PropTypes.string,
     confirmation: PropTypes.string, // arguments of your confirm function
     okText: PropTypes.string,
-    okButtonStyle: PropTypes.oneOf([
-        "primary",
-        "secondary",
-        "success",
-        "error",
-        "warning",
-        "info",
-    ]),
+    okButtonStyle: PropTypes.oneOf(["primary", "secondary", "success", "error", "warning", "info"]),
     show: PropTypes.bool, // from confirmable.
     proceed: PropTypes.func, // from confirmable.
     cancel: PropTypes.func, // from confirmable.

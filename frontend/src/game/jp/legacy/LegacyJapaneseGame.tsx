@@ -7,11 +7,7 @@ import type {
     Transaction,
     Game,
 } from "@/types";
-import {
-    getRiichiStickCount,
-    getScoresWithPlayers,
-    japanesePointsWheel,
-} from "@/common/Utils";
+import { getRiichiStickCount, getScoresWithPlayers, japanesePointsWheel } from "@/common/Utils";
 import alert from "@/common/AlertDialog";
 import {
     isGameEnd,

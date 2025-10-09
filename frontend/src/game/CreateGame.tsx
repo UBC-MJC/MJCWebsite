@@ -1,8 +1,7 @@
-import React, { FC, useContext, useState } from "react";
+import React, { FC, useState } from "react";
 import { createGameAPI } from "@/api/GameAPI";
 import { Col, Container, Row } from "react-bootstrap";
 import { AxiosError } from "axios";
-import { AuthContext } from "@/common/AuthContext";
 import { withPlayerCondition } from "@/common/withPlayerCondition";
 import { useNavigate } from "react-router-dom";
 import { getGameVariantString } from "@/common/Utils";

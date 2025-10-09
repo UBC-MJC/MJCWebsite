@@ -122,9 +122,7 @@ const NavBar: FC = () => {
                                     sx={{ pl: 4 }}
                                     onClick={closeDrawer}
                                 >
-                                    <ListItemText
-                                        primary={getGameVariantString("jp", "CASUAL")}
-                                    />
+                                    <ListItemText primary={getGameVariantString("jp", "CASUAL")} />
                                 </ListItem>
                                 {player.hongKongQualified && (
                                     <ListItem
@@ -144,9 +142,7 @@ const NavBar: FC = () => {
                                     sx={{ pl: 4 }}
                                     onClick={closeDrawer}
                                 >
-                                    <ListItemText
-                                        primary={getGameVariantString("hk", "CASUAL")}
-                                    />
+                                    <ListItemText primary={getGameVariantString("hk", "CASUAL")} />
                                 </ListItem>
                             </List>
                         </Collapse>
@@ -250,7 +246,7 @@ const NavBar: FC = () => {
                         flexGrow: isMobile ? 1 : 0,
                         textDecoration: "none",
                         color: "inherit",
-                        mr: 2,
+                        mr: 5,
                     }}
                 >
                     UBC Mahjong Club

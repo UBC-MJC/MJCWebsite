@@ -99,9 +99,8 @@ export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
                                             }}
                                         >
                                             <Typography variant="h6" component="div">
-                                                {getGameVariantString(gameVariant, game.type)} #{
-                                                    game.id
-                                                }
+                                                {getGameVariantString(gameVariant, game.type)} #
+                                                {game.id}
                                             </Typography>
                                             <Chip
                                                 icon={<AccessTimeIcon />}
@@ -113,14 +112,33 @@ export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
                                         </Box>
                                     }
                                     subheader={
-                                        <Box sx={{ display: "flex", gap: 2, mt: 1, flexWrap: "wrap" }}>
-                                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                gap: 2,
+                                                mt: 1,
+                                                flexWrap: "wrap",
+                                            }}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 0.5,
+                                                }}
+                                            >
                                                 <CalendarTodayIcon fontSize="small" />
                                                 <Typography variant="caption">
                                                     {formatDate(game.createdAt)}
                                                 </Typography>
                                             </Box>
-                                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 0.5,
+                                                }}
+                                            >
                                                 <PeopleIcon fontSize="small" />
                                                 <Typography variant="caption">
                                                     {game.players.length} Players

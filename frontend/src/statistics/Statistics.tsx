@@ -4,7 +4,7 @@ import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayers } from "@/hooks/GameHooks";
 import { mapPlayerNameToOption, mapSeasonToOption } from "@/game/common/constants";
 import { useStatistics } from "@/hooks/LeaderboardHooks";
-import { Autocomplete, Container, Grid, Stack, TextField } from "@mui/material";
+import { Autocomplete, Container, Grid, Stack, TextField, Typography } from "@mui/material";
 import type { GameVariant, Season } from "@/types";
 
 const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
@@ -21,9 +21,17 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const seasonsOptions = mapSeasonToOption(seasonsResult.data);
     const playersOptions = mapPlayerNameToOption(playersResult.data);
     return (
-        <Container>
+        <Container sx={{ py: 4 }}>
             <Stack spacing={1}>
-                <h1>Round Statistics</h1>
+                <Typography
+                    variant="h4"
+                    component="h1"
+                    gutterBottom
+                    sx={{ mb: 4, fontWeight: 600 }}
+                >
+                    Round Statistics
+                </Typography>
+
                 <Stack spacing={1} direction="row">
                     <Stack spacing={1} direction="column" width="50%">
                         <h3>Season</h3>

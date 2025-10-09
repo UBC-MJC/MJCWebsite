@@ -13,6 +13,7 @@ import {
     DialogTitle,
     Stack,
     TextField,
+    Typography,
 } from "@mui/material";
 import { DisplayStatistics } from "@/statistics/Statistics";
 
@@ -25,9 +26,17 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     }
     const seasonsOptions = mapSeasonToOption(seasons);
     return (
-        <Box>
+        <Box sx={{ py: 4 }}>
             <Stack spacing={1} margin="auto" width={"80%"} maxWidth="800px">
-                <h1>{getGameVariantString(gameVariant, gameType)} Leaderboard</h1>
+                <Typography
+                    variant="h4"
+                    component="h1"
+                    gutterBottom
+                    sx={{ mb: 4, fontWeight: 600 }}
+                >
+                    {getGameVariantString(gameVariant, gameType)} Leaderboard
+                </Typography>
+
                 <h5>Season: </h5>
                 <Autocomplete
                     isOptionEqualToValue={(option, value) => option.label === value.label}
