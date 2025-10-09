@@ -28,7 +28,6 @@ const Game: FC = <T extends GameVariant>() => {
     const variant = (validateGameVariant(variantParam) ? variantParam : undefined) as GameVariant | undefined;
 
     const [game, setGame] = useState<Game<T> | undefined>(undefined);
-    const [listening, setListening] = useState(false);
 
     useEffect(() => {
         if (isNaN(gameId) || !variant) {
@@ -54,8 +53,7 @@ const Game: FC = <T extends GameVariant>() => {
         if (
             game &&
             (!player || game.recordedById !== player.id) &&
-            game.status === "IN_PROGRESS" &&
-            !listening
+            game.status === "IN_PROGRESS"
         ) {
             const eventSource = new EventSource(baseUrl + `/games/${variant}/${game.id}/live`);
 
@@ -64,20 +62,17 @@ const Game: FC = <T extends GameVariant>() => {
                 setGame(gameResult);
             };
 
-            eventSource.onerror = (event) => {
-                console.error("EventSource Error: ", event);
+            eventSource.onerror = () => {
+                // Close the connection on error and don't retry
                 eventSource.close();
-                setListening(false);
             };
-            setListening(true);
 
             // Cleanup function to close EventSource when component unmounts
             return () => {
                 eventSource.close();
-                setListening(false);
             };
         }
-    }, [listening, game, player, variant]);
+    }, [game?.id, game?.status, player, variant]);
 
     const handleSubmitRound = async (roundRequest: JapaneseRound | HongKongRound) => {
         addRoundAPI(gameId, variant!, roundRequest)
