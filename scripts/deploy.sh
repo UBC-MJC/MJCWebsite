@@ -4,10 +4,10 @@
 set -e
 
 # Configuration - UPDATE THESE VALUES
-SERVER_USER="ubuntu"
-SERVER_HOST="ec2-54-185-167-168.us-west-2.compute.amazonaws.com"
-SERVER_PATH="/home/ubuntu/MJCWebsite"
-KEY_PATH="/home/iforgot/MahjongKeyPair_v2.pem"  # Path to your SSH private key
+SERVER_USER=""
+SERVER_HOST=""
+SERVER_PATH=""
+KEY_PATH=""  # Path to your SSH private key
 
 # Colors for output
 RED='\033[0;31m'
