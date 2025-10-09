@@ -42,10 +42,23 @@ const ConfirmationDialog: FC<ConfirmationDialogProps> = ({
     cancelButtonStyle,
 }) => {
     return (
-        <Dialog open={show || false} onClose={() => proceed?.(false)} maxWidth="xs" fullWidth>
-            {title && <DialogTitle>{title}</DialogTitle>}
+        <Dialog
+            open={show || false}
+            onClose={() => proceed?.(false)}
+            maxWidth="xs"
+            fullWidth
+            PaperProps={{
+                sx: {
+                    bgcolor: "background.paper",
+                    backgroundImage: "none",
+                },
+            }}
+        >
+            {title && <DialogTitle sx={{ color: "text.primary" }}>{title}</DialogTitle>}
             <DialogContent>
-                <DialogContentText>{confirmation}</DialogContentText>
+                <DialogContentText sx={{ color: "text.primary" }}>
+                    {confirmation}
+                </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button

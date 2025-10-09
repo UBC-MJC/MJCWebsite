@@ -47,10 +47,18 @@ const Alert: FC<AlertProps> = ({
             maxWidth="xs"
             fullWidth
             disableEscapeKeyDown={false}
+            PaperProps={{
+                sx: {
+                    bgcolor: "background.paper",
+                    backgroundImage: "none",
+                },
+            }}
         >
-            {title && <DialogTitle>{title}</DialogTitle>}
+            {title && <DialogTitle sx={{ color: "text.primary" }}>{title}</DialogTitle>}
             <DialogContent>
-                <DialogContentText>{confirmation}</DialogContentText>
+                <DialogContentText sx={{ color: "text.primary" }}>
+                    {confirmation}
+                </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button
