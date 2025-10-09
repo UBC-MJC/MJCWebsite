@@ -6,9 +6,9 @@ import {
     getSeasonsAPI,
     updatePlayerAPI,
     updateSeasonAPI,
-} from "../api/AdminAPI";
+} from "@/api/AdminAPI";
 import { AxiosError } from "axios";
-import type { Season, Player } from "../types";
+import type { Season, Player } from "@/types";
 
 const seasonsKey = ["seasons"];
 

@@ -1,8 +1,8 @@
 import React, { FC, useState } from "react";
 import { Card, Container, Form } from "react-bootstrap";
 import { AxiosError } from "axios";
-import { submitRequestPasswordResetAPI } from "../api/AccountAPI";
-import alert from "../common/AlertDialog";
+import { submitRequestPasswordResetAPI } from "@/api/AccountAPI";
+import alert from "@/common/AlertDialog";
 import { Button } from "@mui/material";
 
 const RequestPasswordReset: FC = () => {

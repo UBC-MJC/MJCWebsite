@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import LegacyHongKongGameTable, { ModifiedHongKongRound } from "./LegacyHongKongGameTable";
-import type { HongKongRound, HongKongHandInput } from "../../../types";
+import type { HongKongRound, HongKongHandInput } from "@/types";
+import { getScoresWithPlayers, hongKongPointsWheel } from "@/common/Utils";
+import alert from "@/common/AlertDialog";
 import {
     HK_TRANSACTION_TYPE_BUTTONS,
     HK_UNDEFINED_HAND,
@@ -9,16 +11,14 @@ import {
     HongKongLabel,
     HongKongTransactionType,
     isGameEnd,
-} from "../../common/constants";
-import PlayerButtonRow from "../../common/PlayerButtonRow";
-import { getScoresWithPlayers, hongKongPointsWheel } from "../../../common/Utils";
-import { LegacyGameProps } from "../../Game";
+} from "@/game/common/constants";
+import PlayerButtonRow from "@/game/common/PlayerButtonRow";
+import { LegacyGameProps } from "@/game/Game";
+import PointsInput from "@/game/common/PointsInput";
+import { Footer } from "@/game/common/Footer";
 import { createHongKongRoundRequest, generateOverallScoreDelta } from "../controller/HongKongRound";
 import { validateHongKongRound } from "../controller/ValidateHongKongRound";
-import alert from "../../../common/AlertDialog";
-import PointsInput from "../../common/PointsInput";
 import { Box, Button, ToggleButton } from "@mui/material";
-import { Footer } from "../../common/Footer";
 
 const LegacyHongKongGame = ({
     enableRecording,

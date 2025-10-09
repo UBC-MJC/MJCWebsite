@@ -1,6 +1,6 @@
 import axios from "axios";
 import { baseUrl, getAuthConfig } from "./APIUtils";
-import type { GameType, GameVariant, PlayerNamesDataType, Game, RoundByVariant } from "../types";
+import type { GameType, GameVariant, PlayerNamesDataType, Game, RoundByVariant } from "@/types";
 
 const getPlayerNames = async (gameVariant: string, gameType: GameType) => {
     return axios.get<PlayerNamesDataType[]>(

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { baseUrl, getAuthConfig } from "./APIUtils";
-import type { Player, Season, SeasonsAPIDataType, GameVariant } from "../types";
+import type { Player, Season, SeasonsAPIDataType, GameVariant } from "@/types";
 
 const getPlayersAdminAPI = async () => {
     return axios.get<{ players: Player[] }>(baseUrl + "/admin/players", getAuthConfig());

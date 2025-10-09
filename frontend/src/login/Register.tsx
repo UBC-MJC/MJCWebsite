@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
 import { Card, Container, Form, Row, Col } from "react-bootstrap";
-import { AuthContext } from "../common/AuthContext";
+import { AuthContext } from "@/common/AuthContext";
 import { AxiosError } from "axios";
 import { Button } from "@mui/material";
-import type { RegisterDataType } from "../types";
+import type { RegisterDataType } from "@/types";
 
 const isEmail = (email: string) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
 

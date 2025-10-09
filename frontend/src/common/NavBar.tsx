@@ -1,8 +1,8 @@
 import React, { FC, useContext, memo } from "react";
 import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "@/common/AuthContext";
 import { Link } from "react-router-dom";
-import { getGameVariantString } from "./Utils";
+import { getGameVariantString } from "@/common/Utils";
 
 const NavBar: FC = () => {
     const { player, logout } = useContext(AuthContext);

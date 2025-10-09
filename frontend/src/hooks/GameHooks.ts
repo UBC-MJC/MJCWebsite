@@ -1,6 +1,6 @@
-import { getGameAPI, getLiveGamesAPI, getPlayerNames } from "../api/GameAPI";
+import { getGameAPI, getLiveGamesAPI, getPlayerNames } from "@/api/GameAPI";
 import { useQuery } from "@tanstack/react-query";
-import type { GameVariant, GameType } from "../types";
+import type { GameVariant, GameType } from "@/types";
 
 export function usePlayers(gameVariant: GameVariant, gameType: GameType) {
     // When gameType === "CASUAL", a list of all players is returned.

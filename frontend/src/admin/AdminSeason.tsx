@@ -1,6 +1,6 @@
 import React, { FC, useContext, useState } from "react";
-import { AuthContext } from "../common/AuthContext";
-import type { Season } from "../types";
+import { AuthContext } from "@/common/AuthContext";
+import type { Season } from "@/types";
 import {
     Card,
     CardContent,
@@ -12,7 +12,7 @@ import {
     DialogActions,
     TextField,
 } from "@mui/material";
-import { useCreateSeasonMutation, useUpdateSeasonMutation, useSeasons } from "../hooks/AdminHooks";
+import { useCreateSeasonMutation, useUpdateSeasonMutation, useSeasons } from "@/hooks/AdminHooks";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";

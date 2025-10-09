@@ -1,10 +1,10 @@
 import { FC, ReactNode, useEffect, useCallback } from "react";
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginAPICall, registerAPICall } from "../api/AuthAPI";
-import { getCurrentPlayer } from "../api/AccountAPI";
-import { baseUrl } from "../api/APIUtils";
-import type { AuthContextType, Player, LoginDataType, RegisterDataType } from "../types";
+import { loginAPICall, registerAPICall } from "@/api/AuthAPI";
+import { getCurrentPlayer } from "@/api/AccountAPI";
+import { baseUrl } from "@/api/APIUtils";
+import type { AuthContextType, Player, LoginDataType, RegisterDataType } from "@/types";
 
 interface ChildProps {
     children: ReactNode;

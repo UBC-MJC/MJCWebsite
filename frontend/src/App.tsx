@@ -1,10 +1,10 @@
 import React from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import "./App.scss";
-import WithoutNav from "./common/WithoutNav";
-import WithNav from "./common/WithNav";
-import { AuthContextProvider } from "./common/AuthContext";
-import ErrorBoundary from "./common/ErrorBoundary";
+import WithoutNav from "@/common/WithoutNav";
+import WithNav from "@/common/WithNav";
+import { AuthContextProvider } from "@/common/AuthContext";
+import ErrorBoundary from "@/common/ErrorBoundary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import { enUS } from "@mui/x-date-pickers/locales";

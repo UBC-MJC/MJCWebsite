@@ -1,6 +1,6 @@
-import type { JapaneseTransaction, JapaneseHandInput } from "../../../types";
+import type { JapaneseTransaction, JapaneseHandInput } from "@/types";
 import { findProminentPlayerRound, findProminentPlayers } from "./HonbaProcessing";
-import { JapaneseTransactionType } from "../../common/constants";
+import { JapaneseTransactionType } from "@/game/common/constants";
 
 const E_NOWIN = "A winner is required";
 const E_NOLOSE = "A loser is required";

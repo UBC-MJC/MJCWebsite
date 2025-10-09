@@ -1,11 +1,11 @@
 import React, { FC, useContext, useState } from "react";
-import { AuthContext } from "../common/AuthContext";
-import { useSeasons } from "../hooks/AdminHooks";
-import { usePlayers } from "../hooks/GameHooks";
-import { mapPlayerNameToOption, mapSeasonToOption } from "../game/common/constants";
-import { useStatistics } from "../hooks/LeaderboardHooks";
+import { AuthContext } from "@/common/AuthContext";
+import { useSeasons } from "@/hooks/AdminHooks";
+import { usePlayers } from "@/hooks/GameHooks";
+import { mapPlayerNameToOption, mapSeasonToOption } from "@/game/common/constants";
+import { useStatistics } from "@/hooks/LeaderboardHooks";
 import { Autocomplete, Container, Grid, Stack, TextField } from "@mui/material";
-import type { GameVariant, Season } from "../types";
+import type { GameVariant, Season } from "@/types";
 
 const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const [playerId, setPlayerId] = useState<string | undefined>(

@@ -1,8 +1,8 @@
 import { FC } from "react";
 import { GridColDef } from "@mui/x-data-grid";
-import { mapChineseNumerals, mapWindToCharacter } from "../../../common/Utils";
-import TableDisplay from "../../common/TableDisplay";
-import type { JapaneseRound, PartialJapaneseRound, GamePlayer } from "../../../types";
+import { mapChineseNumerals, mapWindToCharacter } from "@/common/Utils";
+import TableDisplay from "@/game/common/TableDisplay";
+import type { JapaneseRound, PartialJapaneseRound, GamePlayer } from "@/types";
 
 interface LegacyGameTableProps {
     rounds: ModifiedJapaneseRound[];

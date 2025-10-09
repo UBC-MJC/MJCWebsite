@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { PointWheelComponent } from "../../common/Utils";
+import { PointWheelComponent } from "@/common/Utils";
 import DropdownInput from "./DropdownInput";
 import { Stack } from "@mui/material";
 

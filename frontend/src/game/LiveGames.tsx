@@ -1,11 +1,11 @@
 import React, { FC } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
-import { getGameVariantString } from "../common/Utils";
+import { getGameVariantString } from "@/common/Utils";
 import { useNavigate } from "react-router-dom";
 import { gameRoundString } from "./common/constants";
 import GameSummaryBody from "./common/GameSummaryBody";
-import { useLiveGames } from "../hooks/GameHooks";
-import type { GameCreationProp, Game } from "../types";
+import { useLiveGames } from "@/hooks/GameHooks";
+import type { GameCreationProp, Game } from "@/types";
 
 export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
     const navigate = useNavigate();

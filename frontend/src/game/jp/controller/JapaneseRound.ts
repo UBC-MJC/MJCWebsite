@@ -7,17 +7,17 @@ import {
     JAPANESE_RETURNING_POINT,
     RIICHI_STICK_VALUE,
     Wind,
-} from "../../common/constants";
+} from "@/game/common/constants";
 import { containingAny, findHeadbumpWinner, transformTransactions } from "./HonbaProcessing";
 
-import { range } from "../../../common/Utils";
+import { range } from "@/common/Utils";
 import type {
     JapaneseRound,
     PartialJapaneseRound,
     JapaneseTransaction,
     JapaneseHandInput,
     Transaction,
-} from "../../../types";
+} from "@/types";
 
 const createJapaneseRoundRequest = (
     currentRound: PartialJapaneseRound,

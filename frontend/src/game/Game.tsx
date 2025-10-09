@@ -8,22 +8,22 @@ import type {
     RoundByVariant,
     JapaneseRound,
     HongKongRound,
-} from "../types";
+} from "@/types";
 import {
     addRoundAPI,
     deleteGameAPI,
     deleteRoundAPI,
     getGameAPI,
     submitGameAPI,
-} from "../api/GameAPI";
-import { AuthContext } from "../common/AuthContext";
-import { getGameVariantString, validateGameVariant } from "../common/Utils";
-import alert from "../common/AlertDialog";
-import confirmDialog from "../common/ConfirmationDialog";
+} from "@/api/GameAPI";
+import { AuthContext } from "@/common/AuthContext";
+import { getGameVariantString, validateGameVariant } from "@/common/Utils";
+import alert from "@/common/AlertDialog";
+import confirmDialog from "@/common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
 import { gameRoundString, isGameEnd } from "./common/constants";
-import { baseUrl } from "../api/APIUtils";
+import { baseUrl } from "@/api/APIUtils";
 import { Button, Stack, Container } from "@mui/material";
 
 const Game: FC = <T extends GameVariant>() => {

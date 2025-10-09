@@ -1,9 +1,9 @@
 import React, { FC, useContext, useState } from "react";
 import { Button, TextField, Stack, Autocomplete } from "@mui/material";
-import { AuthContext } from "../common/AuthContext";
-import { setChomboAPI } from "../api/GameAPI";
-import { usePlayers } from "../hooks/GameHooks";
-import type { GameVariant } from "../types";
+import { AuthContext } from "@/common/AuthContext";
+import { setChomboAPI } from "@/api/GameAPI";
+import { usePlayers } from "@/hooks/GameHooks";
+import type { GameVariant } from "@/types";
 
 const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Riichi", value: "jp" },

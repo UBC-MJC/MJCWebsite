@@ -1,7 +1,7 @@
-import { isJapaneseGameEnd } from "../jp/controller/JapaneseRound";
-import { isHongKongGameEnd } from "../hk/controller/HongKongRound";
-import { mapWindToCharacter } from "../../common/Utils";
-import { getRowString } from "../jp/legacy/LegacyJapaneseGameTable";
+import { isJapaneseGameEnd } from "@/game/jp/controller/JapaneseRound";
+import { isHongKongGameEnd } from "@/game/hk/controller/HongKongRound";
+import { mapWindToCharacter } from "@/common/Utils";
+import { getRowString } from "@/game/jp/legacy/LegacyJapaneseGameTable";
 import type {
     GameVariant,
     Game,
@@ -15,7 +15,7 @@ import type {
     OptionsType,
     Season,
     LeaderboardType,
-} from "../../types";
+} from "@/types";
 
 enum Wind {
     EAST = "EAST",

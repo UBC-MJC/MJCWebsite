@@ -1,13 +1,13 @@
 import React, { FC, useContext } from "react";
-import { AuthContext } from "../common/AuthContext";
+import { AuthContext } from "@/common/AuthContext";
 import { AxiosError } from "axios";
-import { makeDummyAdminsAPI, recalcSeasonAPI, removeQualificationAPI } from "../api/AdminAPI";
+import { makeDummyAdminsAPI, recalcSeasonAPI, removeQualificationAPI } from "@/api/AdminAPI";
 import {
     useDeletePlayerMutation,
     useSavePlayerMutation,
     useAdminPlayers,
-} from "../hooks/AdminHooks";
-import type { Player } from "../types";
+} from "@/hooks/AdminHooks";
+import type { Player } from "@/types";
 import {
     Button,
     Dialog,

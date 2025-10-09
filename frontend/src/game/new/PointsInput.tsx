@@ -1,8 +1,8 @@
 import React, { FC } from "react";
-import { japanesePointsWheel } from "../../common/Utils";
+import { japanesePointsWheel } from "@/common/Utils";
 import CustomizedWheelPicker from "./CustomizedWheelPicker";
 import { PickerData } from "react-simple-wheel-picker";
-import type { GameVariant, JapaneseHandInput, HongKongHandInput } from "../../types";
+import type { GameVariant, JapaneseHandInput, HongKongHandInput } from "@/types";
 
 interface PointsInputProps {
     gameVariant: GameVariant;

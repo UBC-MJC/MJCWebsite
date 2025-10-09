@@ -1,15 +1,15 @@
 import React, { useCallback, useState } from "react";
-import { getGamesAPI } from "../api/GameAPI";
+import { getGamesAPI } from "@/api/GameAPI";
 import { AxiosError } from "axios";
 import { Card, Col, Container, Pagination, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import alert from "../common/AlertDialog";
+import alert from "@/common/AlertDialog";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { mapPlayerNameToOption, mapSeasonToOption } from "./common/constants";
-import { useSeasons } from "../hooks/AdminHooks";
-import { usePlayers } from "../hooks/GameHooks";
+import { useSeasons } from "@/hooks/AdminHooks";
+import { usePlayers } from "@/hooks/GameHooks";
 import { Autocomplete, Button, TextField } from "@mui/material";
-import type { GameVariant, Season, Game } from "../types";
+import type { GameVariant, Season, Game } from "@/types";
 
 const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Riichi", value: "jp" },

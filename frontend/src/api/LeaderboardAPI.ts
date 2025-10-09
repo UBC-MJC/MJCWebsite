@@ -1,6 +1,6 @@
 import axios from "axios";
 import { baseUrl } from "./APIUtils";
-import type { Season, GameType, LeaderboardType } from "../types";
+import type { Season, GameType, LeaderboardType } from "@/types";
 
 const getCurrentSeason = async () => {
     return axios.get<Season>(baseUrl + "/seasons/current");

@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import riichiStick from "../../assets/riichiStick.png";
+import riichiStick from "@/assets/riichiStick.png";
 import { Box, Stack } from "@mui/material";
 
 export const Footer: FC<{

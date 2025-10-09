@@ -1,4 +1,4 @@
-import type { HongKongTransaction } from "../../../types";
+import type { HongKongTransaction } from "@/types";
 
 const validateHongKongRound = (transactions: HongKongTransaction[]) => {
     if (transactions.length === 0) {

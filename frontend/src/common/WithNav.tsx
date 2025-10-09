@@ -1,7 +1,7 @@
 import { FC, Suspense } from "react";
 import { Outlet } from "react-router";
-import NavBar from "./NavBar";
-import LoadingFallback from "./LoadingFallback";
+import NavBar from "@/common/NavBar";
+import LoadingFallback from "@/common/LoadingFallback";
 
 const WithNav: FC = () => {
     return (

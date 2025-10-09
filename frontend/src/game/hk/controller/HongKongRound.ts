@@ -5,15 +5,15 @@ import {
     HongKongTransactionType,
     NUM_PLAYERS,
     Wind,
-} from "../../common/constants";
+} from "@/game/common/constants";
 
-import { range } from "../../../common/Utils";
+import { range } from "@/common/Utils";
 import type {
     HongKongRound,
     PartialHongKongRound,
     HongKongTransaction,
     HongKongHandInput,
-} from "../../../types";
+} from "@/types";
 
 const createHongKongRoundRequest = (
     roundType: HongKongTransactionType,

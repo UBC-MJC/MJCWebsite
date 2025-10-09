@@ -1,14 +1,14 @@
 import React, { FC, useContext, useState } from "react";
-import { createGameAPI } from "../api/GameAPI";
+import { createGameAPI } from "@/api/GameAPI";
 import { Col, Container, Row } from "react-bootstrap";
 import { AxiosError } from "axios";
-import { AuthContext } from "../common/AuthContext";
-import { withPlayerCondition } from "../common/withPlayerCondition";
+import { AuthContext } from "@/common/AuthContext";
+import { withPlayerCondition } from "@/common/withPlayerCondition";
 import { useNavigate } from "react-router-dom";
-import { getGameVariantString } from "../common/Utils";
-import { usePlayers } from "../hooks/GameHooks";
+import { getGameVariantString } from "@/common/Utils";
+import { usePlayers } from "@/hooks/GameHooks";
 import { Autocomplete, Button, TextField } from "@mui/material";
-import type { GameCreationProp, Player, PlayerNamesDataType } from "../types";
+import type { GameCreationProp, Player, PlayerNamesDataType } from "@/types";
 
 const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const navigate = useNavigate();

@@ -1,6 +1,6 @@
-import type { JapaneseTransaction } from "../../../types";
-import { getEmptyScoreDelta, JapaneseTransactionType, NUM_PLAYERS } from "../../common/constants";
-import { range } from "../../../common/Utils";
+import type { JapaneseTransaction } from "@/types";
+import { getEmptyScoreDelta, JapaneseTransactionType, NUM_PLAYERS } from "@/game/common/constants";
+import { range } from "@/common/Utils";
 
 export function containingAny(
     transactions: JapaneseTransaction[],

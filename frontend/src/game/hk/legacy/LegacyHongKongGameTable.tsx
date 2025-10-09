@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { mapWindToCharacter } from "../../../common/Utils";
+import { mapWindToCharacter } from "@/common/Utils";
 import { GridColDef } from "@mui/x-data-grid";
-import TableDisplay from "../../common/TableDisplay";
-import type { HongKongRound, GamePlayer } from "../../../types";
+import TableDisplay from "@/game/common/TableDisplay";
+import type { HongKongRound, GamePlayer } from "@/types";
 interface LegacyGameTableProps {
     rounds: ModifiedHongKongRound[];
     players: GamePlayer[];

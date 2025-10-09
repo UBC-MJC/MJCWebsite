@@ -1,8 +1,8 @@
 import React, { FC, useState } from "react";
 import { Card, Container, Form, Alert } from "react-bootstrap";
 import { AxiosError } from "axios";
-import { submitPasswordResetAPI } from "../api/AccountAPI";
-import alert from "../common/AlertDialog";
+import { submitPasswordResetAPI } from "@/api/AccountAPI";
+import alert from "@/common/AlertDialog";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 

@@ -1,10 +1,10 @@
 import React, { FC, useState } from "react";
-import { getGameVariantString } from "../common/Utils";
-import { useSeasons } from "../hooks/AdminHooks";
-import { usePlayerLeaderboard } from "../hooks/LeaderboardHooks";
-import { mapSeasonToOption } from "../game/common/constants";
+import { getGameVariantString } from "@/common/Utils";
+import { useSeasons } from "@/hooks/AdminHooks";
+import { usePlayerLeaderboard } from "@/hooks/LeaderboardHooks";
+import { mapSeasonToOption } from "@/game/common/constants";
 import { GridColDef, DataGrid } from "@mui/x-data-grid";
-import type { GameCreationProp, Season, GameVariant, GameType, LeaderboardType } from "../types";
+import type { GameCreationProp, Season, GameVariant, GameType, LeaderboardType } from "@/types";
 import {
     Autocomplete,
     Box,
@@ -14,7 +14,7 @@ import {
     Stack,
     TextField,
 } from "@mui/material";
-import { DisplayStatistics } from "../statistics/Statistics";
+import { DisplayStatistics } from "@/statistics/Statistics";
 
 const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const [season, setSeason] = useState<Season | undefined>();

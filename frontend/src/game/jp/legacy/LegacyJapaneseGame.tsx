@@ -6,7 +6,13 @@ import type {
     JapaneseTransaction,
     Transaction,
     Game,
-} from "../../../types";
+} from "@/types";
+import {
+    getRiichiStickCount,
+    getScoresWithPlayers,
+    japanesePointsWheel,
+} from "@/common/Utils";
+import alert from "@/common/AlertDialog";
 import {
     isGameEnd,
     JapaneseActions,
@@ -15,14 +21,11 @@ import {
     JP_SINGLE_ACTION_BUTTONS,
     JP_TRANSACTION_TYPE_BUTTONS,
     JP_UNDEFINED_HAND,
-} from "../../common/constants";
-import PlayerButtonRow from "../../common/PlayerButtonRow";
-import {
-    getRiichiStickCount,
-    getScoresWithPlayers,
-    japanesePointsWheel,
-} from "../../../common/Utils";
-import { LegacyGameProps } from "../../Game";
+} from "@/game/common/constants";
+import PlayerButtonRow from "@/game/common/PlayerButtonRow";
+import PointsInput from "@/game/common/PointsInput";
+import { Footer } from "@/game/common/Footer";
+import { LegacyGameProps } from "@/game/Game";
 import {
     addDealIn,
     addInRoundRyuukyoku,
@@ -34,10 +37,7 @@ import {
     generateOverallScoreDelta,
 } from "../controller/JapaneseRound";
 import { validateJapaneseRound, validateTransaction } from "../controller/ValidateJapaneseRound";
-import alert from "../../../common/AlertDialog";
-import PointsInput from "../../common/PointsInput";
 import { Button, ToggleButton, FormControlLabel, Switch, Stack, Grid, Box } from "@mui/material";
-import { Footer } from "../../common/Footer";
 
 function getTransaction(
     game: Game<"jp">,

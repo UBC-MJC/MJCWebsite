@@ -1,11 +1,11 @@
 import React, { FC, useContext, useState } from "react";
-import type { Setting } from "../types";
-import { AuthContext } from "../common/AuthContext";
+import type { Setting } from "@/types";
+import { AuthContext } from "@/common/AuthContext";
 import { Container, Col, Row, Modal, Form } from "react-bootstrap";
-import { updateSettingsAPI, updateUsernameAPI } from "../api/AccountAPI";
+import { updateSettingsAPI, updateUsernameAPI } from "@/api/AccountAPI";
 import { AxiosError } from "axios";
 import { ButtonGroup, Button, FormControlLabel, Switch } from "@mui/material";
-import { ColorModeContext } from "../App";
+import { ColorModeContext } from "@/App";
 
 const Settings: FC = () => {
     const { player, reloadPlayer } = useContext(AuthContext);
