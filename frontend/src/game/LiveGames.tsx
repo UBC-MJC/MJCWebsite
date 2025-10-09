@@ -1,14 +1,13 @@
 import React, { FC } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import { getGameVariantString } from "@/common/Utils";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { gameRoundString } from "./common/constants";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { useLiveGames } from "@/hooks/GameHooks";
 import type { GameCreationProp, Game } from "@/types";
 
 export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
-    const navigate = useNavigate();
     const { isPending, error, data: liveGames } = useLiveGames(gameVariant);
 
     const getCardHeader = (game: Game<typeof gameVariant>) => {
@@ -20,9 +19,6 @@ export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
         );
     };
 
-    const navigateToGame = (gameId: string) => {
-        navigate(`/games/${gameVariant}/${gameId}`);
-    };
     if (isPending) {
         return <>Loading...</>;
     }
@@ -36,14 +32,19 @@ export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
                 <Row>
                     {liveGames.map((game, idx) => (
                         <Col key={idx} className="text-center my-2" xs={12} lg={6}>
-                            <Card className="game-card" onClick={() => navigateToGame(game.id)}>
-                                <Card.Header style={{ fontSize: 18 }}>
-                                    {getCardHeader(game)}
-                                </Card.Header>
-                                <Card.Body>
-                                    <GameSummaryBody game={game} gameVariant={gameVariant} />
-                                </Card.Body>
-                            </Card>
+                            <Link
+                                to={`/games/${gameVariant}/${game.id}`}
+                                style={{ textDecoration: "none", color: "inherit" }}
+                            >
+                                <Card className="game-card" style={{ cursor: "pointer" }}>
+                                    <Card.Header style={{ fontSize: 18 }}>
+                                        {getCardHeader(game)}
+                                    </Card.Header>
+                                    <Card.Body>
+                                        <GameSummaryBody game={game} gameVariant={gameVariant} />
+                                    </Card.Body>
+                                </Card>
+                            </Link>
                         </Col>
                     ))}
                 </Row>
