@@ -53,21 +53,51 @@ export const ColorModeContext = React.createContext({
     },
 });
 
+const COLOR_MODE_STORAGE_KEY = "colorMode";
+
 const App: React.FC = () => {
     const query = useQuery();
     const systemMode = useMediaQuery("(prefers-color-scheme: dark)") ? "dark" : "light";
     const root = window.document.documentElement;
-    const [mode, setMode] = React.useState<"light" | "dark">(systemMode);
-    root.setAttribute("data-bs-theme", mode);
+
+    // Initialize mode from localStorage, or fall back to system preference
+    const getInitialMode = (): "light" | "dark" => {
+        try {
+            const stored = localStorage.getItem(COLOR_MODE_STORAGE_KEY);
+            if (stored === "light" || stored === "dark") {
+                return stored;
+            }
+            if (stored === "system") {
+                return systemMode;
+            }
+        } catch (error) {
+            console.error("Error reading color mode from localStorage:", error);
+        }
+        return systemMode;
+    };
+
+    const [mode, setMode] = React.useState<"light" | "dark">(getInitialMode);
+
+    // Set initial theme attribute
+    React.useEffect(() => {
+        root.setAttribute("data-bs-theme", mode);
+    }, [mode, root]);
+
     const colorMode = {
-        toggleColorMode: (mode: "light" | "dark" | "system") => {
-            if (mode === "system") {
+        toggleColorMode: (newMode: "light" | "dark" | "system") => {
+            try {
+                localStorage.setItem(COLOR_MODE_STORAGE_KEY, newMode);
+            } catch (error) {
+                console.error("Error saving color mode to localStorage:", error);
+            }
+
+            if (newMode === "system") {
                 setMode(systemMode);
                 root.setAttribute("data-bs-theme", systemMode);
                 return;
             }
-            root.setAttribute("data-bs-theme", mode);
-            setMode(mode);
+            root.setAttribute("data-bs-theme", newMode);
+            setMode(newMode);
         },
     };
     const theme = createTheme(
