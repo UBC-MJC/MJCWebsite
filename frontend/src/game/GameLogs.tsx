@@ -1,14 +1,31 @@
 import React, { useCallback, useState } from "react";
 import { getGamesAPI } from "@/api/GameAPI";
 import { AxiosError } from "axios";
-import { Card, Col, Container, Pagination, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import {
+    Box,
+    Card,
+    CardContent,
+    Container,
+    Grid,
+    Typography,
+    Autocomplete,
+    Button,
+    TextField,
+    Chip,
+    CircularProgress,
+    Pagination,
+    Stack,
+} from "@mui/material";
+import { Link } from "react-router-dom";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import PeopleIcon from "@mui/icons-material/People";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import alert from "@/common/AlertDialog";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { mapPlayerNameToOption, mapSeasonToOption } from "./common/constants";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayers } from "@/hooks/GameHooks";
-import { Autocomplete, Button, TextField } from "@mui/material";
+import { getGameVariantString } from "@/common/Utils";
 import type { GameVariant, Season, Game } from "@/types";
 
 const gameVariants: { label: string; value: GameVariant }[] = [
@@ -19,7 +36,6 @@ const gameVariants: { label: string; value: GameVariant }[] = [
 const MAX_GAMES_PER_PAGE = 12;
 
 const GameLogs = <T extends GameVariant>() => {
-    const navigate = useNavigate();
     const [queryGameVariant, setQueryGameVariant] = useState<GameVariant>(gameVariants[0].value);
     const [season, setSeason] = useState<Season | undefined>();
     const [queryPlayers, setQueryPlayers] = useState<string[]>([]);
@@ -55,10 +71,6 @@ const GameLogs = <T extends GameVariant>() => {
         }
     }, [queryGameVariant, season, queryPlayers]);
 
-    const navigateToGame = (gameId: string) => {
-        navigate(`/games/${queryGameVariant}/${gameId}`);
-    };
-
     const getPaginatedGames = () => {
         const startIdx = (pagination - 1) * MAX_GAMES_PER_PAGE;
         const endIdx = Math.min(pagination * MAX_GAMES_PER_PAGE, games.length);
@@ -66,128 +78,190 @@ const GameLogs = <T extends GameVariant>() => {
         return games.slice(startIdx, endIdx);
     };
 
-    const getPagination = () => {
-        if (games.length <= MAX_GAMES_PER_PAGE) {
-            return null;
-        }
-
-        const numPages = Math.ceil(games.length / MAX_GAMES_PER_PAGE);
-
-        return (
-            <Pagination className="justify-content-center" size="lg">
-                <Pagination.Prev
-                    disabled={pagination === 1}
-                    onClick={() => setPagination(pagination - 1)}
-                />
-                {pagination !== 1 && (
-                    <Pagination.Item onClick={() => setPagination(1)}>{1}</Pagination.Item>
-                )}
-                {pagination > 2 && <Pagination.Ellipsis disabled />}
-
-                <Pagination.Item active>{pagination}</Pagination.Item>
-
-                {pagination < numPages - 1 && <Pagination.Ellipsis disabled />}
-                {pagination !== numPages && (
-                    <Pagination.Item onClick={() => setPagination(numPages)}>
-                        {numPages}
-                    </Pagination.Item>
-                )}
-                <Pagination.Next
-                    disabled={pagination === numPages}
-                    onClick={() => setPagination(pagination + 1)}
-                />
-            </Pagination>
-        );
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
     };
+
+    const getWinner = (game: Game<T>) => {
+        const scores = game.players
+            .map((player) => ({
+                username: player.username,
+                score: player.score,
+            }))
+            .sort((a, b) => b.score - a.score);
+        return scores[0];
+    };
+
     if (!seasonsResult.isSuccess || !playersResult.isSuccess) {
-        return <>Loading ...</>;
+        return (
+            <Container maxWidth="lg" sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
+                <CircularProgress />
+            </Container>
+        );
     }
+
     const seasonsOptions = mapSeasonToOption(seasonsResult.data);
     const playersOptions = mapPlayerNameToOption(playersResult.data);
+    const numPages = Math.ceil(games.length / MAX_GAMES_PER_PAGE);
 
     return (
-        <>
-            <Container>
-                <h1 className="my-4">Game Logs</h1>
-                <Row>
-                    <Col xs={12} lg={4} className="mb-4">
-                        <h3>Game Variant</h3>
-                        <div className="text-start">
-                            <Autocomplete
-                                isOptionEqualToValue={(option, value) =>
-                                    option.label === value.label
-                                }
-                                options={gameVariants}
-                                defaultValue={gameVariants[0]}
-                                onChange={(event, value) => setQueryGameVariant(value!.value)}
-                                renderInput={(params) => (
-                                    <TextField {...params} placeholder="Choose a variant" />
-                                )}
-                            />
-                        </div>
-                    </Col>
-                    <Col xs={12} lg={4} className="mb-4">
-                        <h3>Season</h3>
-                        <div className="text-start">
-                            <Autocomplete
-                                isOptionEqualToValue={(option, value) =>
-                                    option.label === value.label
-                                }
-                                options={seasonsOptions}
-                                onChange={(event, value) => setSeason(value!.value)}
-                                renderInput={(params) => (
-                                    <TextField {...params} placeholder="Default: this season" />
-                                )}
-                            />
-                        </div>
-                    </Col>
-                    <Col xs={12} lg={4} className="mb-4">
-                        <h3>Players</h3>
-                        <div className="text-start">
-                            <Autocomplete
-                                isOptionEqualToValue={(option, value) =>
-                                    option.label === value.label
-                                }
-                                options={playersOptions}
-                                multiple
-                                disableCloseOnSelect
-                                onChange={(event, value) =>
-                                    setQueryPlayers(value!.map((player) => player.value))
-                                }
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        placeholder="Leave blank for all players"
-                                    />
-                                )}
-                            />
-                        </div>
-                    </Col>
-                </Row>
-                <Button
-                    className="my-2 mx-auto"
-                    variant={"contained"}
-                    disabled={disableQueryButton()}
-                    onClick={getGames}
-                >
-                    Search Games
-                </Button>
-            </Container>
-            <Container>
-                <Row>
-                    {getPaginatedGames().map((game, idx) => (
-                        <Col key={idx} className="text-center my-2" xs={12}>
-                            <Card className="game-card" onClick={() => navigateToGame(game.id)}>
-                                <Card.Body>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+            <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 600}}>
+                Game Logs
+            </Typography>
+
+            {/* Search Filters */}
+            <Box
+                sx={{
+                    mb: 4,
+                    p: 3,
+                    bgcolor: "background.paper",
+                    borderRadius: 2,
+                    boxShadow: 1,
+                }}
+            >
+                <Grid container spacing={3}>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                        <Typography variant="h6" gutterBottom>
+                            Game Variant
+                        </Typography>
+                        <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.label === value.label}
+                            options={gameVariants}
+                            defaultValue={gameVariants[0]}
+                            onChange={(event, value) => setQueryGameVariant(value!.value)}
+                            renderInput={(params) => (
+                                <TextField {...params} placeholder="Choose a variant" />
+                            )}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                        <Typography variant="h6" gutterBottom>
+                            Season
+                        </Typography>
+                        <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.label === value.label}
+                            options={seasonsOptions}
+                            onChange={(event, value) => setSeason(value!.value)}
+                            renderInput={(params) => (
+                                <TextField {...params} placeholder="Default: this season" />
+                            )}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                        <Typography variant="h6" gutterBottom>
+                            Players
+                        </Typography>
+                        <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.label === value.label}
+                            options={playersOptions}
+                            multiple
+                            disableCloseOnSelect
+                            onChange={(event, value) =>
+                                setQueryPlayers(value!.map((player) => player.value))
+                            }
+                            renderInput={(params) => (
+                                <TextField {...params} placeholder="Leave blank for all players" />
+                            )}
+                        />
+                    </Grid>
+                </Grid>
+                <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
+                    <Button
+                        variant="contained"
+                        disabled={disableQueryButton()}
+                        onClick={getGames}
+                        size="large"
+                    >
+                        {loading ? <CircularProgress size={24} /> : "Search Games"}
+                    </Button>
+                </Box>
+            </Box>
+
+            {/* Game Cards */}
+            <Grid container spacing={3}>
+                {getPaginatedGames().map((game) => (
+                    <Grid size={{ xs: 12, md: 6 }} key={game.id}>
+                        <Link
+                            to={`/games/${queryGameVariant}/${game.id}`}
+                            style={{
+                                textDecoration: "none",
+                                width: "100%",
+                                display: "block",
+                            }}
+                        >
+                            <Card
+                                sx={{
+                                    height: "100%",
+                                    transition: "all 0.3s ease",
+                                    "&:hover": {
+                                        transform: "translateY(-4px)",
+                                        boxShadow: 6,
+                                    },
+                                }}
+                            >
+                                <CardContent>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "flex-start",
+                                            mb: 2,
+                                            flexWrap: "wrap",
+                                            gap: 1,
+                                        }}
+                                    >
+                                        <Box>
+                                            <Typography variant="h6" component="div" sx={{ textAlign: 'left' }}>
+                                                {getGameVariantString(queryGameVariant, game.type)}{" "}
+                                                #{game.id}
+                                            </Typography>
+                                            <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                                                <Chip
+                                                    icon={<CalendarTodayIcon />}
+                                                    label={formatDate(game.createdAt)}
+                                                    size="small"
+                                                    variant="outlined"
+                                                />
+                                                <Chip
+                                                    icon={<PeopleIcon />}
+                                                    label={`${game.players.length} Players`}
+                                                    size="small"
+                                                    variant="outlined"
+                                                />
+                                            </Box>
+                                        </Box>
+                                    </Box>
                                     <GameSummaryBody game={game} gameVariant={queryGameVariant} />
-                                </Card.Body>
+                                </CardContent>
                             </Card>
-                        </Col>
-                    ))}
-                </Row>
-                <Row className="my-2">{getPagination()}</Row>
-            </Container>
-        </>
+                        </Link>
+                    </Grid>
+                ))}
+            </Grid>
+
+            {/* Pagination */}
+            {games.length > MAX_GAMES_PER_PAGE && (
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                    <Pagination
+                        count={numPages}
+                        page={pagination}
+                        onChange={(event, page) => setPagination(page)}
+                        color="primary"
+                        size="large"
+                        showFirstButton
+                        showLastButton
+                    />
+                </Box>
+            )}
+        </Container>
     );
 };
 
