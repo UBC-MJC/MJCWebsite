@@ -10,7 +10,7 @@ const GameSummaryBody = <T extends GameVariant>({
     gameVariant: GameVariant;
 }) => {
     return (
-        <Grid container spacing={1}>
+        <Grid container spacing={1.5}>
             {getScoresWithPlayers(game, gameVariant)
                 .sort((a, b) => b.score - a.score)
                 .map((score, idx) => (
@@ -19,14 +19,30 @@ const GameSummaryBody = <T extends GameVariant>({
                             sx={{
                                 display: "flex",
                                 justifyContent: "space-between",
-                                py: 0.5,
-                                px: 1,
+                                py: 1,
+                                px: 1.5,
+                                bgcolor: idx === 0 ? "action.hover" : "background.default",
+                                borderRadius: 1,
+                                border: 1,
+                                borderColor: idx === 0 ? "primary.main" : "divider",
                             }}
                         >
-                            <Typography variant="body2">
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    fontWeight: idx === 0 ? 600 : 500,
+                                    color: "text.primary",
+                                }}
+                            >
                                 {mapIndextoPlace(idx)} - {score.username}
                             </Typography>
-                            <Typography variant="body2">
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    fontWeight: idx === 0 ? 600 : 500,
+                                    color: "text.primary",
+                                }}
+                            >
                                 {score.score}
                             </Typography>
                         </Box>
