@@ -1,4 +1,4 @@
-interface LeaderboardType {
+export interface LeaderboardType {
     id: string;
     username: string;
     elo: string;
@@ -6,32 +6,32 @@ interface LeaderboardType {
     chomboCount: number;
 }
 
-interface Setting {
+export interface Setting {
     legacyDisplayGame: boolean;
 }
 
-interface GamePlayer {
+export interface GamePlayer {
     id: string;
     username: string;
     trueWind: string;
     score: number;
 }
 
-type GameType = "RANKED" | "PLAY_OFF" | "TOURNEY" | "CASUAL";
+export type GameType = "RANKED" | "PLAY_OFF" | "TOURNEY" | "CASUAL";
 
-type GameVariant = "jp" | "hk";
+export type GameVariant = "jp" | "hk";
 
-interface GameCreationProp {
+export interface GameCreationProp {
     gameVariant: GameVariant;
     gameType: GameType;
 }
 
-interface LoginDataType {
+export interface LoginDataType {
     username: string;
     password: string;
 }
 
-interface RegisterDataType {
+export interface RegisterDataType {
     username: string;
     email: string;
     firstName: string;
@@ -39,20 +39,20 @@ interface RegisterDataType {
     password: string;
 }
 
-interface ResetPasswordDataType {
+export interface ResetPasswordDataType {
     email: string;
 }
 
-interface PlayerAPIDataType {
+export interface PlayerAPIDataType {
     player: Player;
 }
 
-interface PlayerNamesDataType {
+export interface PlayerNamesDataType {
     playerId: string;
     username: string;
 }
 
-interface Player {
+export interface Player {
     id: string;
     username: string;
     email: string;
@@ -65,16 +65,16 @@ interface Player {
     legacyDisplayGame: boolean;
 }
 
-interface Season {
+export interface Season {
     id: string;
     name: string;
     startDate: Date;
     endDate: Date;
 }
 
-type SeasonsAPIDataType = Season[];
+export type SeasonsAPIDataType = Season[];
 
-interface AuthContextType {
+export interface AuthContextType {
     player: Player | undefined;
     login: (loginData: LoginDataType) => Promise<void>;
     register: (registerData: RegisterDataType) => Promise<void>;
@@ -82,7 +82,7 @@ interface AuthContextType {
     reloadPlayer: () => Promise<void>;
 }
 
-interface Game<T extends GameVariant> {
+export interface Game<T extends GameVariant> {
     id: string;
     type: GameType;
     status: string;
@@ -94,26 +94,26 @@ interface Game<T extends GameVariant> {
     currentRound: PartialRoundByVariant<T>;
 }
 
-type RoundByVariant<T extends GameVariant> = T extends "jp" ? JapaneseRound : HongKongRound;
-type PartialRoundByVariant<T extends GameVariant> = T extends "jp"
+export type RoundByVariant<T extends GameVariant> = T extends "jp" ? JapaneseRound : HongKongRound;
+export type PartialRoundByVariant<T extends GameVariant> = T extends "jp"
     ? PartialJapaneseRound
     : PartialHongKongRound;
-type EloDeltaObject = Record<string, number>;
+export type EloDeltaObject = Record<string, number>;
 
-interface RoundType {
+export interface RoundType {
     name: string;
     value: string;
     selectors?: string[];
 }
 
-type PlayerActions = Record<string, string[]>;
+export type PlayerActions = Record<string, string[]>;
 
-interface RoundValue {
+export interface RoundValue {
     type: RoundType;
     playerActions: PlayerActions;
 }
 
-interface JapaneseRound {
+export interface JapaneseRound {
     roundNumber: number;
     roundWind: string;
     roundCount: number;
@@ -125,21 +125,21 @@ interface JapaneseRound {
     transactions: JapaneseTransaction[];
 }
 
-type PartialJapaneseRound = Pick<
+export type PartialJapaneseRound = Pick<
     JapaneseRound,
     "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount"
 >;
 
-interface JapaneseTransaction {
+export interface JapaneseTransaction {
     transactionType: JapaneseTransactionType;
     scoreDeltas: number[];
     hand?: JapaneseHandInput;
     paoPlayerIndex?: number;
 }
 
-type Transaction = JapaneseTransaction | HongKongTransaction;
+export type Transaction = JapaneseTransaction | HongKongTransaction;
 
-type JapaneseTransactionType =
+export type JapaneseTransactionType =
     | "DEAL_IN"
     | "SELF_DRAW"
     | "DEAL_IN_PAO"
@@ -147,13 +147,13 @@ type JapaneseTransactionType =
     | "NAGASHI_MANGAN"
     | "INROUND_RYUUKYOKU";
 
-interface JapaneseHandInput {
+export interface JapaneseHandInput {
     han: number;
     fu: number;
     dora: number;
 }
 
-interface HongKongRound {
+export interface HongKongRound {
     id?: string;
     roundNumber: number;
     roundWind: string;
@@ -161,30 +161,30 @@ interface HongKongRound {
     transactions: HongKongTransaction[];
 }
 
-type PartialHongKongRound = Pick<HongKongRound, "roundCount" | "roundNumber" | "roundWind">;
+export type PartialHongKongRound = Pick<HongKongRound, "roundCount" | "roundNumber" | "roundWind">;
 
-interface HongKongTransaction {
+export interface HongKongTransaction {
     id?: string;
     transactionType: HongKongTransactionType;
     scoreDeltas: number[];
     hand?: HongKongHandInput;
 }
 
-type HongKongHandInput = number;
+export type HongKongHandInput = number;
 
-type HongKongTransactionType =
+export type HongKongTransactionType =
     | "DEAL_IN"
     | "SELF_DRAW"
     | "DEAL_IN_PAO"
     | "SELF_DRAW_PAO"
     | "RESHUFFLE";
 
-interface OptionsType<T> {
+export interface OptionsType<T> {
     label: string;
     value: T;
 }
 
-interface StatisticsType {
+export interface StatisticsType {
     totalRounds: number;
     dealInCount: number;
     dealInPoint: number;

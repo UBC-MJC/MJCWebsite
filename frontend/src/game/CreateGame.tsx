@@ -8,10 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { getGameVariantString } from "../common/Utils";
 import { usePlayers } from "../hooks/GameHooks";
 import { Autocomplete, Button, TextField } from "@mui/material";
+import type { GameCreationProp, Player, PlayerNamesDataType } from "../types";
 
 const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const navigate = useNavigate();
-    const { player } = useContext(AuthContext);
 
     const [eastPlayer, setEastPlayer] = useState<PlayerNamesDataType | null>(null);
     const [southPlayer, setSouthPlayer] = useState<PlayerNamesDataType | null>(null);

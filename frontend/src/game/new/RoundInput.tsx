@@ -2,6 +2,7 @@ import { FC, useState } from "react";
 import { hongKongRoundLabels, japaneseRoundLabels } from "../../common/Utils";
 import { Col, Container, Row, ToggleButton } from "react-bootstrap";
 import RoundInputFigure from "./RoundInputFigure";
+import type { GameVariant, GamePlayer, RoundValue, RoundType } from "../../types";
 
 interface RoundInputProps {
     gameVariant: GameVariant;

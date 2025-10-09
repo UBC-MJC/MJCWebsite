@@ -4,7 +4,16 @@ import { Modal } from "react-bootstrap";
 import { confirmable, createConfirmation } from "react-confirm";
 import { Button } from "@mui/material";
 
-type ButtonVariant = "primary" | "secondary" | "success" | "danger" | "warning" | "info" | "light" | "dark" | "link";
+type ButtonVariant =
+    | "primary"
+    | "secondary"
+    | "success"
+    | "danger"
+    | "warning"
+    | "info"
+    | "light"
+    | "dark"
+    | "link";
 
 interface ConfirmationDialogProps {
     show?: boolean;

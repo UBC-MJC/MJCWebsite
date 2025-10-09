@@ -1,6 +1,7 @@
 import { PickerData } from "react-simple-wheel-picker";
 import { generateJapaneseCurrentScore } from "../game/jp/controller/JapaneseRound";
 import { generateHongKongCurrentScore } from "../game/hk/controller/HongKongRound";
+import type { GameVariant, GameType, Game, JapaneseRound, HongKongRound } from "../types";
 
 const japanesePoints: PickerData[] = Array.from({ length: 13 }, (_, k) => {
     return {

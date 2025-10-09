@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { gameRoundString } from "./common/constants";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { useLiveGames } from "../hooks/GameHooks";
+import type { GameCreationProp, Game } from "../types";
 
 export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
     const navigate = useNavigate();

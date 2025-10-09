@@ -1,6 +1,14 @@
 import { FC, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AxiosError } from "axios";
+import type {
+    GameVariant,
+    Game,
+    GamePlayer,
+    RoundByVariant,
+    JapaneseRound,
+    HongKongRound,
+} from "../types";
 import {
     addRoundAPI,
     deleteGameAPI,
@@ -25,7 +33,9 @@ const Game: FC = <T extends GameVariant>() => {
     const gameId = Number(id);
 
     // Validate and cast variant to GameVariant type
-    const variant = (validateGameVariant(variantParam) ? variantParam : undefined) as GameVariant | undefined;
+    const variant = (validateGameVariant(variantParam) ? variantParam : undefined) as
+        | GameVariant
+        | undefined;
 
     const [game, setGame] = useState<Game<T> | undefined>(undefined);
 
@@ -50,11 +60,7 @@ const Game: FC = <T extends GameVariant>() => {
 
     useEffect(() => {
         // Only setup EventSource for spectators (not the recorder) watching live games
-        if (
-            game &&
-            (!player || game.recordedById !== player.id) &&
-            game.status === "IN_PROGRESS"
-        ) {
+        if (game && (!player || game.recordedById !== player.id) && game.status === "IN_PROGRESS") {
             const eventSource = new EventSource(baseUrl + `/games/${variant}/${game.id}/live`);
 
             eventSource.onmessage = (event) => {

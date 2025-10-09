@@ -1,3 +1,5 @@
+import type { RoundValue, JapaneseHandInput, HongKongHandInput, GameVariant } from "../types";
+
 const validateRound = (
     roundValue: RoundValue,
     pointsValue: JapaneseHandInput | HongKongHandInput,

@@ -1,3 +1,4 @@
+import type { JapaneseTransaction, JapaneseHandInput } from "../../../types";
 import { findProminentPlayerRound, findProminentPlayers } from "./HonbaProcessing";
 import { JapaneseTransactionType } from "../../common/constants";
 

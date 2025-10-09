@@ -1,5 +1,12 @@
 import React, { useState } from "react";
 import LegacyJapaneseGameTable, { ModifiedJapaneseRound } from "./LegacyJapaneseGameTable";
+import type {
+    JapaneseRound,
+    JapaneseHandInput,
+    JapaneseTransaction,
+    Transaction,
+    Game,
+} from "../../../types";
 import {
     isGameEnd,
     JapaneseActions,

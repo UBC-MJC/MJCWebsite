@@ -1,6 +1,7 @@
 import React, { FC, useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
+import type { Player } from "../types";
 
 const withPlayerCondition = <T extends object>(
     Component: FC<T>,

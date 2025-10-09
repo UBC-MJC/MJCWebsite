@@ -5,6 +5,7 @@ import { usePlayers } from "../hooks/GameHooks";
 import { mapPlayerNameToOption, mapSeasonToOption } from "../game/common/constants";
 import { useStatistics } from "../hooks/LeaderboardHooks";
 import { Autocomplete, Container, Grid, Stack, TextField } from "@mui/material";
+import type { GameVariant, Season } from "../types";
 
 const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const [playerId, setPlayerId] = useState<string | undefined>(

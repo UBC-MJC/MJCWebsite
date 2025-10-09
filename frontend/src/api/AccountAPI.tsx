@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { PlayerAPIDataType, ResetPasswordDataType, Setting } from "../types";
 import { baseUrl, getAuthConfig } from "./APIUtils";
 
 const getCurrentPlayer = () => {

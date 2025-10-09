@@ -1,5 +1,6 @@
 import { Col, Row } from "react-bootstrap";
 import { getScoresWithPlayers } from "../../common/Utils";
+import type { Game, GameVariant } from "../../types";
 
 const GameSummaryBody = <T extends GameVariant>({
     game,

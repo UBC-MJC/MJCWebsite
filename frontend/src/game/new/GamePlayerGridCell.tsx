@@ -1,5 +1,6 @@
 import { FC, memo } from "react";
 import { Badge } from "react-bootstrap";
+import type { GamePlayer } from "../../types";
 
 interface GamePlayerGridCellProps {
     player: GamePlayer;

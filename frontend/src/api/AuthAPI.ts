@@ -1,5 +1,6 @@
 import axios from "axios";
 import { baseUrl } from "./APIUtils";
+import type { LoginDataType, RegisterDataType, PlayerAPIDataType } from "../types";
 
 const loginAPICall = (loginData: LoginDataType) => {
     return axios.post<PlayerAPIDataType>(baseUrl + "/login", loginData, {

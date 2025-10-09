@@ -3,6 +3,7 @@ import { Container, Form, Card } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { AuthContext } from "../common/AuthContext";
 import { Button } from "@mui/material";
+import type { LoginDataType } from "../types";
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState("");

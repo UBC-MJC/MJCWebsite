@@ -4,6 +4,7 @@ import { Container, Tabs, Tab } from "@mui/material";
 import AdminPlayers from "./AdminPlayers";
 import AdminSeason from "./AdminSeason";
 import AdminChombo from "./AdminChombo";
+import type { Player } from "../types";
 const AdminComponent: FC = () => {
     const [value, setValue] = React.useState(0);
 

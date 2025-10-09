@@ -9,6 +9,7 @@ import { mapPlayerNameToOption, mapSeasonToOption } from "./common/constants";
 import { useSeasons } from "../hooks/AdminHooks";
 import { usePlayers } from "../hooks/GameHooks";
 import { Autocomplete, Button, TextField } from "@mui/material";
+import type { GameVariant, Season, Game } from "../types";
 
 const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Riichi", value: "jp" },

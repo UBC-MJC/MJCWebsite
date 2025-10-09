@@ -4,6 +4,7 @@ import { useSeasons } from "../hooks/AdminHooks";
 import { usePlayerLeaderboard } from "../hooks/LeaderboardHooks";
 import { mapSeasonToOption } from "../game/common/constants";
 import { GridColDef, DataGrid } from "@mui/x-data-grid";
+import type { GameCreationProp, Season, GameVariant, GameType, LeaderboardType } from "../types";
 import {
     Autocomplete,
     Box,

@@ -1,5 +1,6 @@
 import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "../common/AuthContext";
+import type { Season } from "../types";
 import {
     Card,
     CardContent,

@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 import { Stack, ToggleButton } from "@mui/material";
+import type { GamePlayer } from "../../types";
 
 interface PlayerButtonRow<T extends string> {
     players: GamePlayer[];

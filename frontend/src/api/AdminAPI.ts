@@ -1,5 +1,6 @@
 import axios from "axios";
 import { baseUrl, getAuthConfig } from "./APIUtils";
+import type { Player, Season, SeasonsAPIDataType, GameVariant } from "../types";
 
 const getPlayersAdminAPI = async () => {
     return axios.get<{ players: Player[] }>(baseUrl + "/admin/players", getAuthConfig());
@@ -10,11 +11,7 @@ const deletePlayerAPI = async (playerId: string) => {
 };
 
 const updatePlayerAPI = async (player: Player) => {
-    return axios.put<Player>(
-        baseUrl + "/admin/players/" + player.id,
-        { player },
-        getAuthConfig(),
-    );
+    return axios.put<Player>(baseUrl + "/admin/players/" + player.id, { player }, getAuthConfig());
 };
 
 const getSeasonsAPI = async () => {
@@ -26,11 +23,7 @@ const createSeasonAdminAPI = async (season: Partial<Season>) => {
 };
 
 const updateSeasonAPI = async (season: Season) => {
-    return axios.put<Season>(
-        baseUrl + "/admin/seasons/" + season.id,
-        { season },
-        getAuthConfig(),
-    );
+    return axios.put<Season>(baseUrl + "/admin/seasons/" + season.id, { season }, getAuthConfig());
 };
 
 const makeDummyAdminsAPI = async () => {

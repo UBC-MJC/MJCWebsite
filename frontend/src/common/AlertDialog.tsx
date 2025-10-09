@@ -3,7 +3,16 @@ import PropTypes from "prop-types";
 import { Modal, Button } from "react-bootstrap";
 import { confirmable, createConfirmation } from "react-confirm";
 
-type ButtonVariant = "primary" | "secondary" | "success" | "danger" | "warning" | "info" | "light" | "dark" | "link";
+type ButtonVariant =
+    | "primary"
+    | "secondary"
+    | "success"
+    | "danger"
+    | "warning"
+    | "info"
+    | "light"
+    | "dark"
+    | "link";
 
 interface AlertProps {
     show?: boolean;

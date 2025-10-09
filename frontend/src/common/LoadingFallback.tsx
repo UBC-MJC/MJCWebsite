@@ -6,12 +6,7 @@ interface LoadingFallbackProps {
 }
 
 const LoadingFallback: FC<LoadingFallbackProps> = ({ minHeight = "50vh" }) => (
-    <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight={minHeight}
-    >
+    <Box display="flex" justifyContent="center" alignItems="center" minHeight={minHeight}>
         <CircularProgress />
     </Box>
 );

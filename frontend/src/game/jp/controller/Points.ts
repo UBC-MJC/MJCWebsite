@@ -1,3 +1,5 @@
+import type { JapaneseHandInput } from "../../../types";
+
 export const MANGAN_BASE_POINT = 2000;
 const manganValue = (points: number) => {
     let multiplier = 0;

@@ -2,6 +2,20 @@ import { isJapaneseGameEnd } from "../jp/controller/JapaneseRound";
 import { isHongKongGameEnd } from "../hk/controller/HongKongRound";
 import { mapWindToCharacter } from "../../common/Utils";
 import { getRowString } from "../jp/legacy/LegacyJapaneseGameTable";
+import type {
+    GameVariant,
+    Game,
+    PartialJapaneseRound,
+    JapaneseRound,
+    PartialHongKongRound,
+    HongKongRound,
+    JapaneseHandInput,
+    HongKongHandInput,
+    PlayerNamesDataType,
+    OptionsType,
+    Season,
+    LeaderboardType,
+} from "../../types";
 
 enum Wind {
     EAST = "EAST",

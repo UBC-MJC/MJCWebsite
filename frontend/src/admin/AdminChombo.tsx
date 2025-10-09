@@ -3,6 +3,7 @@ import { Button, TextField, Stack, Autocomplete } from "@mui/material";
 import { AuthContext } from "../common/AuthContext";
 import { setChomboAPI } from "../api/GameAPI";
 import { usePlayers } from "../hooks/GameHooks";
+import type { GameVariant } from "../types";
 
 const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Riichi", value: "jp" },
@@ -27,12 +28,7 @@ const AdminChombo: FC = () => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await setChomboAPI(
-                gameId,
-                gameVariant,
-                playerId,
-                chomboCount,
-            );
+            const response = await setChomboAPI(gameId, gameVariant, playerId, chomboCount);
             if (response.data.count === 0) {
                 alert("No chombo count updated!");
                 return;

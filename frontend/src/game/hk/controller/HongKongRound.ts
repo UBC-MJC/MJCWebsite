@@ -8,6 +8,12 @@ import {
 } from "../../common/constants";
 
 import { range } from "../../../common/Utils";
+import type {
+    HongKongRound,
+    PartialHongKongRound,
+    HongKongTransaction,
+    HongKongHandInput,
+} from "../../../types";
 
 const createHongKongRoundRequest = (
     roundType: HongKongTransactionType,

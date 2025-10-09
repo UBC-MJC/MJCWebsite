@@ -11,6 +11,13 @@ import {
 import { containingAny, findHeadbumpWinner, transformTransactions } from "./HonbaProcessing";
 
 import { range } from "../../../common/Utils";
+import type {
+    JapaneseRound,
+    PartialJapaneseRound,
+    JapaneseTransaction,
+    JapaneseHandInput,
+    Transaction,
+} from "../../../types";
 
 const createJapaneseRoundRequest = (
     currentRound: PartialJapaneseRound,

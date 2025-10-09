@@ -2,6 +2,7 @@ import { FC } from "react";
 import { Col, Container, Ratio, Row } from "react-bootstrap";
 import GamePlayerGridCell from "./GamePlayerGridCell";
 import riichiStick from "../../assets/riichiStick.png";
+import type { GamePlayer } from "../../types";
 
 interface RoundInputFigureProps {
     players: GamePlayer[];

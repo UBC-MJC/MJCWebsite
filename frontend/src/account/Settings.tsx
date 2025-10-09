@@ -1,4 +1,5 @@
 import React, { FC, useContext, useState } from "react";
+import type { Setting } from "../types";
 import { AuthContext } from "../common/AuthContext";
 import { Container, Col, Row, Modal, Form } from "react-bootstrap";
 import { updateSettingsAPI, updateUsernameAPI } from "../api/AccountAPI";

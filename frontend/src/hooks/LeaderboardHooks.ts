@@ -1,6 +1,7 @@
 import { skipToken, useQuery } from "@tanstack/react-query";
 import { getPlayerLeaderboard, getUserStatistics } from "../api/LeaderboardAPI";
 import { mapLeaderboardToOneDecimal } from "../game/common/constants";
+import type { GameVariant, GameType, Season } from "../types";
 
 export function usePlayerLeaderboard(
     gameVariant: GameVariant,
