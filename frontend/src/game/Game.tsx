@@ -95,7 +95,7 @@ const Game: FC = <T extends GameVariant>() => {
             "Are you sure you want to delete the previous round?",
             {
                 okText: "Delete",
-                okButtonStyle: "danger",
+                okButtonStyle: "error",
             },
         );
         if (!response) {
@@ -114,7 +114,7 @@ const Game: FC = <T extends GameVariant>() => {
     const handleDeleteGame = async () => {
         const response = await confirmDialog("Are you sure you want to delete this game?", {
             okText: "Delete",
-            okButtonStyle: "danger",
+            okButtonStyle: "error",
         });
         if (!response) {
             return;

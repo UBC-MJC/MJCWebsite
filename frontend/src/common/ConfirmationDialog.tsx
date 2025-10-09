@@ -1,19 +1,22 @@
 import React, { FC } from "react";
 import PropTypes from "prop-types";
-import { Modal } from "react-bootstrap";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    DialogContentText,
+    Button,
+} from "@mui/material";
 import { confirmable, createConfirmation } from "react-confirm";
-import { Button } from "@mui/material";
 
 type ButtonVariant =
     | "primary"
     | "secondary"
     | "success"
-    | "danger"
+    | "error"
     | "warning"
-    | "info"
-    | "light"
-    | "dark"
-    | "link";
+    | "info";
 
 interface ConfirmationDialogProps {
     show?: boolean;
@@ -35,21 +38,33 @@ const ConfirmationDialog: FC<ConfirmationDialogProps> = ({
     title,
     okText,
     cancelText,
+    okButtonStyle,
+    cancelButtonStyle,
 }) => {
-    const header = title ? (
-        <Modal.Header>
-            <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
-    ) : undefined;
     return (
-        <Modal size="sm" show={show} onHide={() => proceed?.(false)} backdrop="static" centered>
-            {header}
-            <Modal.Body>{confirmation}</Modal.Body>
-            <Modal.Footer>
-                <Button onClick={() => proceed?.(false)}>{cancelText}</Button>
-                <Button onClick={() => proceed?.(true)}>{okText}</Button>
-            </Modal.Footer>
-        </Modal>
+        <Dialog open={show || false} onClose={() => proceed?.(false)} maxWidth="xs" fullWidth>
+            {title && <DialogTitle>{title}</DialogTitle>}
+            <DialogContent>
+                <DialogContentText>{confirmation}</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="outlined"
+                    color={cancelButtonStyle}
+                    onClick={() => proceed?.(false)}
+                >
+                    {cancelText}
+                </Button>
+                <Button
+                    variant="contained"
+                    color={okButtonStyle}
+                    onClick={() => proceed?.(true)}
+                    autoFocus
+                >
+                    {okText}
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 };
 
@@ -63,23 +78,17 @@ ConfirmationDialog.propTypes = {
         "primary",
         "secondary",
         "success",
-        "danger",
+        "error",
         "warning",
         "info",
-        "light",
-        "dark",
-        "link",
     ]),
     cancelButtonStyle: PropTypes.oneOf([
         "primary",
         "secondary",
         "success",
-        "danger",
+        "error",
         "warning",
         "info",
-        "light",
-        "dark",
-        "link",
     ]),
     show: PropTypes.bool, // from confirmable.
     proceed: PropTypes.func, // from confirmable.

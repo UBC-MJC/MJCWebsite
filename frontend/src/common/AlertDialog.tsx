@@ -1,18 +1,22 @@
 import React, { FC } from "react";
 import PropTypes from "prop-types";
-import { Modal, Button } from "react-bootstrap";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    DialogContentText,
+    Button,
+} from "@mui/material";
 import { confirmable, createConfirmation } from "react-confirm";
 
 type ButtonVariant =
     | "primary"
     | "secondary"
     | "success"
-    | "danger"
+    | "error"
     | "warning"
-    | "info"
-    | "light"
-    | "dark"
-    | "link";
+    | "info";
 
 interface AlertProps {
     show?: boolean;
@@ -36,28 +40,29 @@ const Alert: FC<AlertProps> = ({
     okButtonStyle,
     ..._options
 }) => {
-    const header = title ? (
-        <Modal.Header>
-            <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
-    ) : undefined;
     return (
-        <Modal
-            size="sm"
-            show={show}
-            onHide={() => proceed?.()}
-            keyboard={true}
-            backdrop="static"
-            centered
+        <Dialog
+            open={show || false}
+            onClose={() => proceed?.()}
+            maxWidth="xs"
+            fullWidth
+            disableEscapeKeyDown={false}
         >
-            {header}
-            <Modal.Body>{confirmation}</Modal.Body>
-            <Modal.Footer>
-                <Button variant={okButtonStyle} onClick={() => proceed?.()}>
+            {title && <DialogTitle>{title}</DialogTitle>}
+            <DialogContent>
+                <DialogContentText>{confirmation}</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    color={okButtonStyle}
+                    onClick={() => proceed?.()}
+                    autoFocus
+                >
                     {okText}
                 </Button>
-            </Modal.Footer>
-        </Modal>
+            </DialogActions>
+        </Dialog>
     );
 };
 
@@ -70,12 +75,9 @@ Alert.propTypes = {
         "primary",
         "secondary",
         "success",
-        "danger",
+        "error",
         "warning",
         "info",
-        "light",
-        "dark",
-        "link",
     ]),
     show: PropTypes.bool, // from confirmable.
     proceed: PropTypes.func, // from confirmable.
