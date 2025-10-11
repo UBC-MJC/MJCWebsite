@@ -24,7 +24,7 @@ import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
 import { gameRoundString, isGameEnd } from "./common/constants";
 import { baseUrl } from "@/api/APIUtils";
-import { Button, Stack, Container } from "@mui/material";
+import { Button, Stack, Container, Typography, Box } from "@mui/material";
 
 const Game: FC = <T extends GameVariant>() => {
     const { id, variant: variantParam } = useParams();
@@ -203,29 +203,56 @@ const Game: FC = <T extends GameVariant>() => {
         );
     }
     return (
-        <Container sx={{ width: "100%", paddingBottom: "10rem", position: "relative" }}>
-            <h1>
-                {getGameVariantString(variant, game.type)} Game
-                {game.status === "IN_PROGRESS" && " - " + gameRoundString(game, variant)}
-            </h1>
+        <Container
+            maxWidth="lg"
+            sx={{ pt: { xs: 4 }, pb: { xs: 6, sm: 10 }, position: "relative" }}
+        >
+            <Box sx={{ mb: 3 }}>
+                <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
+                    {getGameVariantString(variant, game.type)}
+                </Typography>
+                {game.status === "IN_PROGRESS" && (
+                    <Typography
+                        variant="h6"
+                        component="h2"
+                        color="text.secondary"
+                        sx={{ fontWeight: 500 }}
+                    >
+                        {gameRoundString(game, variant)}
+                    </Typography>
+                )}
+            </Box>
             {getLegacyDisplayGame(game)}
             {game.status === "IN_PROGRESS" && (isRecording(game) || player?.admin) && (
                 <Stack
-                    direction="row"
+                    direction={{ xs: "column", sm: "row" }}
                     spacing={2}
-                    width="75%"
-                    margin="auto"
-                    justifyContent={"center"}
+                    sx={{
+                        width: { xs: "100%", sm: "90%", md: "75%" },
+                        margin: "auto",
+                        justifyContent: "center",
+                        pb: { xs: 18, sm: 16 },
+                        pt: 2,
+                        px: { xs: 2, sm: 0 },
+                    }}
                 >
                     <Button
                         variant="contained"
                         color="error"
                         disabled={game.rounds.length == 0}
                         onClick={() => handleDeleteRound()}
+                        fullWidth
+                        sx={{ minWidth: { sm: "140px" } }}
                     >
                         Delete last Hand
                     </Button>
-                    <Button variant="contained" color="error" onClick={() => handleDeleteGame()}>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => handleDeleteGame()}
+                        fullWidth
+                        sx={{ minWidth: { sm: "140px" } }}
+                    >
                         Delete Game
                     </Button>
                     <Button
@@ -233,6 +260,8 @@ const Game: FC = <T extends GameVariant>() => {
                         color="success"
                         disabled={!isGameEnd(game, variant)}
                         onClick={() => handleSubmitGame()}
+                        fullWidth
+                        sx={{ minWidth: { sm: "140px" } }}
                     >
                         Submit Game
                     </Button>

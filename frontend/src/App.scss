@@ -1,5 +1,5 @@
-@import "../node_modules/bootstrap/scss/functions";
-@import "../node_modules/bootstrap/scss/mixins/color-mode";
+// Bootstrap SCSS removed - migrated to MUI
+// Legacy color variables kept for reference
 $primary: #870E06;
 $secondary: #0B3413;
 $tertiary: #07092D;
@@ -72,16 +72,7 @@ $light: #F2F2F2;
   pointer-events: none;
 }
 
-.game-round-input .game-round-input-grid .row {
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-  min-height: 0;
-}
-
-.game-round-input .game-round-input-grid .row .col {
-  padding: 0;
-}
+// Grid styling now handled by MUI Grid component
 
 /*.game-round-input .ratio {*/
 /*    position: absolute;*/
@@ -124,4 +115,4 @@ $light: #F2F2F2;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
-@import "../node_modules/bootstrap";
+// Bootstrap import removed - fully migrated to MUI

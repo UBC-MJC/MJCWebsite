@@ -1,8 +1,7 @@
 import React, { useContext, useState } from "react";
-import { Container, Form, Card } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { AuthContext } from "@/common/AuthContext";
-import { Button } from "@mui/material";
+import { Button, Card, CardContent, Container, TextField, Box, Typography } from "@mui/material";
 import type { LoginDataType } from "@/types";
 
 const Login: React.FC = () => {
@@ -48,50 +47,52 @@ const Login: React.FC = () => {
     };
 
     return (
-        <Container className="my-5 d-flex flex-column" style={{ maxWidth: "540px" }}>
-            <Card body>
-                <h2>UBC Mahjong Club Login</h2>
-                <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicUsername" className="my-4">
-                        <Form.Control
+        <Container maxWidth="sm" sx={{ my: 5, display: "flex", flexDirection: "column" }}>
+            <Card>
+                <CardContent>
+                    <Typography variant="h4" component="h2" gutterBottom>
+                        UBC Mahjong Club Login
+                    </Typography>
+                    <Box component="form" noValidate onSubmit={handleSubmit}>
+                        <TextField
+                            fullWidth
                             required
+                            margin="normal"
                             placeholder="Username or Email"
                             value={username}
-                            isInvalid={!!errors.username}
+                            error={!!errors.username}
+                            helperText={errors.username}
                             onChange={(e) => setUsername(e.target.value)}
+                            sx={{ my: 2 }}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.username}
-                        </Form.Control.Feedback>
-                    </Form.Group>
 
-                    <Form.Group controlId="formBasicPassword" className="my-4">
-                        <Form.Control
+                        <TextField
+                            fullWidth
                             required
+                            margin="normal"
                             type="password"
                             placeholder="Password"
                             value={password}
-                            isInvalid={!!errors.password}
+                            error={!!errors.password}
+                            helperText={errors.password}
                             onChange={(e) => setPassword(e.target.value)}
+                            sx={{ my: 2 }}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.password}
-                        </Form.Control.Feedback>
-                    </Form.Group>
 
-                    <div className="d-grid my-4">
-                        <Button variant="contained" type="submit">
+                        <Button fullWidth variant="contained" type="submit" sx={{ my: 2 }}>
                             Login
                         </Button>
-                    </div>
 
-                    <div className="d-flex justify-content-between mx-2">
-                        <p>
-                            Not a member? <a href="/register">Register</a>
-                        </p>
-                        <a href="/request-password-reset">Forgot password?</a>
-                    </div>
-                </Form>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", mx: 1 }}>
+                            <Typography variant="body2">
+                                Not a member? <a href="/register">Register</a>
+                            </Typography>
+                            <Typography variant="body2">
+                                <a href="/request-password-reset">Forgot password?</a>
+                            </Typography>
+                        </Box>
+                    </Box>
+                </CardContent>
             </Card>
             <Button href="/">Back</Button>
         </Container>

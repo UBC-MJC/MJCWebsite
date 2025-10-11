@@ -1,12 +1,20 @@
-import { FC } from "react";
+import React, { FC } from "react";
+import { Box, Container, Typography } from "@mui/material";
 
 import logo from "../assets/MJC square.png";
 
 const Home: FC = () => {
     return (
-        <div className={"my-4"}>
-            <h1>Home</h1>
-            <img src={logo} className={"w-50"} alt={"Logo of UBC MJC"} />
+        <Container>
+            <Typography variant="h4" component="h1" gutterBottom sx={{ my: 4, fontWeight: 600 }}>
+                Home
+            </Typography>
+            <Box
+                component="img"
+                src={logo}
+                alt="UBC Mahjong Club Logo"
+                sx={{ width: "50%" }}
+            />
             <p>Club room location: Room 3206B, The Nest</p>
             <p>The University of British Columbia, Vancouver, BC</p>
             <p>
@@ -22,7 +30,7 @@ const Home: FC = () => {
                     <b>Terms and conditions</b>
                 </a>
             </p>
-        </div>
+        </Container>
     );
 };
 

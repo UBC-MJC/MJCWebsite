@@ -33,7 +33,17 @@ import {
     generateOverallScoreDelta,
 } from "../controller/JapaneseRound";
 import { validateJapaneseRound, validateTransaction } from "../controller/ValidateJapaneseRound";
-import { Button, ToggleButton, FormControlLabel, Switch, Stack, Grid, Box } from "@mui/material";
+import {
+    Button,
+    ToggleButton,
+    FormControlLabel,
+    Switch,
+    Stack,
+    Box,
+    Paper,
+    ToggleButtonGroup,
+    Divider,
+} from "@mui/material";
 
 function getTransaction(
     game: Game<"jp">,
@@ -285,49 +295,86 @@ const LegacyJapaneseGame = ({
 
     const getRecordingInterface = () => {
         return (
-            <>
-                <FormControlLabel
-                    control={
-                        <Switch onChange={(_e, checked) => setMultipleHandInputMode(checked)} />
-                    }
-                    label="Multiple Transactions"
-                />
-                <Grid container spacing={1}>
-                    {getActions().map((button, idx) => (
-                        <Grid key={idx}>
-                            <ToggleButton
-                                key={idx}
-                                value={button.value}
-                                id={button.name}
-                                selected={transactionType === button.value}
-                                onChange={(_event, value) => transactionTypeOnChange(value)}
-                            >
-                                {button.name}
-                            </ToggleButton>
-                        </Grid>
-                    ))}
-                </Grid>
-                <PlayerButtonRow
-                    players={players}
-                    label={"RIICHI"}
-                    labelPlayerIds={riichiList}
-                    onChange={riichiOnChange}
-                />
-                {getJapaneseLabels().map(([label, labelPlayerIds]) => (
-                    <PlayerButtonRow
-                        key={label}
-                        players={players}
-                        label={label}
-                        labelPlayerIds={labelPlayerIds}
-                        onChange={actionOnChange}
-                    />
-                ))}
-                {showPointInput(transactionType) && (
-                    <PointsInput pointsWheel={japanesePointsWheel} onChange={handOnChange} />
-                )}
+            <Paper
+                elevation={2}
+                sx={{
+                    p: 3,
+                    borderRadius: 2,
+                    bgcolor: "background.paper",
+                    width: "100%",
+                    maxWidth: "600px",
+                }}
+            >
+                <Stack spacing={3}>
+                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    onChange={(_e, checked) => setMultipleHandInputMode(checked)}
+                                />
+                            }
+                            label="Multiple Transactions"
+                        />
+                    </Box>
 
-                {getTransactionMatters()}
-            </>
+                    <Box>
+                        <ToggleButtonGroup
+                            exclusive
+                            value={transactionType}
+                            onChange={(_event, value) => value && transactionTypeOnChange(value)}
+                            sx={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: 1,
+                                "& .MuiToggleButton-root": {
+                                    flex: "1 1 auto",
+                                    minWidth: "120px",
+                                    borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
+                                    "&:hover": {
+                                        borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
+                                    },
+                                },
+                            }}
+                        >
+                            {getActions().map((button, idx) => (
+                                <ToggleButton key={idx} value={button.value} id={button.name}>
+                                    {button.name}
+                                </ToggleButton>
+                            ))}
+                        </ToggleButtonGroup>
+                    </Box>
+
+                    <Divider />
+
+                    <PlayerButtonRow
+                        players={players}
+                        label={"RIICHI"}
+                        labelPlayerIds={riichiList}
+                        onChange={riichiOnChange}
+                    />
+
+                    {getJapaneseLabels().map(([label, labelPlayerIds]) => (
+                        <PlayerButtonRow
+                            key={label}
+                            players={players}
+                            label={label}
+                            labelPlayerIds={labelPlayerIds}
+                            onChange={actionOnChange}
+                        />
+                    ))}
+
+                    {showPointInput(transactionType) && (
+                        <Box sx={{ my: 2 }}>
+                            <PointsInput
+                                pointsWheel={japanesePointsWheel}
+                                onChange={handOnChange}
+                            />
+                        </Box>
+                    )}
+
+                    {getTransactionMatters()}
+                </Stack>
+            </Paper>
         );
     };
     function getTransactionMatters() {
@@ -338,15 +385,23 @@ const LegacyJapaneseGame = ({
                     variant="contained"
                     disabled={gameOver}
                     onClick={submitSingleTransactionRound}
+                    fullWidth
+                    size="large"
+                    sx={{ mt: 2 }}
                 >
                     Submit Round
                 </Button>
             );
         }
         return (
-            <>
-                <Stack direction="row" spacing={1}>
-                    <Button variant="contained" disabled={gameOver} onClick={addTransaction}>
+            <Box>
+                <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+                    <Button
+                        variant="contained"
+                        disabled={gameOver}
+                        onClick={addTransaction}
+                        fullWidth
+                    >
                         Add Transaction
                     </Button>
                     <Button
@@ -354,37 +409,46 @@ const LegacyJapaneseGame = ({
                         variant="contained"
                         disabled={gameOver || transactions.length === 0}
                         onClick={deleteLastTransaction}
+                        fullWidth
                     >
-                        Delete Last Transaction
+                        Delete Last
                     </Button>
                 </Stack>
-                {getTransactionListRender(transactions)}
+                {transactions.length > 0 && (
+                    <Box sx={{ mb: 2 }}>{getTransactionListRender(transactions)}</Box>
+                )}
                 <Button
                     color="success"
                     variant="contained"
                     disabled={gameOver || transactions.length === 0}
                     onClick={submitAllTransactionRound}
+                    fullWidth
+                    size="large"
                 >
                     Submit Round
                 </Button>
-            </>
+            </Box>
         );
     }
 
+    const riichiStickCount = getRiichiStickCount(game.rounds, riichiList);
+
     return (
         <>
-            <Stack alignItems="center" spacing={2}>
+            <Stack alignItems="center" spacing={3} sx={{ pb: 2 }}>
                 {enableRecording && !gameOver && getRecordingInterface()}
-                <LegacyJapaneseGameTable
-                    rounds={mapRoundsToModifiedRounds(game.rounds)}
-                    players={players}
-                />
-                <Box paddingBottom={2} />
+
+                <Box sx={{ width: "100%" }}>
+                    <LegacyJapaneseGameTable
+                        rounds={mapRoundsToModifiedRounds(game.rounds)}
+                        players={players}
+                    />
+                </Box>
             </Stack>
             <Footer
                 scores={getScoresWithPlayers(game, "jp")}
                 riichiList={riichiList}
-                riichiStickCount={getRiichiStickCount(game.rounds, riichiList)}
+                riichiStickCount={riichiStickCount}
             />
         </>
     );

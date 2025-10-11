@@ -1,9 +1,8 @@
 import React, { FC, useState } from "react";
-import { Card, Container, Form } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { submitRequestPasswordResetAPI } from "@/api/AccountAPI";
 import alert from "@/common/AlertDialog";
-import { Button } from "@mui/material";
+import { Button, Card, CardContent, Container, TextField, Box, Typography } from "@mui/material";
 
 const RequestPasswordReset: FC = () => {
     const [username, setUsername] = useState("");
@@ -32,25 +31,34 @@ const RequestPasswordReset: FC = () => {
     };
 
     return (
-        <Container className="my-5 d-flex flex-column" style={{ maxWidth: "540px" }}>
-            <Card body>
-                <h2>Request Password Reset</h2>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicUsername" className="my-4">
-                        <Form.Control
+        <Container maxWidth="sm" sx={{ my: 5, display: "flex", flexDirection: "column" }}>
+            <Card>
+                <CardContent>
+                    <Typography variant="h4" component="h2" gutterBottom>
+                        Request Password Reset
+                    </Typography>
+                    <Box component="form" onSubmit={handleSubmit}>
+                        <TextField
+                            fullWidth
                             required
+                            margin="normal"
                             placeholder="Username Or Email"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            sx={{ my: 2 }}
                         />
-                    </Form.Group>
 
-                    <div className="d-grid my-4">
-                        <Button variant="contained" type="submit" disabled={isWaiting}>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            type="submit"
+                            disabled={isWaiting}
+                            sx={{ my: 2 }}
+                        >
                             Request Password Reset
                         </Button>
-                    </div>
-                </Form>
+                    </Box>
+                </CardContent>
             </Card>
             <Button href="/login">Back</Button>
         </Container>

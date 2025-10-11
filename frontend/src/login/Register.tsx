@@ -1,8 +1,16 @@
 import React, { useContext, useState } from "react";
-import { Card, Container, Form, Row, Col } from "react-bootstrap";
 import { AuthContext } from "@/common/AuthContext";
 import { AxiosError } from "axios";
-import { Button } from "@mui/material";
+import {
+    Button,
+    Card,
+    CardContent,
+    Container,
+    TextField,
+    Box,
+    Typography,
+    Grid,
+} from "@mui/material";
 import type { RegisterDataType } from "@/types";
 
 const isEmail = (email: string) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
@@ -63,88 +71,87 @@ const Register: React.FC = () => {
     };
 
     return (
-        <Container className="my-5 d-flex flex-column" style={{ maxWidth: "600px" }}>
-            <Card body>
-                <h2>UBC Mahjong Club Register</h2>
-                <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicUsername" className="my-4">
-                        <Form.Control
+        <Container maxWidth="sm" sx={{ my: 5, display: "flex", flexDirection: "column" }}>
+            <Card>
+                <CardContent>
+                    <Typography variant="h4" component="h2" gutterBottom>
+                        UBC Mahjong Club Register
+                    </Typography>
+                    <Box component="form" noValidate onSubmit={handleSubmit}>
+                        <TextField
+                            fullWidth
                             required
+                            margin="normal"
                             placeholder="Username"
                             value={username}
-                            isInvalid={!!errors.username}
+                            error={!!errors.username}
+                            helperText={errors.username}
                             onChange={(e) => setUsername(e.target.value)}
+                            sx={{ my: 2 }}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.username}
-                        </Form.Control.Feedback>
-                    </Form.Group>
 
-                    <Row className="my-4">
-                        <Form.Group as={Col} controlId="formBasicFirstName">
-                            <Form.Control
-                                type="text"
-                                placeholder="First name"
-                                value={firstName}
-                                isInvalid={!!errors.firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.firstName}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group as={Col} controlId="formBasicLastName">
-                            <Form.Control
-                                type="text"
-                                placeholder="Last name"
-                                value={lastName}
-                                isInvalid={!!errors.lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.lastName}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                    </Row>
+                        <Grid container spacing={2} sx={{ my: 2 }}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    type="text"
+                                    placeholder="First name"
+                                    value={firstName}
+                                    error={!!errors.firstName}
+                                    helperText={errors.firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    type="text"
+                                    placeholder="Last name"
+                                    value={lastName}
+                                    error={!!errors.lastName}
+                                    helperText={errors.lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                />
+                            </Grid>
+                        </Grid>
 
-                    <Form.Group controlId="formBasicEmail" className="my-4">
-                        <Form.Control
+                        <TextField
+                            fullWidth
                             required
+                            margin="normal"
                             type="email"
                             placeholder="Email"
                             value={email}
-                            isInvalid={!!errors.email}
+                            error={!!errors.email}
+                            helperText={errors.email}
                             onChange={(e) => setEmail(e.target.value)}
+                            sx={{ my: 2 }}
                         />
-                        <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
-                    </Form.Group>
 
-                    <Form.Group controlId="formBasicPassword" className="my-4">
-                        <Form.Control
+                        <TextField
+                            fullWidth
                             required
+                            margin="normal"
                             type="password"
                             placeholder="Password"
                             value={password}
-                            isInvalid={!!errors.password}
+                            error={!!errors.password}
+                            helperText={errors.password}
                             onChange={(e) => setPassword(e.target.value)}
+                            sx={{ my: 2 }}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.password}
-                        </Form.Control.Feedback>
-                    </Form.Group>
 
-                    <div className="d-grid my-4">
-                        <Button variant="contained" type="submit">
+                        <Button fullWidth variant="contained" type="submit" sx={{ my: 2 }}>
                             Sign Up
                         </Button>
-                    </div>
 
-                    <div className="d-flex justify-content-center mx-2">
-                        <p>
-                            Have an account? <a href="/login">Login</a>
-                        </p>
-                    </div>
-                </Form>
+                        <Box sx={{ display: "flex", justifyContent: "center", mx: 1 }}>
+                            <Typography variant="body2">
+                                Have an account? <a href="/login">Login</a>
+                            </Typography>
+                        </Box>
+                    </Box>
+                </CardContent>
             </Card>
             <Button href="/login">Back</Button>
         </Container>

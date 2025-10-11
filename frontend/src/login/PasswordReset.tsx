@@ -1,10 +1,18 @@
 import React, { FC, useState } from "react";
-import { Card, Container, Form, Alert } from "react-bootstrap";
 import { AxiosError } from "axios";
 import { submitPasswordResetAPI } from "@/api/AccountAPI";
 import alert from "@/common/AlertDialog";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
+import {
+    Button,
+    Card,
+    CardContent,
+    Container,
+    TextField,
+    Box,
+    Typography,
+    Alert,
+} from "@mui/material";
 
 interface PasswordResetProps {
     playerId: string | null;
@@ -52,47 +60,67 @@ const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
 
     if (!playerId || !token) {
         return (
-            <Container className="my-5 d-flex flex-column" style={{ maxWidth: "540px" }}>
-                <Card body>
-                    <h2>Invalid Request</h2>
-                    <p>The link you have requested has been expired.</p>
+            <Container maxWidth="sm" sx={{ my: 5, display: "flex", flexDirection: "column" }}>
+                <Card>
+                    <CardContent>
+                        <Typography variant="h4" component="h2" gutterBottom>
+                            Invalid Request
+                        </Typography>
+                        <Typography variant="body1">
+                            The link you have requested has been expired.
+                        </Typography>
+                    </CardContent>
                 </Card>
             </Container>
         );
     }
 
     return (
-        <Container className="my-5 d-flex flex-column" style={{ maxWidth: "540px" }}>
-            <Card body>
-                <h2>Reset Password</h2>
-                {error && <Alert variant="danger">{error}</Alert>}
-                <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicPassword" className="my-4">
-                        <Form.Control
+        <Container maxWidth="sm" sx={{ my: 5, display: "flex", flexDirection: "column" }}>
+            <Card>
+                <CardContent>
+                    <Typography variant="h4" component="h2" gutterBottom>
+                        Reset Password
+                    </Typography>
+                    {error && (
+                        <Alert severity="error" sx={{ my: 2 }}>
+                            {error}
+                        </Alert>
+                    )}
+                    <Box component="form" noValidate onSubmit={handleSubmit}>
+                        <TextField
+                            fullWidth
                             required
+                            margin="normal"
                             type="password"
                             placeholder="New Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            sx={{ my: 2 }}
                         />
-                    </Form.Group>
 
-                    <Form.Group controlId="formBasicConfirmPassword" className="my-4">
-                        <Form.Control
+                        <TextField
+                            fullWidth
                             required
+                            margin="normal"
                             type="password"
                             placeholder="Confirm Password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
+                            sx={{ my: 2 }}
                         />
-                    </Form.Group>
 
-                    <div className="d-grid my-4">
-                        <Button variant="contained" type="submit" disabled={isWaiting}>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            type="submit"
+                            disabled={isWaiting}
+                            sx={{ my: 2 }}
+                        >
                             Reset Password
                         </Button>
-                    </div>
-                </Form>
+                    </Box>
+                </CardContent>
             </Card>
         </Container>
     );

@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { PointWheelComponent } from "@/common/Utils";
 import DropdownInput from "./DropdownInput";
-import { Stack } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 
 interface PointsInputProps {
     pointsWheel: PointWheelComponent[];
@@ -10,9 +10,11 @@ interface PointsInputProps {
 
 const PointsInput: FC<PointsInputProps> = ({ pointsWheel, onChange }) => {
     return (
-        <>
-            <h5>Hand:</h5>
-            <Stack direction="row" spacing={1}>
+        <Stack spacing={2} alignItems="center">
+            <Typography variant="h6" component="h5" sx={{ fontWeight: 600 }}>
+                Hand:
+            </Typography>
+            <Stack direction="row" spacing={2} justifyContent="center">
                 {pointsWheel.map((wheel) => (
                     <DropdownInput
                         key={wheel.value}
@@ -22,7 +24,7 @@ const PointsInput: FC<PointsInputProps> = ({ pointsWheel, onChange }) => {
                     />
                 ))}
             </Stack>
-        </>
+        </Stack>
     );
 };
 export default PointsInput;

@@ -19,7 +19,7 @@ import { getGameVariantString } from "@/common/Utils";
 import { gameRoundString } from "./common/constants";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { useLiveGames } from "@/hooks/GameHooks";
-import type { GameCreationProp, Game } from "@/types";
+import type { GameCreationProp } from "@/types";
 
 export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
     const { isPending, error, data: liveGames } = useLiveGames(gameVariant);

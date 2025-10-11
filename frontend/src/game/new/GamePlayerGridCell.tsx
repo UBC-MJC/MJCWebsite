@@ -1,5 +1,5 @@
 import { FC, memo } from "react";
-import { Badge } from "react-bootstrap";
+import { Badge } from "@mui/material";
 import type { GamePlayer } from "@/types";
 
 interface GamePlayerGridCellProps {
@@ -12,7 +12,7 @@ const GamePlayerGridCell: FC<GamePlayerGridCellProps> = ({ player }) => {
             <div>{player.trueWind}</div>
             <div>{player.username}</div>
             {/*<div>{player.score}</div>*/}
-            <Badge bg="primary">Tenpai</Badge>
+            <Badge color="primary">Tenpai</Badge>
         </div>
     );
 };

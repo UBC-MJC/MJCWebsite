@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import { PickerData } from "react-simple-wheel-picker";
-import { Autocomplete, TextField, Stack } from "@mui/material";
+import { Autocomplete, TextField, Stack, Typography } from "@mui/material";
+
 interface DropdownInputProps {
     label: string;
     data: PickerData[];
@@ -11,7 +12,9 @@ const DropdownInput: FC<DropdownInputProps> = ({ label, data, onChange }) => {
     const options = transformToSelectOptions(data);
     return (
         <Stack spacing={1}>
-            <h6>{label}:</h6>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                {label}:
+            </Typography>
             <Autocomplete
                 isOptionEqualToValue={(option, value) => option.label === value.label}
                 size={"small"}

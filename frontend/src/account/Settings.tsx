@@ -1,10 +1,22 @@
 import React, { FC, useContext, useState } from "react";
 import type { Setting } from "@/types";
 import { AuthContext } from "@/common/AuthContext";
-import { Container, Col, Row, Modal, Form } from "react-bootstrap";
 import { updateSettingsAPI, updateUsernameAPI } from "@/api/AccountAPI";
 import { AxiosError } from "axios";
-import { ButtonGroup, Button, FormControlLabel, Switch } from "@mui/material";
+import {
+    ButtonGroup,
+    Button,
+    FormControlLabel,
+    Switch,
+    Container,
+    Box,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Typography,
+} from "@mui/material";
 import { ColorModeContext } from "@/App";
 
 const Settings: FC = () => {
@@ -51,9 +63,11 @@ const Settings: FC = () => {
     }
 
     return (
-        <Container fluid className={"my-4"}>
-            <h1>Settings</h1>
-            <Col xs sm={3} className="mx-auto">
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+            <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 600 }}>
+                Settings
+            </Typography>
+            <Box sx={{ maxWidth: "300px", mx: "auto", my: 3 }}>
                 <FormControlLabel
                     label="Legacy Display Game"
                     defaultChecked={settings.legacyDisplayGame}
@@ -63,21 +77,21 @@ const Settings: FC = () => {
                         />
                     }
                 />
-            </Col>
+            </Box>
             <ButtonGroup variant="contained" aria-label="Basic button group">
                 <Button onClick={() => colorMode.toggleColorMode("light")}>Light</Button>
                 <Button onClick={() => colorMode.toggleColorMode("dark")}>Dark</Button>
                 <Button onClick={() => colorMode.toggleColorMode("system")}>System</Button>
             </ButtonGroup>
-            <Row className="pt-2 d-flex justify-content-center">
+            <Box sx={{ pt: 2, display: "flex", justifyContent: "center" }}>
                 <Button
                     onClick={() => setShowUpdateUsernameModal(true)}
                     variant="contained"
-                    style={{ maxWidth: "200px" }}
+                    sx={{ maxWidth: "200px" }}
                 >
                     Update Username
                 </Button>
-            </Row>
+            </Box>
             <UpdateUsernameModal
                 show={showUpdateUsernameModal}
                 handleClose={() => setShowUpdateUsernameModal(false)}
@@ -125,39 +139,33 @@ const UpdateUsernameModal: FC<UpdateUsernameModalProps> = ({ show, handleClose, 
     };
 
     return (
-        <Modal show={show} onHide={onClose}>
-            <Modal.Header closeButton>
-                <Modal.Title>Update Username</Modal.Title>
-            </Modal.Header>
-            <Form noValidate onSubmit={submitUsername}>
-                <Modal.Body>
-                    <Form.Group>
-                        <Form.Label>Season Name</Form.Label>
-                        <Form.Control
-                            required
-                            size="lg"
-                            type="text"
-                            placeholder="New Username"
-                            defaultValue={""}
-                            isInvalid={!!errors.username}
-                            onChange={(e) => setUpdatedUsername(e.target.value)}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.username}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                </Modal.Body>
-
-                <Modal.Footer>
+        <Dialog open={show} onClose={onClose}>
+            <DialogTitle>Update Username</DialogTitle>
+            <Box component="form" noValidate onSubmit={submitUsername}>
+                <DialogContent>
+                    <TextField
+                        fullWidth
+                        required
+                        label="Season Name"
+                        type="text"
+                        placeholder="New Username"
+                        defaultValue=""
+                        error={!!errors.username}
+                        helperText={errors.username}
+                        onChange={(e) => setUpdatedUsername(e.target.value)}
+                        margin="normal"
+                    />
+                </DialogContent>
+                <DialogActions>
                     <Button variant="contained" onClick={onClose}>
                         Close
                     </Button>
                     <Button variant="contained" type="submit">
                         Update
                     </Button>
-                </Modal.Footer>
-            </Form>
-        </Modal>
+                </DialogActions>
+            </Box>
+        </Dialog>
     );
 };
 

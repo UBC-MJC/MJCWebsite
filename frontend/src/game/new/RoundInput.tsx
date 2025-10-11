@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { hongKongRoundLabels, japaneseRoundLabels } from "@/common/Utils";
-import { Col, Container, Row, ToggleButton } from "react-bootstrap";
+import { Container, Grid, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import RoundInputFigure from "./RoundInputFigure";
 import type { GameVariant, GamePlayer, RoundValue, RoundType } from "@/types";
 
@@ -32,32 +32,34 @@ const NewRoundInput: FC<RoundInputProps> = ({ gameVariant, players }) => {
     };
 
     return (
-        <Container fluid="lg">
-            <Row className="justify-content-center">
-                <Col xs={12} lg={4} className="d-flex justify-content-center flex-column">
-                    <Row className="justify-content-center mt-1">
+        <Container maxWidth="lg">
+            <Grid container justifyContent="center">
+                <Grid
+                    size={{ xs: 12, lg: 4 }}
+                    sx={{ display: "flex", justifyContent: "center", flexDirection: "column" }}
+                >
+                    <ToggleButtonGroup
+                        orientation="vertical"
+                        value={roundValue}
+                        exclusive
+                        onChange={(e, newValue) => newValue && setRoundValue(newValue)}
+                        sx={{ mt: 1 }}
+                    >
                         {getRoundLabels().map((label: RoundType, idx: number) => (
-                            <Col key={idx} xs={6} lg={12}>
-                                <ToggleButton
-                                    id={`radio-${idx}`}
-                                    type="radio"
-                                    variant="outline-primary"
-                                    name="radio"
-                                    className="w-100 my-1"
-                                    value={label.value}
-                                    checked={roundValue === label.value}
-                                    onChange={(e) => setRoundValue(e.currentTarget.value)}
-                                >
-                                    {label.name}
-                                </ToggleButton>
-                            </Col>
+                            <ToggleButton
+                                key={idx}
+                                value={label.value}
+                                sx={{ my: 0.5, width: "100%" }}
+                            >
+                                {label.name}
+                            </ToggleButton>
                         ))}
-                    </Row>
-                </Col>
-                <Col xs={12} lg={8}>
+                    </ToggleButtonGroup>
+                </Grid>
+                <Grid size={{ xs: 12, lg: 8 }}>
                     <RoundInputFigure players={players} />
-                </Col>
-            </Row>
+                </Grid>
+            </Grid>
         </Container>
     );
 };

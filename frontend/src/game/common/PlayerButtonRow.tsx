@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Stack, ToggleButton } from "@mui/material";
+import { Stack, ToggleButton, Typography } from "@mui/material";
 import type { GamePlayer } from "@/types";
 
 interface PlayerButtonRow<T extends string> {
@@ -16,8 +16,10 @@ const PlayerButtonRow = <T extends string>({
     onChange,
 }: PlayerButtonRow<T>) => {
     return (
-        <>
-            <h5>{label[0] + label.slice(1).toLowerCase()}:</h5>
+        <Stack spacing={1}>
+            <Typography variant="h6" component="h5" sx={{ fontWeight: 600 }}>
+                {label[0] + label.slice(1).toLowerCase()}:
+            </Typography>
             <Stack
                 direction="row"
                 spacing={1}
@@ -44,7 +46,7 @@ const PlayerButtonRow = <T extends string>({
                     </ToggleButton>
                 ))}
             </Stack>
-        </>
+        </Stack>
     );
 };
 

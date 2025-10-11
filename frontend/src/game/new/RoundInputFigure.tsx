@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Col, Container, Ratio, Row } from "react-bootstrap";
+import { Grid, Box } from "@mui/material";
 import GamePlayerGridCell from "./GamePlayerGridCell";
 import riichiStick from "@/assets/riichiStick.png";
 import type { GamePlayer } from "@/types";
@@ -9,36 +9,43 @@ interface RoundInputFigureProps {
 }
 const RoundInputFigure: FC<RoundInputFigureProps> = ({ players }) => {
     return (
-        <Row className="justify-content-center">
-            <Col xs sm={10} md={8} lg={9} xl={8} className="p-0 game-round-input">
-                <Container className="d-flex flex-column p-0 game-round-input-grid">
-                    <Row>
-                        <Col></Col>
-                        <Col>
+        <Grid container justifyContent="center">
+            <Grid
+                size={{ xs: 12, sm: 10, md: 8, lg: 9, xl: 8 }}
+                className="game-round-input"
+                sx={{ p: 0 }}
+            >
+                <Box
+                    className="game-round-input-grid"
+                    sx={{ display: "flex", flexDirection: "column", p: 0 }}
+                >
+                    <Grid container>
+                        <Grid size={{ xs: 4 }}></Grid>
+                        <Grid size={{ xs: 4 }}>
                             <GamePlayerGridCell player={players[2]} />
-                        </Col>
-                        <Col></Col>
-                    </Row>
-                    <Row>
-                        <Col>
+                        </Grid>
+                        <Grid size={{ xs: 4 }}></Grid>
+                    </Grid>
+                    <Grid container>
+                        <Grid size={{ xs: 4 }}>
                             <GamePlayerGridCell player={players[3]} />
-                        </Col>
-                        <Col></Col>
-                        <Col>
+                        </Grid>
+                        <Grid size={{ xs: 4 }}></Grid>
+                        <Grid size={{ xs: 4 }}>
                             <GamePlayerGridCell player={players[1]} />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col></Col>
-                        <Col>
+                        </Grid>
+                    </Grid>
+                    <Grid container>
+                        <Grid size={{ xs: 4 }}></Grid>
+                        <Grid size={{ xs: 4 }}>
                             <GamePlayerGridCell player={players[0]} />
-                        </Col>
-                        <Col></Col>
-                    </Row>
-                </Container>
+                        </Grid>
+                        <Grid size={{ xs: 4 }}></Grid>
+                    </Grid>
+                </Box>
 
-                <Ratio aspectRatio="1x1">
-                    <svg viewBox="0 0 100 100">
+                <Box sx={{ aspectRatio: "1/1", width: "100%" }}>
+                    <svg viewBox="0 0 100 100" style={{ width: "100%", height: "100%" }}>
                         <polygon
                             points="0,100 100,100 67.5,67.5 32.5,67.5"
                             onClick={() => console.log("bot")}
@@ -72,9 +79,9 @@ const RoundInputFigure: FC<RoundInputFigureProps> = ({ players }) => {
                             transform="rotate(-90, 50, 50)"
                         />
                     </svg>
-                </Ratio>
-            </Col>
-        </Row>
+                </Box>
+            </Grid>
+        </Grid>
     );
 };
 
