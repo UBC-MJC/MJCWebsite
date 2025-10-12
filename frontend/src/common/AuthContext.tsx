@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { loginAPICall, registerAPICall } from "@/api/AuthAPI";
 import { getCurrentPlayer } from "@/api/AccountAPI";
 import { baseUrl } from "@/api/APIUtils";
+import { logger } from "./logger";
 import type { AuthContextType, Player, LoginDataType, RegisterDataType } from "@/types";
 
 interface ChildProps {
@@ -64,7 +65,7 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
                 credentials: "include",
             });
         } catch (error) {
-            console.error("Logout error:", error);
+            logger.error("Logout error:", error);
         }
         setPlayer(undefined);
         navigate("/login");
@@ -75,7 +76,7 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
             const response = await getCurrentPlayer();
             setPlayer(response.data.player);
         } catch (error) {
-            console.error("Error reloading player:", error);
+            logger.error("Error reloading player:", error);
             // If token is invalid/expired, log out
             setPlayer(undefined);
             navigate("/login");

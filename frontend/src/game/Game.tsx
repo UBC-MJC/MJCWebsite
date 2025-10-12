@@ -18,6 +18,7 @@ import {
 } from "@/api/GameAPI";
 import { AuthContext } from "@/common/AuthContext";
 import { getGameVariantString, validateGameVariant } from "@/common/Utils";
+import { logger } from "@/common/logger";
 import alert from "@/common/AlertDialog";
 import confirmDialog from "@/common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
@@ -50,7 +51,7 @@ const Game: FC = <T extends GameVariant>() => {
                 setGame(response.data);
             })
             .catch((error: AxiosError) => {
-                console.error("Error fetching game: ", error.response?.data);
+                logger.error("Error fetching game: ", error.response?.data);
                 if (error.response?.status === 404) {
                     navigate("/games/not-found");
                     return;

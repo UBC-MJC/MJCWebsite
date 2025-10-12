@@ -5,6 +5,7 @@ import WithoutNav from "@/common/WithoutNav";
 import WithNav from "@/common/WithNav";
 import { AuthContextProvider } from "@/common/AuthContext";
 import ErrorBoundary from "@/common/ErrorBoundary";
+import { logger } from "@/common/logger";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import { enUS } from "@mui/x-date-pickers/locales";
@@ -71,7 +72,7 @@ const App: React.FC = () => {
                 return systemMode;
             }
         } catch (error) {
-            console.error("Error reading color mode from localStorage:", error);
+            logger.error("Error reading color mode from localStorage:", error);
         }
         return systemMode;
     };
@@ -88,7 +89,7 @@ const App: React.FC = () => {
             try {
                 localStorage.setItem(COLOR_MODE_STORAGE_KEY, newMode);
             } catch (error) {
-                console.error("Error saving color mode to localStorage:", error);
+                logger.error("Error saving color mode to localStorage:", error);
             }
 
             if (newMode === "system") {

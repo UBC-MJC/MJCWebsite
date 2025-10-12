@@ -2,6 +2,7 @@ import { FC } from "react";
 import { Grid, Box } from "@mui/material";
 import GamePlayerGridCell from "./GamePlayerGridCell";
 import riichiStick from "@/assets/riichiStick.png";
+import { logger } from "@/common/logger";
 import type { GamePlayer } from "@/types";
 
 interface RoundInputFigureProps {
@@ -48,19 +49,19 @@ const RoundInputFigure: FC<RoundInputFigureProps> = ({ players }) => {
                     <svg viewBox="0 0 100 100" style={{ width: "100%", height: "100%" }}>
                         <polygon
                             points="0,100 100,100 67.5,67.5 32.5,67.5"
-                            onClick={() => console.log("bot")}
+                            onClick={() => logger.debug("bot")}
                         />
                         <polygon
                             points="100,0 100,100 67.5,67.5 67.5,32.5"
-                            onClick={() => console.log("right")}
+                            onClick={() => logger.debug("right")}
                         />
                         <polygon
                             points="0,0 100,0 67.5,32.5 32.5,32.5"
-                            onClick={() => console.log("top")}
+                            onClick={() => logger.debug("top")}
                         />
                         <polygon
                             points="0,0 0,100 32.5,67.5 32.5,32.5"
-                            onClick={() => console.log("left")}
+                            onClick={() => logger.debug("left")}
                         />
                         <image href={riichiStick} width={24} x={38} y={35} />
                         <image href={riichiStick} width={24} x={38} y={62} />

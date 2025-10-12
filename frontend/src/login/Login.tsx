@@ -3,6 +3,7 @@ import { AxiosError } from "axios";
 import { AuthContext } from "@/common/AuthContext";
 import { Button, Card, CardContent, Container, TextField, Box, Typography } from "@mui/material";
 import type { LoginDataType } from "@/types";
+import { logger } from "@/common/logger";
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState("");
@@ -36,7 +37,7 @@ const Login: React.FC = () => {
         const credentials: LoginDataType = { username, password };
         login(credentials)
             .then(() => {
-                console.log("Login successful!");
+                logger.log("Login successful!");
             })
             .catch((err: AxiosError) => {
                 setErrors({

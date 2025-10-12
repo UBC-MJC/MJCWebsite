@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { getGamesAPI } from "@/api/GameAPI";
 import { AxiosError } from "axios";
+import { logger } from "@/common/logger";
 import {
     Box,
     Card,
@@ -63,7 +64,7 @@ const GameLogs = <T extends GameVariant>() => {
                     }
                 })
                 .catch((error: AxiosError) => {
-                    console.error("Error fetching games: ", error.response?.data);
+                    logger.error("Error fetching games: ", error.response?.data);
                     setLoading(false);
                 });
         }

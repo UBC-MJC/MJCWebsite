@@ -4,6 +4,7 @@ import { AuthContext } from "@/common/AuthContext";
 import { setChomboAPI } from "@/api/GameAPI";
 import { usePlayers } from "@/hooks/GameHooks";
 import type { GameVariant } from "@/types";
+import { logger } from "@/common/logger";
 
 const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Riichi", value: "jp" },
@@ -35,7 +36,7 @@ const AdminChombo: FC = () => {
             }
             alert("Chombo count updated successfully!");
         } catch (error) {
-            console.error("Failed to update chombo count:", error);
+            logger.error("Failed to update chombo count:", error);
             alert("Failed to update chombo count.");
         }
     };

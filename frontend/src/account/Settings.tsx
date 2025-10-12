@@ -3,6 +3,7 @@ import type { Setting } from "@/types";
 import { AuthContext } from "@/common/AuthContext";
 import { updateSettingsAPI, updateUsernameAPI } from "@/api/AccountAPI";
 import { AxiosError } from "axios";
+import { logger } from "@/common/logger";
 import {
     ButtonGroup,
     Button,
@@ -41,7 +42,7 @@ const Settings: FC = () => {
                 return reloadPlayer();
             })
             .catch((error: AxiosError) => {
-                console.log("Error updating settings: ", error.response?.data);
+                logger.log("Error updating settings: ", error.response?.data);
             });
     };
 
@@ -54,7 +55,7 @@ const Settings: FC = () => {
                 setShowUpdateUsernameModal(false);
             })
             .catch((error: AxiosError) => {
-                console.log("Error updating username: ", error.response?.data);
+                logger.log("Error updating username: ", error.response?.data);
             });
     };
 

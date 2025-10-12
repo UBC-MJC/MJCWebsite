@@ -1,6 +1,7 @@
 import React, { FC, useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
 import type { Season } from "@/types";
+import { logger } from "@/common/logger";
 import {
     Card,
     CardContent,
@@ -57,7 +58,7 @@ const AdminSeason: FC = () => {
     }
     const handleCreate = (name: string, endDate?: Date) => {
         if (!name || !endDate) {
-            console.log("Error creating season: name or endDate is undefined");
+            logger.log("Error creating season: name or endDate is undefined");
             return;
         }
         const season: Omit<Season, "id"> = {
@@ -70,7 +71,7 @@ const AdminSeason: FC = () => {
     };
     const updateSeason = (editedSeason: Season) => {
         if (typeof editedSeason === "undefined") {
-            console.log("Error updating season: editedSeason is undefined");
+            logger.log("Error updating season: editedSeason is undefined");
             return;
         }
         updateSeasonMut.mutate(editedSeason);

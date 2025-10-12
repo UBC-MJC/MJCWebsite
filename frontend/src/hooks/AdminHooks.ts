@@ -9,6 +9,7 @@ import {
 } from "@/api/AdminAPI";
 import { AxiosError } from "axios";
 import type { Season, Player } from "@/types";
+import { logger } from "@/common/logger";
 
 const seasonsKey = ["seasons"];
 
@@ -43,7 +44,7 @@ export function useCreateSeasonMutation(player?: Player) {
             await queryClient.invalidateQueries({ queryKey: seasonsKey }); // TODO: return the updated seasons
         },
         onError: (error: AxiosError) => {
-            console.log("Error creating season: ", error.response?.data);
+            logger.log("Error creating season: ", error.response?.data);
         },
     });
 }
@@ -59,7 +60,7 @@ export function useUpdateSeasonMutation(player?: Player) {
             await queryClient.invalidateQueries({ queryKey: seasonsKey }); // TODO: return the updated seasons
         },
         onError: (error: AxiosError) => {
-            console.log("Error updating season: ", error.response?.data);
+            logger.log("Error updating season: ", error.response?.data);
         },
     });
 }
@@ -89,7 +90,7 @@ export function useDeletePlayerMutation(player?: Player) {
             await queryClient.invalidateQueries({ queryKey: adminPlayersKey });
         },
         onError: (error: AxiosError) => {
-            console.log("Error deleting player: ", error.response?.data);
+            logger.log("Error deleting player: ", error.response?.data);
         },
     });
 }
@@ -105,7 +106,7 @@ export function useSavePlayerMutation(player?: Player) {
             await queryClient.invalidateQueries({ queryKey: adminPlayersKey });
         },
         onError: (error: AxiosError) => {
-            console.log("Error updating player: ", error.response?.data);
+            logger.log("Error updating player: ", error.response?.data);
         },
     });
 }

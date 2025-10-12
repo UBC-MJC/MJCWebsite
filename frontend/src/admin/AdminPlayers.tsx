@@ -2,6 +2,7 @@ import React, { FC, useContext } from "react";
 import { AuthContext } from "@/common/AuthContext";
 import { AxiosError } from "axios";
 import { makeDummyAdminsAPI, recalcSeasonAPI, removeQualificationAPI } from "@/api/AdminAPI";
+import { logger } from "@/common/logger";
 import {
     useDeletePlayerMutation,
     useSavePlayerMutation,
@@ -135,27 +136,27 @@ const AdminPlayers: FC = () => {
 
     const makeTestAdmins = () => {
         makeDummyAdminsAPI().catch((err: AxiosError) => {
-            console.log("Error making dummy admins: ", err.response?.data);
+            logger.log("Error making dummy admins: ", err.response?.data);
         });
     };
 
     const recalcCurrentSeasonHK = () => {
         recalcSeasonAPI("hk")
             .then((response) => {
-                console.log("HK Recalculation Complete", response.data);
+                logger.log("HK Recalculation Complete", response.data);
             })
             .catch((err) => {
-                console.log("Error recalculating hk", err.response.data);
+                logger.log("Error recalculating hk", err.response.data);
             });
     };
 
     const recalcCurrentSeasonJP = () => {
         recalcSeasonAPI("jp")
             .then((response) => {
-                console.log("JP Recalculation Complete", response.data);
+                logger.log("JP Recalculation Complete", response.data);
             })
             .catch((err) => {
-                console.log("Error recalculating riichi", err.response.data);
+                logger.log("Error recalculating riichi", err.response.data);
             });
     };
 
@@ -163,7 +164,7 @@ const AdminPlayers: FC = () => {
         if (editedPlayer) {
             savePlayerMut.mutate(editedPlayer);
         } else {
-            console.log("Error updating player: editedPlayer is undefined");
+            logger.log("Error updating player: editedPlayer is undefined");
         }
     };
     if (isPending || !data) return <>Loading...</>;
