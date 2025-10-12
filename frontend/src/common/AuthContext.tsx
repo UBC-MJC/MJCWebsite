@@ -24,7 +24,6 @@ const AuthContext = createContext<AuthContextType>({
 const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
     const navigate = useNavigate();
     const [player, setPlayer] = useState<Player | undefined>(undefined);
-    const [_loading, setLoading] = useState(true);
 
     useEffect(() => {
         // Check if user is already authenticated via cookie
@@ -35,9 +34,6 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
             .catch(() => {
                 // No valid session, user is not logged in
                 setPlayer(undefined);
-            })
-            .finally(() => {
-                setLoading(false);
             });
     }, []);
 
@@ -75,11 +71,6 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
     }, [navigate]);
 
     const reloadPlayer = useCallback(async () => {
-        if (typeof player === "undefined") {
-            console.log("Error: Player not logged in");
-            return;
-        }
-
         try {
             const response = await getCurrentPlayer();
             setPlayer(response.data.player);
