@@ -89,7 +89,7 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
             setPlayer(undefined);
             navigate("/login");
         }
-    }, [player, navigate]);
+    }, [navigate]);
 
     return (
         <>

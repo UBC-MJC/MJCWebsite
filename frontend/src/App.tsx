@@ -104,6 +104,33 @@ const App: React.FC = () => {
         {
             palette: {
                 mode: mode,
+                ...(mode === "dark" && {
+                    primary: {
+                        main: "#90caf9",
+                    },
+                }),
+            },
+            components: {
+                MuiLink: {
+                    styleOverrides: {
+                        root: {
+                            color: mode === "dark" ? "#90caf9" : "#1976d2",
+                            "&:hover": {
+                                color: mode === "dark" ? "#bbdefb" : "#1565c0",
+                            },
+                        },
+                    },
+                },
+                MuiCssBaseline: {
+                    styleOverrides: {
+                        a: {
+                            color: mode === "dark" ? "#90caf9" : "#1976d2",
+                            "&:hover": {
+                                color: mode === "dark" ? "#bbdefb" : "#1565c0",
+                            },
+                        },
+                    },
+                },
             },
         },
         enUS,
