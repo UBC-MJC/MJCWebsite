@@ -10,6 +10,7 @@ import {
 } from "@/hooks/AdminHooks";
 import type { Player } from "@/types";
 import {
+    Box,
     Button,
     Dialog,
     DialogActions,
@@ -172,7 +173,7 @@ const AdminPlayers: FC = () => {
     if (error) return <>{"An error has occurred: " + error.message}</>;
     return (
         <>
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <Box sx={{ height: 600, width: "100%" }}>
                 <DataGrid
                     rows={data}
                     columns={playerColumns}
@@ -188,7 +189,7 @@ const AdminPlayers: FC = () => {
                     }}
                     editMode="row"
                 />
-            </div>
+            </Box>
             <div className="my-4">
                 <Button variant="outlined" onClick={makeTestAdmins}>
                     Make Test Admins

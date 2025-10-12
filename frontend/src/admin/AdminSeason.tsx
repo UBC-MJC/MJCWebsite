@@ -3,6 +3,7 @@ import { AuthContext } from "@/common/AuthContext";
 import type { Season } from "@/types";
 import { logger } from "@/common/logger";
 import {
+    Box,
     Card,
     CardContent,
     CardHeader,
@@ -153,7 +154,7 @@ const AdminSeason: FC = () => {
                 {getCurrentSeasonPanel()}
             </Card>
             <h2>All Seasons</h2>
-            <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+            <Box sx={{ height: 600, width: "100%" }}>
                 <DataGrid<Season>
                     columns={playerColumns}
                     rows={seasons}
@@ -166,7 +167,7 @@ const AdminSeason: FC = () => {
                     }}
                     editMode="row"
                 />
-            </div>
+            </Box>
         </>
     );
 };

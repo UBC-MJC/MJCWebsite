@@ -108,7 +108,7 @@ const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; sea
             <h5>
                 {season.name} season ends {new Date(season.endDate).toDateString()}
             </h5>
-            <Box>
+            <Box sx={{ height: 600, width: "100%" }}>
                 <DataGrid<(typeof leaderboard)[0]>
                     rows={leaderboard}
                     columns={columns}
