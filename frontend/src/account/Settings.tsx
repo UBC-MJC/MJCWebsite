@@ -131,7 +131,7 @@ interface UpdateUsernameModalProps {
     handleSubmit: (username: string) => void;
 }
 
-const UpdateUsernameModal: FC<UpdateUsernameModalProps> = ({ show, handleClose, handleSubmit }) => {
+const UpdateUsernameModal = React.memo<UpdateUsernameModalProps>(({ show, handleClose, handleSubmit }) => {
     const [updatedUsername, setUpdatedUsername] = useState("");
     const [errors, setErrors] = useState<{ username?: string }>({});
 
@@ -191,6 +191,6 @@ const UpdateUsernameModal: FC<UpdateUsernameModalProps> = ({ show, handleClose, 
             </Box>
         </Dialog>
     );
-};
+});
 
 export default Settings;

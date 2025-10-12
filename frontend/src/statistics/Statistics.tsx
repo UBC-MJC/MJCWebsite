@@ -34,7 +34,9 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
 
                 <Stack spacing={1} direction="row">
                     <Stack spacing={1} direction="column" width="50%">
-                        <h3>Season</h3>
+                        <Typography variant="h6" component="h2">
+                            Season
+                        </Typography>
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={seasonsOptions}
@@ -45,7 +47,9 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
                         />
                     </Stack>
                     <Stack spacing={1} direction="column" width="50%">
-                        <h3>Players</h3>
+                        <Typography variant="h6" component="h2">
+                            Players
+                        </Typography>
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.label === value.label}
                             options={playersOptions}
@@ -62,11 +66,11 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     );
 };
 
-export const DisplayStatistics: FC<{
+export const DisplayStatistics = React.memo<{
     playerId: string | undefined;
     gameVariant: GameVariant;
     season: Season | undefined;
-}> = ({ playerId, gameVariant, season }) => {
+}>(({ playerId, gameVariant, season }) => {
     const { isSuccess, data: stats } = useStatistics(playerId, gameVariant, season);
     if (!isSuccess) {
         return "";
@@ -104,7 +108,7 @@ export const DisplayStatistics: FC<{
             </Grid>
         </>
     );
-};
+});
 function divideWithDefault(numerator: number, denominator: number, defaultValue = 0) {
     const result = numerator / denominator;
     if (isNaN(result)) {

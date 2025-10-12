@@ -97,7 +97,7 @@ const columns: GridColDef[] = [
         flex: 0.5,
     },
 ];
-const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; season: Season }> = ({
+const LeaderboardDisplay = React.memo<{ gameVariant: GameVariant; gameType: GameType; season: Season }>(({
     gameVariant,
     gameType,
     season,
@@ -139,5 +139,5 @@ const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; sea
             </Dialog>
         </>
     );
-};
+});
 export default Leaderboard;
