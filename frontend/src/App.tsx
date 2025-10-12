@@ -49,11 +49,24 @@ const useQuery = () => {
     return React.useMemo(() => new URLSearchParams(search), [search]);
 };
 
-export const ColorModeContext = React.createContext({
-    toggleColorMode: (_: "light" | "dark" | "system") => {
-        void 0;
-    },
-});
+type ColorMode = "light" | "dark" | "system";
+
+interface ColorModeContextType {
+    mode: "light" | "dark";
+    toggleColorMode: (newMode: ColorMode) => void;
+}
+
+export const ColorModeContext = React.createContext<ColorModeContextType | undefined>(
+    undefined,
+);
+
+export const useColorMode = () => {
+    const context = React.useContext(ColorModeContext);
+    if (!context) {
+        throw new Error("useColorMode must be used within ColorModeContext.Provider");
+    }
+    return context;
+};
 
 const COLOR_MODE_STORAGE_KEY = "colorMode";
 
@@ -85,8 +98,9 @@ const App: React.FC = () => {
         root.setAttribute("data-bs-theme", mode);
     }, [mode, root]);
 
-    const colorMode = {
-        toggleColorMode: (newMode: "light" | "dark" | "system") => {
+    const colorMode: ColorModeContextType = {
+        mode,
+        toggleColorMode: (newMode: ColorMode) => {
             try {
                 localStorage.setItem(COLOR_MODE_STORAGE_KEY, newMode);
             } catch (error) {

@@ -149,5 +149,6 @@ dist
 .svelte-kit
 
 .claude/
+CLAUDE.md
 
 certificate/

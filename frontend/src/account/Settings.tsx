@@ -18,11 +18,11 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { ColorModeContext } from "@/App";
+import { useColorMode } from "@/App";
 
 const Settings: FC = () => {
     const { player, reloadPlayer } = useContext(AuthContext);
-    const colorMode = React.useContext(ColorModeContext);
+    const colorMode = useColorMode();
 
     const [settings, setSettings] = useState<Setting>((): Setting => {
         return {
@@ -60,7 +60,13 @@ const Settings: FC = () => {
     };
 
     if (typeof player === "undefined") {
-        return <h1>Not Logged In</h1>;
+        return (
+            <Container maxWidth="lg" sx={{ py: 4 }}>
+                <Typography variant="h4" component="h1">
+                    Not Logged In
+                </Typography>
+            </Container>
+        );
     }
 
     return (
@@ -79,10 +85,27 @@ const Settings: FC = () => {
                     }
                 />
             </Box>
-            <ButtonGroup variant="contained" aria-label="Basic button group">
-                <Button onClick={() => colorMode.toggleColorMode("light")}>Light</Button>
-                <Button onClick={() => colorMode.toggleColorMode("dark")}>Dark</Button>
-                <Button onClick={() => colorMode.toggleColorMode("system")}>System</Button>
+            <Typography variant="h6" component="h2" sx={{ mb: 2, textAlign: "center" }}>
+                Theme
+            </Typography>
+            <ButtonGroup variant="contained" aria-label="Color mode selection" sx={{ mb: 3 }}>
+                <Button
+                    onClick={() => colorMode.toggleColorMode("light")}
+                    variant={colorMode.mode === "light" ? "contained" : "outlined"}
+                    color={colorMode.mode === "light" ? "primary" : "inherit"}
+                >
+                    Light
+                </Button>
+                <Button
+                    onClick={() => colorMode.toggleColorMode("dark")}
+                    variant={colorMode.mode === "dark" ? "contained" : "outlined"}
+                    color={colorMode.mode === "dark" ? "primary" : "inherit"}
+                >
+                    Dark
+                </Button>
+                <Button onClick={() => colorMode.toggleColorMode("system")} variant="outlined">
+                    System
+                </Button>
             </ButtonGroup>
             <Box sx={{ pt: 2, display: "flex", justifyContent: "center" }}>
                 <Button
