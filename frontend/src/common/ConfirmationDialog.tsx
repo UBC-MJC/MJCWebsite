@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import PropTypes from "prop-types";
 import {
     Dialog,
     DialogTitle,
@@ -26,18 +25,18 @@ interface ConfirmationDialogProps {
 }
 
 const ConfirmationDialog: FC<ConfirmationDialogProps> = ({
-    show,
+    show = false,
     proceed,
     confirmation,
     title,
-    okText,
-    cancelText,
-    okButtonStyle,
-    cancelButtonStyle,
+    okText = "OK",
+    cancelText = "Cancel",
+    okButtonStyle = "primary",
+    cancelButtonStyle = "secondary",
 }) => {
     return (
         <Dialog
-            open={show || false}
+            open={show}
             onClose={() => proceed?.(false)}
             maxWidth="xs"
             fullWidth
@@ -71,40 +70,6 @@ const ConfirmationDialog: FC<ConfirmationDialogProps> = ({
             </DialogActions>
         </Dialog>
     );
-};
-
-ConfirmationDialog.propTypes = {
-    /** header title */
-    title: PropTypes.string,
-    confirmation: PropTypes.string, // arguments of your confirm function
-    okText: PropTypes.string,
-    cancelText: PropTypes.string,
-    okButtonStyle: PropTypes.oneOf(["primary", "secondary", "success", "error", "warning", "info"]),
-    cancelButtonStyle: PropTypes.oneOf([
-        "primary",
-        "secondary",
-        "success",
-        "error",
-        "warning",
-        "info",
-    ]),
-    show: PropTypes.bool, // from confirmable.
-    proceed: PropTypes.func, // from confirmable.
-    cancel: PropTypes.func, // from confirmable.
-    dismiss: PropTypes.func, // from confirmable.
-};
-
-ConfirmationDialog.defaultProps = {
-    title: undefined,
-    confirmation: undefined,
-    okText: "OK",
-    cancelText: "Cancel",
-    okButtonStyle: "primary",
-    cancelButtonStyle: "secondary",
-    show: undefined,
-    proceed: undefined,
-    cancel: undefined,
-    dismiss: undefined,
 };
 
 // @ts-expect-error - react-confirm types are incompatible with FC

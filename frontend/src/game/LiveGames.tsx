@@ -54,7 +54,7 @@ export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
     if (error) {
         return (
             <Container maxWidth="lg" sx={{ mt: 4 }}>
-                <Alert severity="error">Failed to load live games. Please try again later.</Alert>
+                <Alert severity="error" variant="standard">Failed to load live games. Please try again later.</Alert>
             </Container>
         );
     }
@@ -66,7 +66,7 @@ export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
             </Typography>
 
             {liveGames.length === 0 ? (
-                <Alert severity="info">No live games at the moment.</Alert>
+                <Alert severity="info" variant="standard">No live games at the moment.</Alert>
             ) : (
                 <Grid container spacing={3}>
                     {liveGames.map((game) => (

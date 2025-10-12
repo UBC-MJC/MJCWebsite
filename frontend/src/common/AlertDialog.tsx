@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import PropTypes from "prop-types";
 import {
     Dialog,
     DialogTitle,
@@ -24,19 +23,19 @@ interface AlertProps {
 }
 
 const Alert: FC<AlertProps> = ({
-    show,
+    show = false,
     proceed,
     dismiss: _dismiss,
     cancel: _cancel,
     confirmation,
     title,
-    okText,
-    okButtonStyle,
+    okText = "OK",
+    okButtonStyle = "primary",
     ..._options
 }) => {
     return (
         <Dialog
-            open={show || false}
+            open={show}
             onClose={() => proceed?.()}
             maxWidth="xs"
             fullWidth
@@ -64,29 +63,6 @@ const Alert: FC<AlertProps> = ({
             </DialogActions>
         </Dialog>
     );
-};
-
-Alert.propTypes = {
-    /** header title */
-    title: PropTypes.string,
-    confirmation: PropTypes.string, // arguments of your confirm function
-    okText: PropTypes.string,
-    okButtonStyle: PropTypes.oneOf(["primary", "secondary", "success", "error", "warning", "info"]),
-    show: PropTypes.bool, // from confirmable.
-    proceed: PropTypes.func, // from confirmable.
-    cancel: PropTypes.func, // from confirmable.
-    dismiss: PropTypes.func, // from confirmable.
-};
-
-Alert.defaultProps = {
-    title: undefined,
-    confirmation: undefined,
-    okText: "OK",
-    okButtonStyle: "primary",
-    show: undefined,
-    proceed: undefined,
-    cancel: undefined,
-    dismiss: undefined,
 };
 
 // @ts-expect-error - react-confirm types are incompatible with FC

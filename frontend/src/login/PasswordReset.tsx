@@ -83,7 +83,7 @@ const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
                         Reset Password
                     </Typography>
                     {error && (
-                        <Alert severity="error" sx={{ my: 2 }}>
+                        <Alert severity="error" variant="standard" sx={{ my: 2 }}>
                             {error}
                         </Alert>
                     )}
