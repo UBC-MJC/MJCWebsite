@@ -1,4 +1,4 @@
-import React, { FC, useContext } from "react";
+import React, { useContext } from "react";
 import { AuthContext } from "@/common/AuthContext";
 import { AxiosError } from "axios";
 import { makeDummyAdminsAPI, recalcSeasonAPI, removeQualificationAPI } from "@/api/AdminAPI";
@@ -28,7 +28,7 @@ import {
     GridRowParams,
 } from "@mui/x-data-grid";
 
-const AdminPlayers: FC = () => {
+const AdminPlayers = () => {
     const { player } = useContext(AuthContext);
     const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
 

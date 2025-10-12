@@ -1,4 +1,4 @@
-import React, { FC, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, TextField, Stack, Autocomplete } from "@mui/material";
 import { AuthContext } from "@/common/AuthContext";
 import { setChomboAPI } from "@/api/GameAPI";
@@ -11,7 +11,7 @@ const gameVariants: { label: string; value: GameVariant }[] = [
     { label: "Hong Kong", value: "hk" },
 ];
 
-const AdminChombo: FC = () => {
+const AdminChombo = () => {
     const { player } = useContext(AuthContext);
     const [gameId, setGameId] = useState<number>(0);
     const [gameVariant, setGameVariant] = useState<GameVariant>("jp");

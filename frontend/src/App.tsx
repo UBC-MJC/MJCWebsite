@@ -46,7 +46,7 @@ const queryClient = new QueryClient({
 const useQuery = () => {
     const { search } = useLocation();
 
-    return React.useMemo(() => new URLSearchParams(search), [search]);
+    return new URLSearchParams(search);
 };
 
 type ColorMode = "light" | "dark" | "system";
@@ -68,11 +68,9 @@ export const useColorMode = () => {
 
 const COLOR_MODE_STORAGE_KEY = "colorMode";
 
-const App: React.FC = () => {
+const App = () => {
     const query = useQuery();
     const systemMode = useMediaQuery("(prefers-color-scheme: dark)") ? "dark" : "light";
-    const root = window.document.documentElement;
-
     // Initialize mode from localStorage, or fall back to system preference
     const getInitialMode = (): "light" | "dark" => {
         try {
@@ -91,11 +89,6 @@ const App: React.FC = () => {
 
     const [mode, setMode] = React.useState<"light" | "dark">(getInitialMode);
 
-    // Set initial theme attribute
-    React.useEffect(() => {
-        root.setAttribute("data-bs-theme", mode);
-    }, [mode, root]);
-
     const colorMode: ColorModeContextType = {
         mode,
         toggleColorMode: (newMode: ColorMode) => {
@@ -107,10 +100,8 @@ const App: React.FC = () => {
 
             if (newMode === "system") {
                 setMode(systemMode);
-                root.setAttribute("data-bs-theme", systemMode);
                 return;
             }
-            root.setAttribute("data-bs-theme", newMode);
             setMode(newMode);
         },
     };

@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React from "react";
 import { withPlayerCondition } from "@/common/withPlayerCondition";
 import { Container, Tabs, Tab } from "@mui/material";
 import AdminPlayers from "./AdminPlayers";
@@ -6,7 +6,7 @@ import AdminSeason from "./AdminSeason";
 import AdminChombo from "./AdminChombo";
 import type { Player } from "@/types";
 
-const AdminComponent: FC = () => {
+const AdminComponent = () => {
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {

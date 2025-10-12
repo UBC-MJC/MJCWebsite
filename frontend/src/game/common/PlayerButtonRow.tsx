@@ -1,4 +1,3 @@
-import React, { memo } from "react";
 import { Stack, ToggleButton, Typography } from "@mui/material";
 import type { GamePlayer } from "@/types";
 
@@ -57,4 +56,4 @@ function getVariant(label: string) {
     return "primary";
 }
 
-export default memo(PlayerButtonRow) as typeof PlayerButtonRow;
+export default PlayerButtonRow;

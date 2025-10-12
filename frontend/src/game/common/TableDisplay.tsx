@@ -1,5 +1,4 @@
 import { DataGrid, GridColDef, GridValidRowModel } from "@mui/x-data-grid";
-import { memo } from "react";
 
 function TableDisplay<T extends GridValidRowModel>(props: {
     rounds: T[];
@@ -63,4 +62,4 @@ function TableDisplay<T extends GridValidRowModel>(props: {
 //     );
 // }
 
-export default memo(TableDisplay) as typeof TableDisplay;
+export default TableDisplay;

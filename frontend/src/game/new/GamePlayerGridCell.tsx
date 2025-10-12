@@ -1,4 +1,3 @@
-import { FC, memo } from "react";
 import { Badge } from "@mui/material";
 import type { GamePlayer } from "@/types";
 
@@ -6,7 +5,7 @@ interface GamePlayerGridCellProps {
     player: GamePlayer;
 }
 
-const GamePlayerGridCell: FC<GamePlayerGridCellProps> = ({ player }) => {
+const GamePlayerGridCell = ({ player }: GamePlayerGridCellProps) => {
     return (
         <div>
             <div>{player.trueWind}</div>
@@ -17,4 +16,4 @@ const GamePlayerGridCell: FC<GamePlayerGridCellProps> = ({ player }) => {
     );
 };
 
-export default memo(GamePlayerGridCell);
+export default GamePlayerGridCell;

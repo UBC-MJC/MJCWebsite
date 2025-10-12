@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import { useState } from "react";
 import { getGameVariantString } from "@/common/Utils";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayerLeaderboard } from "@/hooks/LeaderboardHooks";
@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { DisplayStatistics } from "@/statistics/Statistics";
 
-const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
+const Leaderboard = ({ gameVariant, gameType }: GameCreationProp) => {
     const [season, setSeason] = useState<Season | undefined>();
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons(setSeason);
 
@@ -97,11 +97,15 @@ const columns: GridColDef[] = [
         flex: 0.5,
     },
 ];
-const LeaderboardDisplay = React.memo<{
+const LeaderboardDisplay = ({
+    gameVariant,
+    gameType,
+    season,
+}: {
     gameVariant: GameVariant;
     gameType: GameType;
     season: Season;
-}>(({ gameVariant, gameType, season }) => {
+}) => {
     const { isSuccess, data: leaderboard } = usePlayerLeaderboard(gameVariant, gameType, season);
     const [player, setPlayer] = useState<LeaderboardType | undefined>(undefined);
     if (!isSuccess) {
@@ -138,8 +142,6 @@ const LeaderboardDisplay = React.memo<{
             </Dialog>
         </>
     );
-});
-
-LeaderboardDisplay.displayName = "LeaderboardDisplay";
+};
 
 export default Leaderboard;
