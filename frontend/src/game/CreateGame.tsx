@@ -5,6 +5,7 @@ import { withPlayerCondition } from "@/common/withPlayerCondition";
 import { useNavigate } from "react-router-dom";
 import { getGameVariantString } from "@/common/Utils";
 import { usePlayers } from "@/hooks/GameHooks";
+import LoadingFallback from "@/common/LoadingFallback";
 import { Autocomplete, Button, TextField, Container, Grid, Typography } from "@mui/material";
 import type { GameCreationProp, Player, PlayerNamesDataType } from "@/types";
 
@@ -42,9 +43,15 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
     const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4;
     if (playerNamesResult.error)
-        return <>{"An error has occurred: " + playerNamesResult.error.message}</>;
+        return (
+            <Container maxWidth="lg" sx={{ py: 4 }}>
+                <Typography variant="body1" color="error">
+                    An error has occurred: {playerNamesResult.error.message}
+                </Typography>
+            </Container>
+        );
     if (!playerNamesResult.isSuccess) {
-        return <>Loading ... </>;
+        return <LoadingFallback minHeight="50vh" message="Loading players..." />;
     }
     const playerNames = playerNamesResult.data
         .sort((a, b) => a.username.localeCompare(b.username))
@@ -58,7 +65,7 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
             </Typography>
             <Grid container spacing={3}>
                 <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-                    <Typography variant="h5" component="h3" gutterBottom>
+                    <Typography variant="h5" component="h3" gutterBottom id="east-player-label">
                         East
                     </Typography>
                     <Autocomplete
@@ -67,12 +74,17 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                         disableClearable
                         onChange={(event, value) => setEastPlayer(value!.value)}
                         renderInput={(params) => (
-                            <TextField {...params} placeholder="Choose a Player" />
+                            <TextField
+                                {...params}
+                                placeholder="Choose a Player"
+                                aria-labelledby="east-player-label"
+                                required
+                            />
                         )}
                     />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-                    <Typography variant="h5" component="h3" gutterBottom>
+                    <Typography variant="h5" component="h3" gutterBottom id="south-player-label">
                         South
                     </Typography>
                     <Autocomplete
@@ -81,12 +93,17 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                         disableClearable
                         onChange={(event, value) => setSouthPlayer(value!.value)}
                         renderInput={(params) => (
-                            <TextField {...params} placeholder="Choose a Player" />
+                            <TextField
+                                {...params}
+                                placeholder="Choose a Player"
+                                aria-labelledby="south-player-label"
+                                required
+                            />
                         )}
                     />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-                    <Typography variant="h5" component="h3" gutterBottom>
+                    <Typography variant="h5" component="h3" gutterBottom id="west-player-label">
                         West
                     </Typography>
                     <Autocomplete
@@ -95,12 +112,17 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                         disableClearable
                         onChange={(event, value) => setWestPlayer(value!.value)}
                         renderInput={(params) => (
-                            <TextField {...params} placeholder="Choose a Player" />
+                            <TextField
+                                {...params}
+                                placeholder="Choose a Player"
+                                aria-labelledby="west-player-label"
+                                required
+                            />
                         )}
                     />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-                    <Typography variant="h5" component="h3" gutterBottom>
+                    <Typography variant="h5" component="h3" gutterBottom id="north-player-label">
                         North
                     </Typography>
                     <Autocomplete
@@ -109,7 +131,12 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
                         disableClearable
                         onChange={(event, value) => setNorthPlayer(value!.value)}
                         renderInput={(params) => (
-                            <TextField {...params} placeholder="Choose a Player" />
+                            <TextField
+                                {...params}
+                                placeholder="Choose a Player"
+                                aria-labelledby="north-player-label"
+                                required
+                            />
                         )}
                     />
                 </Grid>

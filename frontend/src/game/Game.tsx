@@ -19,6 +19,7 @@ import {
 import { AuthContext } from "@/common/AuthContext";
 import { getGameVariantString, validateGameVariant } from "@/common/Utils";
 import { logger } from "@/common/logger";
+import LoadingFallback from "@/common/LoadingFallback";
 import alert from "@/common/AlertDialog";
 import confirmDialog from "@/common/ConfirmationDialog";
 import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
@@ -184,24 +185,11 @@ const Game: FC = <T extends GameVariant>() => {
         }
     };
 
-    if (isNaN(gameId)) {
-        return (
-            <div>
-                <h1>Game Not Found</h1>
-            </div>
-        );
-    } else if (!validateGameVariant(variant)) {
-        return (
-            <div>
-                <h1>Invalid Game Variant</h1>
-            </div>
-        );
+    if (isNaN(gameId) || !validateGameVariant(variant)) {
+        navigate("/games/not-found");
+        return;
     } else if (typeof game === "undefined") {
-        return (
-            <div>
-                <h1>Loading...</h1>
-            </div>
-        );
+        return <LoadingFallback minHeight="50vh" message="Loading game..." />;
     }
     return (
         <Container

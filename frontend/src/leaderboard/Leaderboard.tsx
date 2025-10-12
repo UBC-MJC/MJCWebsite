@@ -3,6 +3,7 @@ import { getGameVariantString } from "@/common/Utils";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayerLeaderboard } from "@/hooks/LeaderboardHooks";
 import { mapSeasonToOption } from "@/game/common/constants";
+import LoadingFallback from "@/common/LoadingFallback";
 import { GridColDef, DataGrid } from "@mui/x-data-grid";
 import type { GameCreationProp, Season, GameVariant, GameType, LeaderboardType } from "@/types";
 import {
@@ -22,7 +23,7 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons(setSeason);
 
     if (!seasonsSuccess) {
-        return <h5 className="my-3">Loading...</h5>;
+        return <LoadingFallback minHeight="50vh" message="Loading seasons..." />;
     }
     const seasonsOptions = mapSeasonToOption(seasons);
     return (
@@ -37,7 +38,9 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
                     {getGameVariantString(gameVariant, gameType)} Leaderboard
                 </Typography>
 
-                <h5>Season: </h5>
+                <Typography variant="h6" component="h2" sx={{ mb: 1 }}>
+                    Season:
+                </Typography>
                 <Autocomplete
                     isOptionEqualToValue={(option, value) => option.label === value.label}
                     options={seasonsOptions}
@@ -48,7 +51,9 @@ const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
                 />
 
                 {season === undefined ? (
-                    <h5>No season selected</h5>
+                    <Typography variant="body1" sx={{ mt: 2 }}>
+                        No season selected
+                    </Typography>
                 ) : (
                     <LeaderboardDisplay
                         season={season}
@@ -100,14 +105,14 @@ const LeaderboardDisplay: FC<{ gameVariant: GameVariant; gameType: GameType; sea
     const { isSuccess, data: leaderboard } = usePlayerLeaderboard(gameVariant, gameType, season);
     const [player, setPlayer] = useState<LeaderboardType | undefined>(undefined);
     if (!isSuccess) {
-        return <h5>Loading ...</h5>;
+        return <LoadingFallback minHeight="30vh" message="Loading leaderboard..." />;
     }
     //
     return (
         <>
-            <h5>
+            <Typography variant="body2" color="text.secondary" sx={{ my: 2 }}>
                 {season.name} season ends {new Date(season.endDate).toDateString()}
-            </h5>
+            </Typography>
             <Box sx={{ height: 600, width: "100%" }}>
                 <DataGrid<(typeof leaderboard)[0]>
                     rows={leaderboard}

@@ -225,19 +225,40 @@ const NavBar: FC = () => {
     );
 
     return (
-        <AppBar position="static" color="info">
-            <Toolbar>
-                {isMobile && (
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        edge="start"
-                        onClick={handleDrawerToggle}
-                        sx={{ mr: 2 }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                )}
+        <>
+            <Box
+                component="a"
+                href="#main-content"
+                sx={{
+                    position: "absolute",
+                    left: "-9999px",
+                    zIndex: 10000,
+                    padding: "8px 16px",
+                    backgroundColor: "primary.main",
+                    color: "primary.contrastText",
+                    textDecoration: "none",
+                    borderRadius: 1,
+                    "&:focus": {
+                        left: "8px",
+                        top: "8px",
+                    },
+                }}
+            >
+                Skip to main content
+            </Box>
+            <AppBar position="static" color="info">
+                <Toolbar>
+                    {isMobile && (
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            edge="start"
+                            onClick={handleDrawerToggle}
+                            sx={{ mr: 2 }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                    )}
                 <Typography
                     variant="h6"
                     component={Link}
@@ -431,6 +452,7 @@ const NavBar: FC = () => {
                 {mobileDrawer}
             </Drawer>
         </AppBar>
+        </>
     );
 };
 
