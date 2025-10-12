@@ -109,6 +109,9 @@ export const DisplayStatistics = React.memo<{
         </>
     );
 });
+
+DisplayStatistics.displayName = "DisplayStatistics";
+
 function divideWithDefault(numerator: number, denominator: number, defaultValue = 0) {
     const result = numerator / denominator;
     if (isNaN(result)) {

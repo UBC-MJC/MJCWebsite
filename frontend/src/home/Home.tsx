@@ -9,12 +9,7 @@ const Home: FC = () => {
             <Typography variant="h4" component="h1" gutterBottom sx={{ my: 4, fontWeight: 600 }}>
                 Home
             </Typography>
-            <Box
-                component="img"
-                src={logo}
-                alt="UBC Mahjong Club Logo"
-                sx={{ width: "50%" }}
-            />
+            <Box component="img" src={logo} alt="UBC Mahjong Club Logo" sx={{ width: "50%" }} />
             <p>Club room location: Room 3206B, The Nest</p>
             <p>The University of British Columbia, Vancouver, BC</p>
             <p>

@@ -38,6 +38,7 @@ export default tseslint.config(
             ...reactPlugin.configs.flat["jsx-runtime"].rules,
             "no-console": "warn",
             "react/react-in-jsx-scope": "off",
+            "react/prop-types": "off",
             "@typescript-eslint/no-explicit-any": "warn",
             "@typescript-eslint/explicit-module-boundary-types": "off",
             "@typescript-eslint/no-unused-vars": ["warn", {

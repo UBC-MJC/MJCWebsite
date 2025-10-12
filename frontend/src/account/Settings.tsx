@@ -131,66 +131,70 @@ interface UpdateUsernameModalProps {
     handleSubmit: (username: string) => void;
 }
 
-const UpdateUsernameModal = React.memo<UpdateUsernameModalProps>(({ show, handleClose, handleSubmit }) => {
-    const [updatedUsername, setUpdatedUsername] = useState("");
-    const [errors, setErrors] = useState<{ username?: string }>({});
+const UpdateUsernameModal = React.memo<UpdateUsernameModalProps>(
+    ({ show, handleClose, handleSubmit }) => {
+        const [updatedUsername, setUpdatedUsername] = useState("");
+        const [errors, setErrors] = useState<{ username?: string }>({});
 
-    const submitUsername = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const newErrors = findErrors();
-        if (Object.keys(newErrors).length !== 0) {
-            setErrors(newErrors);
-            return;
-        }
+        const submitUsername = (e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            const newErrors = findErrors();
+            if (Object.keys(newErrors).length !== 0) {
+                setErrors(newErrors);
+                return;
+            }
 
-        handleSubmit(updatedUsername);
-    };
+            handleSubmit(updatedUsername);
+        };
 
-    const findErrors = () => {
-        const newErrors: { username?: string } = {};
-        if (updatedUsername.length < 1 || updatedUsername.length > 20) {
-            newErrors["username"] = "Username must be between 1 and 20 characters";
-        } else if (updatedUsername.trim().length === 0) {
-            newErrors["username"] = "Username cannot be whitespace only";
-        }
+        const findErrors = () => {
+            const newErrors: { username?: string } = {};
+            if (updatedUsername.length < 1 || updatedUsername.length > 20) {
+                newErrors["username"] = "Username must be between 1 and 20 characters";
+            } else if (updatedUsername.trim().length === 0) {
+                newErrors["username"] = "Username cannot be whitespace only";
+            }
 
-        return newErrors;
-    };
+            return newErrors;
+        };
 
-    const onClose = () => {
-        setUpdatedUsername("");
-        handleClose();
-    };
+        const onClose = () => {
+            setUpdatedUsername("");
+            handleClose();
+        };
 
-    return (
-        <Dialog open={show} onClose={onClose}>
-            <DialogTitle>Update Username</DialogTitle>
-            <Box component="form" noValidate onSubmit={submitUsername}>
-                <DialogContent>
-                    <TextField
-                        fullWidth
-                        required
-                        label="Season Name"
-                        type="text"
-                        placeholder="New Username"
-                        defaultValue=""
-                        error={!!errors.username}
-                        helperText={errors.username}
-                        onChange={(e) => setUpdatedUsername(e.target.value)}
-                        margin="normal"
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="contained" onClick={onClose}>
-                        Close
-                    </Button>
-                    <Button variant="contained" type="submit">
-                        Update
-                    </Button>
-                </DialogActions>
-            </Box>
-        </Dialog>
-    );
-});
+        return (
+            <Dialog open={show} onClose={onClose}>
+                <DialogTitle>Update Username</DialogTitle>
+                <Box component="form" noValidate onSubmit={submitUsername}>
+                    <DialogContent>
+                        <TextField
+                            fullWidth
+                            required
+                            label="Season Name"
+                            type="text"
+                            placeholder="New Username"
+                            defaultValue=""
+                            error={!!errors.username}
+                            helperText={errors.username}
+                            onChange={(e) => setUpdatedUsername(e.target.value)}
+                            margin="normal"
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button variant="contained" onClick={onClose}>
+                            Close
+                        </Button>
+                        <Button variant="contained" type="submit">
+                            Update
+                        </Button>
+                    </DialogActions>
+                </Box>
+            </Dialog>
+        );
+    },
+);
+
+UpdateUsernameModal.displayName = "UpdateUsernameModal";
 
 export default Settings;

@@ -1,8 +1,5 @@
 import React, { FC } from "react";
-import {
-    Container,
-    Typography
-} from "@mui/material";
+import { Container, Typography } from "@mui/material";
 
 export const GameNotFound: FC = () => {
     return (
@@ -12,4 +9,4 @@ export const GameNotFound: FC = () => {
             </Typography>
         </Container>
     );
-}
+};

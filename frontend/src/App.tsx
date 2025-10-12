@@ -9,7 +9,7 @@ import { logger } from "@/common/logger";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import { enUS } from "@mui/x-date-pickers/locales";
-import {GameNotFound} from "@/game/common/GameNotFound";
+import { GameNotFound } from "@/game/common/GameNotFound";
 
 // Lazy load route components for code splitting
 const Home = React.lazy(() => import("./home/Home"));
@@ -56,9 +56,7 @@ interface ColorModeContextType {
     toggleColorMode: (newMode: ColorMode) => void;
 }
 
-export const ColorModeContext = React.createContext<ColorModeContextType | undefined>(
-    undefined,
-);
+export const ColorModeContext = React.createContext<ColorModeContextType | undefined>(undefined);
 
 export const useColorMode = () => {
     const context = React.useContext(ColorModeContext);

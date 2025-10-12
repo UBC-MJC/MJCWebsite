@@ -97,17 +97,16 @@ const columns: GridColDef[] = [
         flex: 0.5,
     },
 ];
-const LeaderboardDisplay = React.memo<{ gameVariant: GameVariant; gameType: GameType; season: Season }>(({
-    gameVariant,
-    gameType,
-    season,
-}) => {
+const LeaderboardDisplay = React.memo<{
+    gameVariant: GameVariant;
+    gameType: GameType;
+    season: Season;
+}>(({ gameVariant, gameType, season }) => {
     const { isSuccess, data: leaderboard } = usePlayerLeaderboard(gameVariant, gameType, season);
     const [player, setPlayer] = useState<LeaderboardType | undefined>(undefined);
     if (!isSuccess) {
         return <LoadingFallback minHeight="30vh" message="Loading leaderboard..." />;
     }
-    //
     return (
         <>
             <Typography variant="body2" color="text.secondary" sx={{ my: 2 }}>
@@ -140,4 +139,7 @@ const LeaderboardDisplay = React.memo<{ gameVariant: GameVariant; gameType: Game
         </>
     );
 });
+
+LeaderboardDisplay.displayName = "LeaderboardDisplay";
+
 export default Leaderboard;
