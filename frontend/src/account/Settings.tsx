@@ -171,7 +171,7 @@ const UpdateUsernameModal = React.memo<UpdateUsernameModalProps>(
                         <TextField
                             fullWidth
                             required
-                            label="Season Name"
+                            label="New Username"
                             type="text"
                             placeholder="New Username"
                             defaultValue=""
