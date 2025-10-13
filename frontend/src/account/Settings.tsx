@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import type { Setting } from "@/types";
 import { AuthContext } from "@/common/AuthContext";
 import { updateSettingsAPI, updateUsernameAPI } from "@/api/AccountAPI";

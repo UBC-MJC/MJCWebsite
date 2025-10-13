@@ -49,7 +49,7 @@ const loginHandler = async (req: Request, res: Response, next: NextFunction): Pr
         const player = await findPlayerByUsernameOrEmail(registerPlayerRequest.username);
         if (player && bcrypt.compareSync(req.body.password, player.password)) {
             const token = generateToken(player.id);
-            const { password, ...playerOmitted } = player;
+            const { password: _, ...playerOmitted } = player;
 
             // Set httpOnly cookie for security
             res.cookie("authToken", token, {
@@ -198,7 +198,7 @@ const updateUsernameHandler = async (
 ): Promise<void> => {
     try {
         const player = await updatePlayer(req.player.id, { username: req.body.username });
-        const { password, ...playerOmitted } = player;
+        const { password: _, ...playerOmitted } = player;
         res.json({ ...playerOmitted });
     } catch (err) {
         next(createError.InternalServerError((err as Error).message));

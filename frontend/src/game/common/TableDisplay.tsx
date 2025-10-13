@@ -14,7 +14,6 @@ function TableDisplay<T extends GridValidRowModel>(props: {
             disableColumnSorting
             disableColumnResize
             hideFooter
-            autoHeight
             sx={{ width: "100%" }}
         />
     );

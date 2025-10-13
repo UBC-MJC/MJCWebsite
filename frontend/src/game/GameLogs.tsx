@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { getGamesAPI } from "@/api/GameAPI";
 import { AxiosError } from "axios";
 import { logger } from "@/common/logger";

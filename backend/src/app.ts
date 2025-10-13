@@ -52,7 +52,11 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     next();
 });
 
-const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : process.env.NODE_ENV === "production" ? 8080 : 4000;
+const PORT: number = process.env.PORT
+    ? parseInt(process.env.PORT)
+    : process.env.NODE_ENV === "production"
+      ? 8080
+      : 4000;
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

@@ -1,10 +1,10 @@
-import { FC, Suspense } from "react";
+import { Suspense } from "react";
 import { Outlet } from "react-router";
 import { Box } from "@mui/material";
 import NavBar from "@/common/NavBar";
 import LoadingFallback from "@/common/LoadingFallback";
 
-const WithNav: FC = () => {
+const WithNav = () => {
     return (
         <>
             <NavBar />

@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { useState } from "react";
 import { hongKongRoundLabels, japaneseRoundLabels } from "@/common/Utils";
 import { Container, Grid, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import RoundInputFigure from "./RoundInputFigure";
@@ -12,7 +12,7 @@ interface RoundInputProps {
     isLegacy?: boolean;
 }
 
-const NewRoundInput: FC<RoundInputProps> = ({ gameVariant, players }) => {
+export const NewRoundInput = ({ gameVariant, players }: RoundInputProps) => {
     const [roundValue, setRoundValue] = useState<string>(() => {
         switch (gameVariant) {
             case "jp":

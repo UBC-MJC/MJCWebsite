@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import { useState } from "react";
 import { AxiosError } from "axios";
 import { submitPasswordResetAPI } from "@/api/AccountAPI";
 import alert from "@/common/AlertDialog";
@@ -19,7 +19,7 @@ interface PasswordResetProps {
     token: string | null;
 }
 
-const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
+const PasswordReset = ({ playerId, token }: PasswordResetProps) => {
     const navigate = useNavigate();
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");

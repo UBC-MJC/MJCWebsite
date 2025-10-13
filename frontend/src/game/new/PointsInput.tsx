@@ -1,4 +1,3 @@
-import React, { FC } from "react";
 import { japanesePointsWheel } from "@/common/Utils";
 import CustomizedWheelPicker from "./CustomizedWheelPicker";
 import { PickerData } from "react-simple-wheel-picker";
@@ -11,10 +10,12 @@ interface PointsInputProps {
     isLegacy?: boolean;
 }
 
-const NewPointsInput: FC<PointsInputProps> = ({
+export const NewPointsInput = ({
     gameVariant: _gameVariant,
     onChange: _onChange,
-}) => {
+    pointsValue: _pointsValue,
+    isLegacy: _isLegacy = false,
+}: PointsInputProps) => {
     const handleOnChange = (_target: PickerData, _label: string) => {
         // handleOnChange
     };

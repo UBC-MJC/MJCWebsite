@@ -1,10 +1,10 @@
-import React, { FC, useState } from "react";
+import { useState } from "react";
 import { AxiosError } from "axios";
 import { submitRequestPasswordResetAPI } from "@/api/AccountAPI";
 import alert from "@/common/AlertDialog";
 import { Button, Card, CardContent, Container, TextField, Box, Typography } from "@mui/material";
 
-const RequestPasswordReset: FC = () => {
+const RequestPasswordReset = () => {
     const [username, setUsername] = useState("");
     const [isWaiting, setIsWaiting] = useState(false);
 

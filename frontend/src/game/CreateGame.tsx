@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import { useState } from "react";
 import { createGameAPI } from "@/api/GameAPI";
 import { AxiosError } from "axios";
 import { withPlayerCondition } from "@/common/withPlayerCondition";
@@ -9,7 +9,7 @@ import LoadingFallback from "@/common/LoadingFallback";
 import { Autocomplete, Button, TextField, Container, Grid, Typography } from "@mui/material";
 import type { GameCreationProp, Player, PlayerNamesDataType } from "@/types";
 
-const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
+const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
     const navigate = useNavigate();
 
     const [eastPlayer, setEastPlayer] = useState<PlayerNamesDataType | null>(null);

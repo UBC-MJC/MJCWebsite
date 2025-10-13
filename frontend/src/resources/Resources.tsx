@@ -1,5 +1,4 @@
-import { FC } from "react";
-export const Resources: FC = () => {
+export const Resources = () => {
     return (
         <div className={"my-4"}>
             <h1>Study resources</h1>

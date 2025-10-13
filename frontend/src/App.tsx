@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import "./App.scss";
 import WithoutNav from "@/common/WithoutNav";
@@ -10,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import { enUS } from "@mui/x-date-pickers/locales";
 import { GameNotFound } from "@/game/common/GameNotFound";
+import React, { useState } from "react";
 
 // Lazy load route components for code splitting
 const Home = React.lazy(() => import("./home/Home"));
@@ -87,7 +87,7 @@ const App = () => {
         return systemMode;
     };
 
-    const [mode, setMode] = React.useState<"light" | "dark">(getInitialMode);
+    const [mode, setMode] = useState<"light" | "dark">(getInitialMode);
 
     const colorMode: ColorModeContextType = {
         mode,

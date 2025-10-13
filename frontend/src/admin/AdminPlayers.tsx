@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
 import { AxiosError } from "axios";
 import { makeDummyAdminsAPI, recalcSeasonAPI, removeQualificationAPI } from "@/api/AdminAPI";
@@ -30,7 +30,7 @@ import {
 
 const AdminPlayers = () => {
     const { player } = useContext(AuthContext);
-    const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
+    const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
     // Call all hooks unconditionally at the top
     const { isPending, data, error } = useAdminPlayers(player || undefined);
@@ -214,7 +214,7 @@ const AdminPlayers = () => {
 };
 
 function DeleteUserActionItem({ deleteUser, label }: { label: string; deleteUser: () => void }) {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
 
     return (
         <>

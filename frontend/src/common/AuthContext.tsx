@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useCallback } from "react";
+import { ReactNode, useEffect, useCallback } from "react";
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAPICall, registerAPICall } from "@/api/AuthAPI";
@@ -22,7 +22,7 @@ const AuthContext = createContext<AuthContextType>({
     reloadPlayer: notInstantiated,
 });
 
-const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
+const AuthContextProvider = (props: ChildProps) => {
     const navigate = useNavigate();
     const [player, setPlayer] = useState<Player | undefined>(undefined);
 

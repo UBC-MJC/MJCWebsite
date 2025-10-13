@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { GridColDef } from "@mui/x-data-grid";
 import { mapChineseNumerals, mapWindToCharacter } from "@/common/Utils";
 import TableDisplay from "@/game/common/TableDisplay";
@@ -17,7 +16,7 @@ export function getRowString(row: PartialJapaneseRound) {
     }本場`;
 }
 
-const LegacyJapaneseGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {
+const LegacyJapaneseGameTable = ({ rounds, players }: LegacyGameTableProps) => {
     const columns: GridColDef<ModifiedJapaneseRound>[] = [
         {
             field: "round",

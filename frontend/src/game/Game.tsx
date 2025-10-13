@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AxiosError } from "axios";
 import type {
@@ -28,7 +28,7 @@ import { gameRoundString, isGameEnd } from "./common/constants";
 import { baseUrl } from "@/api/APIUtils";
 import { Button, Stack, Container, Typography, Box } from "@mui/material";
 
-const Game: FC = <T extends GameVariant>() => {
+const Game = <T extends GameVariant>() => {
     const { id, variant: variantParam } = useParams();
     const { player } = useContext(AuthContext);
     const navigate = useNavigate();

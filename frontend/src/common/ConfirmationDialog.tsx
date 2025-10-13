@@ -1,4 +1,3 @@
-import React, { FC } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -24,7 +23,7 @@ interface ConfirmationDialogProps {
     cancelButtonStyle?: ButtonVariant;
 }
 
-const ConfirmationDialog: FC<ConfirmationDialogProps> = ({
+const ConfirmationDialog = ({
     show = false,
     proceed,
     confirmation,
@@ -33,7 +32,7 @@ const ConfirmationDialog: FC<ConfirmationDialogProps> = ({
     cancelText = "Cancel",
     okButtonStyle = "primary",
     cancelButtonStyle = "secondary",
-}) => {
+}: ConfirmationDialogProps) => {
     return (
         <Dialog
             open={show}
@@ -72,7 +71,6 @@ const ConfirmationDialog: FC<ConfirmationDialogProps> = ({
     );
 };
 
-// @ts-expect-error - react-confirm types are incompatible with FC
 const confirmLow = createConfirmation(confirmable(ConfirmationDialog));
 
 const confirmDialog = (message: string, options: Partial<ConfirmationDialogProps> = {}) => {

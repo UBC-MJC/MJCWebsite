@@ -1,4 +1,4 @@
-import React, { FC, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
 import type { Season } from "@/types";
 import { logger } from "@/common/logger";
@@ -42,7 +42,7 @@ const playerColumns: GridColDef<Season>[] = [
         editable: true,
     },
 ];
-const AdminSeason: FC = () => {
+const AdminSeason = () => {
     const { player } = useContext(AuthContext);
 
     // Call all hooks unconditionally at the top

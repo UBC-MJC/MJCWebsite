@@ -1,11 +1,11 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { AxiosError } from "axios";
 import { AuthContext } from "@/common/AuthContext";
 import { Button, Card, CardContent, Container, TextField, Box, Typography } from "@mui/material";
 import type { LoginDataType } from "@/types";
 import { logger } from "@/common/logger";
 
-const Login: React.FC = () => {
+const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 

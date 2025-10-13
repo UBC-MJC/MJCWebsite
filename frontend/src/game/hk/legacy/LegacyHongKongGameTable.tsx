@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { mapWindToCharacter } from "@/common/Utils";
 import { GridColDef } from "@mui/x-data-grid";
 import TableDisplay from "@/game/common/TableDisplay";
@@ -10,7 +9,7 @@ interface LegacyGameTableProps {
 
 export type ModifiedHongKongRound = HongKongRound & { scoreDeltas: number[] };
 
-const LegacyHongKongGameTable: FC<LegacyGameTableProps> = ({ rounds, players }) => {
+const LegacyHongKongGameTable = ({ rounds, players }: LegacyGameTableProps) => {
     const columns: GridColDef<ModifiedHongKongRound>[] = [
         {
             field: "round",
