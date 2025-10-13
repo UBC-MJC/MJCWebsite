@@ -27,15 +27,17 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
     const [player, setPlayer] = useState<Player | undefined>(undefined);
 
     useEffect(() => {
-        // Check if user is already authenticated via cookie
-        getCurrentPlayer()
-            .then((response) => {
+        const checkAuth = async () => {
+            // Check if user is already authenticated via cookie
+            try {
+                const response = await getCurrentPlayer();
                 setPlayer(response.data.player);
-            })
-            .catch(() => {
+            } catch {
                 // No valid session, user is not logged in
                 setPlayer(undefined);
-            });
+            }
+        };
+        checkAuth();
     }, []);
 
     const authLogin = useCallback(
@@ -84,19 +86,17 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
     }, [navigate]);
 
     return (
-        <>
-            <AuthContext.Provider
-                value={{
-                    player,
-                    login: authLogin,
-                    register: authRegister,
-                    logout: authLogout,
-                    reloadPlayer,
-                }}
-            >
-                {props.children}
-            </AuthContext.Provider>
-        </>
+        <AuthContext.Provider
+            value={{
+                player,
+                login: authLogin,
+                register: authRegister,
+                logout: authLogout,
+                reloadPlayer,
+            }}
+        >
+            {props.children}
+        </AuthContext.Provider>
     );
 };
 

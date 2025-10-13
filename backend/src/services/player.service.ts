@@ -7,16 +7,15 @@ import { sendResetPasswordEmail } from "./email/resetPasswordEmail";
 import tokenCache from "../tokenCache";
 
 const createPlayer = async (player: RegisterType): Promise<Player> => {
-    return bcrypt.hash(player.password, 12).then((hash) => {
-        return prisma.player.create({
-            data: {
-                firstName: player.firstName,
-                lastName: player.lastName,
-                username: player.username,
-                email: player.email,
-                password: hash,
-            },
-        });
+    const hash = await bcrypt.hash(player.password, 12);
+    return prisma.player.create({
+        data: {
+            firstName: player.firstName,
+            lastName: player.lastName,
+            username: player.username,
+            email: player.email,
+            password: hash,
+        },
     });
 };
 

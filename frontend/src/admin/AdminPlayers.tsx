@@ -135,30 +135,30 @@ const AdminPlayers = () => {
         },
     ];
 
-    const makeTestAdmins = () => {
-        makeDummyAdminsAPI().catch((err: AxiosError) => {
-            logger.log("Error making dummy admins: ", err.response?.data);
-        });
+    const makeTestAdmins = async () => {
+        try {
+            await makeDummyAdminsAPI();
+        } catch (err) {
+            logger.log("Error making dummy admins: ", (err as AxiosError).response?.data);
+        }
     };
 
-    const recalcCurrentSeasonHK = () => {
-        recalcSeasonAPI("hk")
-            .then((response) => {
-                logger.log("HK Recalculation Complete", response.data);
-            })
-            .catch((err) => {
-                logger.log("Error recalculating hk", err.response.data);
-            });
+    const recalcCurrentSeasonHK = async () => {
+        try {
+            const response = await recalcSeasonAPI("hk");
+            logger.log("HK Recalculation Complete", response.data);
+        } catch (err: any) {
+            logger.log("Error recalculating hk", err.response.data);
+        }
     };
 
-    const recalcCurrentSeasonJP = () => {
-        recalcSeasonAPI("jp")
-            .then((response) => {
-                logger.log("JP Recalculation Complete", response.data);
-            })
-            .catch((err) => {
-                logger.log("Error recalculating riichi", err.response.data);
-            });
+    const recalcCurrentSeasonJP = async () => {
+        try {
+            const response = await recalcSeasonAPI("jp");
+            logger.log("JP Recalculation Complete", response.data);
+        } catch (err) {
+            logger.log("Error recalculating riichi", (err as AxiosError).response?.data);
+        }
     };
 
     const savePlayer = (editedPlayer: Player) => {

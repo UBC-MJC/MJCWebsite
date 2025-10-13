@@ -16,7 +16,7 @@ const Login: React.FC = () => {
 
     const { login } = useContext(AuthContext);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const newErrors: {
@@ -35,16 +35,15 @@ const Login: React.FC = () => {
         }
 
         const credentials: LoginDataType = { username, password };
-        login(credentials)
-            .then(() => {
-                logger.log("Login successful!");
-            })
-            .catch((err: AxiosError) => {
-                setErrors({
-                    username: " ",
-                    password: err.response?.data as string,
-                });
+        try {
+            await login(credentials);
+            logger.log("Login successful!");
+        } catch (err) {
+            setErrors({
+                username: " ",
+                password: (err as AxiosError).response?.data as string,
             });
+        }
     };
 
     return (

@@ -19,23 +19,22 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
 
     const playerNamesResult = usePlayers(gameVariant, gameType);
 
-    const createGame = () => {
+    const createGame = async () => {
         if (playerSelectMissing || notUnique) {
             return;
         }
 
         const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
-        createGameAPI(
-            gameType,
-            gameVariant,
-            playerList.map((playerName) => playerName?.username),
-        )
-            .then((response) => {
-                navigate(`/games/${gameVariant}/${response.data.id}`);
-            })
-            .catch((error: AxiosError) => {
-                alert(`Error creating game: ${error.response?.data}`);
-            });
+        try {
+            const response = await createGameAPI(
+                gameType,
+                gameVariant,
+                playerList.map((playerName) => playerName?.username),
+            );
+            navigate(`/games/${gameVariant}/${response.data.id}`);
+        } catch (error) {
+            alert(`Error creating game: ${(error as AxiosError).response?.data}`);
+        }
     };
 
     const title = `Create ${getGameVariantString(gameVariant, gameType)} Game`;

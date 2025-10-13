@@ -18,17 +18,16 @@ const getPlayersHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    findAllPlayers()
-        .then((players) => {
-            const playersCleaned = players.map((player) => {
-                const { password, ...playerOmitted } = player;
-                return playerOmitted;
-            });
-            res.json({ players: playersCleaned });
-        })
-        .catch((err: any) => {
-            next(createError.InternalServerError(err.message));
+    try {
+        const players = await findAllPlayers();
+        const playersCleaned = players.map((player) => {
+            const { password, ...playerOmitted } = player;
+            return playerOmitted;
         });
+        res.json({ players: playersCleaned });
+    } catch (err: any) {
+        next(createError.InternalServerError(err.message));
+    }
 };
 
 const updatePlayerHandler = async (
@@ -60,13 +59,12 @@ const deletePlayerHandler = async (
         next(createError.BadRequest("Invalid player id"));
     }
 
-    deletePlayer(id)
-        .then((player) => {
-            res.json({ ...player });
-        })
-        .catch((err: any) => {
-            next(createError.InternalServerError(err.message));
-        });
+    try {
+        const player = await deletePlayer(id);
+        res.json({ ...player });
+    } catch (err) {
+        next(createError.InternalServerError((err as Error).message));
+    }
 };
 
 // nested promises are ugly, someone smarter than me should fix this
@@ -129,13 +127,12 @@ const deleteSeasonHandler = async (
         return next(createError.BadRequest("Invalid season id"));
     }
 
-    deleteSeason(id)
-        .then((season) => {
-            res.json({ ...season });
-        })
-        .catch((err: any) => {
-            next(createError.InternalServerError(err.message));
-        });
+    try {
+        const season = await deleteSeason(id);
+        res.json({ ...season });
+    } catch (err) {
+        next(createError.InternalServerError((err as Error).message));
+    }
 };
 
 const makeTestAdminsHandler = async (
@@ -143,9 +140,12 @@ const makeTestAdminsHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    makeDummyAdmins().catch((err: any) => {
-        next(createError.InternalServerError(err.message));
-    });
+    try {
+        await makeDummyAdmins();
+        res.json({ message: "Test admins created successfully" });
+    } catch (err) {
+        next(createError.InternalServerError((err as Error).message));
+    }
 };
 
 async function removeQualificationHandler(req: Request, res: Response, next: NextFunction) {

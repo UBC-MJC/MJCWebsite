@@ -27,7 +27,7 @@ const Register: React.FC = () => {
 
     const { register } = useContext(AuthContext);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const newErrors: Record<string, string> = {};
@@ -60,15 +60,14 @@ const Register: React.FC = () => {
             email,
             password,
         };
-        register(credentials)
-            .then(() => {
-                logger.log("Registration successful!");
-            })
-            .catch((err: AxiosError) => {
-                setErrors({
-                    password: String(err.response?.data || "Registration failed"),
-                });
+        try {
+            await register(credentials);
+            logger.log("Registration successful!");
+        } catch (err) {
+            setErrors({
+                password: String((err as AxiosError).response?.data || "Registration failed"),
             });
+        }
     };
 
     return (

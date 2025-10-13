@@ -3,7 +3,7 @@ import createError from "http-errors";
 import { verifyToken } from "./jwt";
 import { findPlayerById } from "../services/player.service";
 
-const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
     // Try to get token from cookie first, then fall back to Authorization header for backward compatibility
     const token = req.cookies?.authToken || req.headers.authorization?.split(" ")[1];
 
@@ -17,18 +17,17 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
             return next(createError.Unauthorized("Invalid token"));
         }
 
-        findPlayerById(payloadId)
-            .then((player) => {
-                if (player) {
-                    req.player = player;
-                    return next();
-                } else {
-                    return next(createError.Unauthorized("Invalid token"));
-                }
-            })
-            .catch((err) => {
-                return next(createError.InternalServerError(err.message));
-            });
+        try {
+            const player = await findPlayerById(payloadId);
+            if (player) {
+                req.player = player;
+                return next();
+            } else {
+                return next(createError.Unauthorized("Invalid token"));
+            }
+        } catch (err) {
+            return next(createError.InternalServerError((err as Error).message));
+        }
     } catch (err) {
         return next(createError.Unauthorized());
     }

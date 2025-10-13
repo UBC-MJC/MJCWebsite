@@ -37,26 +37,22 @@ const Settings = () => {
             [setting]: checked,
         };
         setSettings(newSettings);
-        updateSettingsAPI(newSettings)
-            .then(() => {
-                return reloadPlayer();
-            })
-            .catch((error: AxiosError) => {
-                logger.log("Error updating settings: ", error.response?.data);
-            });
+        try {
+            await updateSettingsAPI(newSettings);
+            await reloadPlayer();
+        } catch (error) {
+            logger.log("Error updating settings: ", (error as AxiosError).response?.data);
+        }
     };
 
     const updateUsername = async (username: string) => {
-        return updateUsernameAPI(username)
-            .then(() => {
-                return reloadPlayer();
-            })
-            .then(() => {
-                setShowUpdateUsernameModal(false);
-            })
-            .catch((error: AxiosError) => {
-                logger.log("Error updating username: ", error.response?.data);
-            });
+        try {
+            await updateUsernameAPI(username);
+            await reloadPlayer();
+            setShowUpdateUsernameModal(false);
+        } catch (error) {
+            logger.log("Error updating username: ", (error as AxiosError).response?.data);
+        }
     };
 
     if (typeof player === "undefined") {

@@ -45,17 +45,14 @@ const PasswordReset: FC<PasswordResetProps> = ({ playerId, token }) => {
         }
 
         setIsWaiting(true);
-        submitPasswordResetAPI(playerId!, token!, password)
-            .then(() => {
-                alert(`Password reset successfully. Please login with your new password.`);
-            })
-            .then(() => {
-                navigate(`/login`);
-            })
-            .catch((err: AxiosError) => {
-                setError(err.response?.data as string);
-                setIsWaiting(false);
-            });
+        try {
+            await submitPasswordResetAPI(playerId!, token!, password);
+            alert(`Password reset successfully. Please login with your new password.`);
+            navigate(`/login`);
+        } catch (err) {
+            setError((err as AxiosError).response?.data as string);
+            setIsWaiting(false);
+        }
     };
 
     if (!playerId || !token) {
