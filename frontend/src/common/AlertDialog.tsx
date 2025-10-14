@@ -38,12 +38,6 @@ const Alert = ({
             maxWidth="xs"
             fullWidth
             disableEscapeKeyDown={false}
-            PaperProps={{
-                sx: {
-                    bgcolor: "background.paper",
-                    backgroundImage: "none",
-                },
-            }}
         >
             {title && <DialogTitle sx={{ color: "text.primary" }}>{title}</DialogTitle>}
             <DialogContent>

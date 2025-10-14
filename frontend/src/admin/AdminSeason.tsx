@@ -90,15 +90,11 @@ const AdminSeason = () => {
         if (seasons.length > 0 && new Date(seasons[0].endDate) > new Date()) {
             const currentSeason = seasons[0];
             return (
-                <>
-                    <CardContent>
-                        <h3>{currentSeason.name}</h3>
-                        <div className="mb-2">
-                            Start Date: {currentSeason.startDate.toDateString()}
-                        </div>
-                        <div className="mb-2">End Date: {currentSeason.endDate.toDateString()}</div>
-                    </CardContent>
-                </>
+                <CardContent>
+                    <h3>{currentSeason.name}</h3>
+                    <div className="mb-2">Start Date: {currentSeason.startDate.toDateString()}</div>
+                    <div className="mb-2">End Date: {currentSeason.endDate.toDateString()}</div>
+                </CardContent>
             );
         }
         return (
