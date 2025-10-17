@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { memo, useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayers } from "@/hooks/GameHooks";
@@ -61,50 +61,54 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
     );
 };
 
-export const DisplayStatistics = ({
-    playerId,
-    gameVariant,
-    season,
-}: {
-    playerId: string | undefined;
-    gameVariant: GameVariant;
-    season: Season | undefined;
-}) => {
-    const { isSuccess, data: stats } = useStatistics(playerId, gameVariant, season);
-    if (!isSuccess) {
-        return "";
-    }
-    return (
-        <Grid container spacing={2}>
-            <Grid size={6}>
-                Deal-in %:{" "}
-                {divideWithDefault(100 * stats.dealInCount, stats.totalRounds).toFixed(2)}%
+export const DisplayStatistics = memo(
+    ({
+        playerId,
+        gameVariant,
+        season,
+    }: {
+        playerId: string | undefined;
+        gameVariant: GameVariant;
+        season: Season | undefined;
+    }) => {
+        const { isSuccess, data: stats } = useStatistics(playerId, gameVariant, season);
+        if (!isSuccess) {
+            return "";
+        }
+        return (
+            <Grid container spacing={2}>
+                <Grid size={6}>
+                    Deal-in %:{" "}
+                    {divideWithDefault(100 * stats.dealInCount, stats.totalRounds).toFixed(2)}%
+                </Grid>
+                <Grid size={6}>
+                    Avg Deal-in size:{" "}
+                    {divideWithDefault(stats.dealInPoint, stats.dealInCount).toFixed(0)}
+                </Grid>
+                <Grid size={6}>
+                    Win %: {divideWithDefault(100 * stats.winCount, stats.totalRounds).toFixed(2)}%
+                </Grid>
+                <Grid size={6}>
+                    Avg Agari size: {divideWithDefault(stats.winPoint, stats.winCount).toFixed(0)}
+                </Grid>
+                <Grid size={6}>
+                    Riichi Rate:{" "}
+                    {divideWithDefault(100 * stats.riichiCount, stats.totalRounds).toFixed(2)}%
+                </Grid>
+                <Grid size={6}>
+                    Riichi Win Rate:{" "}
+                    {divideWithDefault(100 * stats.winRiichiCount, stats.riichiCount).toFixed(2)}%
+                </Grid>
+                <Grid size={6}>
+                    Riichi Deal-in Rate:{" "}
+                    {divideWithDefault(100 * stats.dealInRiichiCount, stats.riichiCount).toFixed(2)}
+                    %
+                </Grid>
             </Grid>
-            <Grid size={6}>
-                Avg Deal-in size:{" "}
-                {divideWithDefault(stats.dealInPoint, stats.dealInCount).toFixed(0)}
-            </Grid>
-            <Grid size={6}>
-                Win %: {divideWithDefault(100 * stats.winCount, stats.totalRounds).toFixed(2)}%
-            </Grid>
-            <Grid size={6}>
-                Avg Agari size: {divideWithDefault(stats.winPoint, stats.winCount).toFixed(0)}
-            </Grid>
-            <Grid size={6}>
-                Riichi Rate:{" "}
-                {divideWithDefault(100 * stats.riichiCount, stats.totalRounds).toFixed(2)}%
-            </Grid>
-            <Grid size={6}>
-                Riichi Win Rate:{" "}
-                {divideWithDefault(100 * stats.winRiichiCount, stats.riichiCount).toFixed(2)}%
-            </Grid>
-            <Grid size={6}>
-                Riichi Deal-in Rate:{" "}
-                {divideWithDefault(100 * stats.dealInRiichiCount, stats.riichiCount).toFixed(2)}%
-            </Grid>
-        </Grid>
-    );
-};
+        );
+    },
+);
+DisplayStatistics.displayName = "DisplayStatistics";
 
 function divideWithDefault(numerator: number, denominator: number, defaultValue = 0) {
     const result = numerator / denominator;
