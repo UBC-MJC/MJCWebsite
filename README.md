@@ -42,7 +42,7 @@ MJCWebsite/
 
 ### Development
 ```bash
-./scripts/dev.sh      # Start development server with Docker
+./scripts/dev.sh      # Start development server locally
 ```
 
 ### Production

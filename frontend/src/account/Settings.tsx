@@ -76,7 +76,7 @@ const Settings = () => {
                     defaultChecked={settings.legacyDisplayGame}
                     control={
                         <Switch
-                            onChange={(e, checked) => handleToggle(checked, "legacyDisplayGame")}
+                            onChange={(_e, checked) => handleToggle(checked, "legacyDisplayGame")}
                         />
                     }
                 />

@@ -191,10 +191,12 @@ const Game = <T extends GameVariant>() => {
     } else if (typeof game === "undefined") {
         return <LoadingFallback minHeight="50vh" message="Loading game..." />;
     }
+    const canUpdateGame: boolean = game.status === "IN_PROGRESS" && (isRecording(game) || (player!! && player.admin));
+    const spectatorPadding: number = canUpdateGame ? 0 : 12;
     return (
         <Container
             maxWidth="lg"
-            sx={{ pt: { xs: 4 }, pb: { xs: 6, sm: 10 }, position: "relative" }}
+            sx={{ pt: { xs: 4 }, pb: { xs: 6 + spectatorPadding, sm: 10 + spectatorPadding }, position: "relative" }}
         >
             <Box sx={{ mb: 3 }}>
                 <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
@@ -212,7 +214,7 @@ const Game = <T extends GameVariant>() => {
                 )}
             </Box>
             {getLegacyDisplayGame(game)}
-            {game.status === "IN_PROGRESS" && (isRecording(game) || player?.admin) && (
+            {canUpdateGame && (
                 <Stack
                     direction={{ xs: "column", sm: "row" }}
                     spacing={2}
