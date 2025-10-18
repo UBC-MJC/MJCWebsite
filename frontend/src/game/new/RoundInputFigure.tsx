@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { Grid, Box } from "@mui/material";
 import GamePlayerGridCell from "./GamePlayerGridCell";
 import riichiStick from "@/assets/riichiStick.png";
@@ -8,7 +7,7 @@ import type { GamePlayer } from "@/types";
 interface RoundInputFigureProps {
     players: GamePlayer[];
 }
-const RoundInputFigure: FC<RoundInputFigureProps> = ({ players }) => {
+const RoundInputFigure = ({ players }: RoundInputFigureProps) => {
     return (
         <Grid container justifyContent="center">
             <Grid

@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import { useState } from "react";
 import { createGameAPI } from "@/api/GameAPI";
 import { AxiosError } from "axios";
 import { withPlayerCondition } from "@/common/withPlayerCondition";
@@ -9,7 +9,7 @@ import LoadingFallback from "@/common/LoadingFallback";
 import { Autocomplete, Button, TextField, Container, Grid, Typography } from "@mui/material";
 import type { GameCreationProp, Player, PlayerNamesDataType } from "@/types";
 
-const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
+const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
     const navigate = useNavigate();
 
     const [eastPlayer, setEastPlayer] = useState<PlayerNamesDataType | null>(null);
@@ -19,23 +19,22 @@ const CreateGameComponent: FC<GameCreationProp> = ({ gameVariant, gameType }) =>
 
     const playerNamesResult = usePlayers(gameVariant, gameType);
 
-    const createGame = () => {
+    const createGame = async () => {
         if (playerSelectMissing || notUnique) {
             return;
         }
 
         const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
-        createGameAPI(
-            gameType,
-            gameVariant,
-            playerList.map((playerName) => playerName?.username),
-        )
-            .then((response) => {
-                navigate(`/games/${gameVariant}/${response.data.id}`);
-            })
-            .catch((error: AxiosError) => {
-                alert(`Error creating game: ${error.response?.data}`);
-            });
+        try {
+            const response = await createGameAPI(
+                gameType,
+                gameVariant,
+                playerList.map((playerName) => playerName?.username),
+            );
+            navigate(`/games/${gameVariant}/${response.data.id}`);
+        } catch (error) {
+            alert(`Error creating game: ${(error as AxiosError).response?.data}`);
+        }
     };
 
     const title = `Create ${getGameVariantString(gameVariant, gameType)} Game`;

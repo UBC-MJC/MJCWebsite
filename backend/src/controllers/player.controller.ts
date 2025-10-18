@@ -14,7 +14,7 @@ import { getCurrentSeason } from "../services/season.service";
 import { GameVariant, getGameService, STARTING_ELO } from "../services/game/game.util";
 import { GameType } from "@prisma/client";
 
-const isProduction = () => process.env.NODE_ENV === 'production';
+const isProduction = () => process.env.NODE_ENV === "production";
 
 const registerHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const registerPlayerRequest = registerSchema.parse(req.body);
@@ -28,10 +28,10 @@ const registerHandler = async (req: Request, res: Response, next: NextFunction):
         const { password: _, ...playerOmitted } = player;
 
         // Set httpOnly cookie for security
-        res.cookie('authToken', token, {
+        res.cookie("authToken", token, {
             httpOnly: true,
             secure: isProduction(),
-            sameSite: 'strict',
+            sameSite: "strict",
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
@@ -49,13 +49,13 @@ const loginHandler = async (req: Request, res: Response, next: NextFunction): Pr
         const player = await findPlayerByUsernameOrEmail(registerPlayerRequest.username);
         if (player && bcrypt.compareSync(req.body.password, player.password)) {
             const token = generateToken(player.id);
-            const { password, ...playerOmitted } = player;
+            const { password: _, ...playerOmitted } = player;
 
             // Set httpOnly cookie for security
-            res.cookie('authToken', token, {
+            res.cookie("authToken", token, {
                 httpOnly: true,
                 secure: isProduction(),
-                sameSite: 'strict',
+                sameSite: "strict",
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             });
 
@@ -82,9 +82,7 @@ const requestPasswordResetHandler = async (
             return;
         }
 
-        const host = isProduction()
-            ? "https://" + req.headers.host
-            : "http://localhost:3000";
+        const host = isProduction() ? "https://" + req.headers.host : "http://localhost:3000";
         await requestPasswordReset(player, host);
 
         res.json({ email: player.email });
@@ -184,14 +182,13 @@ const updateSettingsHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    updatePlayer(req.player.id, req.body.settings)
-        .then((player) => {
-            const { password, ...playerOmitted } = player;
-            res.json({ ...playerOmitted });
-        })
-        .catch((err: any) => {
-            next(createError.InternalServerError(err.message));
-        });
+    try {
+        const player = await updatePlayer(req.player.id, req.body.settings);
+        const { password, ...playerOmitted } = player;
+        res.json({ ...playerOmitted });
+    } catch (err) {
+        next(createError.InternalServerError((err as Error).message));
+    }
 };
 
 const updateUsernameHandler = async (
@@ -199,14 +196,13 @@ const updateUsernameHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    updatePlayer(req.player.id, { username: req.body.username })
-        .then((player) => {
-            const { password, ...playerOmitted } = player;
-            res.json({ ...playerOmitted });
-        })
-        .catch((err: any) => {
-            next(createError.InternalServerError(err.message));
-        });
+    try {
+        const player = await updatePlayer(req.player.id, { username: req.body.username });
+        const { password: _, ...playerOmitted } = player;
+        res.json({ ...playerOmitted });
+    } catch (err) {
+        next(createError.InternalServerError((err as Error).message));
+    }
 };
 
 async function getUserStatisticsHandler(
@@ -224,12 +220,12 @@ async function getUserStatisticsHandler(
 
 const logoutHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        res.clearCookie('authToken', {
+        res.clearCookie("authToken", {
             httpOnly: true,
             secure: isProduction(),
-            sameSite: 'strict',
+            sameSite: "strict",
         });
-        res.json({ message: 'Logged out successfully' });
+        res.json({ message: "Logged out successfully" });
     } catch (err: any) {
         next(createError.InternalServerError(err.message));
     }

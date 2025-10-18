@@ -1,4 +1,4 @@
-import React, { FC, useContext, useState } from "react";
+import { memo, useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayers } from "@/hooks/GameHooks";
@@ -7,7 +7,7 @@ import { useStatistics } from "@/hooks/LeaderboardHooks";
 import { Autocomplete, Container, Grid, Stack, TextField, Typography } from "@mui/material";
 import type { GameVariant, Season } from "@/types";
 
-const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
+const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
     const [playerId, setPlayerId] = useState<string | undefined>(
         useContext(AuthContext).player?.id,
     );
@@ -21,14 +21,9 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     const seasonsOptions = mapSeasonToOption(seasonsResult.data);
     const playersOptions = mapPlayerNameToOption(playersResult.data);
     return (
-        <Container sx={{ py: 4 }}>
+        <Container>
             <Stack spacing={1}>
-                <Typography
-                    variant="h4"
-                    component="h1"
-                    gutterBottom
-                    sx={{ mb: 4, fontWeight: 600 }}
-                >
+                <Typography variant="h4" component="h1" gutterBottom>
                     Round Statistics
                 </Typography>
 
@@ -66,17 +61,21 @@ const Statistics: FC<{ gameVariant: GameVariant }> = ({ gameVariant }) => {
     );
 };
 
-export const DisplayStatistics = React.memo<{
-    playerId: string | undefined;
-    gameVariant: GameVariant;
-    season: Season | undefined;
-}>(({ playerId, gameVariant, season }) => {
-    const { isSuccess, data: stats } = useStatistics(playerId, gameVariant, season);
-    if (!isSuccess) {
-        return "";
-    }
-    return (
-        <>
+export const DisplayStatistics = memo(
+    ({
+        playerId,
+        gameVariant,
+        season,
+    }: {
+        playerId: string | undefined;
+        gameVariant: GameVariant;
+        season: Season | undefined;
+    }) => {
+        const { isSuccess, data: stats } = useStatistics(playerId, gameVariant, season);
+        if (!isSuccess) {
+            return "";
+        }
+        return (
             <Grid container spacing={2}>
                 <Grid size={6}>
                     Deal-in %:{" "}
@@ -106,10 +105,9 @@ export const DisplayStatistics = React.memo<{
                     %
                 </Grid>
             </Grid>
-        </>
-    );
-});
-
+        );
+    },
+);
 DisplayStatistics.displayName = "DisplayStatistics";
 
 function divideWithDefault(numerator: number, denominator: number, defaultValue = 0) {

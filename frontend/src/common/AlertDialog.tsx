@@ -1,4 +1,3 @@
-import React, { FC } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -22,7 +21,7 @@ interface AlertProps {
     okButtonStyle?: ButtonVariant;
 }
 
-const Alert: FC<AlertProps> = ({
+const Alert = ({
     show = false,
     proceed,
     dismiss: _dismiss,
@@ -30,9 +29,8 @@ const Alert: FC<AlertProps> = ({
     confirmation,
     title,
     okText = "OK",
-    okButtonStyle = "primary",
-    ..._options
-}) => {
+    okButtonStyle = "primary" as ButtonVariant,
+}: AlertProps) => {
     return (
         <Dialog
             open={show}
@@ -40,12 +38,6 @@ const Alert: FC<AlertProps> = ({
             maxWidth="xs"
             fullWidth
             disableEscapeKeyDown={false}
-            PaperProps={{
-                sx: {
-                    bgcolor: "background.paper",
-                    backgroundImage: "none",
-                },
-            }}
         >
             {title && <DialogTitle sx={{ color: "text.primary" }}>{title}</DialogTitle>}
             <DialogContent>
@@ -65,11 +57,21 @@ const Alert: FC<AlertProps> = ({
     );
 };
 
-// @ts-expect-error - react-confirm types are incompatible with FC
 const alertLow = createConfirmation(confirmable(Alert));
 
-const alert = (message: string, options: Partial<AlertProps> = {}) => {
-    return alertLow(Object.assign({ confirmation: message }, options));
+const alert = async (message: string, options: Partial<AlertProps> = {}) => {
+    return alertLow(
+        Object.assign(
+            {
+                confirmation: message,
+                proceed: () => undefined,
+                dismiss: () => undefined,
+                cancel: () => undefined,
+                title: "",
+            },
+            options,
+        ),
+    );
 };
 
 export default alert;

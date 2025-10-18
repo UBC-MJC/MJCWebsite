@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import { memo, useState } from "react";
 import { getGameVariantString } from "@/common/Utils";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayerLeaderboard } from "@/hooks/LeaderboardHooks";
@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { DisplayStatistics } from "@/statistics/Statistics";
 
-const Leaderboard: FC<GameCreationProp> = ({ gameVariant, gameType }) => {
+const Leaderboard = ({ gameVariant, gameType }: GameCreationProp) => {
     const [season, setSeason] = useState<Season | undefined>();
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons(setSeason);
 
@@ -97,49 +97,57 @@ const columns: GridColDef[] = [
         flex: 0.5,
     },
 ];
-const LeaderboardDisplay = React.memo<{
-    gameVariant: GameVariant;
-    gameType: GameType;
-    season: Season;
-}>(({ gameVariant, gameType, season }) => {
-    const { isSuccess, data: leaderboard } = usePlayerLeaderboard(gameVariant, gameType, season);
-    const [player, setPlayer] = useState<LeaderboardType | undefined>(undefined);
-    if (!isSuccess) {
-        return <LoadingFallback minHeight="30vh" message="Loading leaderboard..." />;
-    }
-    return (
-        <>
-            <Typography variant="body2" color="text.secondary" sx={{ my: 2 }}>
-                {season.name} season ends {new Date(season.endDate).toDateString()}
-            </Typography>
-            <Box sx={{ height: 600, width: "100%" }}>
-                <DataGrid<(typeof leaderboard)[0]>
-                    rows={leaderboard}
-                    columns={columns}
-                    initialState={{
-                        columns: {
-                            columnVisibilityModel: {
-                                chomboCount: false,
+const LeaderboardDisplay = memo(
+    ({
+        gameVariant,
+        gameType,
+        season,
+    }: {
+        gameVariant: GameVariant;
+        gameType: GameType;
+        season: Season;
+    }) => {
+        const { isSuccess, data: leaderboard } = usePlayerLeaderboard(
+            gameVariant,
+            gameType,
+            season,
+        );
+        const [player, setPlayer] = useState<LeaderboardType | undefined>(undefined);
+        if (!isSuccess) {
+            return <LoadingFallback minHeight="30vh" message="Loading leaderboard..." />;
+        }
+        return (
+            <>
+                <Typography variant="body2" color="text.secondary" sx={{ my: 2 }}>
+                    {season.name} season ends {new Date(season.endDate).toDateString()}
+                </Typography>
+                <Box sx={{ height: 600, width: "100%" }}>
+                    <DataGrid<(typeof leaderboard)[0]>
+                        rows={leaderboard}
+                        columns={columns}
+                        initialState={{
+                            columns: {
+                                columnVisibilityModel: {
+                                    chomboCount: false,
+                                },
                             },
-                        },
-                    }}
-                    onRowDoubleClick={(params) => setPlayer(params.row)}
-                />
-            </Box>
-            <Dialog open={player !== undefined} onClose={() => setPlayer(undefined)}>
-                <DialogTitle>Statistics for {player?.username}</DialogTitle>
-                <DialogContent>
-                    <DisplayStatistics
-                        playerId={player?.id}
-                        gameVariant={gameVariant}
-                        season={season}
+                        }}
+                        onRowDoubleClick={(params) => setPlayer(params.row)}
                     />
-                </DialogContent>
-            </Dialog>
-        </>
-    );
-});
-
+                </Box>
+                <Dialog open={player !== undefined} onClose={() => setPlayer(undefined)}>
+                    <DialogTitle>Statistics for {player?.username}</DialogTitle>
+                    <DialogContent>
+                        <DisplayStatistics
+                            playerId={player?.id}
+                            gameVariant={gameVariant}
+                            season={season}
+                        />
+                    </DialogContent>
+                </Dialog>
+            </>
+        );
+    },
+);
 LeaderboardDisplay.displayName = "LeaderboardDisplay";
-
 export default Leaderboard;

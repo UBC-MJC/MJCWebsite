@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import LegacyHongKongGameTable, { ModifiedHongKongRound } from "./LegacyHongKongGameTable";
 import type { HongKongRound, HongKongHandInput } from "@/types";
 import { getScoresWithPlayers, hongKongPointsWheel } from "@/common/Utils";

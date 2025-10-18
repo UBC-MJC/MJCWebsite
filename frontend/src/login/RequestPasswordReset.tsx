@@ -1,10 +1,10 @@
-import React, { FC, useState } from "react";
+import { useState } from "react";
 import { AxiosError } from "axios";
 import { submitRequestPasswordResetAPI } from "@/api/AccountAPI";
 import alert from "@/common/AlertDialog";
 import { Button, Card, CardContent, Container, TextField, Box, Typography } from "@mui/material";
 
-const RequestPasswordReset: FC = () => {
+const RequestPasswordReset = () => {
     const [username, setUsername] = useState("");
     const [isWaiting, setIsWaiting] = useState(false);
 
@@ -17,17 +17,16 @@ const RequestPasswordReset: FC = () => {
         }
 
         setIsWaiting(true);
-        submitRequestPasswordResetAPI(username)
-            .then((response) => {
-                setIsWaiting(false);
-                alert(
-                    `Password reset email sent to your email address at ${response.data.email}. Please check your main inbox and any spam folders for the email.`,
-                );
-            })
-            .catch((err: AxiosError) => {
-                setIsWaiting(false);
-                alert(String(err.response?.data || "Password reset submission failed"));
-            });
+        try {
+            const response = await submitRequestPasswordResetAPI(username);
+            setIsWaiting(false);
+            alert(
+                `Password reset email sent to your email address at ${response.data.email}. Please check your main inbox and any spam folders for the email.`,
+            );
+        } catch (err) {
+            setIsWaiting(false);
+            alert(String((err as AxiosError).response?.data || "Password reset submission failed"));
+        }
     };
 
     return (

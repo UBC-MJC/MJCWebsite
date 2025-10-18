@@ -1,7 +1,6 @@
-import React, { FC } from "react";
 import { Container, Typography } from "@mui/material";
 
-export const GameNotFound: FC = () => {
+export const GameNotFound = () => {
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
             <Typography variant="h4" component="h1">

@@ -1,4 +1,4 @@
-import { FC, memo } from "react";
+import { memo } from "react";
 import { Box, CircularProgress, Typography } from "@mui/material";
 
 interface LoadingFallbackProps {
@@ -6,10 +6,7 @@ interface LoadingFallbackProps {
     message?: string;
 }
 
-const LoadingFallback: FC<LoadingFallbackProps> = ({
-    minHeight = "50vh",
-    message = "Loading...",
-}) => (
+const LoadingFallback = ({ minHeight = "50vh", message = "Loading..." }: LoadingFallbackProps) => (
     <Box
         display="flex"
         flexDirection="column"

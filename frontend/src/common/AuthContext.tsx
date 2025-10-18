@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useCallback } from "react";
+import { ReactNode, useEffect, useCallback } from "react";
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAPICall, registerAPICall } from "@/api/AuthAPI";
@@ -22,20 +22,22 @@ const AuthContext = createContext<AuthContextType>({
     reloadPlayer: notInstantiated,
 });
 
-const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
+const AuthContextProvider = (props: ChildProps) => {
     const navigate = useNavigate();
     const [player, setPlayer] = useState<Player | undefined>(undefined);
 
     useEffect(() => {
-        // Check if user is already authenticated via cookie
-        getCurrentPlayer()
-            .then((response) => {
+        const checkAuth = async () => {
+            // Check if user is already authenticated via cookie
+            try {
+                const response = await getCurrentPlayer();
                 setPlayer(response.data.player);
-            })
-            .catch(() => {
+            } catch {
                 // No valid session, user is not logged in
                 setPlayer(undefined);
-            });
+            }
+        };
+        checkAuth();
     }, []);
 
     const authLogin = useCallback(
@@ -84,19 +86,17 @@ const AuthContextProvider: FC<ChildProps> = (props: ChildProps) => {
     }, [navigate]);
 
     return (
-        <>
-            <AuthContext.Provider
-                value={{
-                    player,
-                    login: authLogin,
-                    register: authRegister,
-                    logout: authLogout,
-                    reloadPlayer,
-                }}
-            >
-                {props.children}
-            </AuthContext.Provider>
-        </>
+        <AuthContext.Provider
+            value={{
+                player,
+                login: authLogin,
+                register: authRegister,
+                logout: authLogout,
+                reloadPlayer,
+            }}
+        >
+            {props.children}
+        </AuthContext.Provider>
     );
 };
 

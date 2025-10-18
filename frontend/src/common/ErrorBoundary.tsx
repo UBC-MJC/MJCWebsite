@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from "react";
+import { Component, ErrorInfo, ReactNode } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { logger } from "./logger";
 

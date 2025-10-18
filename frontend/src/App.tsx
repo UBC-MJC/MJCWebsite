@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import "./App.scss";
 import WithoutNav from "@/common/WithoutNav";
@@ -10,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import { enUS } from "@mui/x-date-pickers/locales";
 import { GameNotFound } from "@/game/common/GameNotFound";
+import React, { useState } from "react";
 
 // Lazy load route components for code splitting
 const Home = React.lazy(() => import("./home/Home"));
@@ -46,7 +46,7 @@ const queryClient = new QueryClient({
 const useQuery = () => {
     const { search } = useLocation();
 
-    return React.useMemo(() => new URLSearchParams(search), [search]);
+    return new URLSearchParams(search);
 };
 
 type ColorMode = "light" | "dark" | "system";
@@ -68,11 +68,9 @@ export const useColorMode = () => {
 
 const COLOR_MODE_STORAGE_KEY = "colorMode";
 
-const App: React.FC = () => {
+const App = () => {
     const query = useQuery();
     const systemMode = useMediaQuery("(prefers-color-scheme: dark)") ? "dark" : "light";
-    const root = window.document.documentElement;
-
     // Initialize mode from localStorage, or fall back to system preference
     const getInitialMode = (): "light" | "dark" => {
         try {
@@ -89,12 +87,7 @@ const App: React.FC = () => {
         return systemMode;
     };
 
-    const [mode, setMode] = React.useState<"light" | "dark">(getInitialMode);
-
-    // Set initial theme attribute
-    React.useEffect(() => {
-        root.setAttribute("data-bs-theme", mode);
-    }, [mode, root]);
+    const [mode, setMode] = useState<"light" | "dark">(getInitialMode);
 
     const colorMode: ColorModeContextType = {
         mode,
@@ -107,10 +100,8 @@ const App: React.FC = () => {
 
             if (newMode === "system") {
                 setMode(systemMode);
-                root.setAttribute("data-bs-theme", systemMode);
                 return;
             }
-            root.setAttribute("data-bs-theme", newMode);
             setMode(newMode);
         },
     };

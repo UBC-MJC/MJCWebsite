@@ -1,4 +1,3 @@
-import React, { FC } from "react";
 import riichiStick from "@/assets/riichiStick.png";
 import { Box, Stack, Typography, Paper, Chip, alpha } from "@mui/material";
 
@@ -15,7 +14,7 @@ interface PlayerScoreCardProps {
     hasRiichiStick?: boolean;
 }
 
-const PlayerScoreCard: FC<PlayerScoreCardProps> = ({ username, score, eloDelta }) => {
+const PlayerScoreCard = ({ username, score, eloDelta }: PlayerScoreCardProps) => {
     const isPositiveDelta = eloDelta >= 0;
 
     return (
@@ -79,7 +78,7 @@ const PlayerScoreCard: FC<PlayerScoreCardProps> = ({ username, score, eloDelta }
     );
 };
 
-export const Footer: FC<FooterProps> = ({ scores, riichiList, riichiStickCount }) => {
+export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) => {
     const hasRiichiSticks = riichiList && riichiList.length > 0;
 
     return (

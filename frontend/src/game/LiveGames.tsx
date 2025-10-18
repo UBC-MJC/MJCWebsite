@@ -1,4 +1,3 @@
-import React, { FC } from "react";
 import {
     Box,
     Card,
@@ -21,7 +20,7 @@ import GameSummaryBody from "./common/GameSummaryBody";
 import { useLiveGames } from "@/hooks/GameHooks";
 import type { GameCreationProp } from "@/types";
 
-export const LiveGames: FC<GameCreationProp> = ({ gameVariant }) => {
+export const LiveGames = ({ gameVariant }: GameCreationProp) => {
     const { isPending, error, data: liveGames } = useLiveGames(gameVariant);
 
     const formatDate = (dateString: string) => {

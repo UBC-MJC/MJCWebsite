@@ -1,9 +1,8 @@
-import React, { FC } from "react";
 import { Box, Container, Typography } from "@mui/material";
 
 import logo from "../assets/MJC square.png";
 
-const Home: FC = () => {
+const Home = () => {
     return (
         <Container>
             <Typography variant="h4" component="h1" gutterBottom sx={{ my: 4, fontWeight: 600 }}>

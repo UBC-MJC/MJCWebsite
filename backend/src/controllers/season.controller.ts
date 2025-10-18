@@ -26,11 +26,12 @@ const getSeasonsHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    findAllSeasons()
-        .then((seasons) => res.json(seasons))
-        .catch((err: any) => {
-            next(createError.InternalServerError(err.message));
-        });
+    try {
+        const seasons = await findAllSeasons();
+        res.json(seasons);
+    } catch (err) {
+        next(createError.InternalServerError((err as Error).message));
+    }
 };
 
 export { getCurrentSeasonHandler, getSeasonsHandler };

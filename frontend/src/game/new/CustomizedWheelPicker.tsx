@@ -1,4 +1,3 @@
-import { FC } from "react";
 import WheelPicker, { PickerData } from "react-simple-wheel-picker";
 
 interface CustomizedWheelPickerProps {
@@ -6,7 +5,7 @@ interface CustomizedWheelPickerProps {
     onChange: (item: PickerData) => void;
 }
 
-const CustomizedWheelPicker: FC<CustomizedWheelPickerProps> = ({ data, onChange }) => {
+const CustomizedWheelPicker = ({ data, onChange }: CustomizedWheelPickerProps) => {
     return (
         <WheelPicker
             data={data}

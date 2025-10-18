@@ -1,4 +1,4 @@
-import React, { FC, useContext, memo, useState } from "react";
+import { useContext, memo, useState } from "react";
 import {
     AppBar,
     Toolbar,
@@ -24,7 +24,7 @@ import { AuthContext } from "@/common/AuthContext";
 import { Link } from "react-router-dom";
 import { getGameVariantString } from "@/common/Utils";
 
-const NavBar: FC = () => {
+const NavBar = () => {
     const { player, logout } = useContext(AuthContext);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));

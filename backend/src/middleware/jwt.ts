@@ -17,11 +17,11 @@ const verifyToken = (token: string): string | undefined => {
     }
 };
 
-const getAccessTokenSecret = () =>  {
+const getAccessTokenSecret = () => {
     if (!process.env.ACCESS_TOKEN_SECRET) {
         throw new Error("ACCESS_TOKEN_SECRET is not defined in environment variables");
     }
     return process.env.ACCESS_TOKEN_SECRET;
-}
+};
 
 export { generateToken, verifyToken };

@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AxiosError } from "axios";
 import type {
@@ -28,7 +28,7 @@ import { gameRoundString, isGameEnd } from "./common/constants";
 import { baseUrl } from "@/api/APIUtils";
 import { Button, Stack, Container, Typography, Box } from "@mui/material";
 
-const Game: FC = <T extends GameVariant>() => {
+const Game = <T extends GameVariant>() => {
     const { id, variant: variantParam } = useParams();
     const { player } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -42,22 +42,24 @@ const Game: FC = <T extends GameVariant>() => {
     const [game, setGame] = useState<Game<T> | undefined>(undefined);
 
     useEffect(() => {
-        if (isNaN(gameId) || !variant) {
-            navigate("/games/not-found");
-            return;
-        }
+        const fetchGame = async () => {
+            if (isNaN(gameId) || !variant) {
+                navigate("/games/not-found");
+                return;
+            }
 
-        getGameAPI(gameId, variant)
-            .then((response) => {
+            try {
+                const response = await getGameAPI(gameId, variant);
                 setGame(response.data);
-            })
-            .catch((error: AxiosError) => {
-                logger.error("Error fetching game: ", error.response?.data);
-                if (error.response?.status === 404) {
+            } catch (error) {
+                logger.error("Error fetching game: ", (error as AxiosError).response?.data);
+                if ((error as AxiosError).response?.status === 404) {
                     navigate("/games/not-found");
                     return;
                 }
-            });
+            }
+        };
+        fetchGame();
     }, [gameId, navigate, variant]);
 
     useEffect(() => {
@@ -83,13 +85,12 @@ const Game: FC = <T extends GameVariant>() => {
     }, [game?.id, game?.status, player, variant]);
 
     const handleSubmitRound = async (roundRequest: JapaneseRound | HongKongRound) => {
-        addRoundAPI(gameId, variant!, roundRequest)
-            .then((response) => {
-                setGame(response.data);
-            })
-            .catch((error: AxiosError) => {
-                alert(`Add Round Error: ${error.response?.data}`);
-            });
+        try {
+            const response = await addRoundAPI(gameId, variant!, roundRequest);
+            setGame(response.data);
+        } catch (error) {
+            alert(`Add Round Error: ${(error as AxiosError).response?.data}`);
+        }
     };
 
     const handleDeleteRound = async () => {
@@ -147,9 +148,8 @@ const Game: FC = <T extends GameVariant>() => {
             const tempGame = { ...game! };
             tempGame.status = "FINISHED";
             setGame(tempGame);
-        } catch (e) {
-            const error = e as Error;
-            await alert(`Delete Game Error: ${error.message}`);
+        } catch (error) {
+            await alert(`Delete Game Error: ${(error as AxiosError).message}`);
         }
     };
 

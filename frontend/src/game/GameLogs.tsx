@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { getGamesAPI } from "@/api/GameAPI";
 import { AxiosError } from "axios";
 import { logger } from "@/common/logger";
@@ -50,23 +50,22 @@ const GameLogs = <T extends GameVariant>() => {
         return loading || season == undefined;
     }, [loading, season]);
 
-    const getGames = useCallback(() => {
+    const getGames = useCallback(async () => {
         if (season != undefined) {
             setLoading(true);
-            getGamesAPI(queryGameVariant, season.id, queryPlayers)
-                .then((response) => {
-                    response.data.reverse();
-                    setGames(response.data);
-                    setLoading(false);
-                    setPagination(1);
-                    if (response.data.length === 0) {
-                        return alert("No games found");
-                    }
-                })
-                .catch((error: AxiosError) => {
-                    logger.error("Error fetching games: ", error.response?.data);
-                    setLoading(false);
-                });
+            try {
+                const response = await getGamesAPI(queryGameVariant, season.id, queryPlayers);
+                response.data.reverse();
+                setGames(response.data);
+                setLoading(false);
+                setPagination(1);
+                if (response.data.length === 0) {
+                    alert("No games found");
+                }
+            } catch (error) {
+                logger.error("Error fetching games: ", (error as AxiosError).response?.data);
+                setLoading(false);
+            }
         }
     }, [queryGameVariant, season, queryPlayers]);
 

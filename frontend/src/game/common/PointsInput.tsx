@@ -1,4 +1,3 @@
-import React, { FC } from "react";
 import { PointWheelComponent } from "@/common/Utils";
 import DropdownInput from "./DropdownInput";
 import { Stack, Typography } from "@mui/material";
@@ -8,7 +7,7 @@ interface PointsInputProps {
     onChange: (label: string, value: string) => void;
 }
 
-const PointsInput: FC<PointsInputProps> = ({ pointsWheel, onChange }) => {
+const PointsInput = ({ pointsWheel, onChange }: PointsInputProps) => {
     return (
         <Stack spacing={2} alignItems="center">
             <Typography variant="h6" component="h5" sx={{ fontWeight: 600 }}>
