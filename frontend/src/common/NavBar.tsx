@@ -53,7 +53,15 @@ const NavBar = () => {
         <Box sx={{ width: 250 }} role="presentation">
             <List>
                 <ListItem>
-                    <Typography variant="h6">UBC Mahjong Club</Typography>
+                    <Typography
+                        variant="h6"
+                        component={Link}
+                        to="/"
+                        sx={{ textDecoration: "none", color: "inherit" }}
+                        onClick={closeDrawer}
+                    >
+                        UBC Mahjong Club
+                    </Typography>
                 </ListItem>
                 <Divider />
                 <ListItem onClick={() => setLeaderboardOpen(!leaderboardOpen)}>
