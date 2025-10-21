@@ -6,7 +6,6 @@ import { mapPlayerNameToOption, mapSeasonToOption } from "@/game/common/constant
 import { useStatistics } from "@/hooks/LeaderboardHooks";
 import {
     Autocomplete,
-    Box,
     Card,
     CardContent,
     Container,
@@ -155,15 +154,16 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
     );
 };
 
-interface StatCardProps {
+const StatCard = ({
+    label,
+    value,
+    color,
+}: {
     label: string;
     value: string;
     color?: string;
-}
-
-const StatCard = ({ label, value, color }: StatCardProps) => {
+}) => {
     const theme = useTheme();
-
     return (
         <Card
             elevation={0}
@@ -171,45 +171,37 @@ const StatCard = ({ label, value, color }: StatCardProps) => {
                 height: "100%",
                 borderRadius: 2,
                 border: `1px solid ${theme.palette.divider}`,
-                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                transition: "transform 0.2s, box-shadow 0.2s",
                 "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: theme.shadows[4],
-                    borderColor: color || theme.palette.primary.main,
+                    transform: { xs: "none", sm: "translateY(-2px)" },
+                    boxShadow: { xs: 0, sm: theme.shadows[2] },
                 },
             }}
         >
-            <CardContent
-                sx={{
-                    p: 3,
-                    "&:last-child": { pb: 3 },
-                }}
-            >
-                <Stack spacing={1.5}>
-                    <Typography
-                        variant="body2"
-                        sx={{
-                            color: "text.secondary",
-                            fontWeight: 500,
-                            textTransform: "uppercase",
-                            letterSpacing: 0.5,
-                            fontSize: "0.75rem",
-                        }}
-                    >
-                        {label}
-                    </Typography>
-                    <Typography
-                        variant="h4"
-                        component="div"
-                        sx={{
-                            fontWeight: 700,
-                            color: color || "primary.main",
-                            fontSize: { xs: "1.75rem", sm: "2rem" },
-                        }}
-                    >
-                        {value}
-                    </Typography>
-                </Stack>
+            <CardContent sx={{ p: { xs: 2, sm: 2.5 }, "&:last-child": { pb: { xs: 2, sm: 2.5 } } }}>
+                <Typography
+                    variant="caption"
+                    sx={{
+                        color: "text.secondary",
+                        fontWeight: 600,
+                        textTransform: "uppercase",
+                        letterSpacing: 0.5,
+                        display: "block",
+                        mb: 0.5,
+                    }}
+                >
+                    {label}
+                </Typography>
+                <Typography
+                    variant="h5"
+                    sx={{
+                        fontWeight: 700,
+                        color: color || "primary.main",
+                        fontSize: { xs: "1.5rem", sm: "1.75rem" },
+                    }}
+                >
+                    {value}
+                </Typography>
             </CardContent>
         </Card>
     );
@@ -230,73 +222,62 @@ export const DisplayStatistics = memo(
 
         if (!isSuccess) {
             return (
-                <Grid container spacing={2}>
-                    {[...Array(7)].map((_, index) => (
-                        <Grid key={index} size={{ xs: 12, sm: 6, md: 4 }}>
-                            <Skeleton variant="rounded" height={120} sx={{ borderRadius: 2 }} />
+                <Grid container spacing={{ xs: 1.5, sm: 2 }}>
+                    {[...Array(7)].map((_, i) => (
+                        <Grid key={i} size={{ xs: 12, sm: 6, md: 4 }}>
+                            <Skeleton variant="rounded" height={100} sx={{ borderRadius: 2 }} />
                         </Grid>
                     ))}
                 </Grid>
             );
         }
 
-        const dealInRate = divideWithDefault(100 * stats.dealInCount, stats.totalRounds);
-        const winRate = divideWithDefault(100 * stats.winCount, stats.totalRounds);
-        const riichiRate = divideWithDefault(100 * stats.riichiCount, stats.totalRounds);
-        const riichiWinRate = divideWithDefault(100 * stats.winRiichiCount, stats.riichiCount);
-        const riichiDealInRate = divideWithDefault(
-            100 * stats.dealInRiichiCount,
-            stats.riichiCount,
-        );
-
         const statisticsData = [
             {
                 label: "Win Rate",
-                value: `${winRate.toFixed(2)}%`,
+                value: `${divideWithDefault(100 * stats.winCount, stats.totalRounds).toFixed(2)}%`,
                 color: theme.palette.success.main,
             },
             {
-                label: "Average Agari Size",
+                label: "Avg Agari Size",
                 value: divideWithDefault(stats.winPoint, stats.winCount).toFixed(0),
                 color: theme.palette.success.light,
             },
             {
                 label: "Deal-in Rate",
-                value: `${dealInRate.toFixed(2)}%`,
+                value: `${divideWithDefault(100 * stats.dealInCount, stats.totalRounds).toFixed(2)}%`,
                 color: theme.palette.error.main,
             },
             {
-                label: "Average Deal-in Size",
+                label: "Avg Deal-in Size",
                 value: divideWithDefault(stats.dealInPoint, stats.dealInCount).toFixed(0),
                 color: theme.palette.error.light,
             },
             {
                 label: "Riichi Rate",
-                value: `${riichiRate.toFixed(2)}%`,
+                value: `${divideWithDefault(100 * stats.riichiCount, stats.totalRounds).toFixed(2)}%`,
                 color: theme.palette.info.main,
             },
             {
                 label: "Riichi Win Rate",
-                value: `${riichiWinRate.toFixed(2)}%`,
+                value: `${divideWithDefault(100 * stats.winRiichiCount, stats.riichiCount).toFixed(2)}%`,
                 color: theme.palette.info.light,
             },
             {
-                label: "Riichi Deal-in Rate",
-                value: `${riichiDealInRate.toFixed(2)}%`,
+                label: "Deal-in after Riichi",
+                value: `${divideWithDefault(100 * stats.dealInRiichiCount, stats.riichiCount).toFixed(2)}%`,
                 color: theme.palette.warning.main,
             },
         ];
 
         return (
-            <Box>
-                <Grid container spacing={2}>
-                    {statisticsData.map((stat, index) => (
-                        <Grid key={index} size={{ xs: 12, sm: 6, md: 4 }}>
-                            <StatCard label={stat.label} value={stat.value} color={stat.color} />
-                        </Grid>
-                    ))}
-                </Grid>
-            </Box>
+            <Grid container spacing={{ xs: 1.5, sm: 2 }}>
+                {statisticsData.map((stat, i) => (
+                    <Grid key={i} size={{ xs: 12, sm: 6, md: 4 }}>
+                        <StatCard {...stat} />
+                    </Grid>
+                ))}
+            </Grid>
         );
     },
 );
