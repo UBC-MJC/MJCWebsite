@@ -70,17 +70,17 @@ const Settings = () => {
             <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 600 }}>
                 Settings
             </Typography>
-            <Box sx={{ maxWidth: "300px", mx: "auto", my: 3 }}>
-                <FormControlLabel
-                    label="Legacy Display Game"
-                    defaultChecked={settings.legacyDisplayGame}
-                    control={
-                        <Switch
-                            onChange={(_e, checked) => handleToggle(checked, "legacyDisplayGame")}
-                        />
-                    }
-                />
-            </Box>
+            {/*<Box sx={{ maxWidth: "300px", mx: "auto", my: 3 }}>*/}
+            {/*    <FormControlLabel*/}
+            {/*        label="Legacy Display Game"*/}
+            {/*        defaultChecked={settings.legacyDisplayGame}*/}
+            {/*        control={*/}
+            {/*            <Switch*/}
+            {/*                onChange={(_e, checked) => handleToggle(checked, "legacyDisplayGame")}*/}
+            {/*            />*/}
+            {/*        }*/}
+            {/*    />*/}
+            {/*</Box>*/}
             <Typography variant="h6" component="h2" sx={{ mb: 2, textAlign: "center" }}>
                 Theme
             </Typography>
