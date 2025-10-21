@@ -1,6 +1,6 @@
 # UBC Mahjong Club Website
 
-A full-stack web application for managing the UBC Mahjong Club, including player statistics, game tracking, leaderboards, and tournament management.
+A full-stack web application for managing the UBC Mahjong Club, including player statistics, game tracking, and ranked leaderboards.
 
 ## Tech Stack
 
