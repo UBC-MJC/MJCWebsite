@@ -64,9 +64,6 @@ const alert = async (message: string, options: Partial<AlertProps> = {}) => {
         Object.assign(
             {
                 confirmation: message,
-                proceed: () => undefined,
-                dismiss: () => undefined,
-                cancel: () => undefined,
                 title: "",
             },
             options,
