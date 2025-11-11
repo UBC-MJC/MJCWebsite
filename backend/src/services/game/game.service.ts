@@ -12,7 +12,6 @@ import prisma from "../../db";
 import { findPlayerByUsernameOrEmail } from "../player.service";
 
 export type EloDict = Record<string, number>;
-const MAX_GAME_COUNT = 120;
 
 abstract class GameService {
     public readonly gameDatabase: any;
@@ -43,18 +42,6 @@ abstract class GameService {
             for (const player of playerList) {
                 if (!this.isEligible(player!)) {
                     throw new Error("Player not eligible for game type");
-                }
-                const gameCount = await this.playerGameDatabase.count({
-                    where: {
-                        playerId: player.id,
-                        game: {
-                            seasonId: seasonId,
-                            type: gameType,
-                        },
-                    },
-                });
-                if (gameCount > MAX_GAME_COUNT) {
-                    throw Error("Maximum Game Count exceeded for player " + player.username + "!");
                 }
             }
         }
