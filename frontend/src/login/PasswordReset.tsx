@@ -49,7 +49,7 @@ const PasswordReset = ({ playerId, token }: PasswordResetProps) => {
         setIsWaiting(true);
         try {
             await submitPasswordResetAPI(playerId!, token!, password);
-            await alert(`Password reset successfully. Please login with your new password.`);
+            alert(`Password reset successfully. Please login with your new password.`);
             navigate(`/login`);
         } catch (err) {
             setError((err as AxiosError).response?.data as string);
