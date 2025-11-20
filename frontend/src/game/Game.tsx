@@ -193,7 +193,7 @@ const Game = <T extends GameVariant>() => {
     }
     const canUpdateGame: boolean =
         game.status === "IN_PROGRESS" &&
-        (isRecording(game) || (player !== undefined && player.admin));
+        (isRecording(game) || (player && player.admin));
     const spectatorPadding: number = canUpdateGame ? 0 : 12;
     return (
         <Container sx={{ pb: { xs: 6 + spectatorPadding, sm: 10 + spectatorPadding } }}>
