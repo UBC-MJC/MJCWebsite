@@ -50,11 +50,11 @@ const GameLogs = <T extends GameVariant>() => {
     const seasonsSorted =
         seasonsSuccess && seasons ? [...seasons].sort((a, b) => b.id.localeCompare(a.id)) : [];
     useEffect(() => {
-        // Set the first season as the current season if it has not ended
-        if (seasonsSuccess && seasons && seasons.length > 0 && seasons[0].endDate > new Date()) {
-            setSeason(seasons[0]);
+        // Always set the first season (most recent) as the default season if available
+        if (seasonsSorted.length > 0) {
+            setSeason(seasonsSorted[0]);
         }
-    }, [seasonsSuccess, seasons]);
+    }, [seasonsSorted]);
 
     const disableQueryButton = useCallback((): boolean => {
         return loading || season === null;
