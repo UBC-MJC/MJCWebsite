@@ -7,9 +7,11 @@ import {
     CardContent,
     Container,
     TextField,
-    Box,
+    Stack,
     Typography,
     Grid,
+    Link,
+    Box,
 } from "@mui/material";
 import type { RegisterDataType } from "@/types";
 import { logger } from "@/common/logger";
@@ -22,6 +24,7 @@ const Register = () => {
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -34,9 +37,6 @@ const Register = () => {
         if (!username || username.trim().length === 0) {
             newErrors["username"] = "Username is required (no whitespace only)";
         }
-        if (!password) {
-            newErrors["password"] = "Password is required";
-        }
         if (!firstName) {
             newErrors["firstName"] = "First name is required";
         }
@@ -47,6 +47,16 @@ const Register = () => {
             newErrors["email"] = "Email is required";
         } else if (!isEmail(email)) {
             newErrors["email"] = "Email is invalid";
+        }
+        if (!password) {
+            newErrors["password"] = "Password is required";
+        } else if (password.length < 6) {
+            newErrors["password"] = "Password must be at least 6 characters long";
+        }
+        if (!confirmPassword) {
+            newErrors["confirmPassword"] = "Please confirm your password";
+        } else if (password !== confirmPassword) {
+            newErrors["confirmPassword"] = "Passwords do not match";
         }
         if (Object.keys(newErrors).length !== 0) {
             setErrors(newErrors);
@@ -71,89 +81,123 @@ const Register = () => {
     };
 
     return (
-        <Container maxWidth="sm" sx={{ my: 5, display: "flex", flexDirection: "column" }}>
-            <Card>
-                <CardContent>
-                    <Typography variant="h4" component="h2" gutterBottom>
-                        UBC Mahjong Club Register
-                    </Typography>
-                    <Box component="form" noValidate onSubmit={handleSubmit}>
-                        <TextField
-                            fullWidth
-                            required
-                            margin="normal"
-                            placeholder="Username"
-                            value={username}
-                            error={!!errors.username}
-                            helperText={errors.username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            sx={{ my: 2 }}
-                        />
+        <Container
+            maxWidth="sm"
+            sx={{
+                minHeight: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+            }}
+        >
+            <Stack>
+                <Card>
+                    <CardContent>
+                        <Stack component="form" noValidate onSubmit={handleSubmit}>
+                            <Typography variant="h1">UBC Mahjong Club</Typography>
 
-                        <Grid container spacing={2} sx={{ my: 2 }}>
-                            <Grid size={{ xs: 12, sm: 6 }}>
-                                <TextField
-                                    fullWidth
-                                    type="text"
-                                    placeholder="First name"
-                                    value={firstName}
-                                    error={!!errors.firstName}
-                                    helperText={errors.firstName}
-                                    onChange={(e) => setFirstName(e.target.value)}
-                                />
+                            <TextField
+                                fullWidth
+                                required
+                                label="Username"
+                                placeholder="Choose a username"
+                                value={username}
+                                error={!!errors.username}
+                                helperText={errors.username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                autoComplete="username"
+                            />
+
+                            <Grid container spacing={2}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        required
+                                        label="First Name"
+                                        placeholder="Enter your first name"
+                                        value={firstName}
+                                        error={!!errors.firstName}
+                                        helperText={errors.firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                        autoComplete="given-name"
+                                    />
+                                </Grid>
+                                <Grid size={{ xs: 12, sm: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        required
+                                        label="Last Name"
+                                        placeholder="Enter your last name"
+                                        value={lastName}
+                                        error={!!errors.lastName}
+                                        helperText={errors.lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                        autoComplete="family-name"
+                                    />
+                                </Grid>
                             </Grid>
-                            <Grid size={{ xs: 12, sm: 6 }}>
-                                <TextField
-                                    fullWidth
-                                    type="text"
-                                    placeholder="Last name"
-                                    value={lastName}
-                                    error={!!errors.lastName}
-                                    helperText={errors.lastName}
-                                    onChange={(e) => setLastName(e.target.value)}
-                                />
-                            </Grid>
-                        </Grid>
 
-                        <TextField
-                            fullWidth
-                            required
-                            margin="normal"
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            error={!!errors.email}
-                            helperText={errors.email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            sx={{ my: 2 }}
-                        />
+                            <TextField
+                                fullWidth
+                                required
+                                label="Email"
+                                type="email"
+                                placeholder="Enter your email address"
+                                value={email}
+                                error={!!errors.email}
+                                helperText={errors.email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                autoComplete="email"
+                            />
 
-                        <TextField
-                            fullWidth
-                            required
-                            margin="normal"
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            error={!!errors.password}
-                            helperText={errors.password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            sx={{ my: 2 }}
-                        />
+                            <TextField
+                                fullWidth
+                                required
+                                label="Password"
+                                type="password"
+                                placeholder="Create a password (min 6 characters)"
+                                value={password}
+                                error={!!errors.password}
+                                helperText={errors.password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                autoComplete="new-password"
+                            />
 
-                        <Button fullWidth variant="contained" type="submit" sx={{ my: 2 }}>
-                            Sign Up
-                        </Button>
+                            <TextField
+                                fullWidth
+                                required
+                                label="Confirm Password"
+                                type="password"
+                                placeholder="Re-enter your password"
+                                value={confirmPassword}
+                                error={!!errors.confirmPassword}
+                                helperText={errors.confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                autoComplete="new-password"
+                            />
 
-                        <Box sx={{ display: "flex", justifyContent: "center", mx: 1 }}>
-                            <Typography variant="body2">
-                                Have an account? <a href="/login">Login</a>
-                            </Typography>
-                        </Box>
-                    </Box>
-                </CardContent>
-            </Card>
-            <Button href="/login">Back</Button>
+                            <Button fullWidth variant="contained" type="submit" size="large">
+                                Sign Up
+                            </Button>
+
+                            <Box display="flex" justifyContent="center">
+                                <Typography variant="body2" color="text.secondary">
+                                    Already have an account?{" "}
+                                    <Link href="/login" underline="hover" fontWeight={600}>
+                                        Login
+                                    </Link>
+                                </Typography>
+                            </Box>
+                        </Stack>
+                    </CardContent>
+                </Card>
+
+                <Box display="flex" justifyContent="center">
+                    <Button href="/" variant="text">
+                        Back to Home
+                    </Button>
+                </Box>
+            </Stack>
         </Container>
     );
 };

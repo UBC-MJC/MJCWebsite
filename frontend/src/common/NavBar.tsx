@@ -16,13 +16,17 @@ import {
     useMediaQuery,
     Divider,
     Collapse,
+    Stack,
+    Avatar,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { AuthContext } from "@/common/AuthContext";
 import { Link } from "react-router-dom";
 import { getGameVariantString } from "@/common/Utils";
+import { navButton } from "@/theme/utils";
 
 const NavBar = () => {
     const { player, logout } = useContext(AuthContext);
@@ -246,7 +250,12 @@ const NavBar = () => {
             >
                 Skip to main content
             </Box>
-            <AppBar position="static" color="info">
+            <AppBar
+                position="static"
+                color="info"
+                elevation={0}
+                sx={{ borderBottom: 1, borderColor: "divider" }}
+            >
                 <Toolbar>
                     {isMobile && (
                         <IconButton
@@ -260,25 +269,29 @@ const NavBar = () => {
                         </IconButton>
                     )}
                     <Typography
-                        variant="h6"
+                        variant="h3"
                         component={Link}
                         to="/"
                         sx={{
                             flexGrow: isMobile ? 1 : 0,
-                            textDecoration: "none",
                             color: "inherit",
                             mr: 5,
+                            whiteSpace: "nowrap",
                         }}
                     >
                         UBC Mahjong Club
                     </Typography>
                     {!isMobile && (
                         <>
-                            <Box sx={{ flexGrow: 1, display: "flex" }}>
+                            <Stack direction="row" spacing={1} sx={{ flexGrow: 1 }}>
                                 <Button
                                     color="inherit"
+                                    sx={navButton}
                                     onClick={(e) => setLeaderboardAnchor(e.currentTarget)}
                                     aria-label="Leaderboard menu"
+                                    aria-haspopup="true"
+                                    aria-expanded={Boolean(leaderboardAnchor)}
+                                    endIcon={<KeyboardArrowDownIcon />}
                                 >
                                     Leaderboard
                                 </Button>
@@ -286,6 +299,9 @@ const NavBar = () => {
                                     anchorEl={leaderboardAnchor}
                                     open={Boolean(leaderboardAnchor)}
                                     onClose={() => setLeaderboardAnchor(null)}
+                                    anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                                    transformOrigin={{ vertical: "top", horizontal: "left" }}
+                                    sx={{ mt: 2 }}
                                 >
                                     <MenuItem
                                         component={Link}
@@ -320,8 +336,12 @@ const NavBar = () => {
                                     <>
                                         <Button
                                             color="inherit"
+                                            sx={navButton}
                                             onClick={(e) => setRecordGameAnchor(e.currentTarget)}
                                             aria-label="Record game menu"
+                                            aria-haspopup="true"
+                                            aria-expanded={Boolean(recordGameAnchor)}
+                                            endIcon={<KeyboardArrowDownIcon />}
                                         >
                                             Record Game
                                         </Button>
@@ -329,6 +349,15 @@ const NavBar = () => {
                                             anchorEl={recordGameAnchor}
                                             open={Boolean(recordGameAnchor)}
                                             onClose={() => setRecordGameAnchor(null)}
+                                            anchorOrigin={{
+                                                vertical: "bottom",
+                                                horizontal: "left",
+                                            }}
+                                            transformOrigin={{
+                                                vertical: "top",
+                                                horizontal: "left",
+                                            }}
+                                            sx={{ mt: 2 }}
                                         >
                                             {player.japaneseQualified && (
                                                 <MenuItem
@@ -367,8 +396,12 @@ const NavBar = () => {
                                 )}
                                 <Button
                                     color="inherit"
+                                    sx={navButton}
                                     onClick={(e) => setLiveGamesAnchor(e.currentTarget)}
                                     aria-label="Live games menu"
+                                    aria-haspopup="true"
+                                    aria-expanded={Boolean(liveGamesAnchor)}
+                                    endIcon={<KeyboardArrowDownIcon />}
                                 >
                                     Live Games
                                 </Button>
@@ -376,6 +409,9 @@ const NavBar = () => {
                                     anchorEl={liveGamesAnchor}
                                     open={Boolean(liveGamesAnchor)}
                                     onClose={() => setLiveGamesAnchor(null)}
+                                    anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                                    transformOrigin={{ vertical: "top", horizontal: "left" }}
+                                    sx={{ mt: 2 }}
                                 >
                                     <MenuItem
                                         component={Link}
@@ -392,19 +428,38 @@ const NavBar = () => {
                                         {getGameVariantString("hk")}
                                     </MenuItem>
                                 </Menu>
-                                <Button color="inherit" component={Link} to="/games">
+                                <Button color="inherit" sx={navButton} component={Link} to="/games">
                                     Logs
                                 </Button>
-                                <Button color="inherit" component={Link} to="/stats/jp">
+                                <Button
+                                    color="inherit"
+                                    sx={navButton}
+                                    component={Link}
+                                    to="/stats/jp"
+                                >
                                     Stats
                                 </Button>
-                                <Button color="inherit" component={Link} to="/resources">
+                                <Button
+                                    color="inherit"
+                                    sx={navButton}
+                                    component={Link}
+                                    to="/resources"
+                                >
                                     Resources
                                 </Button>
-                            </Box>
-                            <Box>
+                            </Stack>
+                            <Stack
+                                direction="row"
+                                spacing={1}
+                                divider={<Divider orientation="vertical" flexItem />}
+                            >
                                 {player && player.admin && (
-                                    <Button color="inherit" component={Link} to="/admin">
+                                    <Button
+                                        color="inherit"
+                                        sx={navButton}
+                                        component={Link}
+                                        to="/admin"
+                                    >
                                         Admin
                                     </Button>
                                 )}
@@ -412,8 +467,28 @@ const NavBar = () => {
                                     <>
                                         <Button
                                             color="inherit"
+                                            sx={navButton}
                                             onClick={(e) => setUserAnchor(e.currentTarget)}
                                             aria-label="User menu"
+                                            aria-haspopup="true"
+                                            aria-expanded={Boolean(userAnchor)}
+                                            endIcon={<KeyboardArrowDownIcon />}
+                                            startIcon={
+                                                <Avatar
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        width: 32,
+                                                        height: 32,
+                                                        fontSize: "0.875rem",
+                                                        lineHeight: 0,
+                                                        bgcolor: "primary.main",
+                                                    }}
+                                                >
+                                                    {player.username[0].toUpperCase()}
+                                                </Avatar>
+                                            }
                                         >
                                             {player.username}
                                         </Button>
@@ -421,6 +496,15 @@ const NavBar = () => {
                                             anchorEl={userAnchor}
                                             open={Boolean(userAnchor)}
                                             onClose={() => setUserAnchor(null)}
+                                            anchorOrigin={{
+                                                vertical: "bottom",
+                                                horizontal: "right",
+                                            }}
+                                            transformOrigin={{
+                                                vertical: "top",
+                                                horizontal: "right",
+                                            }}
+                                            sx={{ mt: 1 }}
                                         >
                                             <MenuItem
                                                 component={Link}
@@ -440,11 +524,16 @@ const NavBar = () => {
                                         </Menu>
                                     </>
                                 ) : (
-                                    <Button color="inherit" component={Link} to="/login">
+                                    <Button
+                                        color="inherit"
+                                        sx={navButton}
+                                        component={Link}
+                                        to="/login"
+                                    >
                                         Login
                                     </Button>
                                 )}
-                            </Box>
+                            </Stack>
                         </>
                     )}
                 </Toolbar>

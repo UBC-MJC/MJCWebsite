@@ -1,61 +1,69 @@
-import { memo, useContext, useState } from "react";
+import { memo, useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayers } from "@/hooks/GameHooks";
-import { mapPlayerNameToOption, mapSeasonToOption } from "@/game/common/constants";
 import { useStatistics } from "@/hooks/LeaderboardHooks";
 import { Autocomplete, Container, Grid, Stack, TextField, Typography } from "@mui/material";
 import type { GameVariant, Season } from "@/types";
 
 const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
-    const [playerId, setPlayerId] = useState<string | undefined>(
-        useContext(AuthContext).player?.id,
-    );
-    const [season, setSeason] = useState<Season | undefined>();
-    const seasonsResult = useSeasons(setSeason);
-    const playersResult = usePlayers(gameVariant, "CASUAL");
+    const { player } = useContext(AuthContext);
+    const [playerId, setPlayerId] = useState<string | null>(player?.id ?? null);
+    const [season, setSeason] = useState<Season | null>(null);
+    const { isSuccess: seasonsSuccess, data: seasons } = useSeasons();
+    const { isSuccess: playersSuccess, data: players } = usePlayers(gameVariant, "CASUAL");
 
-    if (!seasonsResult.isSuccess || !playersResult.isSuccess) {
+    useEffect(() => {
+        // Set the first season as the current season if it has not ended
+        if (seasonsSuccess && seasons && seasons.length > 0 && seasons[0].endDate > new Date()) {
+            setSeason(seasons[0]);
+        }
+    }, [seasonsSuccess, seasons]);
+
+    if (!seasonsSuccess || !playersSuccess || !seasons || !players) {
         return <>Loading ...</>;
     }
-    const seasonsOptions = mapSeasonToOption(seasonsResult.data);
-    const playersOptions = mapPlayerNameToOption(playersResult.data);
+
+    const selectedPlayer = playerId ? (players.find((p) => p.playerId === playerId) ?? null) : null;
+
     return (
         <Container>
-            <Stack spacing={1}>
-                <Typography variant="h4" component="h1" gutterBottom>
-                    Round Statistics
-                </Typography>
+            <Stack>
+                <Typography variant="h1">Game Statistics</Typography>
 
-                <Stack spacing={1} direction="row">
-                    <Stack spacing={1} direction="column" width="50%">
-                        <Typography variant="h6" component="h2">
-                            Season
-                        </Typography>
-                        <Autocomplete
-                            isOptionEqualToValue={(option, value) => option.label === value.label}
-                            options={seasonsOptions}
-                            onChange={(event, value) => setSeason(value!.value)}
-                            renderInput={(params) => (
-                                <TextField {...params} placeholder="Default: this season" />
-                            )}
-                        />
-                    </Stack>
-                    <Stack spacing={1} direction="column" width="50%">
-                        <Typography variant="h6" component="h2">
-                            Players
-                        </Typography>
-                        <Autocomplete
-                            isOptionEqualToValue={(option, value) => option.label === value.label}
-                            options={playersOptions}
-                            onChange={(event, value) => setPlayerId(value!.value)}
-                            renderInput={(params) => (
-                                <TextField {...params} placeholder="Default: your stats" />
-                            )}
-                        />
-                    </Stack>
+                <Stack direction={{ xs: "column", sm: "row" }}>
+                    <Autocomplete
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        getOptionLabel={(option) => option.name}
+                        options={seasons}
+                        value={season}
+                        blurOnSelect
+                        onChange={(_e, value) => setSeason(value)}
+                        sx={{ flex: 1 }}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Season" placeholder="Select a season" />
+                        )}
+                    />
+                    <Autocomplete
+                        isOptionEqualToValue={(option, value) => option.playerId === value.playerId}
+                        getOptionLabel={(option) => option.username}
+                        options={players}
+                        value={selectedPlayer}
+                        blurOnSelect
+                        onChange={(_e, value) => {
+                            setPlayerId(value?.playerId ?? null);
+                        }}
+                        sx={{ flex: 1 }}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Player" placeholder="Select a player" />
+                        )}
+                    />
                 </Stack>
-                <DisplayStatistics playerId={playerId} gameVariant={gameVariant} season={season} />
+                <DisplayStatistics
+                    playerId={playerId === null ? undefined : playerId}
+                    gameVariant={gameVariant}
+                    season={season === null ? undefined : season}
+                />
             </Stack>
         </Container>
     );

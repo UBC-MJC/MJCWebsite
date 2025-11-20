@@ -1,14 +1,11 @@
 import { useContext, useState } from "react";
-import type { Setting } from "@/types";
 import { AuthContext } from "@/common/AuthContext";
-import { updateSettingsAPI, updateUsernameAPI } from "@/api/AccountAPI";
+import { updateUsernameAPI } from "@/api/AccountAPI";
 import { AxiosError } from "axios";
 import { logger } from "@/common/logger";
 import {
     ButtonGroup,
     Button,
-    FormControlLabel,
-    Switch,
     Container,
     Box,
     Dialog,
@@ -18,32 +15,12 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { useColorMode } from "@/App";
+import { ColorModeContext } from "@/App";
 
 const Settings = () => {
     const { player, reloadPlayer } = useContext(AuthContext);
-    const colorMode = useColorMode();
-
-    const [settings, setSettings] = useState<Setting>((): Setting => {
-        return {
-            legacyDisplayGame: player!.legacyDisplayGame,
-        };
-    });
+    const colorMode = useContext(ColorModeContext);
     const [showUpdateUsernameModal, setShowUpdateUsernameModal] = useState(false);
-
-    const handleToggle = async (checked: boolean, setting: string) => {
-        const newSettings: Setting = {
-            ...settings,
-            [setting]: checked,
-        };
-        setSettings(newSettings);
-        try {
-            await updateSettingsAPI(newSettings);
-            await reloadPlayer();
-        } catch (error) {
-            logger.log("Error updating settings: ", (error as AxiosError).response?.data);
-        }
-    };
 
     const updateUsername = async (username: string) => {
         try {
@@ -57,31 +34,27 @@ const Settings = () => {
 
     if (typeof player === "undefined") {
         return (
-            <Container maxWidth="lg" sx={{ py: 4 }}>
-                <Typography variant="h4" component="h1">
-                    Not Logged In
-                </Typography>
+            <Container>
+                <Typography variant="h2">Not Logged In</Typography>
+            </Container>
+        );
+    }
+
+    // Safety check: if colorMode context is not available, show loading state
+    if (!colorMode) {
+        return (
+            <Container>
+                <Typography variant="h2">Loading...</Typography>
             </Container>
         );
     }
 
     return (
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 600 }}>
+        <Container>
+            <Typography variant="h2" gutterBottom>
                 Settings
             </Typography>
-            <Box sx={{ maxWidth: "300px", mx: "auto", my: 3 }}>
-                <FormControlLabel
-                    label="Legacy Display Game"
-                    defaultChecked={settings.legacyDisplayGame}
-                    control={
-                        <Switch
-                            onChange={(_e, checked) => handleToggle(checked, "legacyDisplayGame")}
-                        />
-                    }
-                />
-            </Box>
-            <Typography variant="h6" component="h2" sx={{ mb: 2, textAlign: "center" }}>
+            <Typography variant="h3" gutterBottom>
                 Theme
             </Typography>
             <ButtonGroup variant="contained" aria-label="Color mode selection" sx={{ mb: 3 }}>

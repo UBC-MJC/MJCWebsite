@@ -14,7 +14,7 @@ const AdminComponent = () => {
     };
 
     return (
-        <Container maxWidth="lg">
+        <Container>
             <Tabs value={value} onChange={handleChange} variant="fullWidth">
                 <Tab label="Players" />
                 <Tab label="Season" />

@@ -6,7 +6,17 @@ import { useNavigate } from "react-router-dom";
 import { getGameVariantString } from "@/common/Utils";
 import { usePlayers } from "@/hooks/GameHooks";
 import LoadingFallback from "@/common/LoadingFallback";
-import { Autocomplete, Button, TextField, Container, Grid, Typography } from "@mui/material";
+import {
+    Autocomplete,
+    Button,
+    TextField,
+    Container,
+    Grid,
+    Typography,
+    Stack,
+    Box,
+    Alert,
+} from "@mui/material";
 import type { GameCreationProp, Player, PlayerNamesDataType } from "@/types";
 
 const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
@@ -16,10 +26,13 @@ const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
     const [southPlayer, setSouthPlayer] = useState<PlayerNamesDataType | null>(null);
     const [westPlayer, setWestPlayer] = useState<PlayerNamesDataType | null>(null);
     const [northPlayer, setNorthPlayer] = useState<PlayerNamesDataType | null>(null);
+    const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
     const playerNamesResult = usePlayers(gameVariant, gameType);
 
     const createGame = async () => {
+        setAttemptedSubmit(true);
+
         if (playerSelectMissing || notUnique) {
             return;
         }
@@ -40,11 +53,38 @@ const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
     const title = `Create ${getGameVariantString(gameVariant, gameType)} Game`;
 
     const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
-    const notUnique = new Set([eastPlayer, southPlayer, westPlayer, northPlayer]).size !== 4;
+    const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
+    const notUnique =
+        new Set(playerList.filter((p) => p !== null)).size !==
+        playerList.filter((p) => p !== null).length;
+
+    // Get validation errors
+    const getValidationErrors = () => {
+        const errors: string[] = [];
+
+        if (playerSelectMissing) {
+            const missing: string[] = [];
+            if (!eastPlayer) missing.push("East");
+            if (!southPlayer) missing.push("South");
+            if (!westPlayer) missing.push("West");
+            if (!northPlayer) missing.push("North");
+            errors.push(
+                `Please select ${missing.length === 1 ? "a player" : "players"} for: ${missing.join(", ")}`,
+            );
+        }
+
+        if (!playerSelectMissing && notUnique) {
+            errors.push("Each position must have a different player");
+        }
+
+        return errors;
+    };
+
+    const validationErrors = attemptedSubmit ? getValidationErrors() : [];
     if (playerNamesResult.error)
         return (
-            <Container maxWidth="lg" sx={{ py: 4 }}>
-                <Typography variant="body1" color="error">
+            <Container>
+                <Typography variant="h2" color="error">
                     An error has occurred: {playerNamesResult.error.message}
                 </Typography>
             </Container>
@@ -52,102 +92,112 @@ const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
     if (!playerNamesResult.isSuccess) {
         return <LoadingFallback minHeight="50vh" message="Loading players..." />;
     }
-    const playerNames = playerNamesResult.data
-        .sort((a, b) => a.username.localeCompare(b.username))
-        .map((player) => {
-            return { label: player.username, value: player };
-        });
+    const playerNames = playerNamesResult.data.sort((a, b) => a.username.localeCompare(b.username));
+
     return (
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 600 }}>
-                {title}
-            </Typography>
-            <Grid container spacing={3}>
-                <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-                    <Typography variant="h5" component="h3" gutterBottom id="east-player-label">
-                        East
-                    </Typography>
-                    <Autocomplete
-                        isOptionEqualToValue={(option, value) => option.label === value.label}
-                        options={playerNames}
-                        disableClearable
-                        onChange={(event, value) => setEastPlayer(value!.value)}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                placeholder="Choose a Player"
-                                aria-labelledby="east-player-label"
-                                required
-                            />
-                        )}
-                    />
+        <Container>
+            <Stack spacing={4}>
+                <Typography variant="h1">{title}</Typography>
+
+                <Grid container spacing={3}>
+                    <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                        <Autocomplete
+                            options={playerNames}
+                            getOptionLabel={(option) => option.username}
+                            isOptionEqualToValue={(option, value) =>
+                                option.username === value.username
+                            }
+                            value={eastPlayer}
+                            blurOnSelect
+                            onChange={(_e, value) => setEastPlayer(value)}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="East"
+                                    placeholder="Select player"
+                                    error={attemptedSubmit && !eastPlayer}
+                                />
+                            )}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                        <Autocomplete
+                            options={playerNames}
+                            getOptionLabel={(option) => option.username}
+                            isOptionEqualToValue={(option, value) =>
+                                option.username === value.username
+                            }
+                            value={southPlayer}
+                            blurOnSelect
+                            onChange={(_e, value) => setSouthPlayer(value)}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="South"
+                                    placeholder="Select player"
+                                    error={attemptedSubmit && !southPlayer}
+                                />
+                            )}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                        <Autocomplete
+                            options={playerNames}
+                            getOptionLabel={(option) => option.username}
+                            isOptionEqualToValue={(option, value) =>
+                                option.username === value.username
+                            }
+                            value={westPlayer}
+                            blurOnSelect
+                            onChange={(_e, value) => setWestPlayer(value)}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="West"
+                                    placeholder="Select player"
+                                    error={attemptedSubmit && !westPlayer}
+                                />
+                            )}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                        <Autocomplete
+                            options={playerNames}
+                            getOptionLabel={(option) => option.username}
+                            isOptionEqualToValue={(option, value) =>
+                                option.username === value.username
+                            }
+                            value={northPlayer}
+                            blurOnSelect
+                            onChange={(_e, value) => setNorthPlayer(value)}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="North"
+                                    placeholder="Select player"
+                                    error={attemptedSubmit && !northPlayer}
+                                />
+                            )}
+                        />
+                    </Grid>
                 </Grid>
-                <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-                    <Typography variant="h5" component="h3" gutterBottom id="south-player-label">
-                        South
-                    </Typography>
-                    <Autocomplete
-                        isOptionEqualToValue={(option, value) => option.label === value.label}
-                        options={playerNames}
-                        disableClearable
-                        onChange={(event, value) => setSouthPlayer(value!.value)}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                placeholder="Choose a Player"
-                                aria-labelledby="south-player-label"
-                                required
-                            />
-                        )}
-                    />
-                </Grid>
-                <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-                    <Typography variant="h5" component="h3" gutterBottom id="west-player-label">
-                        West
-                    </Typography>
-                    <Autocomplete
-                        isOptionEqualToValue={(option, value) => option.label === value.label}
-                        options={playerNames}
-                        disableClearable
-                        onChange={(event, value) => setWestPlayer(value!.value)}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                placeholder="Choose a Player"
-                                aria-labelledby="west-player-label"
-                                required
-                            />
-                        )}
-                    />
-                </Grid>
-                <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-                    <Typography variant="h5" component="h3" gutterBottom id="north-player-label">
-                        North
-                    </Typography>
-                    <Autocomplete
-                        isOptionEqualToValue={(option, value) => option.label === value.label}
-                        options={playerNames}
-                        disableClearable
-                        onChange={(event, value) => setNorthPlayer(value!.value)}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                placeholder="Choose a Player"
-                                aria-labelledby="north-player-label"
-                                required
-                            />
-                        )}
-                    />
-                </Grid>
-            </Grid>
-            <Button
-                sx={{ my: 4, mx: "auto", display: "block" }}
-                variant="contained"
-                disabled={playerSelectMissing || notUnique}
-                onClick={createGame}
-            >
-                Create Game
-            </Button>
+
+                {validationErrors.length > 0 && (
+                    <Stack spacing={1}>
+                        {validationErrors.map((error, index) => (
+                            <Alert key={index} severity="error">
+                                {error}
+                            </Alert>
+                        ))}
+                    </Stack>
+                )}
+
+                <Box display="flex" justifyContent="center">
+                    <Button variant="contained" onClick={createGame} size="large">
+                        Create Game
+                    </Button>
+                </Box>
+            </Stack>
         </Container>
     );
 };
