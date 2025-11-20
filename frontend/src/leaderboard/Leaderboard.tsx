@@ -29,9 +29,13 @@ const Leaderboard = ({ gameVariant, gameType }: GameCreationProp) => {
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons();
 
     useEffect(() => {
-        // Set the first season as the current season if it has not ended
-        if (seasonsSuccess && seasons && seasons.length > 0 && seasons[0].endDate > new Date()) {
-            setSeason(seasons[0]);
+        // Set the currently active season, or fallback to the most recent season
+        if (seasonsSuccess && seasons && seasons.length > 0) {
+            const now = new Date();
+            const activeSeason = seasons.find(
+                (s) => new Date(s.startDate) <= now && now < new Date(s.endDate)
+            );
+            setSeason(activeSeason ?? seasons[0]);
         }
     }, [seasonsSuccess, seasons]);
 
