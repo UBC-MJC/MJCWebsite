@@ -216,11 +216,17 @@ const AdminPlayers = () => {
                 <Button variant="outlined" color="warning" onClick={recalcCurrentSeasonJP}>
                     Recalc Elo for JP games (Expensive operation!)
                 </Button>
-                {process.env.NODE_ENV !== "production" && (
-                    <Button variant="outlined" onClick={makeTestAdmins}>
-                        Make Test Admins
-                    </Button>
-                )}
+                <Button
+                    variant="outlined"
+                    onClick={() => {
+                        if (process.env.NODE_ENV !== "production") {
+                            makeTestAdmins();
+                        }
+                    }}
+                    disabled={process.env.NODE_ENV === "production"}
+                >
+                    Make Test Admins
+                </Button>
             </Stack>
         </Stack>
     );
