@@ -483,7 +483,7 @@ const NavBar = () => {
                                                         height: 32,
                                                         fontSize: "0.875rem",
                                                         lineHeight: 0,
-                                                        bgcolor: "primary.main",
+                                                        bgcolor: "secondary.main",
                                                     }}
                                                 >
                                                     {player.username[0].toUpperCase()}
