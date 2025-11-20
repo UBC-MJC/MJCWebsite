@@ -14,8 +14,8 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
     const { isSuccess: playersSuccess, data: players } = usePlayers(gameVariant, "CASUAL");
 
     useEffect(() => {
-        // Set the first season as the current season if it has not ended
-        if (seasonsSuccess && seasons && seasons.length > 0 && seasons[0].endDate > new Date()) {
+        // Set the first season as the current season
+        if (seasonsSuccess && seasons && seasons.length > 0) {
             setSeason(seasons[0]);
         }
     }, [seasonsSuccess, seasons]);
