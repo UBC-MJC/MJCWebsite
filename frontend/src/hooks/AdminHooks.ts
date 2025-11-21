@@ -13,7 +13,7 @@ import { logger } from "@/common/logger";
 
 const seasonsKey = ["seasons"];
 
-export function useSeasons(setSeason: (season: Season) => void = () => null) {
+export function useSeasons() {
     return useQuery({
         queryKey: seasonsKey,
         queryFn: async () => {
@@ -24,10 +24,6 @@ export function useSeasons(setSeason: (season: Season) => void = () => null) {
                 endDate: new Date(season.endDate),
             }));
             seasons.sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
-            // Set the first season as the current season if it has not ended
-            if (seasons.length > 0 && seasons[0].endDate > new Date()) {
-                setSeason(seasons[0]);
-            }
             return seasons;
         },
     });

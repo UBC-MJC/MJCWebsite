@@ -21,30 +21,16 @@ const GameSummaryBody = <T extends GameVariant>({
                                 justifyContent: "space-between",
                                 py: 1,
                                 px: 1.5,
-                                bgcolor: idx === 0 ? "action.hover" : "background.default",
+                                bgcolor: "background.default",
                                 borderRadius: 1,
                                 border: 1,
-                                borderColor: idx === 0 ? "primary.main" : "divider",
+                                borderColor: "divider",
                             }}
                         >
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    fontWeight: idx === 0 ? 600 : 500,
-                                    color: "text.primary",
-                                }}
-                            >
+                            <Typography variant="body2">
                                 {mapIndextoPlace(idx)} - {score.username}
                             </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    fontWeight: idx === 0 ? 600 : 500,
-                                    color: "text.primary",
-                                }}
-                            >
-                                {score.score}
-                            </Typography>
+                            <Typography variant="body2">{score.score}</Typography>
                         </Box>
                     </Grid>
                 ))}

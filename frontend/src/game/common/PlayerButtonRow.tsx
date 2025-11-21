@@ -16,9 +16,7 @@ const PlayerButtonRow = <T extends string>({
 }: PlayerButtonRow<T>) => {
     return (
         <Stack spacing={1}>
-            <Typography variant="h6" component="h5" sx={{ fontWeight: 600 }}>
-                {label[0] + label.slice(1).toLowerCase()}:
-            </Typography>
+            <Typography variant="h3">{label[0] + label.slice(1).toLowerCase()}:</Typography>
             <Stack
                 direction="row"
                 spacing={1}

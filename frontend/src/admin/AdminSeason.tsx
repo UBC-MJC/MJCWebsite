@@ -13,12 +13,15 @@ import {
     DialogContent,
     DialogActions,
     TextField,
+    Typography,
+    Stack,
 } from "@mui/material";
 import { useCreateSeasonMutation, useUpdateSeasonMutation, useSeasons } from "@/hooks/AdminHooks";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
+import { responsiveDataGridContainer } from "@/theme/utils";
 
 const playerColumns: GridColDef<Season>[] = [
     {
@@ -91,19 +94,28 @@ const AdminSeason = () => {
             const currentSeason = seasons[0];
             return (
                 <CardContent>
-                    <h3>{currentSeason.name}</h3>
-                    <div className="mb-2">Start Date: {currentSeason.startDate.toDateString()}</div>
-                    <div className="mb-2">End Date: {currentSeason.endDate.toDateString()}</div>
+                    <Stack spacing={1}>
+                        <Typography variant="h3">{currentSeason.name}</Typography>
+                        <Typography variant="body1">
+                            Start Date: {currentSeason.startDate.toDateString()}
+                        </Typography>
+                        <Typography variant="body1">
+                            End Date: {currentSeason.endDate.toDateString()}
+                        </Typography>
+                    </Stack>
                 </CardContent>
             );
         }
+
         return (
             <>
                 <CardContent>
-                    <p>No current season</p>
-                    <Button variant="contained" onClick={() => setShowCreateSeasonModal(true)}>
-                        Create Season
-                    </Button>
+                    <Stack spacing={1}>
+                        <Typography variant="body1">No current season</Typography>
+                        <Button variant="contained" onClick={() => setShowCreateSeasonModal(true)}>
+                            Create Season
+                        </Button>
+                    </Stack>
                 </CardContent>
                 <Dialog
                     open={showCreateSeasonModal}
@@ -144,13 +156,15 @@ const AdminSeason = () => {
     }
 
     return (
-        <>
-            <Card variant="outlined">
+        <Stack>
+            <Card>
                 <CardHeader title="Current Season" />
                 {getCurrentSeasonPanel()}
             </Card>
-            <h2>All Seasons</h2>
-            <Box sx={{ height: 600, width: "100%" }}>
+
+            <Typography variant="h2">All Seasons</Typography>
+
+            <Box sx={responsiveDataGridContainer}>
                 <DataGrid<Season>
                     columns={playerColumns}
                     rows={seasons}
@@ -164,7 +178,7 @@ const AdminSeason = () => {
                     editMode="row"
                 />
             </Box>
-        </>
+        </Stack>
     );
 };
 

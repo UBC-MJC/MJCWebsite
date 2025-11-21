@@ -2,7 +2,17 @@ import { useState } from "react";
 import { AxiosError } from "axios";
 import { submitRequestPasswordResetAPI } from "@/api/AccountAPI";
 import alert from "@/common/AlertDialog";
-import { Button, Card, CardContent, Container, TextField, Box, Typography } from "@mui/material";
+import {
+    Button,
+    Card,
+    CardContent,
+    Container,
+    TextField,
+    Stack,
+    Typography,
+    Box,
+    Link,
+} from "@mui/material";
 
 const RequestPasswordReset = () => {
     const [username, setUsername] = useState("");
@@ -30,36 +40,67 @@ const RequestPasswordReset = () => {
     };
 
     return (
-        <Container maxWidth="sm" sx={{ my: 5, display: "flex", flexDirection: "column" }}>
-            <Card>
-                <CardContent>
-                    <Typography variant="h4" component="h2" gutterBottom>
-                        Request Password Reset
-                    </Typography>
-                    <Box component="form" onSubmit={handleSubmit}>
-                        <TextField
-                            fullWidth
-                            required
-                            margin="normal"
-                            placeholder="Username Or Email"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            sx={{ my: 2 }}
-                        />
+        <Container
+            maxWidth="sm"
+            sx={{
+                minHeight: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+            }}
+        >
+            <Stack>
+                <Card>
+                    <CardContent>
+                        <Stack component="form" onSubmit={handleSubmit}>
+                            <Stack spacing={1}>
+                                <Typography variant="h2" component="h1">
+                                    Reset Your Password
+                                </Typography>
+                                <Typography variant="body2" align="center" color="text.secondary">
+                                    Enter your username or email and we&apos;ll send you a link to
+                                    reset your password.
+                                </Typography>
+                            </Stack>
 
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            type="submit"
-                            disabled={isWaiting}
-                            sx={{ my: 2 }}
-                        >
-                            Request Password Reset
-                        </Button>
-                    </Box>
-                </CardContent>
-            </Card>
-            <Button href="/login">Back</Button>
+                            <TextField
+                                fullWidth
+                                required
+                                label="Username or Email"
+                                placeholder="Enter your username or email"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                autoComplete="username"
+                            />
+
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                type="submit"
+                                size="large"
+                                disabled={isWaiting}
+                            >
+                                {isWaiting ? "Sending..." : "Send Reset Link"}
+                            </Button>
+
+                            <Box display="flex" justifyContent="center">
+                                <Typography variant="body2" color="text.secondary">
+                                    Remember your password?{" "}
+                                    <Link href="/login" underline="hover" fontWeight={600}>
+                                        Login
+                                    </Link>
+                                </Typography>
+                            </Box>
+                        </Stack>
+                    </CardContent>
+                </Card>
+
+                <Box display="flex" justifyContent="center">
+                    <Button href="/" variant="text">
+                        Back to Home
+                    </Button>
+                </Box>
+            </Stack>
         </Container>
     );
 };

@@ -8,7 +8,7 @@ import {
     resetPassword,
     updatePlayer,
 } from "../services/player.service";
-import { generateToken } from "../middleware/jwt";
+import { addAuthCookieToResponse, generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
 import { getCurrentSeason } from "../services/season.service";
 import { GameVariant, getGameService, STARTING_ELO } from "../services/game/game.util";
@@ -28,12 +28,7 @@ const registerHandler = async (req: Request, res: Response, next: NextFunction):
         const { password: _, ...playerOmitted } = player;
 
         // Set httpOnly cookie for security
-        res.cookie("authToken", token, {
-            httpOnly: true,
-            secure: isProduction(),
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        });
+        addAuthCookieToResponse(res, token, isProduction());
 
         res.json({
             player: playerOmitted,
@@ -52,12 +47,7 @@ const loginHandler = async (req: Request, res: Response, next: NextFunction): Pr
             const { password: _, ...playerOmitted } = player;
 
             // Set httpOnly cookie for security
-            res.cookie("authToken", token, {
-                httpOnly: true,
-                secure: isProduction(),
-                sameSite: "strict",
-                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-            });
+            addAuthCookieToResponse(res, token, isProduction());
 
             res.json({
                 player: playerOmitted,

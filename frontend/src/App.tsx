@@ -6,8 +6,8 @@ import { AuthContextProvider } from "@/common/AuthContext";
 import ErrorBoundary from "@/common/ErrorBoundary";
 import { logger } from "@/common/logger";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
-import { enUS } from "@mui/x-date-pickers/locales";
+import { CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
+import { createAppTheme } from "@/theme";
 import { GameNotFound } from "@/game/common/GameNotFound";
 import React, { useState } from "react";
 
@@ -105,41 +105,8 @@ const App = () => {
             setMode(newMode);
         },
     };
-    const theme = createTheme(
-        {
-            palette: {
-                mode: mode,
-                ...(mode === "dark" && {
-                    primary: {
-                        main: "#90caf9",
-                    },
-                }),
-            },
-            components: {
-                MuiLink: {
-                    styleOverrides: {
-                        root: {
-                            color: mode === "dark" ? "#90caf9" : "#1976d2",
-                            "&:hover": {
-                                color: mode === "dark" ? "#bbdefb" : "#1565c0",
-                            },
-                        },
-                    },
-                },
-                MuiCssBaseline: {
-                    styleOverrides: {
-                        a: {
-                            color: mode === "dark" ? "#90caf9" : "#1976d2",
-                            "&:hover": {
-                                color: mode === "dark" ? "#bbdefb" : "#1565c0",
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        enUS,
-    );
+    // Create theme using centralized mobile-first configuration
+    const theme = React.useMemo(() => createAppTheme(mode), [mode]);
 
     return (
         <ErrorBoundary>

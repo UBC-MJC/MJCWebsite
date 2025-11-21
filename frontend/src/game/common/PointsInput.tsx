@@ -10,7 +10,7 @@ interface PointsInputProps {
 const PointsInput = ({ pointsWheel, onChange }: PointsInputProps) => {
     return (
         <Stack spacing={2} alignItems="center">
-            <Typography variant="h6" component="h5" sx={{ fontWeight: 600 }}>
+            <Typography variant="h3" component="h5">
                 Hand:
             </Typography>
             <Stack direction="row" spacing={2} justifyContent="center">
