@@ -3,7 +3,8 @@ const Unauthorized = () => {
         <div>
             <h1>Unauthorized</h1>
             <p>
-                You do not have permission to access this page. This may be because you are not logged in or your account lacks the required permissions.
+                You do not have permission to access this page. This may be because you are not
+                logged in or your account lacks the required permissions.
             </p>
             <ul>
                 <li>Please log in with an account that has the necessary access rights.</li>

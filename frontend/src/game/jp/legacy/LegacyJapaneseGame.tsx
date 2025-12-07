@@ -41,10 +41,9 @@ import {
     Stack,
     Box,
     Card,
-    ToggleButtonGroup,
     CardContent,
 } from "@mui/material";
-import {SpacedToggleButtonGroup} from "@/theme/utils";
+import { SpacedToggleButtonGroup } from "@/theme/utils";
 
 function getTransaction(
     game: Game<"jp">,
@@ -322,7 +321,12 @@ const LegacyJapaneseGame = ({
                                 aria-label="round type"
                             >
                                 {getActions().map((button, idx) => (
-                                    <ToggleButton key={idx} value={button.value} id={button.name} sx={{ minWidth: "100px", flexGrow: 1 }}>
+                                    <ToggleButton
+                                        key={idx}
+                                        value={button.value}
+                                        id={button.name}
+                                        sx={{ minWidth: "100px", flexGrow: 1 }}
+                                    >
                                         {button.name}
                                     </ToggleButton>
                                 ))}

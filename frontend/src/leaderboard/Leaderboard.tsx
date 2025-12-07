@@ -33,7 +33,7 @@ const Leaderboard = ({ gameVariant, gameType }: GameCreationProp) => {
         if (seasonsSuccess && seasons && seasons.length > 0) {
             const now = new Date();
             const activeSeason = seasons.find(
-                (s) => new Date(s.startDate) <= now && now < new Date(s.endDate)
+                (s) => new Date(s.startDate) <= now && now < new Date(s.endDate),
             );
             setSeason(activeSeason ?? seasons[0]);
         }

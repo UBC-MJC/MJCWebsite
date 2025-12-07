@@ -12,10 +12,9 @@ const colors = {
     light: "#FAFAFA",
 } as const;
 
-export const createAppTheme = (mode: "light" | "dark"): Theme => {
+export const createAppTheme = (): Theme => {
     const baseThemeOptions: ThemeOptions = {
         palette: {
-            mode,
             primary: {
                 main: colors.primary,
             },
@@ -34,16 +33,10 @@ export const createAppTheme = (mode: "light" | "dark"): Theme => {
             success: {
                 main: colors.success,
             },
-            background:
-                mode === "dark"
-                    ? {
-                          default: "#121212",
-                          paper: "#1e1e1e",
-                      }
-                    : {
-                          default: "#fafafa",
-                          paper: "#ffffff",
-                      },
+            background: {
+                default: "#fafafa",
+                paper: "#ffffff",
+            },
         },
         typography: {
             fontFamily: `"Inter", "Roboto", "Helvetica", "Arial", sans-serif`,
@@ -216,5 +209,5 @@ export const createAppTheme = (mode: "light" | "dark"): Theme => {
         spacing: 8,
     };
 
-    return createTheme(baseThemeOptions, enUS);
+    return createTheme({ ...baseThemeOptions, colorSchemes: { dark: true } }, enUS);
 };

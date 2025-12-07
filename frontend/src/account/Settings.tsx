@@ -4,7 +4,6 @@ import { updateUsernameAPI } from "@/api/AccountAPI";
 import { AxiosError } from "axios";
 import { logger } from "@/common/logger";
 import {
-    ButtonGroup,
     Button,
     Container,
     Box,
@@ -14,13 +13,22 @@ import {
     DialogActions,
     TextField,
     Typography,
+    FormControl,
+    RadioGroup,
+    FormControlLabel,
+    FormLabel,
+    useColorScheme,
 } from "@mui/material";
-import { ColorModeContext } from "@/App";
+import Radio from "@mui/material/Radio";
 
 const Settings = () => {
     const { player, reloadPlayer } = useContext(AuthContext);
-    const colorMode = useContext(ColorModeContext);
+    const { mode, setMode } = useColorScheme();
     const [showUpdateUsernameModal, setShowUpdateUsernameModal] = useState(false);
+
+    if (!mode) {
+        return null;
+    }
 
     const updateUsername = async (username: string) => {
         try {
@@ -40,42 +48,36 @@ const Settings = () => {
         );
     }
 
-    // Safety check: if colorMode context is not available, show loading state
-    if (!colorMode) {
-        return (
-            <Container>
-                <Typography variant="h2">Loading...</Typography>
-            </Container>
-        );
-    }
-
     return (
         <Container>
             <Typography variant="h2" gutterBottom>
                 Settings
             </Typography>
-            <Typography variant="h3" gutterBottom>
-                Theme
-            </Typography>
-            <ButtonGroup variant="contained" aria-label="Color mode selection" sx={{ mb: 3 }}>
-                <Button
-                    onClick={() => colorMode.toggleColorMode("light")}
-                    variant={colorMode.mode === "light" ? "contained" : "outlined"}
-                    color={colorMode.mode === "light" ? "primary" : "inherit"}
-                >
-                    Light
-                </Button>
-                <Button
-                    onClick={() => colorMode.toggleColorMode("dark")}
-                    variant={colorMode.mode === "dark" ? "contained" : "outlined"}
-                    color={colorMode.mode === "dark" ? "primary" : "inherit"}
-                >
-                    Dark
-                </Button>
-                <Button onClick={() => colorMode.toggleColorMode("system")} variant="outlined">
-                    System
-                </Button>
-            </ButtonGroup>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    p: 3,
+                }}
+            >
+                <FormControl>
+                    <FormLabel id="theme-toggle-label">Theme</FormLabel>
+                    <RadioGroup
+                        aria-labelledby="theme-toggle-label"
+                        name="theme-toggle"
+                        row
+                        value={mode}
+                        onChange={(event) =>
+                            setMode(event.target.value as "system" | "light" | "dark")
+                        }
+                    >
+                        <FormControlLabel value="system" control={<Radio />} label="System" />
+                        <FormControlLabel value="light" control={<Radio />} label="Light" />
+                        <FormControlLabel value="dark" control={<Radio />} label="Dark" />
+                    </RadioGroup>
+                </FormControl>
+            </Box>
             <Box sx={{ pt: 2, display: "flex", justifyContent: "center" }}>
                 <Button
                     onClick={() => setShowUpdateUsernameModal(true)}

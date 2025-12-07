@@ -192,8 +192,7 @@ const Game = <T extends GameVariant>() => {
         return <LoadingFallback minHeight="50vh" message="Loading game..." />;
     }
     const canUpdateGame: boolean =
-        game.status === "IN_PROGRESS" &&
-        (isRecording(game) || (player && player.admin));
+        game.status === "IN_PROGRESS" && (isRecording(game) || (player && player.admin));
     const spectatorPadding: number = canUpdateGame ? 0 : 12;
     return (
         <Container sx={{ pb: { xs: 6 + spectatorPadding, sm: 10 + spectatorPadding } }}>
