@@ -44,6 +44,7 @@ import {
     ToggleButtonGroup,
     CardContent,
 } from "@mui/material";
+import {SpacedToggleButtonGroup} from "@/theme/utils";
 
 function getTransaction(
     game: Game<"jp">,
@@ -307,7 +308,7 @@ const LegacyJapaneseGame = ({
                             label="Multiple Transactions"
                         />
                         <Box>
-                            <ToggleButtonGroup
+                            <SpacedToggleButtonGroup
                                 exclusive
                                 value={transactionType}
                                 onChange={(_event, value) =>
@@ -316,24 +317,16 @@ const LegacyJapaneseGame = ({
                                 sx={{
                                     display: "flex",
                                     flexWrap: "wrap",
-                                    gap: 1,
-                                    "& .MuiToggleButton-root": {
-                                        flex: "1 1 auto",
-                                        minWidth: "120px",
-                                        borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
-                                        "&:hover": {
-                                            borderLeft: (theme) =>
-                                                `1px solid ${theme.palette.divider}`,
-                                        },
-                                    },
+                                    justifyContent: "space-evenly",
                                 }}
+                                aria-label="round type"
                             >
                                 {getActions().map((button, idx) => (
-                                    <ToggleButton key={idx} value={button.value} id={button.name}>
+                                    <ToggleButton key={idx} value={button.value} id={button.name} sx={{ minWidth: "100px", flexGrow: 1 }}>
                                         {button.name}
                                     </ToggleButton>
                                 ))}
-                            </ToggleButtonGroup>
+                            </SpacedToggleButtonGroup>
                         </Box>
 
                         <PlayerButtonRow
