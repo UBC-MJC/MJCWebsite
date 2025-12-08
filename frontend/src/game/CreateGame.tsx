@@ -33,7 +33,7 @@ const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
     const createGame = async () => {
         setAttemptedSubmit(true);
 
-        if (playerSelectMissing || notUnique) {
+        if (playerSelectMissing() || playerListNotUnique()) {
             return;
         }
 
@@ -42,7 +42,7 @@ const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
             const response = await createGameAPI(
                 gameType,
                 gameVariant,
-                playerList.map((playerName) => playerName?.username),
+                playerList.map((playerName) => playerName!.username),
             );
             navigate(`/games/${gameVariant}/${response.data.id}`);
         } catch (error) {
@@ -52,17 +52,15 @@ const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
 
     const title = `Create ${getGameVariantString(gameVariant, gameType)} Game`;
 
-    const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
-    const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
-    const notUnique =
-        new Set(playerList.filter((p) => p !== null)).size !==
-        playerList.filter((p) => p !== null).length;
+    // const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
+
 
     // Get validation errors
     const getValidationErrors = () => {
         const errors: string[] = [];
 
-        if (playerSelectMissing) {
+        const isPlayerSelectMissing = playerSelectMissing();
+        if (isPlayerSelectMissing) {
             const missing: string[] = [];
             if (!eastPlayer) missing.push("East");
             if (!southPlayer) missing.push("South");
@@ -73,12 +71,22 @@ const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
             );
         }
 
-        if (!playerSelectMissing && notUnique) {
+        if (!isPlayerSelectMissing && playerListNotUnique()) {
             errors.push("Each position must have a different player");
         }
 
         return errors;
     };
+
+    const playerSelectMissing = () => {
+        return !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
+    }
+
+    const playerListNotUnique = () => {
+        const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
+        return new Set(playerList.filter((p) => p !== null)).size !==
+            playerList.filter((p) => p !== null).length;
+    }
 
     const validationErrors = attemptedSubmit ? getValidationErrors() : [];
     if (playerNamesResult.error)
