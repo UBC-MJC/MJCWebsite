@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import riichiStick from "@/assets/riichiStick.png";
 import { responsiveTextTruncate } from "@/theme/utils";
 import { Box, Stack, Typography, Paper, Chip, alpha } from "@mui/material";
@@ -13,13 +14,26 @@ interface PlayerScoreCardProps {
     score: number;
     eloDelta: number;
     hasRiichiStick?: boolean;
+    isSelected?: boolean;
+    scoreDifference?: number | null;
+    onClick?: () => void;
 }
 
-const PlayerScoreCard = ({ username, score, eloDelta }: PlayerScoreCardProps) => {
+const PlayerScoreCard = ({
+    username,
+    score,
+    eloDelta,
+    isSelected = false,
+    scoreDifference = null,
+    onClick,
+}: PlayerScoreCardProps) => {
     const isPositiveDelta = eloDelta >= 0;
+    const showDifference = scoreDifference !== null && scoreDifference !== undefined;
+    const isPositiveDifference = scoreDifference !== null && scoreDifference >= 0;
 
     return (
         <Box
+            onClick={onClick}
             sx={{
                 flex: 1,
                 minWidth: 0,
@@ -27,11 +41,23 @@ const PlayerScoreCard = ({ username, score, eloDelta }: PlayerScoreCardProps) =>
                 px: { xs: 1, sm: 2 },
                 py: 1.5,
                 borderRadius: 2,
+                cursor: "pointer",
                 transition: "all 0.2s ease-in-out",
-                "&:hover": {
-                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.05),
-                    transform: "translateY(-2px)",
-                },
+                border: 2,
+                borderColor: "transparent",
+                // Selected state styling
+                ...(isSelected && {
+                    borderColor: (theme) => theme.palette.primary.main,
+                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                    transform: "scale(1.02)",
+                }),
+                // Hover effect (disabled when selected)
+                ...(!isSelected && {
+                    "&:hover": {
+                        bgcolor: (theme) => alpha(theme.palette.primary.main, 0.05),
+                        transform: "translateY(-2px)",
+                    },
+                }),
             }}
         >
             <Typography
@@ -51,12 +77,16 @@ const PlayerScoreCard = ({ username, score, eloDelta }: PlayerScoreCardProps) =>
                 component="div"
                 sx={{
                     fontWeight: 700,
-                    color: "text.primary",
                     lineHeight: 1.2,
                     my: 0.5,
+                    ...(showDifference && {
+                        color: isPositiveDifference ? "error.main" : "success.main",
+                    }),
                 }}
             >
-                {score.toLocaleString()}
+                {showDifference
+                    ? `${scoreDifference >= 0 ? "+" : ""}${scoreDifference.toLocaleString()}`
+                    : score.toLocaleString()}
             </Typography>
 
             <Chip
@@ -78,7 +108,19 @@ const PlayerScoreCard = ({ username, score, eloDelta }: PlayerScoreCardProps) =>
 };
 
 export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) => {
+    const [selectedScoreIndex, setSelectedScoreIndex] = useState<number | null>(null);
     const hasRiichiSticks = riichiList && riichiList.length > 0;
+
+    // Reset selection if scores array changes
+    useEffect(() => {
+        if (selectedScoreIndex !== null && selectedScoreIndex >= scores.length) {
+            setSelectedScoreIndex(null);
+        }
+    }, [scores.length, selectedScoreIndex]);
+
+    const handleScoreClick = (index: number) => {
+        setSelectedScoreIndex(selectedScoreIndex === index ? null : index);
+    };
 
     return (
         <Paper
@@ -89,18 +131,13 @@ export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) =>
                 right: 0,
                 bottom: 0,
                 zIndex: 1200,
-                borderRadius: "16px 16px 0 0",
-                bgcolor: "background.paper",
-                backdropFilter: "blur(10px)",
-                borderTop: (theme) => `1px solid ${alpha(theme.palette.divider, 0.1)}`,
             }}
         >
             <Box
                 sx={{
                     maxWidth: "lg",
                     mx: "auto",
-                    px: { xs: 2, sm: 3 },
-                    py: { xs: 2, sm: 2.5 },
+                    py: 2
                 }}
             >
                 <Stack spacing={1}>
@@ -112,19 +149,13 @@ export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) =>
                                         component="img"
                                         src={riichiStick}
                                         alt="Riichi stick"
-                                        sx={{ height: 14, width: "auto" }}
+                                        sx={{ height: 14, px: 1 }}
                                     />
                                 }
                                 label={`${riichiStickCount} Riichi ${riichiStickCount === 1 ? "Stick" : "Sticks"}`}
                                 color="primary"
                                 variant="outlined"
                                 size="small"
-                                sx={{
-                                    fontWeight: 600,
-                                    fontSize: "0.75rem",
-                                    height: 24,
-                                    borderWidth: 1.5,
-                                }}
                             />
                         </Box>
                     )}
@@ -135,11 +166,22 @@ export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) =>
                         alignItems="stretch"
                         sx={{
                             flexWrap: { xs: "wrap", sm: "nowrap" },
+                            px: 1
                         }}
                     >
                         {scores.map(({ username, score, eloDelta }, idx) => {
                             const hasRiichiStick = riichiList?.includes(idx) ?? false;
                             const adjustedScore = hasRiichiStick ? score - 1000 : score;
+
+                            // Calculate difference if a score is selected
+                            let scoreDifference: number | null = null;
+                            if (selectedScoreIndex !== null && selectedScoreIndex !== idx) {
+                                const selectedHasRiichi = riichiList?.includes(selectedScoreIndex) ?? false;
+                                const selectedAdjustedScore = selectedHasRiichi
+                                    ? scores[selectedScoreIndex].score - 1000
+                                    : scores[selectedScoreIndex].score;
+                                scoreDifference = adjustedScore - selectedAdjustedScore;
+                            }
 
                             return (
                                 <PlayerScoreCard
@@ -148,6 +190,9 @@ export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) =>
                                     score={adjustedScore}
                                     eloDelta={eloDelta}
                                     hasRiichiStick={hasRiichiStick}
+                                    isSelected={selectedScoreIndex === idx}
+                                    scoreDifference={scoreDifference}
+                                    onClick={() => handleScoreClick(idx)}
                                 />
                             );
                         })}
