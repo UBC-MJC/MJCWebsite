@@ -9,9 +9,11 @@ import {
     CardContent,
     Container,
     TextField,
-    Box,
+    Stack,
     Typography,
     Alert,
+    Box,
+    Link,
 } from "@mui/material";
 
 interface PasswordResetProps {
@@ -57,68 +59,113 @@ const PasswordReset = ({ playerId, token }: PasswordResetProps) => {
 
     if (!playerId || !token) {
         return (
-            <Container maxWidth="sm" sx={{ my: 5, display: "flex", flexDirection: "column" }}>
-                <Card>
-                    <CardContent>
-                        <Typography variant="h4" component="h2" gutterBottom>
-                            Invalid Request
-                        </Typography>
-                        <Typography variant="body1">
-                            The link you have requested has been expired.
-                        </Typography>
-                    </CardContent>
-                </Card>
+            <Container
+                maxWidth="sm"
+                sx={{
+                    minHeight: "100vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                }}
+            >
+                <Stack spacing={2}>
+                    <Card>
+                        <CardContent>
+                            <Stack spacing={2} alignItems="center">
+                                <Typography variant="h2" component="h1" align="center">
+                                    Invalid Request
+                                </Typography>
+                                <Typography variant="body1" align="center" color="text.secondary">
+                                    The password reset link has expired or is invalid.
+                                </Typography>
+                            </Stack>
+                        </CardContent>
+                    </Card>
+
+                    <Box display="flex" justifyContent="center">
+                        <Button href="/request-password-reset" variant="text">
+                            Request a new reset link
+                        </Button>
+                    </Box>
+                </Stack>
             </Container>
         );
     }
 
     return (
-        <Container maxWidth="sm" sx={{ my: 5, display: "flex", flexDirection: "column" }}>
-            <Card>
-                <CardContent>
-                    <Typography variant="h4" component="h2" gutterBottom>
-                        Reset Password
-                    </Typography>
-                    {error && (
-                        <Alert severity="error" variant="standard" sx={{ my: 2 }}>
-                            {error}
-                        </Alert>
-                    )}
-                    <Box component="form" noValidate onSubmit={handleSubmit}>
-                        <TextField
-                            fullWidth
-                            required
-                            margin="normal"
-                            type="password"
-                            placeholder="New Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            sx={{ my: 2 }}
-                        />
+        <Container
+            maxWidth="sm"
+            sx={{
+                minHeight: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+            }}
+        >
+            <Stack>
+                <Card>
+                    <CardContent>
+                        <Stack component="form" noValidate onSubmit={handleSubmit}>
+                            <Typography variant="h2" component="h1">
+                                Reset Password
+                            </Typography>
 
-                        <TextField
-                            fullWidth
-                            required
-                            margin="normal"
-                            type="password"
-                            placeholder="Confirm Password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            sx={{ my: 2 }}
-                        />
+                            {error && (
+                                <Alert severity="error" variant="standard">
+                                    {error}
+                                </Alert>
+                            )}
 
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            type="submit"
-                            disabled={isWaiting}
-                            sx={{ my: 2 }}
-                        >
-                            Reset Password
-                        </Button>
-                    </Box>
-                </CardContent>
-            </Card>
+                            <TextField
+                                fullWidth
+                                required
+                                label="New Password"
+                                type="password"
+                                placeholder="Enter your new password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                autoComplete="new-password"
+                            />
+
+                            <TextField
+                                fullWidth
+                                required
+                                label="Confirm Password"
+                                type="password"
+                                placeholder="Re-enter your new password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                autoComplete="new-password"
+                            />
+
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                type="submit"
+                                size="large"
+                                disabled={isWaiting}
+                            >
+                                {isWaiting ? "Resetting..." : "Reset Password"}
+                            </Button>
+
+                            <Box display="flex" justifyContent="center">
+                                <Typography variant="body2" color="text.secondary">
+                                    Remember your password?{" "}
+                                    <Link href="/login" underline="hover" fontWeight={600}>
+                                        Login
+                                    </Link>
+                                </Typography>
+                            </Box>
+                        </Stack>
+                    </CardContent>
+                </Card>
+
+                <Box display="flex" justifyContent="center">
+                    <Button href="/" variant="text">
+                        Back to Home
+                    </Button>
+                </Box>
+            </Stack>
         </Container>
     );
 };

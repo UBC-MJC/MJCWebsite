@@ -4,12 +4,11 @@ import WithoutNav from "@/common/WithoutNav";
 import WithNav from "@/common/WithNav";
 import { AuthContextProvider } from "@/common/AuthContext";
 import ErrorBoundary from "@/common/ErrorBoundary";
-import { logger } from "@/common/logger";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
-import { enUS } from "@mui/x-date-pickers/locales";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { createAppTheme } from "@/theme";
 import { GameNotFound } from "@/game/common/GameNotFound";
-import React, { useState } from "react";
+import React from "react";
 
 // Lazy load route components for code splitting
 const Home = React.lazy(() => import("./home/Home"));
@@ -49,208 +48,114 @@ const useQuery = () => {
     return new URLSearchParams(search);
 };
 
-type ColorMode = "light" | "dark" | "system";
-
-interface ColorModeContextType {
-    mode: "light" | "dark";
-    toggleColorMode: (newMode: ColorMode) => void;
-}
-
-export const ColorModeContext = React.createContext<ColorModeContextType | undefined>(undefined);
-
-export const useColorMode = () => {
-    const context = React.useContext(ColorModeContext);
-    if (!context) {
-        throw new Error("useColorMode must be used within ColorModeContext.Provider");
-    }
-    return context;
-};
-
-const COLOR_MODE_STORAGE_KEY = "colorMode";
-
 const App = () => {
     const query = useQuery();
-    const systemMode = useMediaQuery("(prefers-color-scheme: dark)") ? "dark" : "light";
-    // Initialize mode from localStorage, or fall back to system preference
-    const getInitialMode = (): "light" | "dark" => {
-        try {
-            const stored = localStorage.getItem(COLOR_MODE_STORAGE_KEY);
-            if (stored === "light" || stored === "dark") {
-                return stored;
-            }
-            if (stored === "system") {
-                return systemMode;
-            }
-        } catch (error) {
-            logger.error("Error reading color mode from localStorage:", error);
-        }
-        return systemMode;
-    };
-
-    const [mode, setMode] = useState<"light" | "dark">(getInitialMode);
-
-    const colorMode: ColorModeContextType = {
-        mode,
-        toggleColorMode: (newMode: ColorMode) => {
-            try {
-                localStorage.setItem(COLOR_MODE_STORAGE_KEY, newMode);
-            } catch (error) {
-                logger.error("Error saving color mode to localStorage:", error);
-            }
-
-            if (newMode === "system") {
-                setMode(systemMode);
-                return;
-            }
-            setMode(newMode);
-        },
-    };
-    const theme = createTheme(
-        {
-            palette: {
-                mode: mode,
-                ...(mode === "dark" && {
-                    primary: {
-                        main: "#90caf9",
-                    },
-                }),
-            },
-            components: {
-                MuiLink: {
-                    styleOverrides: {
-                        root: {
-                            color: mode === "dark" ? "#90caf9" : "#1976d2",
-                            "&:hover": {
-                                color: mode === "dark" ? "#bbdefb" : "#1565c0",
-                            },
-                        },
-                    },
-                },
-                MuiCssBaseline: {
-                    styleOverrides: {
-                        a: {
-                            color: mode === "dark" ? "#90caf9" : "#1976d2",
-                            "&:hover": {
-                                color: mode === "dark" ? "#bbdefb" : "#1565c0",
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        enUS,
-    );
+    const theme = createAppTheme();
 
     return (
         <ErrorBoundary>
-            <ColorModeContext.Provider value={colorMode}>
-                <ThemeProvider theme={theme}>
-                    <QueryClientProvider client={queryClient}>
-                        <AuthContextProvider>
-                            <CssBaseline />
-                            <main className="App">
-                                <Routes>
-                                    <Route element={<WithNav />}>
-                                        <Route path="/" element={<Home />} />
-                                        <Route
-                                            path="/leaderboard/jp"
-                                            element={
-                                                <Leaderboard gameVariant="jp" gameType={"RANKED"} />
-                                            }
-                                        />
-                                        <Route
-                                            path="/leaderboard/jp/casual"
-                                            element={
-                                                <Leaderboard gameVariant="jp" gameType={"CASUAL"} />
-                                            }
-                                        />
-                                        <Route
-                                            path="/leaderboard/hk"
-                                            element={
-                                                <Leaderboard gameVariant="hk" gameType={"RANKED"} />
-                                            }
-                                        />
-                                        <Route
-                                            path="/leaderboard/hk/casual"
-                                            element={
-                                                <Leaderboard gameVariant="hk" gameType={"CASUAL"} />
-                                            }
-                                        />
-                                        <Route path="/games/:variant/:id" element={<Game />} />
-                                        <Route
-                                            path="/games/current/jp"
-                                            element={
-                                                <LiveGames gameVariant="jp" gameType={"RANKED"} />
-                                            }
-                                        />
-                                        <Route
-                                            path="/games/current/hk"
-                                            element={
-                                                <LiveGames gameVariant="hk" gameType={"RANKED"} />
-                                            }
-                                        />
-                                        <Route
-                                            path="/games/create/jp"
-                                            element={
-                                                <CreateGame gameVariant="jp" gameType={"RANKED"} />
-                                            }
-                                        />
-                                        <Route
-                                            path="/games/create/jp/casual"
-                                            element={
-                                                <CreateGame gameVariant="jp" gameType={"CASUAL"} />
-                                            }
-                                        />
-                                        <Route
-                                            path="/games/create/hk"
-                                            element={
-                                                <CreateGame gameVariant="hk" gameType={"RANKED"} />
-                                            }
-                                        />
-                                        <Route
-                                            path="/games/create/hk/casual"
-                                            element={
-                                                <CreateGame gameVariant="hk" gameType={"CASUAL"} />
-                                            }
-                                        />
-                                        <Route path="/games/not-found" element={<GameNotFound />} />
-                                        <Route path="/games" element={<GameLogs />} />
-                                        <Route path="/resources" element={<Resources />} />
-                                        <Route
-                                            path="/stats/jp"
-                                            element={<Statistics gameVariant={"jp"} />}
-                                        />
-                                        <Route path="/admin" element={<Admin />} />
-                                        <Route path="/settings" element={<Settings />} />
-                                        <Route path="/unauthorized" element={<Unauthorized />} />
-                                    </Route>
-                                    <Route element={<WithoutNav />}>
-                                        <Route path="/login" element={<Login />} />
-                                        <Route path="/register" element={<Register />} />
-                                        <Route
-                                            path="/request-password-reset"
-                                            element={<RequestPasswordReset />}
-                                        />
-                                        <Route
-                                            path="/password-reset"
-                                            element={
-                                                <PasswordReset
-                                                    playerId={query.get("id")}
-                                                    token={query.get("token")}
-                                                />
-                                            }
-                                        />
-                                    </Route>
+            <ThemeProvider theme={theme}>
+                <QueryClientProvider client={queryClient}>
+                    <AuthContextProvider>
+                        <CssBaseline />
+                        <main className="App">
+                            <Routes>
+                                <Route element={<WithNav />}>
+                                    <Route path="/" element={<Home />} />
                                     <Route
-                                        path="*" // redirect to home if no route matches
-                                        element={<Navigate to="/" replace />}
+                                        path="/leaderboard/jp"
+                                        element={
+                                            <Leaderboard gameVariant="jp" gameType={"RANKED"} />
+                                        }
                                     />
-                                </Routes>
-                            </main>
-                        </AuthContextProvider>
-                    </QueryClientProvider>
-                </ThemeProvider>
-            </ColorModeContext.Provider>
+                                    <Route
+                                        path="/leaderboard/jp/casual"
+                                        element={
+                                            <Leaderboard gameVariant="jp" gameType={"CASUAL"} />
+                                        }
+                                    />
+                                    <Route
+                                        path="/leaderboard/hk"
+                                        element={
+                                            <Leaderboard gameVariant="hk" gameType={"RANKED"} />
+                                        }
+                                    />
+                                    <Route
+                                        path="/leaderboard/hk/casual"
+                                        element={
+                                            <Leaderboard gameVariant="hk" gameType={"CASUAL"} />
+                                        }
+                                    />
+                                    <Route path="/games/:variant/:id" element={<Game />} />
+                                    <Route
+                                        path="/games/current/jp"
+                                        element={<LiveGames gameVariant="jp" gameType={"RANKED"} />}
+                                    />
+                                    <Route
+                                        path="/games/current/hk"
+                                        element={<LiveGames gameVariant="hk" gameType={"RANKED"} />}
+                                    />
+                                    <Route
+                                        path="/games/create/jp"
+                                        element={
+                                            <CreateGame gameVariant="jp" gameType={"RANKED"} />
+                                        }
+                                    />
+                                    <Route
+                                        path="/games/create/jp/casual"
+                                        element={
+                                            <CreateGame gameVariant="jp" gameType={"CASUAL"} />
+                                        }
+                                    />
+                                    <Route
+                                        path="/games/create/hk"
+                                        element={
+                                            <CreateGame gameVariant="hk" gameType={"RANKED"} />
+                                        }
+                                    />
+                                    <Route
+                                        path="/games/create/hk/casual"
+                                        element={
+                                            <CreateGame gameVariant="hk" gameType={"CASUAL"} />
+                                        }
+                                    />
+                                    <Route path="/games/not-found" element={<GameNotFound />} />
+                                    <Route path="/games" element={<GameLogs />} />
+                                    <Route path="/resources" element={<Resources />} />
+                                    <Route
+                                        path="/stats/jp"
+                                        element={<Statistics gameVariant={"jp"} />}
+                                    />
+                                    <Route path="/admin" element={<Admin />} />
+                                    <Route path="/settings" element={<Settings />} />
+                                    <Route path="/unauthorized" element={<Unauthorized />} />
+                                </Route>
+                                <Route element={<WithoutNav />}>
+                                    <Route path="/login" element={<Login />} />
+                                    <Route path="/register" element={<Register />} />
+                                    <Route
+                                        path="/request-password-reset"
+                                        element={<RequestPasswordReset />}
+                                    />
+                                    <Route
+                                        path="/password-reset"
+                                        element={
+                                            <PasswordReset
+                                                playerId={query.get("id")}
+                                                token={query.get("token")}
+                                            />
+                                        }
+                                    />
+                                </Route>
+                                <Route
+                                    path="*" // redirect to home if no route matches
+                                    element={<Navigate to="/" replace />}
+                                />
+                            </Routes>
+                        </main>
+                    </AuthContextProvider>
+                </QueryClientProvider>
+            </ThemeProvider>
         </ErrorBoundary>
     );
 };

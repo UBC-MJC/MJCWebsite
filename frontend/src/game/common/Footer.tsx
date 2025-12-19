@@ -1,4 +1,5 @@
 import riichiStick from "@/assets/riichiStick.png";
+import { responsiveTextTruncate } from "@/theme/utils";
 import { Box, Stack, Typography, Paper, Chip, alpha } from "@mui/material";
 
 interface FooterProps {
@@ -39,9 +40,7 @@ const PlayerScoreCard = ({ username, score, eloDelta }: PlayerScoreCardProps) =>
                     fontWeight: 600,
                     color: "text.primary",
                     mb: 0.5,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
+                    ...responsiveTextTruncate,
                 }}
             >
                 {username}

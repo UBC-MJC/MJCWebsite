@@ -1,5 +1,6 @@
 import jwt, { SignOptions } from "jsonwebtoken";
 import * as dotenv from "dotenv";
+import { Response } from "express";
 
 dotenv.config();
 
@@ -17,6 +18,15 @@ const verifyToken = (token: string): string | undefined => {
     }
 };
 
+const addAuthCookieToResponse = (res: Response, token: string, isSecure: boolean) => {
+    res.cookie("authToken", token, {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: "strict",
+        maxAge: 6 * 30 * 24 * 60 * 60 * 1000, // 6 months
+    });
+}
+
 const getAccessTokenSecret = () => {
     if (!process.env.ACCESS_TOKEN_SECRET) {
         throw new Error("ACCESS_TOKEN_SECRET is not defined in environment variables");
@@ -24,4 +34,4 @@ const getAccessTokenSecret = () => {
     return process.env.ACCESS_TOKEN_SECRET;
 };
 
-export { generateToken, verifyToken };
+export { generateToken, verifyToken, addAuthCookieToResponse };

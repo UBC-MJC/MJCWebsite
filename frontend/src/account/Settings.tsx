@@ -1,14 +1,10 @@
 import { useContext, useState } from "react";
-import type { Setting } from "@/types";
 import { AuthContext } from "@/common/AuthContext";
-import { updateSettingsAPI, updateUsernameAPI } from "@/api/AccountAPI";
+import { updateUsernameAPI } from "@/api/AccountAPI";
 import { AxiosError } from "axios";
 import { logger } from "@/common/logger";
 import {
-    ButtonGroup,
     Button,
-    FormControlLabel,
-    Switch,
     Container,
     Box,
     Dialog,
@@ -17,33 +13,22 @@ import {
     DialogActions,
     TextField,
     Typography,
+    FormControl,
+    RadioGroup,
+    FormControlLabel,
+    FormLabel,
+    useColorScheme,
 } from "@mui/material";
-import { useColorMode } from "@/App";
+import Radio from "@mui/material/Radio";
 
 const Settings = () => {
     const { player, reloadPlayer } = useContext(AuthContext);
-    const colorMode = useColorMode();
-
-    const [settings, setSettings] = useState<Setting>((): Setting => {
-        return {
-            legacyDisplayGame: player!.legacyDisplayGame,
-        };
-    });
+    const { mode, setMode } = useColorScheme();
     const [showUpdateUsernameModal, setShowUpdateUsernameModal] = useState(false);
 
-    const handleToggle = async (checked: boolean, setting: string) => {
-        const newSettings: Setting = {
-            ...settings,
-            [setting]: checked,
-        };
-        setSettings(newSettings);
-        try {
-            await updateSettingsAPI(newSettings);
-            await reloadPlayer();
-        } catch (error) {
-            logger.log("Error updating settings: ", (error as AxiosError).response?.data);
-        }
-    };
+    if (!mode) {
+        return null;
+    }
 
     const updateUsername = async (username: string) => {
         try {
@@ -57,52 +42,42 @@ const Settings = () => {
 
     if (typeof player === "undefined") {
         return (
-            <Container maxWidth="lg" sx={{ py: 4 }}>
-                <Typography variant="h4" component="h1">
-                    Not Logged In
-                </Typography>
+            <Container>
+                <Typography variant="h2">Not Logged In</Typography>
             </Container>
         );
     }
 
     return (
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 600 }}>
+        <Container>
+            <Typography variant="h2" gutterBottom>
                 Settings
             </Typography>
-            <Box sx={{ maxWidth: "300px", mx: "auto", my: 3 }}>
-                <FormControlLabel
-                    label="Legacy Display Game"
-                    defaultChecked={settings.legacyDisplayGame}
-                    control={
-                        <Switch
-                            onChange={(_e, checked) => handleToggle(checked, "legacyDisplayGame")}
-                        />
-                    }
-                />
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    p: 3,
+                }}
+            >
+                <FormControl>
+                    <FormLabel id="theme-toggle-label">Theme</FormLabel>
+                    <RadioGroup
+                        aria-labelledby="theme-toggle-label"
+                        name="theme-toggle"
+                        row
+                        value={mode}
+                        onChange={(event) =>
+                            setMode(event.target.value as "system" | "light" | "dark")
+                        }
+                    >
+                        <FormControlLabel value="system" control={<Radio />} label="System" />
+                        <FormControlLabel value="light" control={<Radio />} label="Light" />
+                        <FormControlLabel value="dark" control={<Radio />} label="Dark" />
+                    </RadioGroup>
+                </FormControl>
             </Box>
-            <Typography variant="h6" component="h2" sx={{ mb: 2, textAlign: "center" }}>
-                Theme
-            </Typography>
-            <ButtonGroup variant="contained" aria-label="Color mode selection" sx={{ mb: 3 }}>
-                <Button
-                    onClick={() => colorMode.toggleColorMode("light")}
-                    variant={colorMode.mode === "light" ? "contained" : "outlined"}
-                    color={colorMode.mode === "light" ? "primary" : "inherit"}
-                >
-                    Light
-                </Button>
-                <Button
-                    onClick={() => colorMode.toggleColorMode("dark")}
-                    variant={colorMode.mode === "dark" ? "contained" : "outlined"}
-                    color={colorMode.mode === "dark" ? "primary" : "inherit"}
-                >
-                    Dark
-                </Button>
-                <Button onClick={() => colorMode.toggleColorMode("system")} variant="outlined">
-                    System
-                </Button>
-            </ButtonGroup>
             <Box sx={{ pt: 2, display: "flex", justifyContent: "center" }}>
                 <Button
                     onClick={() => setShowUpdateUsernameModal(true)}

@@ -40,10 +40,10 @@ import {
     Switch,
     Stack,
     Box,
-    Paper,
-    ToggleButtonGroup,
-    Divider,
+    Card,
+    CardContent,
 } from "@mui/material";
+import { SpacedToggleButtonGroup } from "@/theme/utils";
 
 function getTransaction(
     game: Game<"jp">,
@@ -295,18 +295,9 @@ const LegacyJapaneseGame = ({
 
     const getRecordingInterface = () => {
         return (
-            <Paper
-                elevation={2}
-                sx={{
-                    p: 3,
-                    borderRadius: 2,
-                    bgcolor: "background.paper",
-                    width: "100%",
-                    maxWidth: "600px",
-                }}
-            >
-                <Stack spacing={3}>
-                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Card>
+                <CardContent>
+                    <Stack alignItems="center">
                         <FormControlLabel
                             control={
                                 <Switch
@@ -315,66 +306,63 @@ const LegacyJapaneseGame = ({
                             }
                             label="Multiple Transactions"
                         />
-                    </Box>
-
-                    <Box>
-                        <ToggleButtonGroup
-                            exclusive
-                            value={transactionType}
-                            onChange={(_event, value) => value && transactionTypeOnChange(value)}
-                            sx={{
-                                display: "flex",
-                                flexWrap: "wrap",
-                                gap: 1,
-                                "& .MuiToggleButton-root": {
-                                    flex: "1 1 auto",
-                                    minWidth: "120px",
-                                    borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
-                                    "&:hover": {
-                                        borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
-                                    },
-                                },
-                            }}
-                        >
-                            {getActions().map((button, idx) => (
-                                <ToggleButton key={idx} value={button.value} id={button.name}>
-                                    {button.name}
-                                </ToggleButton>
-                            ))}
-                        </ToggleButtonGroup>
-                    </Box>
-
-                    <Divider />
-
-                    <PlayerButtonRow
-                        players={players}
-                        label={"RIICHI"}
-                        labelPlayerIds={riichiList}
-                        onChange={riichiOnChange}
-                    />
-
-                    {getJapaneseLabels().map(([label, labelPlayerIds]) => (
-                        <PlayerButtonRow
-                            key={label}
-                            players={players}
-                            label={label}
-                            labelPlayerIds={labelPlayerIds}
-                            onChange={actionOnChange}
-                        />
-                    ))}
-
-                    {showPointInput(transactionType) && (
-                        <Box sx={{ my: 2 }}>
-                            <PointsInput
-                                pointsWheel={japanesePointsWheel}
-                                onChange={handOnChange}
-                            />
+                        <Box>
+                            <SpacedToggleButtonGroup
+                                exclusive
+                                value={transactionType}
+                                onChange={(_event, value) =>
+                                    value && transactionTypeOnChange(value)
+                                }
+                                sx={{
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    justifyContent: "space-evenly",
+                                }}
+                                aria-label="round type"
+                            >
+                                {getActions().map((button, idx) => (
+                                    <ToggleButton
+                                        key={idx}
+                                        value={button.value}
+                                        id={button.name}
+                                        sx={{ minWidth: "100px", flexGrow: 1 }}
+                                    >
+                                        {button.name}
+                                    </ToggleButton>
+                                ))}
+                            </SpacedToggleButtonGroup>
                         </Box>
-                    )}
 
-                    {getTransactionMatters()}
-                </Stack>
-            </Paper>
+                        <PlayerButtonRow
+                            players={players}
+                            label={"RIICHI"}
+                            labelPlayerIds={riichiList}
+                            onChange={riichiOnChange}
+                        />
+
+                        {getJapaneseLabels().map(([label, labelPlayerIds]) => (
+                            <PlayerButtonRow
+                                key={label}
+                                players={players}
+                                label={label}
+                                labelPlayerIds={labelPlayerIds}
+                                onChange={actionOnChange}
+                            />
+                        ))}
+
+                        {showPointInput(transactionType) && (
+                            <Box sx={{ my: 2 }}>
+                                <PointsInput
+                                    pointsWheel={japanesePointsWheel}
+                                    onChange={handOnChange}
+                                />
+                            </Box>
+                        )}
+
+                        {getTransactionMatters()}
+                    </Stack>
+                </CardContent>
+            </Card>
         );
     };
     function getTransactionMatters() {
@@ -385,23 +373,16 @@ const LegacyJapaneseGame = ({
                     variant="contained"
                     disabled={gameOver}
                     onClick={submitSingleTransactionRound}
-                    fullWidth
                     size="large"
-                    sx={{ mt: 2 }}
                 >
                     Submit Round
                 </Button>
             );
         }
         return (
-            <Box>
-                <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-                    <Button
-                        variant="contained"
-                        disabled={gameOver}
-                        onClick={addTransaction}
-                        fullWidth
-                    >
+            <Stack>
+                <Stack direction={{ xs: "column", sm: "row" }}>
+                    <Button variant="contained" disabled={gameOver} onClick={addTransaction}>
                         Add Transaction
                     </Button>
                     <Button
@@ -409,9 +390,8 @@ const LegacyJapaneseGame = ({
                         variant="contained"
                         disabled={gameOver || transactions.length === 0}
                         onClick={deleteLastTransaction}
-                        fullWidth
                     >
-                        Delete Last
+                        Delete Last Transaction
                     </Button>
                 </Stack>
                 {transactions.length > 0 && (
@@ -422,12 +402,11 @@ const LegacyJapaneseGame = ({
                     variant="contained"
                     disabled={gameOver || transactions.length === 0}
                     onClick={submitAllTransactionRound}
-                    fullWidth
                     size="large"
                 >
                     Submit Round
                 </Button>
-            </Box>
+            </Stack>
         );
     }
 

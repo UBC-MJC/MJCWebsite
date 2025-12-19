@@ -1,59 +1,68 @@
-import { memo, useState } from "react";
+import type { GameCreationProp, Season, GameVariant, GameType, LeaderboardType } from "@/types";
+
+import { memo, useEffect, useState } from "react";
 import { getGameVariantString } from "@/common/Utils";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayerLeaderboard } from "@/hooks/LeaderboardHooks";
-import { mapSeasonToOption } from "@/game/common/constants";
 import LoadingFallback from "@/common/LoadingFallback";
+import { responsiveDataGridContainer } from "@/theme/utils";
 import { GridColDef, DataGrid } from "@mui/x-data-grid";
-import type { GameCreationProp, Season, GameVariant, GameType, LeaderboardType } from "@/types";
 import {
     Autocomplete,
     Box,
+    Container,
     Dialog,
     DialogContent,
     DialogTitle,
+    IconButton,
     Stack,
     TextField,
     Typography,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { DisplayStatistics } from "@/statistics/Statistics";
 
 const Leaderboard = ({ gameVariant, gameType }: GameCreationProp) => {
-    const [season, setSeason] = useState<Season | undefined>();
-    const { isSuccess: seasonsSuccess, data: seasons } = useSeasons(setSeason);
+    const [season, setSeason] = useState<Season | null>(null);
+    const { isSuccess: seasonsSuccess, data: seasons } = useSeasons();
+
+    useEffect(() => {
+        // Set the currently active season, or fallback to the most recent season
+        if (seasonsSuccess && seasons && seasons.length > 0) {
+            const now = new Date();
+            const activeSeason = seasons.find(
+                (s) => new Date(s.startDate) <= now && now < new Date(s.endDate),
+            );
+            setSeason(activeSeason ?? seasons[0]);
+        }
+    }, [seasonsSuccess, seasons]);
 
     if (!seasonsSuccess) {
         return <LoadingFallback minHeight="50vh" message="Loading seasons..." />;
     }
-    const seasonsOptions = mapSeasonToOption(seasons);
     return (
-        <Box sx={{ py: 4 }}>
-            <Stack spacing={1} margin="auto" width={"80%"} maxWidth="800px">
-                <Typography
-                    variant="h4"
-                    component="h1"
-                    gutterBottom
-                    sx={{ mb: 4, fontWeight: 600 }}
-                >
+        <Container>
+            <Stack>
+                <Typography variant="h1">
                     {getGameVariantString(gameVariant, gameType)} Leaderboard
                 </Typography>
 
-                <Typography variant="h6" component="h2" sx={{ mb: 1 }}>
-                    Season:
-                </Typography>
                 <Autocomplete
-                    isOptionEqualToValue={(option, value) => option.label === value.label}
-                    options={seasonsOptions}
-                    onChange={(event, value) => setSeason(value!.value)}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    getOptionLabel={(option) => option.name}
+                    options={seasons}
+                    value={season}
+                    blurOnSelect
+                    onChange={(_e, value) => setSeason(value)}
                     renderInput={(params) => (
-                        <TextField {...params} placeholder="Default: this season" />
+                        <TextField {...params} label="Season" placeholder="Select season" />
                     )}
                 />
 
-                {season === undefined ? (
-                    <Typography variant="body1" sx={{ mt: 2 }}>
-                        No season selected
-                    </Typography>
+                {!season ? (
+                    <Typography variant="body1">No season selected</Typography>
                 ) : (
                     <LeaderboardDisplay
                         season={season}
@@ -62,7 +71,7 @@ const Leaderboard = ({ gameVariant, gameType }: GameCreationProp) => {
                     />
                 )}
             </Stack>
-        </Box>
+        </Container>
     );
 };
 
@@ -71,30 +80,36 @@ const columns: GridColDef[] = [
         field: "index",
         headerName: "#",
         type: "number",
-        flex: 0.5,
+        width: 60,
+        minWidth: 50,
+        disableColumnMenu: true,
     },
     {
         field: "username",
         headerName: "Player",
-        flex: 1.5,
+        flex: 1,
+        minWidth: 120,
     },
     {
         field: "displayElo",
         headerName: "Elo",
         type: "number",
-        flex: 1,
+        width: 90,
+        minWidth: 80,
     },
     {
         field: "gameCount",
         headerName: "Games",
         type: "number",
-        flex: 1,
+        width: 80,
+        minWidth: 70,
     },
     {
         field: "chomboCount",
         headerName: "Chombos",
         type: "number",
-        flex: 0.5,
+        width: 90,
+        minWidth: 80,
     },
 ];
 const LeaderboardDisplay = memo(
@@ -113,37 +128,81 @@ const LeaderboardDisplay = memo(
             season,
         );
         const [player, setPlayer] = useState<LeaderboardType | undefined>(undefined);
+        const theme = useTheme();
+        const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
         if (!isSuccess) {
             return <LoadingFallback minHeight="30vh" message="Loading leaderboard..." />;
         }
+
         return (
             <>
-                <Typography variant="body2" color="text.secondary" sx={{ my: 2 }}>
-                    {season.name} season ends {new Date(season.endDate).toDateString()}
+                <Typography variant="body1" color="text.secondary">
+                    {season.name} ends {new Date(season.endDate).toDateString()}
                 </Typography>
-                <Box sx={{ height: 600, width: "100%" }}>
+                <Box sx={responsiveDataGridContainer}>
                     <DataGrid<(typeof leaderboard)[0]>
                         rows={leaderboard}
                         columns={columns}
                         initialState={{
                             columns: {
                                 columnVisibilityModel: {
-                                    chomboCount: false,
+                                    chomboCount: !isMobile,
                                 },
                             },
                         }}
-                        onRowDoubleClick={(params) => setPlayer(params.row)}
+                        onRowClick={(params) => isMobile && setPlayer(params.row)}
+                        onRowDoubleClick={(params) => !isMobile && setPlayer(params.row)}
+                        sx={{
+                            "& .MuiDataGrid-cell": {
+                                cursor: "pointer",
+                            },
+                            "& .MuiDataGrid-row:hover": {
+                                backgroundColor: theme.palette.action.hover,
+                            },
+                        }}
+                        disableColumnMenu={isMobile}
+                        density={isMobile ? "compact" : "standard"}
                     />
                 </Box>
-                <Dialog open={player !== undefined} onClose={() => setPlayer(undefined)}>
-                    <DialogTitle>Statistics for {player?.username}</DialogTitle>
-                    <DialogContent>
-                        <DisplayStatistics
-                            playerId={player?.id}
-                            gameVariant={gameVariant}
-                            season={season}
-                        />
-                    </DialogContent>
+                <Typography variant="caption" color="text.secondary">
+                    {isMobile ? "Tap" : "Double-click"} a row to view detailed statistics
+                </Typography>
+                <Dialog
+                    open={player !== undefined}
+                    onClose={() => setPlayer(undefined)}
+                    maxWidth="md"
+                    fullWidth
+                    keepMounted={false}
+                >
+                    {player && (
+                        <>
+                            <DialogTitle
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                }}
+                            >
+                                Statistics for {player.username}
+                                <IconButton
+                                    edge="end"
+                                    color="inherit"
+                                    onClick={() => setPlayer(undefined)}
+                                    aria-label="close"
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </DialogTitle>
+                            <DialogContent>
+                                <DisplayStatistics
+                                    playerId={player.id}
+                                    gameVariant={gameVariant}
+                                    season={season}
+                                />
+                            </DialogContent>
+                        </>
+                    )}
                 </Dialog>
             </>
         );

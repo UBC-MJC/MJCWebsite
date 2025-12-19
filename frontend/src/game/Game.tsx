@@ -26,7 +26,7 @@ import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
 import { gameRoundString, isGameEnd } from "./common/constants";
 import { baseUrl } from "@/api/APIUtils";
-import { Button, Stack, Container, Typography, Box } from "@mui/material";
+import { Button, Stack, Container, Typography } from "@mui/material";
 
 const Game = <T extends GameVariant>() => {
     const { id, variant: variantParam } = useParams();
@@ -191,73 +191,50 @@ const Game = <T extends GameVariant>() => {
     } else if (typeof game === "undefined") {
         return <LoadingFallback minHeight="50vh" message="Loading game..." />;
     }
-    const canUpdateGame: boolean = game.status === "IN_PROGRESS" && (isRecording(game) || (player!! && player.admin));
+    const canUpdateGame: boolean =
+        game.status === "IN_PROGRESS" && (isRecording(game) || (player && player.admin));
     const spectatorPadding: number = canUpdateGame ? 0 : 12;
     return (
-        <Container
-            maxWidth="lg"
-            sx={{ pt: { xs: 4 }, pb: { xs: 6 + spectatorPadding, sm: 10 + spectatorPadding }, position: "relative" }}
-        >
-            <Box sx={{ mb: 3 }}>
-                <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
-                    {getGameVariantString(variant, game.type)}
-                </Typography>
+        <Container sx={{ pb: { xs: 6 + spectatorPadding, sm: 10 + spectatorPadding } }}>
+            <Stack>
+                <Typography variant="h1">{getGameVariantString(variant, game.type)}</Typography>
                 {game.status === "IN_PROGRESS" && (
-                    <Typography
-                        variant="h6"
-                        component="h2"
-                        color="text.secondary"
-                        sx={{ fontWeight: 500 }}
-                    >
+                    <Typography variant="h2" color="text.secondary">
                         {gameRoundString(game, variant)}
                     </Typography>
                 )}
-            </Box>
-            {getLegacyDisplayGame(game)}
-            {canUpdateGame && (
-                <Stack
-                    direction={{ xs: "column", sm: "row" }}
-                    spacing={2}
-                    sx={{
-                        width: { xs: "100%", sm: "90%", md: "75%" },
-                        margin: "auto",
-                        justifyContent: "center",
-                        pb: { xs: 18, sm: 16 },
-                        pt: 2,
-                        px: { xs: 2, sm: 0 },
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        color="error"
-                        disabled={game.rounds.length == 0}
-                        onClick={() => handleDeleteRound()}
-                        fullWidth
-                        sx={{ minWidth: { sm: "140px" } }}
-                    >
-                        Delete last Hand
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="error"
-                        onClick={() => handleDeleteGame()}
-                        fullWidth
-                        sx={{ minWidth: { sm: "140px" } }}
-                    >
-                        Delete Game
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="success"
-                        disabled={!isGameEnd(game, variant)}
-                        onClick={() => handleSubmitGame()}
-                        fullWidth
-                        sx={{ minWidth: { sm: "140px" } }}
-                    >
-                        Submit Game
-                    </Button>
-                </Stack>
-            )}
+                {getLegacyDisplayGame(game)}
+                {canUpdateGame && (
+                    <Stack direction={{ xs: "column", sm: "row" }} sx={{ pb: { xs: 18, sm: 16 } }}>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            disabled={game.rounds.length == 0}
+                            fullWidth
+                            onClick={() => handleDeleteRound()}
+                        >
+                            Delete Last Round
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            fullWidth
+                            onClick={() => handleDeleteGame()}
+                        >
+                            Delete Game
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="success"
+                            disabled={!isGameEnd(game, variant)}
+                            fullWidth
+                            onClick={() => handleSubmitGame()}
+                        >
+                            Submit Game
+                        </Button>
+                    </Stack>
+                )}
+            </Stack>
         </Container>
     );
 };

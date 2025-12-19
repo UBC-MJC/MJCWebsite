@@ -17,6 +17,9 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Stack,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import { Cancel, Delete, Edit, Save } from "@mui/icons-material";
 import {
@@ -27,10 +30,13 @@ import {
     GridRowModesModel,
     GridRowParams,
 } from "@mui/x-data-grid";
+import { responsiveDataGridContainer } from "@/theme/utils";
 
 const AdminPlayers = () => {
     const { player } = useContext(AuthContext);
     const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     // Call all hooks unconditionally at the top
     const { isPending, data, error } = useAdminPlayers(player || undefined);
@@ -66,6 +72,7 @@ const AdminPlayers = () => {
             flex: 0.5,
             type: "boolean",
             editable: true,
+            disableColumnMenu: true,
         },
         {
             field: "japaneseQualified",
@@ -73,6 +80,7 @@ const AdminPlayers = () => {
             flex: 0.5,
             type: "boolean",
             editable: true,
+            disableColumnMenu: true,
         },
         {
             field: "hongKongQualified",
@@ -80,6 +88,7 @@ const AdminPlayers = () => {
             flex: 0.5,
             type: "boolean",
             editable: true,
+            disableColumnMenu: true,
         },
         {
             field: "actions",
@@ -147,8 +156,8 @@ const AdminPlayers = () => {
         try {
             const response = await recalcSeasonAPI("hk");
             logger.log("HK Recalculation Complete", response.data);
-        } catch (err: any) {
-            logger.log("Error recalculating hk", err.response.data);
+        } catch (err) {
+            logger.log("Error recalculating hk", (err as AxiosError).response?.data);
         }
     };
 
@@ -172,13 +181,20 @@ const AdminPlayers = () => {
 
     if (error) return <>{"An error has occurred: " + error.message}</>;
     return (
-        <>
-            <Box sx={{ height: 600, width: "100%" }}>
+        <Stack>
+            <Box sx={responsiveDataGridContainer}>
                 <DataGrid
                     rows={data}
                     columns={playerColumns}
+                    initialState={{
+                        columns: {
+                            columnVisibilityModel: {
+                                username: !isMobile,
+                                email: !isMobile,
+                            },
+                        },
+                    }}
                     rowModesModel={rowModesModel}
-                    autosizeOnMount
                     onRowModesModelChange={(newModel) => setRowModesModel(newModel)}
                     processRowUpdate={(updatedRow, originalRow) => {
                         if (updatedRow === originalRow) {
@@ -190,16 +206,8 @@ const AdminPlayers = () => {
                     editMode="row"
                 />
             </Box>
-            <div className="my-4">
-                <Button variant="outlined" onClick={makeTestAdmins}>
-                    Make Test Admins
-                </Button>
-                <Button
-                    color={"warning"}
-                    onClick={() => {
-                        removeQualificationAPI();
-                    }}
-                >
+            <Stack direction={{ xs: "column", sm: "row" }}>
+                <Button variant="outlined" color="warning" onClick={removeQualificationAPI}>
                     Remove all qualification
                 </Button>
                 <Button variant="outlined" color="warning" onClick={recalcCurrentSeasonHK}>
@@ -208,8 +216,19 @@ const AdminPlayers = () => {
                 <Button variant="outlined" color="warning" onClick={recalcCurrentSeasonJP}>
                     Recalc Elo for JP games (Expensive operation!)
                 </Button>
-            </div>
-        </>
+                <Button
+                    variant="outlined"
+                    onClick={() => {
+                        if (process.env.NODE_ENV !== "production") {
+                            makeTestAdmins();
+                        }
+                    }}
+                    disabled={process.env.NODE_ENV === "production"}
+                >
+                    Make Test Admins
+                </Button>
+            </Stack>
+        </Stack>
     );
 };
 
