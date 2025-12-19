@@ -3,6 +3,7 @@ import { AuthContext } from "@/common/AuthContext";
 import { updateUsernameAPI } from "@/api/AccountAPI";
 import { AxiosError } from "axios";
 import { logger } from "@/common/logger";
+import LoadingFallback from "@/common/LoadingFallback";
 import {
     Button,
     Container,
@@ -22,7 +23,7 @@ import {
 import Radio from "@mui/material/Radio";
 
 const Settings = () => {
-    const { player, reloadPlayer } = useContext(AuthContext);
+    const { player, loading, reloadPlayer } = useContext(AuthContext);
     const { mode, setMode } = useColorScheme();
     const [showUpdateUsernameModal, setShowUpdateUsernameModal] = useState(false);
 
@@ -39,6 +40,10 @@ const Settings = () => {
             logger.log("Error updating username: ", (error as AxiosError).response?.data);
         }
     };
+
+    if (loading) {
+        return <LoadingFallback />;
+    }
 
     if (typeof player === "undefined") {
         return (

@@ -12,6 +12,7 @@ import {
 import { AuthContext } from "@/common/AuthContext";
 import { setChomboAPI } from "@/api/GameAPI";
 import { usePlayers } from "@/hooks/GameHooks";
+import LoadingFallback from "@/common/LoadingFallback";
 import type { GameVariant } from "@/types";
 import { logger } from "@/common/logger";
 
@@ -21,7 +22,7 @@ const gameVariants: { label: string; value: GameVariant }[] = [
 ];
 
 const AdminChombo = () => {
-    const { player } = useContext(AuthContext);
+    const { player, loading } = useContext(AuthContext);
     const [gameId, setGameId] = useState<number | "">("");
     const [gameVariant, setGameVariant] = useState<GameVariant>("jp");
     const [playerId, setPlayerId] = useState<string>("");
@@ -41,6 +42,10 @@ const AdminChombo = () => {
         chomboCount: false,
     });
     const playersResult = usePlayers(gameVariant, "CASUAL");
+
+    if (loading) {
+        return <LoadingFallback />;
+    }
 
     if (!player) {
         return <>No player logged in</>;

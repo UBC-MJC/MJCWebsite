@@ -76,6 +76,7 @@ export type SeasonsAPIDataType = Season[];
 
 export interface AuthContextType {
     player: Player | undefined;
+    loading: boolean;
     login: (loginData: LoginDataType) => Promise<void>;
     register: (registerData: RegisterDataType) => Promise<void>;
     logout: () => Promise<void>;

@@ -18,6 +18,7 @@ import {
     Collapse,
     Stack,
     Avatar,
+    Skeleton,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandLess from "@mui/icons-material/ExpandLess";
@@ -29,7 +30,7 @@ import { getGameVariantString } from "@/common/Utils";
 import { navButton } from "@/theme/utils";
 
 const NavBar = () => {
-    const { player, logout } = useContext(AuthContext);
+    const { player, loading, logout } = useContext(AuthContext);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -100,7 +101,7 @@ const NavBar = () => {
                         </ListItem>
                     </List>
                 </Collapse>
-                {player && (
+                {!loading && player && (
                     <>
                         <ListItem onClick={() => setRecordGameOpen(!recordGameOpen)}>
                             <ListItemText primary="Record Game" />
@@ -186,12 +187,16 @@ const NavBar = () => {
                     <ListItemText primary="Resources" />
                 </ListItem>
                 <Divider />
-                {player && player.admin && (
+                {!loading && player && player.admin && (
                     <ListItem component={Link} to="/admin" onClick={closeDrawer}>
                         <ListItemText primary="Admin" />
                     </ListItem>
                 )}
-                {player ? (
+                {loading ? (
+                    <ListItem>
+                        <Skeleton variant="text" width="100%" height={32} />
+                    </ListItem>
+                ) : player ? (
                     <>
                         <ListItem onClick={() => setUserOpen(!userOpen)}>
                             <ListItemText primary={player.username} />
@@ -332,7 +337,7 @@ const NavBar = () => {
                                         {getGameVariantString("hk", "CASUAL")}
                                     </MenuItem>
                                 </Menu>
-                                {player && (
+                                {!loading && player && (
                                     <>
                                         <Button
                                             color="inherit"
@@ -453,7 +458,7 @@ const NavBar = () => {
                                 spacing={1}
                                 divider={<Divider orientation="vertical" flexItem />}
                             >
-                                {player && player.admin && (
+                                {!loading && player && player.admin && (
                                     <Button
                                         color="inherit"
                                         sx={navButton}
@@ -463,7 +468,17 @@ const NavBar = () => {
                                         Admin
                                     </Button>
                                 )}
-                                {player ? (
+                                {loading ? (
+                                    <Skeleton
+                                        variant="rectangular"
+                                        width={100}
+                                        height={36}
+                                        sx={{
+                                            borderRadius: 1,
+                                            bgcolor: "rgba(255, 255, 255, 0.1)",
+                                        }}
+                                    />
+                                ) : player ? (
                                     <>
                                         <Button
                                             color="inherit"

@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
 import type { Season } from "@/types";
 import { logger } from "@/common/logger";
+import LoadingFallback from "@/common/LoadingFallback";
 import {
     Box,
     Card,
@@ -46,7 +47,7 @@ const playerColumns: GridColDef<Season>[] = [
     },
 ];
 const AdminSeason = () => {
-    const { player } = useContext(AuthContext);
+    const { player, loading } = useContext(AuthContext);
 
     // Call all hooks unconditionally at the top
     const [showCreateSeasonModal, setShowCreateSeasonModal] = useState<boolean>(false);
@@ -57,6 +58,10 @@ const AdminSeason = () => {
     const updateSeasonMut = useUpdateSeasonMutation(player || undefined);
 
     // Early return after all hooks
+    if (loading) {
+        return <LoadingFallback />;
+    }
+
     if (!player) {
         return <>No player logged in</>;
     }

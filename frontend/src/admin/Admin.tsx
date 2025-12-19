@@ -4,12 +4,12 @@ import AdminPlayers from "./AdminPlayers";
 import AdminSeason from "./AdminSeason";
 import AdminChombo from "./AdminChombo";
 import type { Player } from "@/types";
-import { useState } from "react";
+import { SyntheticEvent, useState } from "react";
 
 const AdminComponent = () => {
     const [value, setValue] = useState(0);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    const handleChange = (event: SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
 

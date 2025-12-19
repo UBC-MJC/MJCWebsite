@@ -30,7 +30,7 @@ import { Button, Stack, Container, Typography } from "@mui/material";
 
 const Game = <T extends GameVariant>() => {
     const { id, variant: variantParam } = useParams();
-    const { player } = useContext(AuthContext);
+    const { player, loading } = useContext(AuthContext);
     const navigate = useNavigate();
     const gameId = Number(id);
 
@@ -190,6 +190,8 @@ const Game = <T extends GameVariant>() => {
         return;
     } else if (typeof game === "undefined") {
         return <LoadingFallback minHeight="50vh" message="Loading game..." />;
+    } else if (loading) {
+        return <LoadingFallback />;
     }
     const canUpdateGame: boolean =
         game.status === "IN_PROGRESS" && (isRecording(game) || (player && player.admin));

@@ -3,6 +3,7 @@ import { AuthContext } from "@/common/AuthContext";
 import { AxiosError } from "axios";
 import { makeDummyAdminsAPI, recalcSeasonAPI, removeQualificationAPI } from "@/api/AdminAPI";
 import { logger } from "@/common/logger";
+import LoadingFallback from "@/common/LoadingFallback";
 import {
     useDeletePlayerMutation,
     useSavePlayerMutation,
@@ -33,7 +34,7 @@ import {
 import { responsiveDataGridContainer } from "@/theme/utils";
 
 const AdminPlayers = () => {
-    const { player } = useContext(AuthContext);
+    const { player, loading } = useContext(AuthContext);
     const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -44,6 +45,10 @@ const AdminPlayers = () => {
     const savePlayerMut = useSavePlayerMutation(player || undefined);
 
     // Early return after all hooks
+    if (loading) {
+        return <LoadingFallback />;
+    }
+
     if (!player) {
         return <>No player logged in</>;
     }

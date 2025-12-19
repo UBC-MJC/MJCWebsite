@@ -16,6 +16,7 @@ const notInstantiated = () => {
 };
 const AuthContext = createContext<AuthContextType>({
     player: undefined,
+    loading: true,
     login: notInstantiated,
     register: notInstantiated,
     logout: notInstantiated,
@@ -25,19 +26,34 @@ const AuthContext = createContext<AuthContextType>({
 const AuthContextProvider = (props: ChildProps) => {
     const navigate = useNavigate();
     const [player, setPlayer] = useState<Player | undefined>(undefined);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
+        const abortController = new AbortController();
+
         const checkAuth = async () => {
             // Check if user is already authenticated via cookie
             try {
                 const response = await getCurrentPlayer();
-                setPlayer(response.data.player);
+                if (!abortController.signal.aborted) {
+                    setPlayer(response.data.player);
+                }
             } catch {
                 // No valid session, user is not logged in
-                setPlayer(undefined);
+                if (!abortController.signal.aborted) {
+                    setPlayer(undefined);
+                }
+            } finally {
+                if (!abortController.signal.aborted) {
+                    setLoading(false);
+                }
             }
         };
         checkAuth();
+
+        return () => {
+            abortController.abort();
+        };
     }, []);
 
     const authLogin = useCallback(
@@ -47,7 +63,7 @@ const AuthContextProvider = (props: ChildProps) => {
             setPlayer(playerAPIData.player);
             navigate("/");
         },
-        [navigate],
+        [],
     );
 
     const authRegister = useCallback(
@@ -57,7 +73,7 @@ const AuthContextProvider = (props: ChildProps) => {
             setPlayer(playerAPIData.player);
             navigate("/");
         },
-        [navigate],
+        [],
     );
 
     const authLogout = useCallback(async () => {
@@ -71,7 +87,7 @@ const AuthContextProvider = (props: ChildProps) => {
         }
         setPlayer(undefined);
         navigate("/login");
-    }, [navigate]);
+    }, []);
 
     const reloadPlayer = useCallback(async () => {
         try {
@@ -83,12 +99,13 @@ const AuthContextProvider = (props: ChildProps) => {
             setPlayer(undefined);
             navigate("/login");
         }
-    }, [navigate]);
+    }, []);
 
     return (
         <AuthContext.Provider
             value={{
                 player,
+                loading,
                 login: authLogin,
                 register: authRegister,
                 logout: authLogout,

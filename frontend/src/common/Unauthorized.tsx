@@ -6,10 +6,10 @@ const Unauthorized = () => {
                 You do not have permission to access this page. This may be because you are not
                 logged in or your account lacks the required permissions.
             </p>
-            <ul>
-                <li>Please log in with an account that has the necessary access rights.</li>
-                <li>If you believe this is an error, contact your administrator.</li>
-            </ul>
+            <p>
+                Please log in with an account that has the necessary access rights.
+                If you believe this is an error, contact your administrator.
+            </p>
             <a href="/">Return to Home</a>
         </div>
     );
