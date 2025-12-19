@@ -36,6 +36,7 @@ const PlayerScoreCard = ({
             onClick={onClick}
             sx={{
                 flex: 1,
+                minWidth: 0,
                 px: { xs: 1, sm: 2 },
                 py: 1.5,
                 borderRadius: 2,
