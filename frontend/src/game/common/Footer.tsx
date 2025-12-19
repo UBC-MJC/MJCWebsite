@@ -36,8 +36,6 @@ const PlayerScoreCard = ({
             onClick={onClick}
             sx={{
                 flex: 1,
-                minWidth: 0,
-                textAlign: "center",
                 px: { xs: 1, sm: 2 },
                 py: 1.5,
                 borderRadius: 2,
@@ -45,6 +43,7 @@ const PlayerScoreCard = ({
                 transition: "all 0.2s ease-in-out",
                 border: 2,
                 borderColor: "transparent",
+                userSelect: "none",
                 // Selected state styling
                 ...(isSelected && {
                     borderColor: (theme) => theme.palette.primary.main,
@@ -63,9 +62,6 @@ const PlayerScoreCard = ({
             <Typography
                 variant="body2"
                 sx={{
-                    fontWeight: 600,
-                    color: "text.primary",
-                    mb: 0.5,
                     ...responsiveTextTruncate,
                 }}
             >
@@ -77,8 +73,6 @@ const PlayerScoreCard = ({
                 component="div"
                 sx={{
                     fontWeight: 700,
-                    lineHeight: 1.2,
-                    my: 0.5,
                     ...(showDifference && {
                         color: isPositiveDifference ? "error.main" : "success.main",
                     }),
