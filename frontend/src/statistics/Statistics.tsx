@@ -36,12 +36,21 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
                         isOptionEqualToValue={(option, value) => option.id === value.id}
                         getOptionLabel={(option) => option.name}
                         options={seasons}
-                        value={season}
+                        value={season!}
                         blurOnSelect
+                        disableClearable
                         onChange={(_e, value) => setSeason(value)}
                         sx={{ flex: 1 }}
                         renderInput={(params) => (
-                            <TextField {...params} label="Season" placeholder="Select a season" />
+                            <TextField
+                                {...params}
+                                label="Season"
+                                placeholder="Select a season"
+                                inputProps={{
+                                    ...params.inputProps,
+                                    readOnly: true, // This is the key line
+                                }}
+                            />
                         )}
                     />
                     <Autocomplete

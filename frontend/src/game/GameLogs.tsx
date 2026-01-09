@@ -51,7 +51,7 @@ const GameLogs = <T extends GameVariant>() => {
         seasonsSuccess && seasons ? [...seasons].sort((a, b) => b.id.localeCompare(a.id)) : [];
     useEffect(() => {
         // Always set the first season (most recent) as the default season if available
-        if (seasonsSorted.length > 0) {
+        if (!season && seasonsSorted.length > 0) {
             setSeason(seasonsSorted[0]);
         }
     }, [seasonsSorted]);
@@ -153,14 +153,19 @@ const GameLogs = <T extends GameVariant>() => {
                                         isOptionEqualToValue={(option, value) =>
                                             option.id === value.id
                                         }
-                                        value={season}
+                                        value={season!}
                                         blurOnSelect
+                                        disableClearable
                                         onChange={(_e, value) => setSeason(value)}
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
                                                 label="Season"
                                                 placeholder="Select a season"
+                                                inputProps={{
+                                                    ...params.inputProps,
+                                                    readOnly: true, // This is the key line
+                                                }}
                                             />
                                         )}
                                     />
