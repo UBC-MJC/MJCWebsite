@@ -1,13 +1,8 @@
 #!/bin/bash
 
+source .env
 # Local build and remote deployment script
 set -e
-
-# Configuration - UPDATE THESE VALUES
-SERVER_USER=""
-SERVER_HOST=""
-SERVER_PATH=""
-KEY_PATH=""  # Path to your SSH private key
 
 # Colors for output
 RED='\033[0;31m'
