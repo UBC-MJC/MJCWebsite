@@ -60,12 +60,7 @@ const PlayerScoreCard = ({
                 }),
             }}
         >
-            <Typography
-                variant="body2"
-                sx={{
-                    ...responsiveTextTruncate,
-                }}
-            >
+            <Typography variant="body2" sx={responsiveTextTruncate}>
                 {username}
             </Typography>
 
@@ -132,7 +127,7 @@ export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) =>
                 sx={{
                     maxWidth: "lg",
                     mx: "auto",
-                    py: 2
+                    py: 2,
                 }}
             >
                 <Stack spacing={1}>
@@ -161,7 +156,7 @@ export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) =>
                         alignItems="stretch"
                         sx={{
                             flexWrap: { xs: "wrap", sm: "nowrap" },
-                            px: 1
+                            px: 1,
                         }}
                     >
                         {scores.map(({ username, score, eloDelta }, idx) => {
@@ -171,7 +166,8 @@ export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) =>
                             // Calculate difference if a score is selected
                             let scoreDifference: number | null = null;
                             if (selectedScoreIndex !== null && selectedScoreIndex !== idx) {
-                                const selectedHasRiichi = riichiList?.includes(selectedScoreIndex) ?? false;
+                                const selectedHasRiichi =
+                                    riichiList?.includes(selectedScoreIndex) ?? false;
                                 const selectedAdjustedScore = selectedHasRiichi
                                     ? scores[selectedScoreIndex].score - 1000
                                     : scores[selectedScoreIndex].score;

@@ -4,11 +4,6 @@ import { enUS } from "@mui/x-date-pickers/locales";
 const colors = {
     primary: "#2E7D32",
     secondary: "#A1887F",
-    tertiary: "#C0E6C3",
-    danger: "#C62828",
-    warning: "#ED6C02",
-    success: "#2E7D32",
-    info: "#0277BD",
     light: "#FAFAFA",
 } as const;
 
@@ -21,75 +16,33 @@ export const createAppTheme = (): Theme => {
             secondary: {
                 main: colors.secondary,
             },
-            info: {
-                main: colors.info,
-            },
-            error: {
-                main: colors.danger,
-            },
-            warning: {
-                main: colors.warning,
-            },
-            success: {
-                main: colors.success,
-            },
             background: {
-                default: "#fafafa",
+                default: colors.light,
                 paper: "#ffffff",
             },
         },
         typography: {
-            fontFamily: `"Inter", "Roboto", "Helvetica", "Arial", sans-serif`,
-            // Responsive typography - scales down on mobile
             h1: {
-                fontFamily: `"Merriweather", serif`,
                 fontSize: "clamp(2rem, 5vw, 3rem)",
-                fontWeight: 650,
             },
             h2: {
-                fontFamily: `"Merriweather", serif`,
                 fontSize: "clamp(1.5rem, 3.5vw, 2.125rem)",
-                fontWeight: 600,
             },
             h3: {
-                fontFamily: `"Merriweather", serif`,
                 fontSize: "clamp(1.25rem, 3vw, 1.75rem)",
-                fontWeight: 600,
             },
             h4: {
-                fontFamily: `"Merriweather", serif`,
-                fontWeight: 600,
                 fontSize: "1.5rem",
             },
             h5: {
-                fontFamily: `"Merriweather", serif`,
-                fontWeight: 500,
                 fontSize: "1.25rem",
             },
             h6: {
-                fontFamily: `"Merriweather", serif`,
-                fontWeight: 500,
                 fontSize: "1.1rem",
             },
-            subtitle1: {
-                fontSize: "clamp(1.25rem, 3vw, 1.75rem)",
-                fontWeight: 600,
-                lineHeight: 1.4,
-            },
-            body1: {
-                fontFamily: `"Inter", sans-serif`,
-                fontSize: "1rem",
-                fontWeight: 400,
-            },
-            body2: {
-                fontFamily: `"Inter", sans-serif`,
-                fontSize: "0.875rem",
-                fontWeight: 400,
-            },
+
             button: {
-                fontFamily: `"Inter", sans-serif`,
                 textTransform: "none", // More modern, readable buttons
-                fontWeight: 500,
             },
         },
         components: {
@@ -169,25 +122,7 @@ export const createAppTheme = (): Theme => {
                     },
                 },
             },
-            // Chip styling for status indicators
-            MuiChip: {
-                styleOverrides: {
-                    root: {
-                        fontWeight: 500,
-                    },
-                },
-            },
-            // Typography spacing - responsive margins for all heading variants
-            MuiTypography: {
-                styleOverrides: {
-                    subtitle1: ({ theme }) => ({
-                        marginBottom: theme.spacing(1),
-                        [theme.breakpoints.up("md")]: {
-                            marginBottom: theme.spacing(1.5),
-                        },
-                    }),
-                },
-            },
+
             MuiStack: {
                 defaultProps: {
                     spacing: {
