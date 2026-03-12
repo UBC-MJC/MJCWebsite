@@ -153,4 +153,4 @@ CLAUDE.md
 
 certificate/
 
-generated/prisma/
+backend/prisma/generated/

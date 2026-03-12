@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source .env
+
 # Local build and remote deployment script
 set -e
 
@@ -18,7 +18,7 @@ echo -e "${GREEN}Starting local build and deployment...${NC}"
 echo ""
 
 # Check if server configuration is set
-if [ "$SERVER_USER" = "YOUR_USERNAME" ] || [ "$SERVER_HOST" = "YOUR_SERVER_IP_OR_DOMAIN" ]; then
+if [ "$SERVER_USER" = "" ] || [ "$SERVER_HOST" = "" ]; then
     echo -e "${RED}Error: Please configure SERVER_USER, SERVER_HOST, and SERVER_PATH in this script first.${NC}"
     exit 1
 fi

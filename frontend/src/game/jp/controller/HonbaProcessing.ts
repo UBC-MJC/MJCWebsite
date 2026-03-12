@@ -1,5 +1,5 @@
 import type { JapaneseTransaction } from "@/types";
-import { getEmptyScoreDelta, JapaneseTransactionType, NUM_PLAYERS } from "@/game/common/constants";
+import { JapaneseTransactionType, NUM_PLAYERS } from "@/game/common/constants";
 import { range } from "@/common/Utils";
 
 export function containingAny(
@@ -18,8 +18,8 @@ export function transformTransactions(transactions: JapaneseTransaction[], honba
     if (transactions.length === 0) {
         return [];
     }
-    const transaction: JapaneseTransaction = determineHonbaTransaction(transactions);
-    const newTransaction: JapaneseTransaction = addHonba(transaction, honba);
+    const transaction = determineHonbaTransaction(transactions);
+    const newTransaction = addHonba(transaction, honba);
     for (const index of range(NUM_PLAYERS)) {
         if (transactions[index] === transaction) {
             transactions[index] = newTransaction;
@@ -56,7 +56,7 @@ function determineHonbaTransaction(transactions: JapaneseTransaction[]) {
 function handleDealIn(newTransaction: JapaneseTransaction, honbaCount: number) {
     for (const index of range(NUM_PLAYERS)) {
         if (
-            newTransaction.paoPlayerIndex !== undefined &&
+            newTransaction.transactionType === JapaneseTransactionType.DEAL_IN_PAO &&
             newTransaction.paoPlayerIndex === index
         ) {
             continue;
@@ -69,20 +69,11 @@ function handleDealIn(newTransaction: JapaneseTransaction, honbaCount: number) {
     }
 }
 
-export function addHonba(transaction: JapaneseTransaction, honbaCount: number) {
-    const newTransaction: JapaneseTransaction = {
-        transactionType: transaction.transactionType,
-        scoreDeltas: getEmptyScoreDelta(),
+export function addHonba<T extends JapaneseTransaction>(transaction: T, honbaCount: number): T {
+    const newTransaction: T = {
+        ...transaction,
+        scoreDeltas: [...transaction.scoreDeltas],
     };
-    if (transaction.hand) {
-        newTransaction.hand = transaction.hand;
-    }
-    if (transaction.paoPlayerIndex !== undefined) {
-        newTransaction.paoPlayerIndex = transaction.paoPlayerIndex;
-    }
-    for (const index of range(NUM_PLAYERS)) {
-        newTransaction.scoreDeltas[index] = transaction.scoreDeltas[index];
-    }
     switch (newTransaction.transactionType) {
         case JapaneseTransactionType.NAGASHI_MANGAN:
         case JapaneseTransactionType.INROUND_RYUUKYOKU:
@@ -117,7 +108,11 @@ export function findProminentPlayerRound(transaction: JapaneseTransaction) {
     const roundWinners = new Set<number>();
     const roundLosers = new Set<number>();
     for (let index = 0; index < transaction.scoreDeltas.length; index++) {
-        if (transaction.paoPlayerIndex !== undefined && transaction.paoPlayerIndex === index) {
+        if (
+            (transaction.transactionType == JapaneseTransactionType.DEAL_IN_PAO ||
+                transaction.transactionType == JapaneseTransactionType.SELF_DRAW_PAO) &&
+            transaction.paoPlayerIndex === index
+        ) {
             // is pao target
             continue;
         }

@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source .env
 # Production deployment script
 set -e
 

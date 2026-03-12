@@ -19,10 +19,8 @@ const E_MULLOSE = "There should only be one loser";
 const E_MULNAGM = "There should only be one nagashi mangan per player";
 
 const validateTransaction = (transaction: JapaneseTransaction) => {
-    const hand = transaction.hand;
     const scoreDeltas = transaction.scoreDeltas;
     const transactionType = transaction.transactionType;
-    const indexPao = transaction.paoPlayerIndex;
 
     const deltaSum = scoreDeltas.reduce<number>((score, prev) => prev + score, 0);
     const { roundWinners, roundLosers } = findProminentPlayerRound(transaction);
@@ -30,11 +28,8 @@ const validateTransaction = (transaction: JapaneseTransaction) => {
     const [indexLose] = roundLosers;
 
     switch (transactionType) {
-        case JapaneseTransactionType.DEAL_IN:
-            if (hand === undefined) {
-                throw new Error(E_INVHAND); // never reaches this
-            }
-
+        case JapaneseTransactionType.DEAL_IN: {
+            const hand = transaction.hand;
             if (hand.han === -2) {
                 if (indexWin === undefined || indexLose === undefined) {
                     throw new Error("Winner, loser, and hand are required");
@@ -59,11 +54,10 @@ const validateTransaction = (transaction: JapaneseTransaction) => {
                     throw new Error(E_INVHAND);
                 }
             }
-            break;
-        case JapaneseTransactionType.SELF_DRAW:
-            if (hand === undefined) {
-                throw new Error(E_INVHAND); // never reaches this
-            }
+            return;
+        }
+        case JapaneseTransactionType.SELF_DRAW: {
+            const hand = transaction.hand;
             if (indexWin === undefined) {
                 throw new Error(E_NOWIN);
             }
@@ -76,11 +70,10 @@ const validateTransaction = (transaction: JapaneseTransaction) => {
                     throw new Error(E_INVHAND);
                 }
             }
-            break;
-        case JapaneseTransactionType.DEAL_IN_PAO:
-            if (hand === undefined) {
-                throw new Error(E_INVHAND); // never reaches this
-            }
+            return;
+        }
+        case JapaneseTransactionType.DEAL_IN_PAO: {
+            const { hand, paoPlayerIndex } = transaction;
             if (deltaSum !== 0) {
                 throw new Error("Winner, loser, pao player, and hand are required");
             }
@@ -90,27 +83,27 @@ const validateTransaction = (transaction: JapaneseTransaction) => {
             if (indexLose === undefined) {
                 throw new Error("Winner, loser, and pao player must be different");
             }
-            if (indexPao === undefined) {
+            if (paoPlayerIndex === undefined) {
                 throw new Error(E_NOPAO);
             }
             checkPao(hand);
-            break;
-        case JapaneseTransactionType.SELF_DRAW_PAO:
-            if (hand === undefined) {
-                throw new Error(E_INVHAND); // never reaches this
-            }
+            return;
+        }
+        case JapaneseTransactionType.SELF_DRAW_PAO: {
+            const { hand, paoPlayerIndex } = transaction;
             if (indexWin === undefined) {
-                if (indexPao === undefined) {
+                if (paoPlayerIndex === undefined) {
                     throw new Error("Winner, pao player, and hand are required");
-                } else if (scoreDeltas[indexPao] < 0) {
+                } else if (scoreDeltas[paoPlayerIndex] < 0) {
                     throw new Error(E_NOWIN);
                 }
                 throw new Error(E_WPSAME);
-            } else if (indexPao === undefined) {
+            } else if (paoPlayerIndex === undefined) {
                 throw new Error(E_NOPAO);
             }
             checkPao(hand);
-            break;
+            return;
+        }
         case JapaneseTransactionType.NAGASHI_MANGAN:
             if (indexWin === undefined) {
                 throw new Error(E_NOWIN);

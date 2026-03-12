@@ -131,22 +131,23 @@ export type PartialJapaneseRound = Pick<
     "roundCount" | "roundNumber" | "roundWind" | "bonus" | "startRiichiStickCount"
 >;
 
-export interface JapaneseTransaction {
-    transactionType: JapaneseTransactionType;
+export type JapaneseTransaction = {
     scoreDeltas: number[];
-    hand?: JapaneseHandInput;
-    paoPlayerIndex?: number;
-}
-
+} & (
+    | {
+          transactionType: "DEAL_IN" | "SELF_DRAW";
+          hand: JapaneseHandInput;
+      }
+    | {
+          transactionType: "DEAL_IN_PAO" | "SELF_DRAW_PAO";
+          hand: JapaneseHandInput;
+          paoPlayerIndex: number;
+      }
+    | {
+          transactionType: "NAGASHI_MANGAN" | "INROUND_RYUUKYOKU";
+      }
+);
 export type Transaction = JapaneseTransaction | HongKongTransaction;
-
-export type JapaneseTransactionType =
-    | "DEAL_IN"
-    | "SELF_DRAW"
-    | "DEAL_IN_PAO"
-    | "SELF_DRAW_PAO"
-    | "NAGASHI_MANGAN"
-    | "INROUND_RYUUKYOKU";
 
 export interface JapaneseHandInput {
     han: number;
