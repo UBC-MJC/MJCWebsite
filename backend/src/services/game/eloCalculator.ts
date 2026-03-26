@@ -71,17 +71,6 @@ const getEloChanges = (
     placingAdjustments: number[], // i.e. Uma in Riichi
     dividingConstant: number,
 ): EloChangeResult[] => {
-    if (playerInformation.length !== 4) {
-        throw new Error("getEloChanges expects exactly 4 players.");
-    }
-
-    if (placingAdjustments.length !== 4) {
-        throw new Error("placingAdjustments must contain exactly 4 values.");
-    }
-
-    if (dividingConstant <= 0) {
-        throw new Error("dividingConstant must be greater than 0.");
-    }
 
     const totalScore = playerInformation.reduce((sum, player) => sum + player.score, 0);
     const startingScore = totalScore / playerInformation.length;
@@ -119,7 +108,7 @@ const getEloChanges = (
 
     return rawResults.map((result) => ({
         playerId: result.playerId,
-        eloChange: roundToTwoDecimals(result.eloChange - offset),
+        eloChange: result.eloChange - offset,
     }));
 };
 
@@ -133,7 +122,7 @@ const getPlacementResults = (
     playerInformation: EloCalculatorInput[],
     placingAdjustments: number[],
 ): PlayerWithPlacement[] => {
-    const sortedByRawPlacement = [...playerInformation].sort((a, b) => {
+    const sortedByRawPlacement = playerInformation.sort((a, b) => {
         if (a.score === b.score) {
             return WIND_ORDER.indexOf(a.wind) - WIND_ORDER.indexOf(b.wind);
         }
@@ -144,8 +133,7 @@ const getPlacementResults = (
         ...player,
         adjustedScore: player.score + placingAdjustments[index],
     }));
-    // Constraint: placingAdjustments[i] >= placingAdjustments[j] for i < j,
-    // so this won't change the placement order determined by raw score and wind tiebreakers.
+
     return playersWithAdjustedScore.map((player, index) => ({
         playerId: player.id,
         score: player.adjustedScore,
@@ -202,19 +190,18 @@ const getOrderProbability = (
     const weights = orderedPlayers.map((player) => getStrengthWeight(player.elo));
     const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
 
-    const result = weights.slice(0, -1).reduce(
-        (acc, weight) => {
-            const remainingWeight = totalWeight - acc.consumedWeight;
-
+    const {probability} = weights.slice(0, -1).reduce(
+        ({consumedWeight, probability}, weight) => {
+            const remainingWeight = totalWeight - consumedWeight;
             return {
-                consumedWeight: acc.consumedWeight + weight,
-                probability: acc.probability * (weight / remainingWeight),
+                consumedWeight: consumedWeight + weight,
+                probability: probability * (weight / remainingWeight),
             };
         },
         { consumedWeight: 0, probability: 1 },
     );
 
-    return result.probability;
+    return probability;
 };
 
 /**
@@ -239,19 +226,11 @@ const getExpectedPlacementElo = (
         const probability = getOrderProbability(order);
         const placementIndex = order.findIndex((p) => p.playerId === player.playerId);
 
-        if (placementIndex === -1) {
-            throw new Error("Player not found in generated order.");
-        }
-
         const placement = (placementIndex + 1) as Placement;
         expectedPlacementElo += probability * PLACEMENT_ELO_MAP[placement];
     }
 
     return expectedPlacementElo;
-};
-
-const roundToTwoDecimals = (value: number): number => {
-    return Math.round(value * 100) / 100;
 };
 
 export { getEloChanges, EloCalculatorInput };
