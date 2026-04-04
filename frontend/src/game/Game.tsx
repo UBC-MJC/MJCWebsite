@@ -193,7 +193,7 @@ const Game = <T extends GameVariant>() => {
     } else if (loading) {
         return <LoadingFallback />;
     }
-    const canUpdateGame: boolean =
+    const canUpdateGame =
         game.status === "IN_PROGRESS" && (isRecording(game) || (player && player.admin));
     const spectatorPadding: number = canUpdateGame ? 0 : 12;
     return (

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+source .env
 # Local build and remote deployment script
 set -e
 

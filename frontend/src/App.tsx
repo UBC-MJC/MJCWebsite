@@ -9,6 +9,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createAppTheme } from "@/theme";
 import { GameNotFound } from "@/game/common/GameNotFound";
 import React from "react";
+import Tournament from "./resources/Tournament";
 
 // Lazy load route components for code splitting
 const Home = React.lazy(() => import("./home/Home"));
@@ -122,6 +123,7 @@ const App = () => {
                                     <Route path="/games/not-found" element={<GameNotFound />} />
                                     <Route path="/games" element={<GameLogs />} />
                                     <Route path="/resources" element={<Resources />} />
+                                    <Route path="/vro2026" element={<Tournament />} />
                                     <Route
                                         path="/stats/jp"
                                         element={<Statistics gameVariant={"jp"} />}

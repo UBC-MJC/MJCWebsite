@@ -2,20 +2,12 @@ import { createTheme, Theme, ThemeOptions } from "@mui/material/styles";
 import { enUS } from "@mui/x-date-pickers/locales";
 
 const colors = {
-    primary: "#2E7D32",
-    secondary: "#A1887F",
     light: "#FAFAFA",
 } as const;
 
 export const createAppTheme = (): Theme => {
     const baseThemeOptions: ThemeOptions = {
         palette: {
-            primary: {
-                main: colors.primary,
-            },
-            secondary: {
-                main: colors.secondary,
-            },
             background: {
                 default: colors.light,
                 paper: "#ffffff",
@@ -98,45 +90,13 @@ export const createAppTheme = (): Theme => {
                     }),
                 },
             },
-            MuiLink: {
-                styleOverrides: {
-                    root: {
-                        color: "inherit",
-                        textDecoration: "none",
-                    },
-                },
-            },
-            // Global styles for anchor tags
-            MuiCssBaseline: {
-                styleOverrides: {
-                    a: {
-                        textDecoration: "none",
-                    },
-                },
-            },
+
             // IconButton touch targets
             MuiIconButton: {
                 styleOverrides: {
                     root: {
                         padding: 12, // Ensures 44px touch target with 20px icon
                     },
-                },
-            },
-
-            MuiStack: {
-                defaultProps: {
-                    spacing: {
-                        xs: 2,
-                        sm: 3,
-                    },
-                },
-            },
-            // ListItemText styling - ensure text color is consistent in drawers/menus
-            MuiListItemText: {
-                styleOverrides: {
-                    root: ({ theme }) => ({
-                        color: theme.palette.text.primary,
-                    }),
                 },
             },
         },

@@ -1,6 +1,7 @@
 import prisma from "../../db";
 import {
     GameType,
+    JapaneseRound,
     JapaneseTransaction,
     JapaneseTransactionType,
     Player,
@@ -60,11 +61,11 @@ class JapaneseGameService extends GameService {
         });
     }
 
-    public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<any> {
+    public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<JapaneseRound> {
         validateCreateJapaneseRound(roundRequest, game);
         const concludedRound = roundRequest as ConcludedJapaneseRoundT;
 
-        const query: any = {
+        const query = {
             data: {
                 game: {
                     connect: {
@@ -99,7 +100,7 @@ class JapaneseGameService extends GameService {
 
     public getNextRound(game: FullJapaneseGame): PartialJapaneseRound {
         if (game.rounds.length === 0) {
-            return getFirstJapaneseRound();
+            return FIRST_JAPANESE_ROUND;
         }
 
         const previousRound: ConcludedJapaneseRoundT = this.transformDBRound(
@@ -159,32 +160,8 @@ class JapaneseGameService extends GameService {
     }
 
     public transformDBRound(dbRound: FullJapaneseRound): ConcludedJapaneseRoundT {
-        const riichis: number[] = [];
-        const tenpais: number[] = [];
-        if (dbRound.player0Riichi) {
-            riichis.push(0);
-        }
-        if (dbRound.player1Riichi) {
-            riichis.push(1);
-        }
-        if (dbRound.player2Riichi) {
-            riichis.push(2);
-        }
-        if (dbRound.player3Riichi) {
-            riichis.push(3);
-        }
-        if (dbRound.player0Tenpai) {
-            tenpais.push(0);
-        }
-        if (dbRound.player1Tenpai) {
-            tenpais.push(1);
-        }
-        if (dbRound.player2Tenpai) {
-            tenpais.push(2);
-        }
-        if (dbRound.player3Tenpai) {
-            tenpais.push(3);
-        }
+        const riichis = range(NUM_PLAYERS).filter((i) => dbRound[`player${i}Riichi`]);
+        const tenpais = range(NUM_PLAYERS).filter((i) => dbRound[`player${i}Tenpai`]);
         return {
             roundCount: dbRound.roundCount,
             roundWind: dbRound.roundWind,
@@ -267,14 +244,12 @@ class JapaneseGameService extends GameService {
     }
 }
 
-const getFirstJapaneseRound = (): PartialJapaneseRound => {
-    return {
-        roundCount: 1,
-        roundNumber: 1,
-        roundWind: Wind.EAST,
-        startRiichiStickCount: 0,
-        bonus: 0,
-    };
+const FIRST_JAPANESE_ROUND: PartialJapaneseRound = {
+    roundCount: 1,
+    roundNumber: 1,
+    roundWind: Wind.EAST,
+    startRiichiStickCount: 0,
+    bonus: 0,
 };
 
 export function dealershipRetains(
@@ -339,7 +314,11 @@ function findHeadbumpWinner(transactions: JapaneseTransactionT[]) {
     const losers = new Set<number>();
     for (const transaction of transactions) {
         for (let index = 0; index < transaction.scoreDeltas.length; index++) {
-            if (transaction.paoPlayerIndex !== undefined && transaction.paoPlayerIndex === index) {
+            if (
+                (transaction.transactionType == JapaneseTransactionType.DEAL_IN_PAO ||
+                    transaction.transactionType == JapaneseTransactionType.SELF_DRAW_PAO) &&
+                transaction.paoPlayerIndex === index
+            ) {
                 // is pao target
                 continue;
             }
@@ -390,13 +369,17 @@ export function generateOverallScoreDelta(concludedRound: ConcludedJapaneseRound
 
 function transformTransaction(transaction: JapaneseTransactionT) {
     return {
-        ...transaction.hand,
-        paoPlayerIndex: transaction.paoPlayerIndex,
+        ...("hand" in transaction ? transaction.hand : {}),
+        paoPlayerIndex:
+            transaction.transactionType == "DEAL_IN_PAO" ||
+            transaction.transactionType == "SELF_DRAW_PAO"
+                ? transaction.paoPlayerIndex
+                : null,
         player0ScoreChange: transaction.scoreDeltas[0],
         player1ScoreChange: transaction.scoreDeltas[1],
         player2ScoreChange: transaction.scoreDeltas[2],
         player3ScoreChange: transaction.scoreDeltas[3],
-        transactionType: transaction.transactionType.toString(),
+        transactionType: transaction.transactionType,
     };
 }
 
@@ -407,28 +390,37 @@ function transformDBTransaction(dbTransaction: JapaneseTransaction): JapaneseTra
         dbTransaction.player2ScoreChange,
         dbTransaction.player3ScoreChange,
     ];
-    let result: JapaneseTransactionT = {
-        scoreDeltas: scoreDeltas,
-        transactionType: dbTransaction.transactionType,
-    };
-    if (dbTransaction.han !== null) {
-        const hand = {
-            han: dbTransaction.han,
-            fu: dbTransaction.fu,
-            dora: dbTransaction.dora,
-        };
-        result = {
-            ...result,
-            hand: hand,
-        };
+    const { transactionType } = dbTransaction;
+    switch (transactionType) {
+        case "DEAL_IN":
+        case "SELF_DRAW":
+            return {
+                scoreDeltas: scoreDeltas,
+                transactionType: transactionType,
+                hand: {
+                    han: dbTransaction.han,
+                    fu: dbTransaction.fu,
+                    dora: dbTransaction.dora,
+                },
+            };
+        case "DEAL_IN_PAO":
+        case "SELF_DRAW_PAO":
+            return {
+                scoreDeltas: scoreDeltas,
+                transactionType: transactionType,
+                hand: {
+                    han: dbTransaction.han,
+                    fu: dbTransaction.fu,
+                    dora: dbTransaction.dora,
+                },
+                paoPlayerIndex: dbTransaction.paoPlayerIndex,
+            };
+        default:
+            return {
+                scoreDeltas: scoreDeltas,
+                transactionType: transactionType,
+            };
     }
-    if (dbTransaction.paoPlayerIndex !== null) {
-        result = {
-            ...result,
-            paoPlayerIndex: dbTransaction.paoPlayerIndex,
-        };
-    }
-    return result;
 }
 
 function transformConcludedRound(concludedRound: ConcludedJapaneseRoundT) {
