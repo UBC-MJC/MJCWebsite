@@ -257,10 +257,7 @@ const LegacyJapaneseGame = ({
     };
 
     const getJapaneseLabels = () => {
-        const labelsRecord: Record<
-            JapaneseTransactionType,
-            [JapaneseLabel, (number | undefined)[]][]
-        > = {
+        const labelsRecord = {
             [JapaneseTransactionType.DEAL_IN]: [
                 [JapaneseLabel.WINNER, [roundActions.WINNER]],
                 [JapaneseLabel.LOSER, [roundActions.LOSER]],
@@ -281,7 +278,7 @@ const LegacyJapaneseGame = ({
                 [JapaneseLabel.TENPAI, tenpaiList],
             ],
             [JapaneseTransactionType.INROUND_RYUUKYOKU]: [[JapaneseLabel.TENPAI, tenpaiList]],
-        };
+        } as const;
 
         return labelsRecord[transactionType];
     };

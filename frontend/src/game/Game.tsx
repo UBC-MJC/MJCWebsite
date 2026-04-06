@@ -1,14 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AxiosError } from "axios";
-import type {
-    GameVariant,
-    Game,
-    GamePlayer,
-    RoundByVariant,
-    JapaneseRound,
-    HongKongRound,
-} from "@/types";
+import type { GameVariant, Game, GamePlayer, RoundByVariant } from "@/types";
 import {
     addRoundAPI,
     deleteGameAPI,
@@ -35,9 +28,7 @@ const Game = <T extends GameVariant>() => {
     const gameId = Number(id);
 
     // Validate and cast variant to GameVariant type
-    const variant = (validateGameVariant(variantParam) ? variantParam : undefined) as
-        | GameVariant
-        | undefined;
+    const variant = (validateGameVariant(variantParam) ? variantParam : undefined) as T | undefined;
 
     const [game, setGame] = useState<Game<T> | undefined>(undefined);
 
@@ -84,7 +75,7 @@ const Game = <T extends GameVariant>() => {
         }
     }, [game?.id, game?.status, player, variant]);
 
-    const handleSubmitRound = async (roundRequest: JapaneseRound | HongKongRound) => {
+    const handleSubmitRound = async (roundRequest: RoundByVariant<T>) => {
         try {
             const response = await addRoundAPI(gameId, variant!, roundRequest);
             setGame(response.data);
@@ -170,7 +161,9 @@ const Game = <T extends GameVariant>() => {
                     enableRecording={isRecording(game)}
                     players={getOrderedPlayers()}
                     game={game as Game<"jp">}
-                    handleSubmitRound={handleSubmitRound}
+                    handleSubmitRound={
+                        handleSubmitRound as (round: RoundByVariant<"jp">) => Promise<void>
+                    }
                 />
             );
         } else if (variant === "hk") {
@@ -179,7 +172,9 @@ const Game = <T extends GameVariant>() => {
                     enableRecording={isRecording(game)}
                     players={getOrderedPlayers()}
                     game={game as Game<"hk">}
-                    handleSubmitRound={handleSubmitRound}
+                    handleSubmitRound={
+                        handleSubmitRound as (round: RoundByVariant<"hk">) => Promise<void>
+                    }
                 />
             );
         }

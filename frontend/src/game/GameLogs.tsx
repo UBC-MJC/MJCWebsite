@@ -28,10 +28,10 @@ import { getGameVariantString } from "@/common/Utils";
 import type { GameVariant, Season, Game, PlayerNamesDataType } from "@/types";
 import { responsiveCardHover } from "@/theme/utils";
 
-const gameVariants: { name: string; variant: GameVariant }[] = [
+const gameVariants = [
     { name: "Riichi", variant: "jp" },
     { name: "Hong Kong", variant: "hk" },
-];
+] as const;
 
 const MAX_GAMES_PER_PAGE = 12;
 

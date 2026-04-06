@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
-import { createGameSchema } from "../validation/game.validation";
+import { createGameSchema, gameVariantSchema } from "../validation/game.validation";
 import { getCurrentSeason } from "../services/season.service";
-import { GameFilterArgs, GameVariant, getGameService } from "../services/game/game.util";
+import { GameFilterArgs, getGameService } from "../services/game/game.util";
 import { addGameListener, sendGameUpdate } from "../services/game/liveGame.service";
 import { GameStatus, GameType } from "@prisma/client";
 
 const getGamesHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const gameVariant = req.params.gameVariant as GameVariant;
+        const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
         const gameService = getGameService(gameVariant);
 
         const query: GameFilterArgs = {
@@ -37,7 +37,7 @@ const getGameHandler = async (
     addListener = false,
 ): Promise<void> => {
     const id = Number(req.params.id);
-    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     if (isNaN(id)) {
         return next(createError.NotFound("Game id is not a number"));
     }
@@ -68,7 +68,7 @@ const getLiveGamesHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     const gameService = getGameService(gameVariant);
     try {
         const filter: GameFilterArgs = {
@@ -88,7 +88,7 @@ const createGameHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
 
     try {
         const { players, gameType } = createGameSchema.parse(req.body);
@@ -110,7 +110,7 @@ const deleteGameHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     const gameId = Number(req.params.id);
     if (isNaN(gameId)) {
         return next(createError.NotFound("Game id is not a number"));
@@ -140,7 +140,7 @@ const submitGameHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     const gameId = Number(req.params.id);
     if (isNaN(gameId)) {
         return next(createError.NotFound("Game id is not a number"));
@@ -170,7 +170,7 @@ const createRoundHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     const gameId = Number(req.params.id);
     if (isNaN(gameId)) {
         return next(createError.NotFound("Game id is not a number"));
@@ -204,7 +204,7 @@ const deleteLastRoundHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     const gameId = Number(req.params.id);
     if (isNaN(gameId)) {
         return next(createError.NotFound("Game id is not a number"));
@@ -240,7 +240,7 @@ const recalcSeasonHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     try {
         const seasonId = await getCurrentSeason();
         const gameService = getGameService(gameVariant);
@@ -253,7 +253,7 @@ const recalcSeasonHandler = async (
 };
 
 const setChomboHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     const { playerId, chomboCount } = req.body;
     const gameId = Number(req.params.id);
     if (isNaN(gameId)) {

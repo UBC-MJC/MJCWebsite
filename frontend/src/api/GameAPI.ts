@@ -19,12 +19,12 @@ const createGameAPI = async (gameType: GameType, gameVariant: GameVariant, playe
     );
 };
 
-const getGameAPI = async <T extends GameVariant>(gameId: number, gameVariant: GameVariant) => {
+const getGameAPI = async <T extends GameVariant>(gameId: number, gameVariant: T) => {
     return axios.get<Game<T>>(baseUrl + `/games/${gameVariant}/${gameId}`);
 };
 
 const getGamesAPI = async <T extends GameVariant>(
-    gameVariant: GameVariant,
+    gameVariant: T,
     seasonId: string,
     playerIds: string[],
 ) => {
@@ -36,7 +36,7 @@ const getGamesAPI = async <T extends GameVariant>(
     });
 };
 
-const getLiveGamesAPI = async <T extends GameVariant>(gameVariant: GameVariant) => {
+const getLiveGamesAPI = async <T extends GameVariant>(gameVariant: T) => {
     return axios.get<Game<T>[]>(baseUrl + `/games/${gameVariant}/live`);
 };
 
@@ -50,7 +50,7 @@ const submitGameAPI = async (gameId: number, gameVariant: GameVariant) => {
 
 const addRoundAPI = async <T extends GameVariant>(
     gameId: number,
-    gameVariant: GameVariant,
+    gameVariant: T,
     round: RoundByVariant<T>,
 ) => {
     return axios.post<Game<T>>(
@@ -62,7 +62,7 @@ const addRoundAPI = async <T extends GameVariant>(
     );
 };
 
-const deleteRoundAPI = async <T extends GameVariant>(gameId: number, gameVariant: GameVariant) => {
+const deleteRoundAPI = async <T extends GameVariant>(gameId: number, gameVariant: T) => {
     return axios.delete<Game<T>>(
         baseUrl + `/games/${gameVariant}/${gameId}/rounds`,
         getAuthConfig(),

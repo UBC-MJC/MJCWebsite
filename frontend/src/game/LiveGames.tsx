@@ -19,10 +19,10 @@ import { getGameVariantString } from "@/common/Utils";
 import { gameRoundString } from "./common/constants";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { useLiveGames } from "@/hooks/GameHooks";
-import type { GameCreationProp } from "@/types";
+import type { GameCreationProp, GameVariant } from "@/types";
 import { responsiveCardHover } from "@/theme/utils";
 
-export const LiveGames = ({ gameVariant }: GameCreationProp) => {
+export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationProp<T>) => {
     const { isPending, error, data: liveGames } = useLiveGames(gameVariant);
 
     const formatDate = (dateString: string) => {

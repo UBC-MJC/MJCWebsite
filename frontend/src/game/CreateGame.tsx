@@ -17,9 +17,12 @@ import {
     Box,
     Alert,
 } from "@mui/material";
-import type { GameCreationProp, Player, PlayerNamesDataType } from "@/types";
+import type { GameCreationProp, GameVariant, Player, PlayerNamesDataType } from "@/types";
 
-const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
+const CreateGameComponent = <T extends GameVariant>({
+    gameVariant,
+    gameType,
+}: GameCreationProp<T>) => {
     const navigate = useNavigate();
 
     const [eastPlayer, setEastPlayer] = useState<PlayerNamesDataType | null>(null);
@@ -54,7 +57,6 @@ const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
 
     // const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
 
-
     // Get validation errors
     const getValidationErrors = () => {
         const errors: string[] = [];
@@ -80,13 +82,15 @@ const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
 
     const playerSelectMissing = () => {
         return !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
-    }
+    };
 
     const playerListNotUnique = () => {
         const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
-        return new Set(playerList.filter((p) => p !== null)).size !==
-            playerList.filter((p) => p !== null).length;
-    }
+        return (
+            new Set(playerList.filter((p) => p !== null)).size !==
+            playerList.filter((p) => p !== null).length
+        );
+    };
 
     const validationErrors = attemptedSubmit ? getValidationErrors() : [];
     if (playerNamesResult.error)
@@ -210,7 +214,10 @@ const CreateGameComponent = ({ gameVariant, gameType }: GameCreationProp) => {
     );
 };
 
-const hasGamePermissions = (player: Player | undefined, props: GameCreationProp): boolean => {
+const hasGamePermissions = <T extends GameVariant>(
+    player: Player | undefined,
+    props: GameCreationProp<T>,
+): boolean => {
     if (player === undefined) {
         return false;
     }

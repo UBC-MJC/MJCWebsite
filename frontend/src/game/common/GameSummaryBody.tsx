@@ -7,7 +7,7 @@ const GameSummaryBody = <T extends GameVariant>({
     gameVariant,
 }: {
     game: Game<T>;
-    gameVariant: GameVariant;
+    gameVariant: T;
 }) => {
     return (
         <Grid container spacing={1.5}>

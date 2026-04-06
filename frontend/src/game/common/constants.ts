@@ -135,7 +135,7 @@ const HK_LABEL_MAP: Record<HongKongLabel, string> = {
 
 const HK_UNDEFINED_HAND: HongKongHandInput = -1;
 
-const isGameEnd = <T extends GameVariant>(game: Game<T>, variant: GameVariant): boolean => {
+const isGameEnd = <T extends GameVariant>(game: Game<T>, variant: T): boolean => {
     if (variant === "jp") {
         return isJapaneseGameEnd(
             game.currentRound as PartialJapaneseRound,

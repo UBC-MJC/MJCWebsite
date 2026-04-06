@@ -11,8 +11,9 @@ import {
 import { addAuthCookieToResponse, generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
 import { getCurrentSeason } from "../services/season.service";
-import { GameVariant, getGameService, STARTING_ELO } from "../services/game/game.util";
+import { getGameService, STARTING_ELO } from "../services/game/game.util";
 import { GameType } from "@prisma/client";
+import { gameVariantSchema } from "../validation/game.validation";
 
 const isProduction = () => process.env.NODE_ENV === "production";
 
@@ -109,7 +110,7 @@ const getQualifiedPlayersHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     try {
         const gameService = getGameService(gameVariant);
         const qualifiedPlayers = await gameService.getQualifiedPlayers(
@@ -132,7 +133,7 @@ const getPlayerLeaderboardHandler = async (
     res: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     try {
         let seasonId: string;
         if (typeof req.query.seasonId !== "undefined") {
@@ -200,7 +201,7 @@ async function getUserStatisticsHandler(
     res: Response,
     next: NextFunction,
 ): Promise<void> {
-    const gameVariant = req.params.gameVariant as GameVariant;
+    const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     const gameService = getGameService(gameVariant);
     const playerId: string = req.params.playerId;
     const seasonId: string = req.params.seasonId;

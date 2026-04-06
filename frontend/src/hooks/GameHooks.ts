@@ -13,7 +13,7 @@ export function usePlayers(gameVariant: GameVariant, gameType: GameType) {
     });
 }
 
-export function useLiveGames(gameVariant: GameVariant) {
+export function useLiveGames<T extends GameVariant>(gameVariant: T) {
     return useQuery({
         queryKey: ["LiveGames", gameVariant],
         queryFn: async () => {

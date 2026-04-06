@@ -4,7 +4,7 @@ import type { GamePlayer } from "@/types";
 interface PlayerButtonRow<T extends string> {
     players: GamePlayer[];
     label: T;
-    labelPlayerIds: (number | undefined)[];
+    labelPlayerIds: readonly (number | undefined)[];
     onChange: (playerIndex: number, label: T) => void;
 }
 

@@ -1,6 +1,6 @@
 import { GameStatus, GameType, Player, Wind } from "@prisma/client";
 import { EloCalculatorInput } from "./eloCalculator";
-import { Transaction } from "../../validation/game.validation";
+import { GameVariant, Transaction } from "../../validation/game.validation";
 import { JapaneseGameService } from "./japaneseGame.service";
 import { HongKongGameService } from "./hongKongGame.service";
 import { EloDict, GameService } from "./game.service";
@@ -12,7 +12,6 @@ interface GameFilterArgs {
 }
 
 const WIND_ORDER: Wind[] = ["EAST", "SOUTH", "WEST", "NORTH"];
-export type GameVariant = "jp" | "hk";
 
 export type TupleOfFour<T> = [T, T, T, T];
 export interface Constants {

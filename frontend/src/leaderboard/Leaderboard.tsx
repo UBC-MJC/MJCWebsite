@@ -24,7 +24,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { DisplayStatistics } from "@/statistics/Statistics";
 
-const Leaderboard = ({ gameVariant, gameType }: GameCreationProp) => {
+const Leaderboard = <T extends GameVariant>({ gameVariant, gameType }: GameCreationProp<T>) => {
     const [season, setSeason] = useState<Season | null>(null);
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons();
 

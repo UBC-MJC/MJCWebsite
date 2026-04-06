@@ -21,8 +21,8 @@ export type GameType = "RANKED" | "PLAY_OFF" | "TOURNEY" | "CASUAL";
 
 export type GameVariant = "jp" | "hk";
 
-export interface GameCreationProp {
-    gameVariant: GameVariant;
+export interface GameCreationProp<T extends GameVariant> {
+    gameVariant: T;
     gameType: GameType;
 }
 

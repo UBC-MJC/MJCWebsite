@@ -4,6 +4,8 @@ import { GameType, HongKongTransactionType, JapaneseTransactionType, Wind } from
 
 import { FullJapaneseGame } from "../services/game/japaneseGame.service";
 
+const gameVariantSchema = z.enum(["jp", "hk"]);
+
 const createGameSchema = z.object({
     gameType: z.enum(GameType),
     players: z.array(z.string()).length(4),
@@ -47,6 +49,7 @@ const ConcludedHongKongRoundSchema = z.object({
     transactions: z.array(HongKongTransactionSchema),
 });
 
+type GameVariant = z.infer<typeof gameVariantSchema>;
 type ConcludedJapaneseRoundT = z.infer<typeof ConcludedJapaneseRoundSchema>;
 type JapaneseTransactionT = z.infer<typeof JapaneseTransactionSchema>;
 type ConcludedHongKongRoundT = z.infer<typeof ConcludedHongKongRoundSchema>;
@@ -74,6 +77,8 @@ const validateCreateHongKongRound = (round: any, game: any): void => {
 
 export {
     createGameSchema,
+    gameVariantSchema,
+    GameVariant,
     ConcludedJapaneseRoundT,
     JapaneseTransactionT,
     ConcludedHongKongRoundT,
