@@ -122,7 +122,7 @@ const GameLogs = <T extends GameVariant>() => {
                 {/* Search Filters */}
                 <Card>
                     <CardContent>
-                        <Stack>
+                        <Stack spacing={2}>
                             <Grid container spacing={3}>
                                 <Grid size={{ xs: 12, md: 4 }}>
                                     <Autocomplete

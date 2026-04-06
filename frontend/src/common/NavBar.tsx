@@ -18,6 +18,7 @@ import {
     Collapse,
     Stack,
     Skeleton,
+    ListItemButton,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandLess from "@mui/icons-material/ExpandLess";
@@ -66,26 +67,31 @@ const NavBar = () => {
                 </ListItem>
                 <Collapse in={leaderboardOpen} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        <ListItem component={Link} to="/leaderboard/jp" onClick={closeDrawer}>
+                        <ListItemButton
+                            component={Link}
+                            to="/leaderboard/jp"
+                            onClick={closeDrawer}
+                            color="inherit"
+                        >
                             <ListItemText primary={getGameVariantString("jp", "RANKED")} />
-                        </ListItem>
-                        <ListItem
+                        </ListItemButton>
+                        <ListItemButton
                             component={Link}
                             to="/leaderboard/jp/casual"
                             onClick={closeDrawer}
                         >
                             <ListItemText primary={getGameVariantString("jp", "CASUAL")} />
-                        </ListItem>
-                        <ListItem component={Link} to="/leaderboard/hk" onClick={closeDrawer}>
+                        </ListItemButton>
+                        <ListItemButton component={Link} to="/leaderboard/hk" onClick={closeDrawer}>
                             <ListItemText primary={getGameVariantString("hk", "RANKED")} />
-                        </ListItem>
-                        <ListItem
+                        </ListItemButton>
+                        <ListItemButton
                             component={Link}
                             to="/leaderboard/hk/casual"
                             onClick={closeDrawer}
                         >
                             <ListItemText primary={getGameVariantString("hk", "CASUAL")} />
-                        </ListItem>
+                        </ListItemButton>
                     </List>
                 </Collapse>
                 {!loading && player && (
@@ -97,7 +103,7 @@ const NavBar = () => {
                         <Collapse in={recordGameOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
                                 {player.japaneseQualified && (
-                                    <ListItem
+                                    <ListItemButton
                                         component={Link}
                                         to="/games/create/jp"
                                         onClick={closeDrawer}
@@ -105,17 +111,17 @@ const NavBar = () => {
                                         <ListItemText
                                             primary={getGameVariantString("jp", "RANKED")}
                                         />
-                                    </ListItem>
+                                    </ListItemButton>
                                 )}
-                                <ListItem
+                                <ListItemButton
                                     component={Link}
                                     to="/games/create/jp/casual"
                                     onClick={closeDrawer}
                                 >
                                     <ListItemText primary={getGameVariantString("jp", "CASUAL")} />
-                                </ListItem>
+                                </ListItemButton>
                                 {player.hongKongQualified && (
-                                    <ListItem
+                                    <ListItemButton
                                         component={Link}
                                         to="/games/create/hk"
                                         onClick={closeDrawer}
@@ -123,15 +129,15 @@ const NavBar = () => {
                                         <ListItemText
                                             primary={getGameVariantString("hk", "RANKED")}
                                         />
-                                    </ListItem>
+                                    </ListItemButton>
                                 )}
-                                <ListItem
+                                <ListItemButton
                                     component={Link}
                                     to="/games/create/hk/casual"
                                     onClick={closeDrawer}
                                 >
                                     <ListItemText primary={getGameVariantString("hk", "CASUAL")} />
-                                </ListItem>
+                                </ListItemButton>
                             </List>
                         </Collapse>
                     </>
@@ -142,44 +148,56 @@ const NavBar = () => {
                 </ListItem>
                 <Collapse in={liveGamesOpen} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        <ListItem component={Link} to="/games/current/jp" onClick={closeDrawer}>
+                        <ListItemButton
+                            component={Link}
+                            to="/games/current/jp"
+                            onClick={closeDrawer}
+                        >
                             <ListItemText primary={getGameVariantString("jp")} />
-                        </ListItem>
-                        <ListItem component={Link} to="/games/current/hk" onClick={closeDrawer}>
+                        </ListItemButton>
+                        <ListItemButton
+                            component={Link}
+                            to="/games/current/hk"
+                            onClick={closeDrawer}
+                        >
                             <ListItemText primary={getGameVariantString("hk")} />
-                        </ListItem>
+                        </ListItemButton>
                     </List>
                 </Collapse>
-                <ListItem component={Link} to="/games" onClick={closeDrawer}>
-                    <ListItemText primary="Logs" />
-                </ListItem>
-                <ListItem component={Link} to="/stats/jp" onClick={closeDrawer}>
+                <ListItemButton component={Link} to="/games" onClick={closeDrawer}>
+                    <ListItemText primary="Logs" color="black" />
+                </ListItemButton>
+                <ListItemButton component={Link} to="/stats/jp" onClick={closeDrawer}>
                     <ListItemText primary="Stats" />
-                </ListItem>
-                <ListItem component={Link} to="/resources" onClick={closeDrawer}>
+                </ListItemButton>
+                <ListItemButton component={Link} to="/resources" onClick={closeDrawer}>
                     <ListItemText primary="Resources" />
-                </ListItem>
+                </ListItemButton>
                 <Divider />
                 {!loading && player && player.admin && (
-                    <ListItem component={Link} to="/admin" onClick={closeDrawer}>
+                    <ListItemButton component={Link} to="/admin" onClick={closeDrawer}>
                         <ListItemText primary="Admin" />
-                    </ListItem>
+                    </ListItemButton>
                 )}
                 {loading ? (
-                    <ListItem>
+                    <ListItemButton>
                         <Skeleton variant="text" width="100%" height={32} />
-                    </ListItem>
+                    </ListItemButton>
                 ) : player ? (
                     <>
-                        <ListItem onClick={() => setUserOpen(!userOpen)}>
+                        <ListItemButton onClick={() => setUserOpen(!userOpen)}>
                             <ListItemText primary={player.username} />
                             {userOpen ? <ExpandLess /> : <ExpandMore />}
-                        </ListItem>
+                        </ListItemButton>
                         <Collapse in={userOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
-                                <ListItem component={Link} to="/settings" onClick={closeDrawer}>
+                                <ListItemButton
+                                    component={Link}
+                                    to="/settings"
+                                    onClick={closeDrawer}
+                                >
                                     <ListItemText primary="Settings" />
-                                </ListItem>
+                                </ListItemButton>
                                 <ListItem
                                     onClick={() => {
                                         logout();
@@ -192,9 +210,9 @@ const NavBar = () => {
                         </Collapse>
                     </>
                 ) : (
-                    <ListItem component={Link} to="/login" onClick={closeDrawer}>
+                    <ListItemButton component={Link} to="/login" onClick={closeDrawer}>
                         <ListItemText primary="Login" />
-                    </ListItem>
+                    </ListItemButton>
                 )}
             </List>
         </Box>

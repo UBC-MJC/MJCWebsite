@@ -28,46 +28,56 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
 
     return (
         <Container>
-            <Stack>
+            <Stack spacing={2}>
                 <Typography variant="h1">Game Statistics</Typography>
 
-                <Stack direction={{ xs: "column", sm: "row" }}>
-                    <Autocomplete
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                        getOptionLabel={(option) => option.name}
-                        options={seasons}
-                        value={season!}
-                        blurOnSelect
-                        disableClearable
-                        onChange={(_e, value) => setSeason(value)}
-                        sx={{ flex: 1 }}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Season"
-                                placeholder="Select a season"
-                                inputProps={{
-                                    ...params.inputProps,
-                                    readOnly: true, // This is the key line
-                                }}
-                            />
-                        )}
-                    />
-                    <Autocomplete
-                        isOptionEqualToValue={(option, value) => option.playerId === value.playerId}
-                        getOptionLabel={(option) => option.username}
-                        options={players}
-                        value={selectedPlayer}
-                        blurOnSelect
-                        onChange={(_e, value) => {
-                            setPlayerId(value?.playerId ?? null);
-                        }}
-                        sx={{ flex: 1 }}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Player" placeholder="Select a player" />
-                        )}
-                    />
-                </Stack>
+                <Grid container spacing={2}>
+                    <Grid size={6}>
+                        <Autocomplete
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            getOptionLabel={(option) => option.name}
+                            options={seasons}
+                            value={season!}
+                            blurOnSelect
+                            disableClearable
+                            onChange={(_e, value) => setSeason(value)}
+                            sx={{ flex: 1 }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Season"
+                                    placeholder="Select a season"
+                                    inputProps={{
+                                        ...params.inputProps,
+                                        readOnly: true, // This is the key line
+                                    }}
+                                />
+                            )}
+                        />
+                    </Grid>
+                    <Grid size={6}>
+                        <Autocomplete
+                            isOptionEqualToValue={(option, value) =>
+                                option.playerId === value.playerId
+                            }
+                            getOptionLabel={(option) => option.username}
+                            options={players}
+                            value={selectedPlayer}
+                            blurOnSelect
+                            onChange={(_e, value) => {
+                                setPlayerId(value?.playerId ?? null);
+                            }}
+                            sx={{ flex: 1 }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Player"
+                                    placeholder="Select a player"
+                                />
+                            )}
+                        />
+                    </Grid>
+                </Grid>
                 <DisplayStatistics
                     playerId={playerId === null ? undefined : playerId}
                     gameVariant={gameVariant}
