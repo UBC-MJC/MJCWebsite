@@ -58,15 +58,7 @@ const Leaderboard = <T extends GameVariant>({ gameVariant, gameType }: GameCreat
                     disableClearable
                     onChange={(_e, value) => setSeason(value)}
                     renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Season"
-                            placeholder="Select a season"
-                            inputProps={{
-                                ...params.inputProps,
-                                readOnly: true, // This is the key line
-                            }}
-                        />
+                        <TextField {...params} label="Season" placeholder="Select a season" />
                     )}
                 />
 

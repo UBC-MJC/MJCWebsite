@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-export function roundQuery(seasonId, playerId) {
+export function roundQuery(seasonId: string | "", playerId) {
     return Prisma.sql`
      SELECT SUM(
           CASE pg.wind 
@@ -13,7 +13,7 @@ export function roundQuery(seasonId, playerId) {
      FROM JapaneseRound r
      JOIN JapanesePlayerGame pg ON pg.gameId = r.gameId
      JOIN JapaneseGame g ON g.id = pg.gameId
-     WHERE g.seasonId = ${seasonId}
+     WHERE (${seasonId} = '' OR g.seasonId = ${seasonId})
      AND pg.playerId = ${playerId}
 `;
 }

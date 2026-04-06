@@ -23,7 +23,7 @@ export function winQuery(seasonId, playerId) {
           JOIN JapaneseRound r ON r.id = t.roundId
           JOIN JapanesePlayerGame pg ON pg.gameId = r.gameId
           JOIN JapaneseGame g ON pg.gameId = g.id
-          WHERE g.seasonId = ${seasonId}
+          WHERE (${seasonId} = '' OR g.seasonId = ${seasonId})
                AND pg.playerId = ${playerId}
                AND (
                     (pg.wind = 'EAST' AND t.player0ScoreChange > 0) OR

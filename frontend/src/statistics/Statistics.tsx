@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect, useState } from "react";
+import { memo, useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayers } from "@/hooks/GameHooks";
@@ -6,19 +6,21 @@ import { useStatistics } from "@/hooks/LeaderboardHooks";
 import { Autocomplete, Container, Grid, Stack, TextField, Typography } from "@mui/material";
 import type { GameVariant, Season } from "@/types";
 
+const ALL_SEASONS: Season = {
+    id: "all",
+    name: "All Seasons",
+    startDate: new Date("00000101"),
+    endDate: new Date(),
+};
+
 const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
     const { player } = useContext(AuthContext);
     const [playerId, setPlayerId] = useState<string | null>(player?.id ?? null);
-    const [season, setSeason] = useState<Season | null>(null);
+    const [season, setSeason] = useState<Season>(ALL_SEASONS);
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons();
     const { isSuccess: playersSuccess, data: players } = usePlayers(gameVariant, "CASUAL");
 
-    useEffect(() => {
-        // Set the first season as the current season
-        if (seasonsSuccess && seasons && seasons.length > 0) {
-            setSeason(seasons[0]);
-        }
-    }, [seasonsSuccess, seasons]);
+    const allSeasons = [ALL_SEASONS, ...(seasons ?? [])];
 
     if (!seasonsSuccess || !playersSuccess || !seasons || !players) {
         return <>Loading ...</>;
@@ -36,8 +38,7 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.id === value.id}
                             getOptionLabel={(option) => option.name}
-                            options={seasons}
-                            value={season!}
+                            options={allSeasons}
                             blurOnSelect
                             disableClearable
                             onChange={(_e, value) => setSeason(value)}
@@ -47,10 +48,6 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
                                     {...params}
                                     label="Season"
                                     placeholder="Select a season"
-                                    inputProps={{
-                                        ...params.inputProps,
-                                        readOnly: true, // This is the key line
-                                    }}
                                 />
                             )}
                         />
@@ -81,7 +78,7 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
                 <DisplayStatistics
                     playerId={playerId === null ? undefined : playerId}
                     gameVariant={gameVariant}
-                    season={season === null ? undefined : season}
+                    season={season}
                 />
             </Stack>
         </Container>
@@ -96,7 +93,7 @@ export const DisplayStatistics = memo(
     }: {
         playerId: string | undefined;
         gameVariant: GameVariant;
-        season: Season | undefined;
+        season: Season;
     }) => {
         const { isSuccess, data: stats } = useStatistics(playerId, gameVariant, season);
         if (!isSuccess) {

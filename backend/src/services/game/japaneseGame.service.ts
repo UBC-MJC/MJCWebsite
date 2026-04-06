@@ -192,7 +192,7 @@ class JapaneseGameService extends GameService {
         });
     }
 
-    public async getUserStatistics(seasonId: string, playerId: string): Promise<any> {
+    public async getUserStatistics(seasonId: string | "", playerId: string): Promise<any> {
         const [
             [{ count: totalRounds }],
             [{ riichiCount }],
@@ -209,7 +209,7 @@ class JapaneseGameService extends GameService {
                   JapaneseGame g
              where pg.gameId = r.gameId
                and g.id = pg.gameId
-               and g.seasonId = ${seasonId}
+               and (${seasonId} = '' OR g.seasonId = ${seasonId})
                and pg.playerId = ${playerId}`,
             prisma.$queryRaw<
                 {

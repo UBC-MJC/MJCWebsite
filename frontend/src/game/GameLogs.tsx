@@ -162,10 +162,6 @@ const GameLogs = <T extends GameVariant>() => {
                                                 {...params}
                                                 label="Season"
                                                 placeholder="Select a season"
-                                                inputProps={{
-                                                    ...params.inputProps,
-                                                    readOnly: true, // This is the key line
-                                                }}
                                             />
                                         )}
                                     />

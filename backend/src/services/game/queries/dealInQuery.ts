@@ -2,73 +2,34 @@ import { Prisma } from "@prisma/client";
 
 export function dealInQuery(seasonId, playerId) {
     return Prisma.sql`
-        select sum(dealInPoint) as dealInPoint, sum(riichiCount) as riichiCount, sum(count) as count
-        from (select -sum(t.player0ScoreChange) as dealInPoint,
-                     sum(player0Riichi)         as riichiCount,
-                     count(r.id)                as count
-              from JapaneseTransaction t,
-                   JapaneseRound r,
-                   JapanesePlayerGame pg,
-                   JapaneseGame g
-              where pg.gameId = r.gameId
-                and r.id = t.roundId
-                and t.transactionType in ('DEAL_IN', 'DEAL_IN_PAO')
-                and (t.paoPlayerIndex IS NULL or t.paoPlayerIndex != 0)
-                and t.player0ScoreChange < 0
-                and pg.wind = 'EAST'
-                and pg.gameId = g.id
-                and g.seasonId = ${seasonId}
-                and pg.playerId = ${playerId}
-              union all
-              select -sum(t.player1ScoreChange) as dealInPoint,
-                     sum(player1Riichi)         as riichiCount,
-                     count(r.id)                as count
-              from JapaneseTransaction t,
-                   JapaneseRound r,
-                   JapanesePlayerGame pg,
-                   JapaneseGame g
-              where pg.gameId = r.gameId
-                and r.id = t.roundId
-                and t.transactionType in ('DEAL_IN', 'DEAL_IN_PAO')
-                and (t.paoPlayerIndex IS NULL or t.paoPlayerIndex != 1)
-                and t.player1ScoreChange < 0
-                and pg.wind = 'SOUTH'
-                and pg.gameId = g.id
-                and g.seasonId = ${seasonId}
-                and pg.playerId = ${playerId}
-              union all
-              select -sum(t.player2ScoreChange) as dealInPoint,
-                     sum(player2Riichi)         as riichiCount,
-                     count(r.id)                as count
-              from JapaneseTransaction t,
-                   JapaneseRound r,
-                   JapanesePlayerGame pg,
-                   JapaneseGame g
-              where pg.gameId = r.gameId
-                and r.id = t.roundId
-                and t.transactionType in ('DEAL_IN', 'DEAL_IN_PAO')
-                and (t.paoPlayerIndex IS NULL or t.paoPlayerIndex != 2)
-                and t.player2ScoreChange < 0
-                and pg.wind = 'WEST'
-                and pg.gameId = g.id
-                and g.seasonId = ${seasonId}
-                and pg.playerId = ${playerId}
-              union all
-              select -sum(t.player3ScoreChange) as dealInPoint,
-                     sum(player3Riichi)         as riichiCount,
-                     count(r.id)                as count
-              from JapaneseTransaction t,
-                   JapaneseRound r,
-                   JapanesePlayerGame pg,
-                   JapaneseGame g
-              where pg.gameId = r.gameId
-                and r.id = t.roundId
-                and t.transactionType in ('DEAL_IN', 'DEAL_IN_PAO')
-                and (t.paoPlayerIndex IS NULL or t.paoPlayerIndex != 3)
-                and t.player3ScoreChange < 0
-                and pg.wind = 'NORTH'
-                and pg.gameId = g.id
-                and g.seasonId = ${seasonId}
-                and pg.playerId = ${playerId}) DEALINS
+ SELECT 
+    SUM(CASE pg.wind
+        WHEN 'EAST' THEN -t.player0ScoreChange
+        WHEN 'SOUTH' THEN -t.player1ScoreChange
+        WHEN 'WEST' THEN -t.player2ScoreChange
+        WHEN 'NORTH' THEN -t.player3ScoreChange
+    END) AS dealInPoint,
+    
+    SUM(CASE pg.wind
+        WHEN 'EAST' THEN player0Riichi
+        WHEN 'SOUTH' THEN player1Riichi
+        WHEN 'WEST' THEN player2Riichi
+        WHEN 'NORTH' THEN player3Riichi
+    END) AS riichiCount,
+    
+    COUNT(r.id) AS count
+FROM JapaneseTransaction t
+JOIN JapaneseRound r ON r.id = t.roundId
+JOIN JapanesePlayerGame pg ON pg.gameId = r.gameId
+JOIN JapaneseGame g ON pg.gameId = g.id
+WHERE t.transactionType IN ('DEAL_IN', 'DEAL_IN_PAO')
+  AND (${seasonId} = '' OR g.seasonId = ${seasonId} )
+  AND pg.playerId = ${playerId}
+  AND (
+      (pg.wind = 'EAST' AND t.player0ScoreChange < 0 AND (t.paoPlayerIndex IS NULL OR t.paoPlayerIndex != 0)) OR
+      (pg.wind = 'SOUTH' AND t.player1ScoreChange < 0 AND (t.paoPlayerIndex IS NULL OR t.paoPlayerIndex != 1)) OR
+      (pg.wind = 'WEST' AND t.player2ScoreChange < 0 AND (t.paoPlayerIndex IS NULL OR t.paoPlayerIndex != 2)) OR
+      (pg.wind = 'NORTH' AND t.player3ScoreChange < 0 AND (t.paoPlayerIndex IS NULL OR t.paoPlayerIndex != 3))
+  )
     `;
 }

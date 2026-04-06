@@ -142,7 +142,7 @@ class HongKongGameService extends GameService {
         });
     }
 
-    public async getUserStatistics(seasonId: string, playerId: string): Promise<any> {
+    public async getUserStatistics(seasonId: string | "", playerId: string): Promise<any> {
         return {};
     }
 }

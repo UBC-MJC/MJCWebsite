@@ -204,7 +204,7 @@ async function getUserStatisticsHandler(
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     const gameService = getGameService(gameVariant);
     const playerId: string = req.params.playerId;
-    const seasonId: string = req.params.seasonId;
+    const seasonId: string | "" = req.params.seasonId == "all" ? "" : req.params.seasonId;
     const result = await gameService.getUserStatistics(seasonId, playerId);
     res.json(result);
 }
