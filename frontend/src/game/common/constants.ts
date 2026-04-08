@@ -216,7 +216,7 @@ export function mapSeasonToOption(seasons: Season[]): OptionsType<Season>[] {
 export function mapLeaderboardToOneDecimal(leaderboards: LeaderboardType[]) {
     const playerElos = leaderboards.sort((a, b) => {
         return (
-            Number(b.elo) - 15 * Number(b.chomboCount) - Number(a.elo) + 15 * Number(a.chomboCount)
+            Number(b.elo) - 50 * Number(b.chomboCount) - Number(a.elo) + 50 * Number(a.chomboCount)
         );
     });
     return playerElos.map((player, index) => {
@@ -224,7 +224,7 @@ export function mapLeaderboardToOneDecimal(leaderboards: LeaderboardType[]) {
         return {
             ...player,
             index: index + 1,
-            displayElo: (elo - 15 * player.chomboCount).toFixed(1),
+            displayElo: (elo - 50 * player.chomboCount).toFixed(1),
         };
     });
 }
