@@ -352,6 +352,7 @@ abstract class GameService {
     abstract isEligible(player: Player): boolean;
     abstract getQualifiedPlayers(gameType: GameType): Promise<Player[]>;
     abstract getUserStatistics(seasonId: string | "", playerId: string): Promise<any>;
+    abstract getPlacementHistory(seasonId: string | "", playerId: string): Promise<any[]>;
 
     public async setChombo(gameId: number, playerId: string, chomboCount: number): Promise<any> {
         return await this.playerGameDatabase.updateMany({

@@ -2,8 +2,9 @@ import { memo, useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayers } from "@/hooks/GameHooks";
-import { useStatistics } from "@/hooks/LeaderboardHooks";
+import { useStatistics, usePlacementHistory } from "@/hooks/LeaderboardHooks";
 import { Autocomplete, Container, Grid, Stack, TextField, Typography } from "@mui/material";
+import { PlacementHistoryGraph } from "./PlacementHistoryGraph";
 import type { GameVariant, Season } from "@/types";
 
 const ALL_SEASONS: Season = {
@@ -96,39 +97,48 @@ export const DisplayStatistics = memo(
         season: Season;
     }) => {
         const { isSuccess, data: stats } = useStatistics(playerId, gameVariant, season);
+        const { isSuccess: historySuccess, data: placementHistory } = usePlacementHistory(
+            playerId,
+            gameVariant,
+            season,
+        );
+
         if (!isSuccess) {
             return "";
         }
+
         return (
-            <Grid container spacing={2}>
-                <Grid size={6}>
-                    Deal-in %:{" "}
-                    {divideWithDefault(100 * stats.dealInCount, stats.totalRounds).toFixed(2)}%
-                </Grid>
-                <Grid size={6}>
-                    Avg Deal-in size:{" "}
-                    {divideWithDefault(stats.dealInPoint, stats.dealInCount).toFixed(0)}
-                </Grid>
-                <Grid size={6}>
-                    Win %: {divideWithDefault(100 * stats.winCount, stats.totalRounds).toFixed(2)}%
-                </Grid>
-                <Grid size={6}>
-                    Avg Agari size: {divideWithDefault(stats.winPoint, stats.winCount).toFixed(0)}
-                </Grid>
-                <Grid size={6}>
-                    Riichi Rate:{" "}
-                    {divideWithDefault(100 * stats.riichiCount, stats.totalRounds).toFixed(2)}%
-                </Grid>
-                <Grid size={6}>
-                    Riichi Win Rate:{" "}
-                    {divideWithDefault(100 * stats.winRiichiCount, stats.riichiCount).toFixed(2)}%
-                </Grid>
-                <Grid size={6}>
-                    Riichi Deal-in Rate:{" "}
-                    {divideWithDefault(100 * stats.dealInRiichiCount, stats.riichiCount).toFixed(2)}
-                    %
-                </Grid>
-            </Grid>
+            <Stack spacing={3}>
+                <div>
+                    <Grid container spacing={2}>
+                        <Grid size={6}>
+                            Deal-in %: {divideWithDefault(100 * stats.dealInCount, stats.totalRounds).toFixed(2)}%
+                        </Grid>
+                        <Grid size={6}>
+                            Avg Deal-in size: {divideWithDefault(stats.dealInPoint, stats.dealInCount).toFixed(0)}
+                        </Grid>
+                        <Grid size={6}>
+                            Win %: {divideWithDefault(100 * stats.winCount, stats.totalRounds).toFixed(2)}%
+                        </Grid>
+                        <Grid size={6}>
+                            Avg Agari size: {divideWithDefault(stats.winPoint, stats.winCount).toFixed(0)}
+                        </Grid>
+                        <Grid size={6}>
+                            Riichi Rate: {divideWithDefault(100 * stats.riichiCount, stats.totalRounds).toFixed(2)}%
+                        </Grid>
+                        <Grid size={6}>
+                            Riichi Win Rate: {divideWithDefault(100 * stats.winRiichiCount, stats.riichiCount).toFixed(2)}%
+                        </Grid>
+                        <Grid size={6}>
+                            Riichi Deal-in Rate: {divideWithDefault(100 * stats.dealInRiichiCount, stats.riichiCount).toFixed(2)}%
+                        </Grid>
+                    </Grid>
+                </div>
+
+                {historySuccess && placementHistory && placementHistory.length > 0 && (
+                    <PlacementHistoryGraph data={placementHistory} />
+                )}
+            </Stack>
         );
     },
 );

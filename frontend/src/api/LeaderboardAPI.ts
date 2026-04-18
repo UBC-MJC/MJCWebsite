@@ -24,4 +24,17 @@ async function getUserStatistics(playerId: string, gameVariant: string, seasonId
         totalRounds: number;
     }>(baseUrl + "/players/" + playerId + "/" + gameVariant + "/" + seasonId + "/");
 }
-export { getCurrentSeason, getPlayerLeaderboard, getUserStatistics };
+
+async function getPlacementHistory(playerId: string, gameVariant: string, seasonId: string) {
+    return axios.get<
+        {
+            gameId: number;
+            createdAt: string;
+            placement: number;
+            score: number;
+            scores: number[];
+        }[]
+    >(baseUrl + "/players/" + playerId + "/" + gameVariant + "/" + seasonId + "/placement-history");
+}
+
+export { getCurrentSeason, getPlayerLeaderboard, getUserStatistics, getPlacementHistory };

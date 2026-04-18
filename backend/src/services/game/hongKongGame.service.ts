@@ -1,5 +1,5 @@
 import prisma from "../../db";
-import { GameType, HongKongTransaction, Player, Prisma, Wind } from "@prisma/client";
+import { GameType, GameStatus, HongKongTransaction, Player, Prisma, Wind } from "@prisma/client";
 import { GameService } from "./game.service";
 import {
     addScoreDeltas,
@@ -144,6 +144,56 @@ class HongKongGameService extends GameService {
 
     public async getUserStatistics(seasonId: string | "", playerId: string): Promise<any> {
         return {};
+    }
+
+    public async getPlacementHistory(seasonId: string | "", playerId: string): Promise<any[]> {
+        const games = await prisma.hongKongGame.findMany({
+            where: {
+                status: GameStatus.FINISHED,
+                ...(seasonId && seasonId !== "" ? { seasonId: seasonId } : {}),
+                players: {
+                    some: {
+                        playerId: playerId,
+                    },
+                },
+            },
+            include: {
+                players: {
+                    include: {
+                        player: true,
+                    },
+                },
+                rounds: {
+                    include: {
+                        transactions: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+            take: 30,
+        });
+
+        return games
+            .reverse()
+            .map((game: any) => {
+                const scores = this.getGameFinalScore(game);
+                const playerIndex = game.players.findIndex((pg: any) => pg.playerId === playerId);
+                const playerScore = scores[playerIndex];
+
+                // Calculate placement (1st, 2nd, 3rd, 4th)
+                const sortedScores = scores.slice().sort((a: number, b: number) => b - a);
+                const placement = sortedScores.findIndex((score: number) => score === playerScore) + 1;
+
+                return {
+                    gameId: game.id,
+                    createdAt: game.createdAt,
+                    placement: placement,
+                    score: playerScore,
+                    scores: scores,
+                };
+            });
     }
 }
 export function generateOverallScoreDelta(concludedGame: ConcludedHongKongRoundT) {

@@ -1,5 +1,5 @@
 import { skipToken, useQuery } from "@tanstack/react-query";
-import { getPlayerLeaderboard, getUserStatistics } from "@/api/LeaderboardAPI";
+import { getPlayerLeaderboard, getUserStatistics, getPlacementHistory } from "@/api/LeaderboardAPI";
 import { mapLeaderboardToOneDecimal } from "@/game/common/constants";
 import type { GameVariant, GameType, Season } from "@/types";
 
@@ -35,6 +35,27 @@ export function useStatistics(
                           season.id,
                       );
                       return statsResponse.data;
+                  }
+                : skipToken,
+    });
+}
+
+export function usePlacementHistory(
+    playerId: string | undefined,
+    gameVariant: GameVariant,
+    season: Season | undefined,
+) {
+    return useQuery({
+        queryKey: ["PlacementHistory", playerId, gameVariant, season],
+        queryFn:
+            season && playerId
+                ? async () => {
+                      const historyResponse = await getPlacementHistory(
+                          playerId,
+                          gameVariant,
+                          season.id,
+                      );
+                      return historyResponse.data;
                   }
                 : skipToken,
     });

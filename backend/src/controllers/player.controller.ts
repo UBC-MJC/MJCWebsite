@@ -209,6 +209,24 @@ async function getUserStatisticsHandler(
     res.json(result);
 }
 
+async function getPlacementHistoryHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void> {
+    try {
+        const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
+        const gameService = getGameService(gameVariant);
+        const playerId: string = req.params.playerId;
+        const seasonId: string | "" = req.params.seasonId == "all" ? "" : req.params.seasonId;
+        const result = await gameService.getPlacementHistory(seasonId, playerId);
+        res.json(result);
+    } catch (err: any) {
+        next(createError.InternalServerError(err.message));
+    }
+}
+
+
 const logoutHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         res.clearCookie("authToken", {
@@ -234,4 +252,5 @@ export {
     updateSettingsHandler,
     updateUsernameHandler,
     getUserStatisticsHandler,
+    getPlacementHistoryHandler,
 };

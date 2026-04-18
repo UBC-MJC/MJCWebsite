@@ -5,6 +5,7 @@ import {
     getPlayerLeaderboardHandler,
     getQualifiedPlayersHandler,
     getUserStatisticsHandler,
+    getPlacementHistoryHandler,
     loginHandler,
     logoutHandler,
     passwordResetHandler,
@@ -65,6 +66,7 @@ router.get("/players/current", isAuthenticated, getCurrentPlayerHandler);
 router.put("/players/current/settings", isAuthenticated, updateSettingsHandler);
 router.put("/players/current/username", isAuthenticated, updateUsernameHandler);
 router.get("/players/:playerId/:gameVariant/:seasonId", getUserStatisticsHandler);
+router.get("/players/:playerId/:gameVariant/:seasonId/placement-history", getPlacementHistoryHandler);
 router.get("/seasons/current", getCurrentSeasonHandler);
 router.get("/seasons", getSeasonsHandler);
 
