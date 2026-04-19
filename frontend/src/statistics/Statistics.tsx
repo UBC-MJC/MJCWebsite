@@ -109,7 +109,6 @@ export const DisplayStatistics = memo(
 
         return (
             <Stack spacing={3}>
-                <div>
                     <Grid container spacing={2}>
                         <Grid size={6}>
                             Deal-in %: {divideWithDefault(100 * stats.dealInCount, stats.totalRounds).toFixed(2)}%
@@ -133,7 +132,6 @@ export const DisplayStatistics = memo(
                             Riichi Deal-in Rate: {divideWithDefault(100 * stats.dealInRiichiCount, stats.riichiCount).toFixed(2)}%
                         </Grid>
                     </Grid>
-                </div>
 
                 {historySuccess && placementHistory && placementHistory.length > 0 && (
                     <PlacementHistoryGraph data={placementHistory} />
