@@ -98,7 +98,7 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
                         overflowX: "auto",
                         overflowY: "hidden",
                         display: "flex",
-                        justifyContent: isMobile ? "flex-start" : "center",
+                        justifyContent: "safe center",
                         width: "100%",
                         WebkitOverflowScrolling: "touch",
                     }}
