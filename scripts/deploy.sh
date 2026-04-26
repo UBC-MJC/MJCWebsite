@@ -48,7 +48,7 @@ echo ""
 # Step 3: Deploy build artifacts
 echo -e "${YELLOW}Step 3: Deploying build artifacts to server...${NC}"
 echo "Syncing to: ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/build/"
-rsync -avz -e "ssh -i ${KEY_PATH}" --delete \
+rsync -avz -e "ssh" --delete \
     --exclude='.git' \
     "$BUILD_DIR/" \
     "${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/build/"
@@ -60,15 +60,6 @@ fi
 
 echo ""
 echo -e "${GREEN}Deployment completed!${NC}"
-echo ""
-
-# Step 4: Deploy .env.production if it exists
-if [ -f "$PROJECT_ROOT/.env.production" ]; then
-    echo -e "${YELLOW}Step 4: Deploying .env.production...${NC}"
-    rsync -avz -e "ssh -i ${KEY_PATH}" "$PROJECT_ROOT/.env.production" \
-        "${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/.env.production"
-    echo ""
-fi
 echo ""
 
 # Step 6: Start remote service
