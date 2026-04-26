@@ -1,4 +1,15 @@
-import { Container, Typography, Divider, Link, Stack, Paper } from "@mui/material";
+import {
+    Container,
+    Typography,
+    Divider,
+    Link,
+    Stack,
+    Paper,
+    List,
+    ListItem,
+    Grid,
+    ListItemText,
+} from "@mui/material";
 
 export default function Tournament() {
     return (
@@ -37,23 +48,32 @@ export default function Tournament() {
                 <Paper elevation={3}>
                     <Stack spacing={2} p={2}>
                         <Typography variant="h2">Fees & Prizes</Typography>
-                        <Typography variant="h3"> Early Bird Registration Fee</Typography>
-                        <Typography>50 CAD / 40 USD</Typography>
-                        <Typography variant="h3"> Regular Registration Fee</Typography>
-                        <Typography>60 CAD / 48 USD</Typography>
+                        <Stack direction="row" justifyContent={"center"} spacing={4}>
+                            <Stack>
+                                <Typography variant="h3">Early Bird Registration Fee</Typography>
+                                <Typography>50 CAD / 40 USD</Typography>
+                            </Stack>
+                            <Stack>
+                                <Typography variant="h3">Regular Registration Fee</Typography>
+                                <Typography>60 CAD / 48 USD</Typography>
+                            </Stack>
+                        </Stack>
                         <Typography variant="h3"> Prize Pool</Typography>
                         <Typography>
                             300 / 150 / 100 / 50 CAD (minimum, subject to increase)
                         </Typography>
-
-                        <Divider />
-                        <Typography variant="h3"> Riichi Canada Certification</Typography>
-                        <Typography>Obtained</Typography>
-                        <Typography variant="h3">
-                            {" "}
-                            American Riichi Association Certification
+                        <Typography variant="h3"> Payment Method</Typography>
+                        <Typography>
+                            For Canadian registrants, please e-transfer the corresponding amount to
+                            ubcmahjongclub@gmail.com.
                         </Typography>
-                        <Typography>Intended, Application submitted</Typography>
+                        <Typography>
+                            For non-Canadian registrants, please send the amount via PayPal to
+                            zihaohuang2017 or julienhuang2009@sina.com.
+                        </Typography>
+                        <Typography>
+                            A confirmation email will be sent to complete the registration process.
+                        </Typography>
                     </Stack>
                 </Paper>
 
@@ -85,9 +105,55 @@ export default function Tournament() {
                             Game 8 (Playoff Game 2) will be played by the top 8 with seating as ([1,
                             3, 5, 7], [2, 4, 6, 8]).
                         </Typography>
+                        <Divider />
+                        <Typography variant="h3"> Riichi Canada Certification</Typography>
+                        <Typography>Obtained</Typography>
+                        <Typography variant="h3">
+                            American Riichi Association Certification
+                        </Typography>
+                        <Typography>Intended, Application submitted</Typography>
                     </Stack>
                 </Paper>
+                <Paper elevation={3}>
+                    <Stack spacing={2} p={2}>
+                        <Typography variant="h2">Schedule</Typography>
+                        <Grid container spacing={2} columns={{ xs: 4, sm: 8, md: 12 }}>
+                            <Grid size={6}>
+                                <List>
+                                    <ListItem>
+                                        <b>Day 1 (2026-07-18)</b>
+                                    </ListItem>
 
+                                    <ListItem>10:00 &ndash; 10:30: Player Check-in</ListItem>
+                                    <ListItem>10:30 &ndash; 12:00: Round 1</ListItem>
+                                    <ListItem>12:15 &ndash; 13:45: Round 2</ListItem>
+                                    <ListItem>13:45 &ndash; 15:00: Intermission + Lunch</ListItem>
+                                    <ListItem>15:00 &ndash; 16:30: Round 3</ListItem>
+                                    <ListItem>16:45 &ndash; 18:15: Round 4</ListItem>
+                                    <ListItem>18:15 onwards: Free Play</ListItem>
+                                </List>
+                            </Grid>
+                            <Grid size={6}>
+                                <List>
+                                    <ListItem>
+                                        <b>Day 2 (2026-07-19)</b>
+                                    </ListItem>
+
+                                    <ListItem>10:00 &ndash; 10:30: Player Check-in</ListItem>
+                                    <ListItem>10:30 &ndash; 12:00: Round 5</ListItem>
+                                    <ListItem>12:15 &ndash; 13:45: Round 6</ListItem>
+                                    <ListItem>13:45 &ndash; 15:00: Intermission + Lunch</ListItem>
+                                    <ListItem>15:00 &ndash; 17:00: Playoff Game 1</ListItem>
+                                    <ListItem>17:15 &ndash; 19:15: Playoff Game 2</ListItem>
+                                    <ListItem>
+                                        19:30 &ndash; 20:00: Awards Ceremony + Free Play
+                                    </ListItem>
+                                    <ListItem>20:00 onwards: Free Play</ListItem>
+                                </List>
+                            </Grid>
+                        </Grid>
+                    </Stack>
+                </Paper>
                 <Paper elevation={3}>
                     <Stack spacing={2} p={2}>
                         <Typography variant="h2">Additional Information</Typography>

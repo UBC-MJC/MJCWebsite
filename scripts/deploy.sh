@@ -39,7 +39,7 @@ echo ""
 
 # Step 2: Stop remote service
 echo -e "${YELLOW}Step 2: Stopping remote service...${NC}"
-ssh -i "${KEY_PATH}" "${SERVER_USER}@${SERVER_HOST}" "sudo systemctl stop mjc-website" || {
+ssh  "${SERVER_USER}@${SERVER_HOST}" "sudo systemctl stop mjc-website" || {
     echo -e "${YELLOW}Warning: Failed to stop service (may not be running)${NC}"
 }
 
@@ -73,13 +73,13 @@ echo ""
 
 # Step 6: Start remote service
 echo -e "${YELLOW}Step 6: Starting remote service...${NC}"
-ssh -i "${KEY_PATH}" "${SERVER_USER}@${SERVER_HOST}" "sudo systemctl start mjc-website"
+ssh  "${SERVER_USER}@${SERVER_HOST}" "sudo systemctl start mjc-website"
 
 echo ""
 
 # Step 7: Check service status
 echo -e "${YELLOW}Step 7: Checking service status...${NC}"
-ssh -i "${KEY_PATH}" "${SERVER_USER}@${SERVER_HOST}" "sudo systemctl status mjc-website --no-pager -l" || true
+ssh  "${SERVER_USER}@${SERVER_HOST}" "sudo systemctl status mjc-website --no-pager -l" || true
 
 echo ""
 echo -e "${GREEN}Deployment complete!${NC}"
