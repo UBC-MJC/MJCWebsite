@@ -90,7 +90,8 @@ export default function Tournament() {
                             <Link href="https://docs.google.com/document/d/1B7NfQbeUtitvm9pBoblBFhCViq5YSWmI9fyJgcn8kFk/">
                                 Riichi General Etiquette
                             </Link>{" "}
-                            will also be observed.
+                            will also be observed. The format of the game will be 90 minutes + 1
+                            round.
                         </Typography>
                         <Divider />
                         <Typography variant="subtitle1" fontWeight="bold">
@@ -111,7 +112,7 @@ export default function Tournament() {
                         <Typography variant="h3">
                             American Riichi Association Certification
                         </Typography>
-                        <Typography>Intended, Application submitted</Typography>
+                        <Typography>Obtained</Typography>
                     </Stack>
                 </Paper>
                 <Paper elevation={3}>
