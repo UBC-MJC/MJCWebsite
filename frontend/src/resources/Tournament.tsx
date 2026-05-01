@@ -90,7 +90,7 @@ export default function Tournament() {
                             <Link href="https://docs.google.com/document/d/1B7NfQbeUtitvm9pBoblBFhCViq5YSWmI9fyJgcn8kFk/">
                                 Riichi General Etiquette
                             </Link>{" "}
-                            will also be observed. The format of the game will be 90 minutes + 1
+                            will also be observed. The format of the game will be 90 minutes + 0
                             round.
                         </Typography>
                         <Divider />
@@ -144,12 +144,9 @@ export default function Tournament() {
                                     <ListItem>10:30 &ndash; 12:00: Round 5</ListItem>
                                     <ListItem>12:15 &ndash; 13:45: Round 6</ListItem>
                                     <ListItem>13:45 &ndash; 15:00: Intermission + Lunch</ListItem>
-                                    <ListItem>15:00 &ndash; 17:00: Playoff Game 1</ListItem>
-                                    <ListItem>17:15 &ndash; 19:15: Playoff Game 2</ListItem>
-                                    <ListItem>
-                                        19:30 &ndash; 20:00: Awards Ceremony + Free Play
-                                    </ListItem>
-                                    <ListItem>20:00 onwards: Free Play</ListItem>
+                                    <ListItem>15:00 &ndash; 16:30: Playoff Game 1</ListItem>
+                                    <ListItem>16:45 &ndash; 18:15: Playoff Game 2</ListItem>
+                                    <ListItem>18:15 onwards: Awards Ceremony + Free Play</ListItem>
                                 </List>
                             </Grid>
                         </Grid>
