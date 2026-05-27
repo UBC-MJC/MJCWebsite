@@ -176,6 +176,18 @@ export default function Tournament() {
                         </Typography>
                     </Stack>
                 </Paper>
+
+                <Paper elevation={3}>
+                    <Stack spacing={2} p={2} alignItems={"center"}>
+                        <Typography variant="h2">Confirmed Participants</Typography>
+
+                        <iframe
+                            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTe2J7soqhGZRI6XKRGYwsiXNCsb6Yd7UAV6sUxWnR0r_enwNITLyyuFgHU5iALCg6JKFFzAM4KudDK/pubhtml?gid=669687262&amp;single=false&amp;widget=true&amp;headers=false&amp;frameborder=0&amp;chrome=false"
+                            height="500px"
+                            width="75%"
+                        />
+                    </Stack>
+                </Paper>
             </Stack>
         </Container>
     );
