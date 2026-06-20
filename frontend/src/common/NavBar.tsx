@@ -34,6 +34,7 @@ import { AuthContext } from "@/common/AuthContext";
 import { Link, useLocation } from "react-router-dom";
 import { getGameVariantString } from "@/common/Utils";
 import { palette, shadow, timing } from "@/theme/tokens";
+import { gradientTitle } from "@/theme/utils";
 
 // ─── Animations ────────────────────────────────────────────────────────────
 
@@ -182,6 +183,10 @@ const NavBar = () => {
     const [userOpen, setUserOpen] = useState(false);
 
     const isActive = (path: string) => location.pathname.startsWith(path);
+    // The combined Games page is served at both /games and /games/current —
+    // highlight the nav entry for either, but not for /games/create or game detail pages.
+    const isGamesActive =
+        location.pathname === "/games" || location.pathname === "/games/current";
 
     const handleDrawerToggle = () => setMobileDrawerOpen(!mobileDrawerOpen);
     const closeDrawer = () => setMobileDrawerOpen(false);
@@ -226,7 +231,7 @@ const NavBar = () => {
                 <Stack direction="row" alignItems="center" spacing={1}>
                     <LogoIcon />
                     <Typography variant="h6" fontWeight={800}>
-                        UBC Mahjong Club
+                        UBC MJC
                     </Typography>
                 </Stack>
                 <IconButton size="small" onClick={closeDrawer} sx={{ color: "inherit" }} aria-label="close menu">
@@ -285,15 +290,14 @@ const NavBar = () => {
 
                 <ListItemButton
                     component={Link}
-                    to="/games/current"
+                    to="/games"
                     onClick={closeDrawer}
-                    selected={isActive("/games/current")}
+                    selected={isGamesActive}
                 >
                     <ListItemText primary="Games" primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 600 }} />
                 </ListItemButton>
 
                 {[
-                    { to: "/games", label: "Game Logs" },
                     { to: "/stats/jp", label: "Stats" },
                     { to: "/resources", label: "Resources" },
                 ].map((item) => (
@@ -428,13 +432,11 @@ const NavBar = () => {
                         "&:hover": { opacity: 0.95 },
                     }}
                 >
-                    <LogoIcon />
                     <Typography
                         variant="h6"
                         sx={{
-                            fontWeight: 800,
-                            letterSpacing: "-0.01em",
-                            fontSize: { xs: "1.05rem", md: "1.2rem" },
+                            ...gradientTitle,
+                            fontSize: { xs: "1.15rem", md: "1.35rem" },
                             transition: `transform 0.25s ${EASE}, letter-spacing 0.25s ${EASE}`,
                             transformOrigin: "left center",
                             "&:hover": {
@@ -443,7 +445,7 @@ const NavBar = () => {
                             },
                         }}
                     >
-                        UBC Mahjong Club
+                        UBC MJC
                     </Typography>
                 </Box>
 
@@ -466,15 +468,11 @@ const NavBar = () => {
 
                             <Button
                                 color="inherit"
-                                sx={navBtnSx(isActive("/games/current"))}
+                                sx={navBtnSx(isGamesActive)}
                                 component={Link}
-                                to="/games/current"
+                                to="/games"
                             >
                                 Games
-                            </Button>
-
-                            <Button color="inherit" sx={navBtnSx(location.pathname === "/games")} component={Link} to="/games">
-                                Logs
                             </Button>
                             <Button color="inherit" sx={navBtnSx(isActive("/stats"))} component={Link} to="/stats/jp">
                                 Stats

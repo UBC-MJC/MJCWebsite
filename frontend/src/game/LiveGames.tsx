@@ -1,20 +1,15 @@
-import { useState } from "react";
 import {
     Box,
     Card,
     CardContent,
     CardHeader,
     Chip,
-    Container,
     Grid,
     Typography,
     Tooltip,
     Skeleton,
     Alert,
-    Stack,
     CardActionArea,
-    ToggleButton,
-    ToggleButtonGroup,
 } from "@mui/material";
 import { keyframes } from "@mui/system";
 import { Link } from "react-router-dom";
@@ -26,54 +21,6 @@ import { useLiveGames } from "@/hooks/GameHooks";
 import type { GameVariant } from "@/types";
 import { responsiveCardHover } from "@/theme/utils";
 import { overlay, shadow } from "@/theme/tokens";
-
-// Header with the page title and a Riichi/Hong Kong variant selector.
-const LiveGamesHeader = ({
-    variant,
-    onChange,
-}: {
-    variant: GameVariant;
-    onChange: (v: GameVariant) => void;
-}) => (
-    <Stack
-        direction={{ xs: "column", sm: "row" }}
-        spacing={2}
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        justifyContent="space-between"
-    >
-        <Typography variant="h1">Games</Typography>
-        <ToggleButtonGroup
-            exclusive
-            size="medium"
-            value={variant}
-            onChange={(_e, v) => v && onChange(v as GameVariant)}
-            aria-label="game variant"
-            sx={{
-                width: { xs: "100%", sm: "auto" },
-                minWidth: { sm: 320 },
-                "& .MuiToggleButton-root": {
-                    flex: 1,
-                    px: 4,
-                    py: 1.25,
-                    fontSize: "1.05rem",
-                    fontWeight: 600,
-                    textTransform: "none",
-                },
-                "& .MuiToggleButtonGroup-firstButton": {
-                    borderTopLeftRadius: 20,
-                    borderBottomLeftRadius: 20,
-                },
-                "& .MuiToggleButtonGroup-lastButton": {
-                    borderTopRightRadius: 20,
-                    borderBottomRightRadius: 20,
-                },
-            }}
-        >
-            <ToggleButton value="jp">{getGameVariantString("jp")}</ToggleButton>
-            <ToggleButton value="hk">{getGameVariantString("hk")}</ToggleButton>
-        </ToggleButtonGroup>
-    </Stack>
-);
 
 // Gentle "breathing" pulse for the live indicator dot.
 const pulse = keyframes`
@@ -102,8 +49,7 @@ const LiveGamesSkeleton = () => (
     </Grid>
 );
 
-export const LiveGames = () => {
-    const [gameVariant, setGameVariant] = useState<GameVariant>("jp");
+export const LiveGamesSection = ({ gameVariant }: { gameVariant: GameVariant }) => {
     const { isPending, error, data: liveGames } = useLiveGames(gameVariant);
 
     const formatDate = (dateString: string) => {
@@ -126,36 +72,24 @@ export const LiveGames = () => {
     };
 
     if (isPending) {
-        return (
-            <Container>
-                <Stack spacing={3}>
-                    <LiveGamesHeader variant={gameVariant} onChange={setGameVariant} />
-                    <LiveGamesSkeleton />
-                </Stack>
-            </Container>
-        );
+        return <LiveGamesSkeleton />;
     }
 
     if (error) {
         return (
-            <Container>
-                <Alert
-                    severity="error"
-                    variant="standard"
-                    sx={{ maxWidth: 480, mx: "auto", mt: 4 }}
-                >
-                    Failed to load live games. Please try again later.
-                </Alert>
-            </Container>
+            <Alert
+                severity="error"
+                variant="standard"
+                sx={{ maxWidth: 480, mx: "auto", mt: 4 }}
+            >
+                Failed to load live games. Please try again later.
+            </Alert>
         );
     }
 
     return (
-        <Container>
-            <Stack spacing={3}>
-                <LiveGamesHeader variant={gameVariant} onChange={setGameVariant} />
-
-                {liveGames.length === 0 ? (
+        <>
+            {liveGames.length === 0 ? (
                     <Alert
                         severity="info"
                         variant="standard"
@@ -298,7 +232,6 @@ export const LiveGames = () => {
                         ))}
                     </Grid>
                 )}
-            </Stack>
-        </Container>
+        </>
     );
 };

@@ -108,7 +108,7 @@ const GameSummaryBody = <T extends GameVariant>({
                                 sx={{
                                     fontWeight: 650,
                                     fontVariantNumeric: "tabular-nums",
-                                    color: score.score > 25000 ? "success.main" : score.score < 25000 ? "error.main" : "text.secondary",
+                                    color: "text.primary",
                                     fontSize: "1.05rem",
                                     minWidth: 64,
                                     textAlign: "right",

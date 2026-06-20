@@ -8,6 +8,24 @@ export const responsiveDataGridContainer: SxProps<Theme> = {
     minHeight: 400,
 };
 
+/**
+ * Text preset — the bold, fluid white→accent gradient title used for the
+ * hero heading ("UBC Mahjong Club"). Layout spacing (e.g. `mb`) is intentionally
+ * left out so it can be reused anywhere; spread it and add margins as needed:
+ *   <Typography variant="h1" sx={{ ...gradientTitle, mb: 2.5 }}>…</Typography>
+ */
+export const gradientTitle: SxProps<Theme> = {
+    fontWeight: 800,
+    fontSize: { xs: "2rem", sm: "2.6rem", md: "3.15rem" },
+    lineHeight: 1.15,
+    pb: "0.08em",
+    letterSpacing: "-0.02em",
+    background: `linear-gradient(90deg, #FFFFFF, ${palette.primary.light})`,
+    backgroundClip: "text",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+};
+
 export const responsiveCardHover: SxProps<Theme> = {
     position: "relative",
     overflow: "hidden",
