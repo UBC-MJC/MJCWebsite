@@ -14,13 +14,13 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { getGameVariantString } from "@/common/Utils";
 import { gameRoundString } from "./common/constants";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { useLiveGames } from "@/hooks/GameHooks";
 import type { GameCreationProp, GameVariant } from "@/types";
 import { responsiveCardHover } from "@/theme/utils";
+import { shadow } from "@/theme/tokens";
 
 export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationProp<T>) => {
     const { isPending, error, data: liveGames } = useLiveGames(gameVariant);
@@ -76,6 +76,20 @@ export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationPr
                                         display: "flex",
                                         flexDirection: "column",
                                         ...responsiveCardHover,
+                                        // Keep the gradient/shadow/border hover effects
+                                        // but remove the upward lift (translateY).
+                                        "&:hover": {
+                                            transform: "none",
+                                            boxShadow: { xs: "none", sm: shadow.card },
+                                            borderColor: "primary.light",
+                                            "&::after": { transform: "scaleX(1)" },
+                                        },
+                                        "&:hover .header-title-group": {
+                                            transform: "scale(1.05)",
+                                        },
+                                        "&:hover .round-chip": {
+                                            transform: "scale(1.05)",
+                                        },
                                     }}
                                 >
                                     <CardActionArea
@@ -98,45 +112,77 @@ export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationPr
                                                         flexWrap: "wrap",
                                                     }}
                                                 >
-                                                    <Typography variant="h6" component="div">
-                                                        {getGameVariantString(
-                                                            gameVariant,
-                                                            game.type,
-                                                        )}{" "}
-                                                        #{game.id}
-                                                    </Typography>
+                                                    <Box
+                                                        className="header-title-group"
+                                                        sx={{
+                                                            display: "flex",
+                                                            alignItems: "baseline",
+                                                            gap: 1,
+                                                            minWidth: 0,
+                                                            transformOrigin: "left center",
+                                                            transition: "transform 0.2s cubic-bezier(0.4,0,0.2,1)",
+                                                        }}
+                                                    >
+                                                        <Typography
+                                                            variant="h6"
+                                                            component="div"
+                                                            sx={{
+                                                                fontSize: "1.25rem",
+                                                                fontWeight: 700,
+                                                            }}
+                                                        >
+                                                            {getGameVariantString(
+                                                                gameVariant,
+                                                                game.type,
+                                                            )}{" "}
+                                                            #{game.id}
+                                                        </Typography>
+                                                        <Box
+                                                            sx={{
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                gap: 0.5,
+                                                                color: "text.secondary",
+                                                                flexShrink: 0,
+                                                            }}
+                                                        >
+                                                            <AccessTimeIcon sx={{ fontSize: "1rem" }} />
+                                                            <Typography
+                                                                variant="body2"
+                                                                sx={{ whiteSpace: "nowrap" }}
+                                                            >
+                                                                {formatDate(game.createdAt)}
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
                                                     <Chip
-                                                        icon={<AccessTimeIcon />}
+                                                        className="round-chip"
                                                         label={gameRoundString(game, gameVariant)}
                                                         color="primary"
-                                                        size="small"
+                                                        size="medium"
                                                         variant="outlined"
+                                                        sx={{
+                                                            height: 40,
+                                                            fontSize: "0.95rem",
+                                                            fontWeight: 600,
+                                                            transformOrigin: "right center",
+                                                            transition: "transform 0.2s cubic-bezier(0.4,0,0.2,1)",
+                                                        }}
                                                     />
-                                                </Box>
-                                            }
-                                            subheader={
-                                                <Box
-                                                    sx={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        gap: 0.5,
-                                                        mt: 1,
-                                                    }}
-                                                >
-                                                    <CalendarTodayIcon fontSize="small" />
-                                                    <Typography variant="caption">
-                                                        {formatDate(game.createdAt)}
-                                                    </Typography>
                                                 </Box>
                                             }
                                             sx={{
                                                 bgcolor: "action.hover",
-                                                "& .MuiCardHeader-subheader": {
-                                                    color: "text.secondary",
-                                                },
                                             }}
                                         />
-                                        <CardContent sx={{ flexGrow: 1 }}>
+                                        <CardContent
+                                            sx={{
+                                                flexGrow: 1,
+                                                px: 1,
+                                                pt: 1,
+                                                "&:last-child": { pb: 1 },
+                                            }}
+                                        >
                                             <GameSummaryBody
                                                 game={game}
                                                 gameVariant={gameVariant}

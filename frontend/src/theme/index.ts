@@ -1,108 +1,226 @@
 import { createTheme, Theme, ThemeOptions } from "@mui/material/styles";
 import { enUS } from "@mui/x-date-pickers/locales";
-
-const colors = {
-    light: "#FAFAFA",
-} as const;
+import { palette as t, overlay, shadow, surface, timing } from "@/theme/tokens";
 
 export const createAppTheme = (): Theme => {
     const baseThemeOptions: ThemeOptions = {
         palette: {
-            background: {
-                default: colors.light,
-                paper: "#ffffff",
+            mode: "dark",
+            primary: {
+                main:  t.primary.main,
+                light: t.primary.light,
+                dark:  t.primary.dark,
+                contrastText: "#0B0B0C",
             },
+            background: {
+                default: surface.background,
+                paper:   surface.paper,
+            },
+            divider: overlay.dark.border,
         },
         typography: {
-            h1: {
-                fontSize: "clamp(2rem, 5vw, 3rem)",
-            },
-            h2: {
-                fontSize: "clamp(1.5rem, 3.5vw, 2.125rem)",
-            },
-            h3: {
-                fontSize: "clamp(1.25rem, 3vw, 1.75rem)",
-            },
-            h4: {
-                fontSize: "1.5rem",
-            },
-            h5: {
-                fontSize: "1.25rem",
-            },
-            h6: {
-                fontSize: "1.1rem",
-            },
-
-            button: {
-                textTransform: "none", // More modern, readable buttons
-            },
+            fontFamily: '"Manrope", "system-ui", -apple-system, sans-serif',
+            h1: { fontSize: "clamp(1.6rem, 4vw, 2.2rem)",   fontWeight: 800, letterSpacing: "-0.02em"  },
+            h2: { fontSize: "clamp(1.25rem, 3vw, 1.6rem)",  fontWeight: 700, letterSpacing: "-0.015em" },
+            h3: { fontSize: "clamp(1rem, 2.5vw, 1.25rem)",  fontWeight: 700, letterSpacing: "-0.01em"  },
+            h4: { fontSize: "1.1rem",  fontWeight: 700 },
+            h5: { fontSize: "1rem",    fontWeight: 700 },
+            h6: { fontSize: "0.95rem", fontWeight: 600 },
+            body1:   { fontSize: "0.9rem",   lineHeight: 1.6 },
+            body2:   { fontSize: "0.825rem", lineHeight: 1.5 },
+            caption: { fontSize: "0.75rem" },
+            button:  { textTransform: "none", fontWeight: 500 },
         },
+        shape: { borderRadius: 10 },
         components: {
-            // Touch-friendly buttons (minimum 44px height for iOS/Android)
             MuiButton: {
-                defaultProps: {
-                    disableElevation: true,
-                    sx: {
-                        minHeight: 44,
-                        padding: "10px 20px",
-                        minWidth: {
-                            xs: "100%",
-                            sm: "200px",
-                        },
-                    },
-                },
+                defaultProps: { disableElevation: true },
                 styleOverrides: {
-                    sizeLarge: {
-                        minHeight: 48,
-                        padding: "12px 24px",
+                    root: {
+                        minHeight: 40,
+                        padding: "8px 18px",
+                        borderRadius: 8,
+                        fontWeight: 500,
+                        transition: `all ${timing.normal} ${timing.ease}`,
+                        "&:hover":  { transform: "translateY(-1px)" },
+                        "&:active": { transform: "translateY(0)"    },
                     },
-                    sizeSmall: {
-                        minHeight: 36,
-                        padding: "6px 12px",
+                    contained: {
+                        boxShadow: "none",
+                        "&:hover": { boxShadow: shadow.button },
                     },
+                    sizeSmall: { minHeight: 32, padding: "5px 12px", fontSize: "0.8rem" },
+                    sizeLarge: { minHeight: 46, padding: "12px 24px" },
                 },
             },
-            // Consistent card styling with hover effects
             MuiCard: {
                 styleOverrides: {
                     root: ({ theme }) => ({
                         borderRadius: 12,
                         border: "1px solid",
                         borderColor: theme.palette.divider,
-                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                        boxShadow: "none",
+                        transition: `border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease`,
+                        "&:hover": { borderColor: theme.palette.primary.light },
                     }),
                 },
             },
-            // Container with responsive vertical/horizontal spacing
+            MuiCardActionArea: {
+                styleOverrides: {
+                    root: {
+                        borderRadius: 12,
+                        "&:hover .MuiCardActionArea-focusHighlight": { opacity: 0.04 },
+                    },
+                },
+            },
+            MuiPaper: {
+                styleOverrides: {
+                    root:       { backgroundImage: "none" },
+                    elevation1: { boxShadow: shadow.sm },
+                    elevation3: { boxShadow: shadow.md },
+                },
+            },
+            MuiTextField: {
+                defaultProps: { size: "small" },
+                styleOverrides: {
+                    root: {
+                        "& .MuiOutlinedInput-root": {
+                            borderRadius: 8,
+                            transition: `box-shadow ${timing.fast} ease`,
+                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: t.primary.light },
+                            "&.Mui-focused": { boxShadow: `0 0 0 3px ${overlay.primary.focus}` },
+                        },
+                    },
+                },
+            },
+            MuiAutocomplete: {
+                defaultProps: { size: "small" },
+                styleOverrides: {
+                    paper:  { borderRadius: 10, boxShadow: shadow.nav },
+                    option: { borderRadius: 6, margin: "2px 6px", padding: "6px 8px", fontSize: "0.875rem" },
+                },
+            },
+            MuiChip: {
+                styleOverrides: {
+                    root:      { borderRadius: 20, fontWeight: 500, fontSize: "0.75rem" },
+                    sizeSmall: { height: 22, fontSize: "0.7rem" },
+                },
+            },
             MuiContainer: {
                 styleOverrides: {
                     root: ({ theme }) => ({
-                        paddingLeft: theme.spacing(2),
+                        paddingLeft:  theme.spacing(2),
                         paddingRight: theme.spacing(2),
-                        paddingTop: theme.spacing(2),
-                        paddingBottom: theme.spacing(2),
+                        paddingTop:    theme.spacing(3),
+                        paddingBottom: theme.spacing(3),
                         [theme.breakpoints.up("md")]: {
-                            paddingLeft: theme.spacing(3),
+                            paddingLeft:  theme.spacing(3),
                             paddingRight: theme.spacing(3),
-                            paddingTop: theme.spacing(3),
-                            paddingBottom: theme.spacing(3),
                         },
                     }),
                 },
             },
-
-            // IconButton touch targets
-            MuiIconButton: {
+            MuiAppBar: {
                 styleOverrides: {
                     root: {
-                        padding: 12, // Ensures 44px touch target with 20px icon
+                        boxShadow: "none",
+                        borderBottom: `1px solid ${overlay.dark.border}`,
                     },
                 },
             },
+            MuiMenu: {
+                styleOverrides: {
+                    paper: {
+                        borderRadius: 10,
+                        boxShadow: shadow.nav,
+                        border: `1px solid ${overlay.dark.border}`,
+                    },
+                },
+            },
+            MuiMenuItem: {
+                styleOverrides: {
+                    root: {
+                        borderRadius: 6,
+                        margin: "2px 6px",
+                        padding: "7px 10px",
+                        fontSize: "0.875rem",
+                        minWidth: 160,
+                        transition: `background ${timing.fast}`,
+                    },
+                },
+            },
+            MuiAlert: {
+                styleOverrides: { root: { borderRadius: 10 } },
+            },
+            MuiDialog: {
+                styleOverrides: {
+                    paper: { borderRadius: 16, boxShadow: shadow.dialog },
+                },
+            },
+            MuiTooltip: {
+                styleOverrides: {
+                    tooltip: { borderRadius: 6, fontSize: "0.75rem" },
+                },
+            },
+            MuiDataGrid: {
+                styleOverrides: {
+                    root: {
+                        borderRadius: 12,
+                        border: `1px solid ${overlay.dark.border}`,
+                        "& .MuiDataGrid-columnHeader": {
+                            backgroundColor: overlay.dark.header,
+                            fontWeight: 600,
+                        },
+                        "& .MuiDataGrid-row": { transition: `background ${timing.fast}` },
+                        "& .MuiDataGrid-row:hover": {
+                            backgroundColor: overlay.primary.row,
+                            cursor: "pointer",
+                        },
+                        "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within": {
+                            outline: "none",
+                        },
+                    },
+                },
+            },
+            MuiIconButton: {
+                styleOverrides: {
+                    root: {
+                        borderRadius: 8,
+                        transition: `background ${timing.fast}, transform ${timing.fast}`,
+                        "&:hover": { transform: "scale(1.08)" },
+                    },
+                },
+            },
+            MuiPagination: {
+                styleOverrides: {
+                    root: {
+                        "& .MuiPaginationItem-root": {
+                            borderRadius: 8,
+                            fontWeight: 500,
+                            transition: `all ${timing.fast}`,
+                        },
+                        "& .MuiPaginationItem-root:hover": { transform: "translateY(-1px)" },
+                    },
+                },
+            },
+            MuiListItemButton: {
+                styleOverrides: {
+                    root: {
+                        borderRadius: 8,
+                        margin: "1px 6px",
+                        transition: `background ${timing.fast}, padding-left 0.15s`,
+                        "&:hover": { paddingLeft: "20px" },
+                    },
+                },
+            },
+            MuiDrawer: {
+                styleOverrides: {
+                    paper: { borderRadius: "0 16px 16px 0" },
+                },
+            },
         },
-        // Responsive spacing scale (8px base unit)
         spacing: 8,
     };
 
-    return createTheme({ ...baseThemeOptions, colorSchemes: { dark: true } }, enUS);
+    return createTheme(baseThemeOptions, enUS);
 };

@@ -1,5 +1,5 @@
 import type { GameCreationProp, Season, GameVariant, GameType, LeaderboardType } from "@/types";
-
+import { palette as tokens } from "@/theme/tokens";
 import { memo, useEffect, useState } from "react";
 import { getGameVariantString } from "@/common/Utils";
 import { useSeasons } from "@/hooks/AdminHooks";
@@ -10,6 +10,7 @@ import { GridColDef, DataGrid } from "@mui/x-data-grid";
 import {
     Autocomplete,
     Box,
+    Chip,
     Container,
     Dialog,
     DialogContent,
@@ -22,6 +23,7 @@ import {
     useTheme,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { DisplayStatistics } from "@/statistics/Statistics";
 
 const Leaderboard = <T extends GameVariant>({ gameVariant, gameType }: GameCreationProp<T>) => {
@@ -29,41 +31,56 @@ const Leaderboard = <T extends GameVariant>({ gameVariant, gameType }: GameCreat
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons();
 
     useEffect(() => {
-        // Set the currently active season, or fallback to the most recent season
         if (seasonsSuccess && seasons && seasons.length > 0) {
             const now = new Date();
-            const activeSeason = seasons.find(
+            const active = seasons.find(
                 (s) => new Date(s.startDate) <= now && now < new Date(s.endDate),
             );
-            setSeason(activeSeason ?? seasons[0]);
+            setSeason(active ?? seasons[0]);
         }
     }, [seasonsSuccess, seasons]);
 
     if (!seasonsSuccess) {
-        return <LoadingFallback minHeight="50vh" message="Loading seasons..." />;
+        return <LoadingFallback minHeight="50vh" message="Loading seasons…" />;
     }
+
     return (
         <Container>
-            <Stack>
-                <Typography variant="h1">
-                    {getGameVariantString(gameVariant, gameType)} Leaderboard
-                </Typography>
+            <Stack spacing={3}>
+                <Box>
+                    <Typography variant="h1" gutterBottom>
+                        {getGameVariantString(gameVariant, gameType)} Leaderboard
+                    </Typography>
+                    {season && (
+                        <Typography variant="body2" color="text.secondary">
+                            Season ends{" "}
+                            {new Date(season.endDate).toLocaleDateString("en-US", {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                            })}
+                        </Typography>
+                    )}
+                </Box>
 
                 <Autocomplete
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    getOptionLabel={(option) => option.name}
+                    isOptionEqualToValue={(o, v) => o.id === v.id}
+                    getOptionLabel={(o) => o.name}
                     options={seasons}
                     value={season!}
                     blurOnSelect
                     disableClearable
-                    onChange={(_e, value) => setSeason(value)}
+                    onChange={(_e, v) => setSeason(v)}
+                    sx={{ maxWidth: 320 }}
                     renderInput={(params) => (
                         <TextField {...params} label="Season" placeholder="Select a season" />
                     )}
                 />
 
                 {!season ? (
-                    <Typography variant="body1">No season selected</Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        No season selected
+                    </Typography>
                 ) : (
                     <LeaderboardDisplay
                         season={season}
@@ -76,43 +93,94 @@ const Leaderboard = <T extends GameVariant>({ gameVariant, gameType }: GameCreat
     );
 };
 
+const MEDAL_STYLES = [tokens.medal.gold, tokens.medal.silver, tokens.medal.bronze] as const;
+
+const rankCell = (params: { value: number }) => {
+    if (params.value >= 1 && params.value <= 3) {
+        const { text, bg } = MEDAL_STYLES[params.value - 1];
+        return (
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                <Box
+                    sx={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: "50%",
+                        bgcolor: bg,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: 700,
+                        fontSize: "0.8rem",
+                        color: text,
+                    }}
+                >
+                    {params.value}
+                </Box>
+            </Box>
+        );
+    }
+    return (
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "text.secondary", fontSize: "0.85rem" }}>
+            {params.value}
+        </Box>
+    );
+};
+
+const eloCell = (params: { value: string }) => (
+    <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
+        <Typography variant="body2" fontWeight={600} fontVariantNumeric="tabular-nums">
+            {params.value}
+        </Typography>
+    </Box>
+);
+
+const chomboCell = (params: { value: number }) =>
+    params.value > 0 ? (
+        <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
+            <Chip
+                label={params.value}
+                size="small"
+                color="error"
+                variant="outlined"
+                sx={{ fontWeight: 700, fontSize: "0.7rem", height: 20 }}
+            />
+        </Box>
+    ) : (
+        <Box sx={{ display: "flex", alignItems: "center", height: "100%", color: "text.disabled" }}>
+            {params.value}
+        </Box>
+    );
+
 const columns: GridColDef[] = [
     {
         field: "index",
         headerName: "#",
         type: "number",
-        width: 60,
+        width: 64,
         minWidth: 50,
         disableColumnMenu: true,
+        renderCell: rankCell,
     },
-    {
-        field: "username",
-        headerName: "Player",
-        flex: 1,
-        minWidth: 120,
-    },
+    { field: "username", headerName: "Player", flex: 1, minWidth: 130 },
     {
         field: "displayElo",
         headerName: "Elo",
         type: "number",
-        width: 90,
+        width: 100,
         minWidth: 80,
+        renderCell: eloCell,
     },
-    {
-        field: "gameCount",
-        headerName: "Games",
-        type: "number",
-        width: 80,
-        minWidth: 70,
-    },
+    { field: "gameCount", headerName: "Games", type: "number", width: 85, minWidth: 70 },
     {
         field: "chomboCount",
         headerName: "Chombos",
         type: "number",
-        width: 90,
+        width: 100,
         minWidth: 80,
+        renderCell: chomboCell,
     },
 ];
+
 const LeaderboardDisplay = memo(
     ({
         gameVariant,
@@ -123,45 +191,28 @@ const LeaderboardDisplay = memo(
         gameType: GameType;
         season: Season;
     }) => {
-        const { isSuccess, data: leaderboard } = usePlayerLeaderboard(
-            gameVariant,
-            gameType,
-            season,
-        );
+        const { isSuccess, data: leaderboard } = usePlayerLeaderboard(gameVariant, gameType, season);
         const [player, setPlayer] = useState<LeaderboardType | undefined>(undefined);
         const theme = useTheme();
         const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
         if (!isSuccess) {
-            return <LoadingFallback minHeight="30vh" message="Loading leaderboard..." />;
+            return <LoadingFallback minHeight="30vh" message="Loading leaderboard…" />;
         }
 
         return (
             <>
-                <Typography variant="body1" color="text.secondary">
-                    {season.name} ends {new Date(season.endDate).toDateString()}
-                </Typography>
                 <Box sx={responsiveDataGridContainer}>
                     <DataGrid<(typeof leaderboard)[0]>
                         rows={leaderboard}
                         columns={columns}
                         initialState={{
                             columns: {
-                                columnVisibilityModel: {
-                                    chomboCount: !isMobile,
-                                },
+                                columnVisibilityModel: { chomboCount: !isMobile },
                             },
                         }}
-                        onRowClick={(params) => isMobile && setPlayer(params.row)}
-                        onRowDoubleClick={(params) => !isMobile && setPlayer(params.row)}
-                        sx={{
-                            "& .MuiDataGrid-cell": {
-                                cursor: "pointer",
-                            },
-                            "& .MuiDataGrid-row:hover": {
-                                backgroundColor: theme.palette.action.hover,
-                            },
-                        }}
+                        onRowClick={(p) => isMobile && setPlayer(p.row)}
+                        onRowDoubleClick={(p) => !isMobile && setPlayer(p.row)}
                         disableColumnMenu={isMobile}
                         density={isMobile ? "compact" : "standard"}
                     />
@@ -169,6 +220,7 @@ const LeaderboardDisplay = memo(
                 <Typography variant="caption" color="text.secondary">
                     {isMobile ? "Tap" : "Double-click"} a row to view detailed statistics
                 </Typography>
+
                 <Dialog
                     open={player !== undefined}
                     onClose={() => setPlayer(undefined)}
@@ -183,16 +235,20 @@ const LeaderboardDisplay = memo(
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "space-between",
+                                    pb: 1,
                                 }}
                             >
-                                Statistics for {player.username}
+                                <Stack direction="row" spacing={1} alignItems="center">
+                                    <EmojiEventsIcon color="primary" fontSize="small" />
+                                    <span>Statistics — {player.username}</span>
+                                </Stack>
                                 <IconButton
                                     edge="end"
-                                    color="inherit"
                                     onClick={() => setPlayer(undefined)}
                                     aria-label="close"
+                                    size="small"
                                 >
-                                    <CloseIcon />
+                                    <CloseIcon fontSize="small" />
                                 </IconButton>
                             </DialogTitle>
                             <DialogContent>
@@ -209,5 +265,6 @@ const LeaderboardDisplay = memo(
         );
     },
 );
+
 LeaderboardDisplay.displayName = "LeaderboardDisplay";
 export default Leaderboard;

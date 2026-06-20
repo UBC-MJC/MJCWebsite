@@ -1,35 +1,37 @@
-import { SxProps, Theme, styled } from "@mui/material/styles";
+import { SxProps, Theme, styled, alpha } from "@mui/material/styles";
 import ToggleButtonGroup, { toggleButtonGroupClasses } from "@mui/material/ToggleButtonGroup";
+import { palette, shadow, timing } from "@/theme/tokens";
 
-/**
- * Responsive DataGrid container with mobile-optimized heights
- * Mobile: viewport-based height
- * Desktop: 600px
- */
 export const responsiveDataGridContainer: SxProps<Theme> = {
-    height: {
-        xs: "calc(100vh - 350px)", // Mobile: Adapt to available space
-        md: 600,
-    },
+    height: { xs: "calc(100vh - 320px)", md: 580 },
     width: "100%",
-    minHeight: 400, // Ensure usability even on small screens
+    minHeight: 400,
 };
 
-/**
- * Responsive card hover effects
- * Reduced transform on mobile to prevent layout shifts
- */
 export const responsiveCardHover: SxProps<Theme> = {
-    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    position: "relative",
+    overflow: "hidden",
+    transition: `all ${timing.slow} ${timing.ease}`,
+    "&::after": {
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "2px",
+        background: `linear-gradient(90deg, ${palette.icon.badgeLight}, ${alpha(palette.icon.badgeLight, 0)})`,
+        transform: "scaleX(0)",
+        transformOrigin: "left",
+        transition: `transform 0.25s ${timing.ease}`,
+    },
     "&:hover": {
-        transform: { xs: "none", sm: "translateY(-4px)" },
-        boxShadow: { xs: 2, sm: 6 },
+        transform: { xs: "none", sm: "translateY(-3px)" },
+        boxShadow: { xs: "none", sm: shadow.card },
+        borderColor: "primary.light",
+        "&::after": { transform: "scaleX(1)" },
     },
 };
 
-/**
- * Responsive text truncation with overflow handling
- */
 export const responsiveTextTruncate: SxProps<Theme> = {
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -37,16 +39,20 @@ export const responsiveTextTruncate: SxProps<Theme> = {
     maxWidth: { xs: "200px", sm: "300px", md: "100%" },
 };
 
-/**
- * Shared navbar button styling - overrides theme defaults for compact nav buttons
- */
 export const navButton: SxProps<Theme> = {
     minWidth: "auto",
     minHeight: "auto",
-    padding: "6px 8px",
-    borderRadius: 1,
-    fontSize: "1rem",
+    padding: "5px 10px",
+    borderRadius: 1.5,
+    fontSize: "0.875rem",
+    fontWeight: 500,
     whiteSpace: "nowrap",
+    color: "inherit",
+    transition: "background 0.12s, color 0.12s",
+    "&:hover": {
+        background: "rgba(255,255,255,0.15)",
+        transform: "none",
+    },
 };
 
 export const SpacedToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
