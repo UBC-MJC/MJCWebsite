@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
     Box,
     Card,
@@ -7,22 +8,102 @@ import {
     Container,
     Grid,
     Typography,
-    CircularProgress,
+    Tooltip,
+    Skeleton,
     Alert,
     Stack,
     CardActionArea,
+    ToggleButton,
+    ToggleButtonGroup,
 } from "@mui/material";
+import { keyframes } from "@mui/system";
 import { Link } from "react-router-dom";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { getGameVariantString } from "@/common/Utils";
 import { gameRoundString } from "./common/constants";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { useLiveGames } from "@/hooks/GameHooks";
-import type { GameCreationProp, GameVariant } from "@/types";
+import type { GameVariant } from "@/types";
 import { responsiveCardHover } from "@/theme/utils";
-import { shadow } from "@/theme/tokens";
+import { overlay, shadow } from "@/theme/tokens";
 
-export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationProp<T>) => {
+// Header with the page title and a Riichi/Hong Kong variant selector.
+const LiveGamesHeader = ({
+    variant,
+    onChange,
+}: {
+    variant: GameVariant;
+    onChange: (v: GameVariant) => void;
+}) => (
+    <Stack
+        direction={{ xs: "column", sm: "row" }}
+        spacing={2}
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        justifyContent="space-between"
+    >
+        <Typography variant="h1">Games</Typography>
+        <ToggleButtonGroup
+            exclusive
+            size="medium"
+            value={variant}
+            onChange={(_e, v) => v && onChange(v as GameVariant)}
+            aria-label="game variant"
+            sx={{
+                width: { xs: "100%", sm: "auto" },
+                minWidth: { sm: 320 },
+                "& .MuiToggleButton-root": {
+                    flex: 1,
+                    px: 4,
+                    py: 1.25,
+                    fontSize: "1.05rem",
+                    fontWeight: 600,
+                    textTransform: "none",
+                },
+                "& .MuiToggleButtonGroup-firstButton": {
+                    borderTopLeftRadius: 20,
+                    borderBottomLeftRadius: 20,
+                },
+                "& .MuiToggleButtonGroup-lastButton": {
+                    borderTopRightRadius: 20,
+                    borderBottomRightRadius: 20,
+                },
+            }}
+        >
+            <ToggleButton value="jp">{getGameVariantString("jp")}</ToggleButton>
+            <ToggleButton value="hk">{getGameVariantString("hk")}</ToggleButton>
+        </ToggleButtonGroup>
+    </Stack>
+);
+
+// Gentle "breathing" pulse for the live indicator dot.
+const pulse = keyframes`
+    0%   { opacity: 1;   transform: scale(1);    }
+    50%  { opacity: 0.35; transform: scale(0.8); }
+    100% { opacity: 1;   transform: scale(1);    }
+`;
+
+const LiveGamesSkeleton = () => (
+    <Grid container spacing={3}>
+        {Array.from({ length: 4 }).map((_, i) => (
+            <Grid size={{ xs: 12, md: 6 }} key={i}>
+                <Card sx={{ display: "flex", flexDirection: "column" }}>
+                    <Box sx={{ bgcolor: "action.hover", px: 2, py: 1.75, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <Skeleton variant="text" width="45%" height={32} />
+                        <Skeleton variant="rounded" width={90} height={36} />
+                    </Box>
+                    <Box sx={{ p: 1.5 }}>
+                        {Array.from({ length: 4 }).map((__, r) => (
+                            <Skeleton key={r} variant="rounded" height={36} sx={{ my: 0.75 }} />
+                        ))}
+                    </Box>
+                </Card>
+            </Grid>
+        ))}
+    </Grid>
+);
+
+export const LiveGames = () => {
+    const [gameVariant, setGameVariant] = useState<GameVariant>("jp");
     const { isPending, error, data: liveGames } = useLiveGames(gameVariant);
 
     const formatDate = (dateString: string) => {
@@ -45,13 +126,24 @@ export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationPr
     };
 
     if (isPending) {
-        return <CircularProgress sx={{ mt: 4 }} />;
+        return (
+            <Container>
+                <Stack spacing={3}>
+                    <LiveGamesHeader variant={gameVariant} onChange={setGameVariant} />
+                    <LiveGamesSkeleton />
+                </Stack>
+            </Container>
+        );
     }
 
     if (error) {
         return (
             <Container>
-                <Alert severity="error" variant="standard">
+                <Alert
+                    severity="error"
+                    variant="standard"
+                    sx={{ maxWidth: 480, mx: "auto", mt: 4 }}
+                >
                     Failed to load live games. Please try again later.
                 </Alert>
             </Container>
@@ -60,11 +152,15 @@ export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationPr
 
     return (
         <Container>
-            <Stack>
-                <Typography variant="h1">Live {getGameVariantString(gameVariant)} Games</Typography>
+            <Stack spacing={3}>
+                <LiveGamesHeader variant={gameVariant} onChange={setGameVariant} />
 
                 {liveGames.length === 0 ? (
-                    <Alert severity="info" variant="standard">
+                    <Alert
+                        severity="info"
+                        variant="standard"
+                        sx={{ maxWidth: 480, mx: "auto", width: "100%", mt: 2 }}
+                    >
                         No live games at the moment.
                     </Alert>
                 ) : (
@@ -83,12 +179,6 @@ export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationPr
                                             boxShadow: { xs: "none", sm: shadow.card },
                                             borderColor: "primary.light",
                                             "&::after": { transform: "scaleX(1)" },
-                                        },
-                                        "&:hover .header-title-group": {
-                                            transform: "scale(1.05)",
-                                        },
-                                        "&:hover .round-chip": {
-                                            transform: "scale(1.05)",
                                         },
                                     }}
                                 >
@@ -113,21 +203,28 @@ export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationPr
                                                     }}
                                                 >
                                                     <Box
-                                                        className="header-title-group"
                                                         sx={{
                                                             display: "flex",
-                                                            alignItems: "baseline",
+                                                            alignItems: "center",
                                                             gap: 1,
                                                             minWidth: 0,
-                                                            transformOrigin: "left center",
-                                                            transition: "transform 0.2s cubic-bezier(0.4,0,0.2,1)",
                                                         }}
                                                     >
+                                                        <Box
+                                                            sx={{
+                                                                width: 9,
+                                                                height: 9,
+                                                                borderRadius: "50%",
+                                                                bgcolor: "primary.main",
+                                                                flexShrink: 0,
+                                                                animation: `${pulse} 1.6s ease-in-out infinite`,
+                                                            }}
+                                                        />
                                                         <Typography
                                                             variant="h6"
                                                             component="div"
                                                             sx={{
-                                                                fontSize: "1.25rem",
+                                                                fontSize: "1.45rem",
                                                                 fontWeight: 700,
                                                             }}
                                                         >
@@ -137,36 +234,43 @@ export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationPr
                                                             )}{" "}
                                                             #{game.id}
                                                         </Typography>
-                                                        <Box
-                                                            sx={{
-                                                                display: "flex",
-                                                                alignItems: "center",
-                                                                gap: 0.5,
-                                                                color: "text.secondary",
-                                                                flexShrink: 0,
-                                                            }}
+                                                        <Tooltip
+                                                            title={new Date(game.createdAt).toLocaleString()}
+                                                            arrow
                                                         >
-                                                            <AccessTimeIcon sx={{ fontSize: "1rem" }} />
-                                                            <Typography
-                                                                variant="body2"
-                                                                sx={{ whiteSpace: "nowrap" }}
+                                                            <Box
+                                                                sx={{
+                                                                    display: "flex",
+                                                                    alignItems: "center",
+                                                                    gap: 0.5,
+                                                                    color: "text.secondary",
+                                                                    flexShrink: 0,
+                                                                }}
                                                             >
-                                                                {formatDate(game.createdAt)}
-                                                            </Typography>
-                                                        </Box>
+                                                                <AccessTimeIcon sx={{ fontSize: "1.15rem" }} />
+                                                                <Typography
+                                                                    variant="body2"
+                                                                    sx={{ whiteSpace: "nowrap", fontSize: "1rem" }}
+                                                                >
+                                                                    {formatDate(game.createdAt)}
+                                                                </Typography>
+                                                            </Box>
+                                                        </Tooltip>
                                                     </Box>
                                                     <Chip
-                                                        className="round-chip"
                                                         label={gameRoundString(game, gameVariant)}
-                                                        color="primary"
                                                         size="medium"
-                                                        variant="outlined"
+                                                        variant="filled"
                                                         sx={{
-                                                            height: 40,
-                                                            fontSize: "0.95rem",
+                                                            height: 45,
+                                                            fontSize: "1.1rem",
                                                             fontWeight: 600,
-                                                            transformOrigin: "right center",
-                                                            transition: "transform 0.2s cubic-bezier(0.4,0,0.2,1)",
+                                                            letterSpacing: "0.04em",
+                                                            fontVariantNumeric: "tabular-nums",
+                                                            border: "none",
+                                                            bgcolor: overlay.primary.row,
+                                                            color: "primary.light",
+                                                            "& .MuiChip-label": { px: 1.75 },
                                                         }}
                                                     />
                                                 </Box>

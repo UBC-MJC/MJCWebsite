@@ -19,7 +19,43 @@ import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
 import { gameRoundString, isGameEnd } from "./common/constants";
 import { baseUrl } from "@/api/APIUtils";
-import { Button, Stack, Container, Typography } from "@mui/material";
+import {
+    Button,
+    Stack,
+    Container,
+    Typography,
+    Box,
+    Card,
+    Chip,
+    Tooltip,
+} from "@mui/material";
+import { keyframes } from "@mui/system";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import UndoIcon from "@mui/icons-material/Undo";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+
+// Gentle "breathing" pulse for the live indicator dot (matches LiveGames).
+const pulse = keyframes`
+    0%   { opacity: 1;    transform: scale(1);   }
+    50%  { opacity: 0.35; transform: scale(0.8); }
+    100% { opacity: 1;    transform: scale(1);   }
+`;
+
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+};
 
 const Game = <T extends GameVariant>() => {
     const { id, variant: variantParam } = useParams();
@@ -193,43 +229,124 @@ const Game = <T extends GameVariant>() => {
     const spectatorPadding: number = canUpdateGame ? 0 : 12;
     return (
         <Container sx={{ pb: { xs: 6 + spectatorPadding, sm: 10 + spectatorPadding } }}>
-            <Stack>
-                <Typography variant="h1">{getGameVariantString(variant, game.type)}</Typography>
-                {game.status === "IN_PROGRESS" && (
-                    <Typography variant="h2" color="text.secondary">
-                        {gameRoundString(game, variant)}
-                    </Typography>
-                )}
+            <Stack spacing={3}>
+                <Card sx={{ overflow: "hidden" }}>
+                    <Box
+                        sx={{
+                            bgcolor: "action.hover",
+                            px: { xs: 2, md: 3 },
+                            py: 2,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            flexWrap: "wrap",
+                            gap: 1.5,
+                        }}
+                    >
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, minWidth: 0 }}>
+                            {game.status === "IN_PROGRESS" && (
+                                <Box
+                                    sx={{
+                                        width: 11,
+                                        height: 11,
+                                        borderRadius: "50%",
+                                        bgcolor: "primary.main",
+                                        flexShrink: 0,
+                                        animation: `${pulse} 1.6s ease-in-out infinite`,
+                                    }}
+                                />
+                            )}
+                            <Typography
+                                variant="h1"
+                                sx={{ fontSize: { xs: "1.6rem", md: "2rem" }, fontWeight: 800 }}
+                            >
+                                {getGameVariantString(variant, game.type)}
+                            </Typography>
+                            <Tooltip title={new Date(game.createdAt).toLocaleString()} arrow>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 0.5,
+                                        color: "text.secondary",
+                                        flexShrink: 0,
+                                    }}
+                                >
+                                    <AccessTimeIcon sx={{ fontSize: "1.15rem" }} />
+                                    <Typography variant="body2" sx={{ whiteSpace: "nowrap", fontSize: "1rem" }}>
+                                        {formatDate(game.createdAt)}
+                                    </Typography>
+                                </Box>
+                            </Tooltip>
+                        </Box>
+                        {game.status === "IN_PROGRESS" ? (
+                            <Chip
+                                label={gameRoundString(game, variant)}
+                                color="primary"
+                                variant="outlined"
+                                sx={{ height: 40, fontSize: "0.95rem", fontWeight: 600 }}
+                            />
+                        ) : (
+                            <Chip
+                                label="Finished"
+                                color="success"
+                                variant="outlined"
+                                sx={{ height: 40, fontSize: "0.95rem", fontWeight: 600 }}
+                            />
+                        )}
+                    </Box>
+                </Card>
+
                 {getLegacyDisplayGame(game)}
                 {canUpdateGame && (
-                    <Stack direction={{ xs: "column", sm: "row" }} sx={{ pb: { xs: 18, sm: 16 } }}>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            disabled={game.rounds.length == 0}
-                            fullWidth
-                            onClick={() => handleDeleteRound()}
-                        >
-                            Delete Last Round
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            fullWidth
-                            onClick={() => handleDeleteGame()}
-                        >
-                            Delete Game
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="success"
-                            disabled={!isGameEnd(game, variant)}
-                            fullWidth
-                            onClick={() => handleSubmitGame()}
-                        >
-                            Submit Game
-                        </Button>
-                    </Stack>
+                    <Box sx={{ pb: { xs: 18, sm: 16 } }}>
+                        <Card sx={{ p: 1.5 }}>
+                            <Typography
+                                sx={{
+                                    fontWeight: 700,
+                                    fontSize: "0.78rem",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.08em",
+                                    color: "text.secondary",
+                                    mb: 1.25,
+                                    ml: 0.5,
+                                }}
+                            >
+                                Game Actions
+                            </Typography>
+                            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    startIcon={<UndoIcon />}
+                                    disabled={game.rounds.length == 0}
+                                    fullWidth
+                                    onClick={() => handleDeleteRound()}
+                                >
+                                    Delete Last Round
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    startIcon={<DeleteOutlineIcon />}
+                                    fullWidth
+                                    onClick={() => handleDeleteGame()}
+                                >
+                                    Delete Game
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    startIcon={<CheckCircleOutlineIcon />}
+                                    disabled={!isGameEnd(game, variant)}
+                                    fullWidth
+                                    onClick={() => handleSubmitGame()}
+                                >
+                                    Submit Game
+                                </Button>
+                            </Stack>
+                        </Card>
+                    </Box>
                 )}
             </Stack>
         </Container>

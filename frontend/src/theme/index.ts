@@ -12,6 +12,13 @@ export const createAppTheme = (): Theme => {
                 dark:  t.primary.dark,
                 contrastText: "#0B0B0C",
             },
+            // Info reuses the accent so info alerts/icons match the theme (no blue).
+            info: {
+                main:  t.primary.main,
+                light: t.primary.light,
+                dark:  t.primary.dark,
+                contrastText: "#0B0B0C",
+            },
             background: {
                 default: surface.background,
                 paper:   surface.paper,
@@ -150,7 +157,26 @@ export const createAppTheme = (): Theme => {
                 },
             },
             MuiAlert: {
-                styleOverrides: { root: { borderRadius: 10 } },
+                defaultProps: { variant: "outlined" },
+                styleOverrides: {
+                    root: {
+                        borderRadius: 12,
+                        padding: "10px 16px",
+                        fontSize: "0.9rem",
+                        alignItems: "center",
+                        backgroundColor: surface.paper,
+                        backdropFilter: "blur(8px)",
+                        border: "1px solid",
+                        borderColor: overlay.dark.border,
+                    },
+                    icon: { opacity: 0.9 },
+                    message: { paddingTop: 0, paddingBottom: 0, fontWeight: 500 },
+                    standardError:   { borderColor: "rgba(244,67,54,0.4)" },
+                    standardSuccess: { borderColor: "rgba(102,187,106,0.4)" },
+                    standardWarning: { borderColor: "rgba(255,167,38,0.4)" },
+                    standardInfo:    { borderColor: overlay.primary.focus },
+                    outlinedInfo:    { borderColor: overlay.primary.focus, color: t.primary.light },
+                },
             },
             MuiDialog: {
                 styleOverrides: {

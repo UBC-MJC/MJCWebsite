@@ -14,22 +14,11 @@ import {
     DialogActions,
     TextField,
     Typography,
-    FormControl,
-    RadioGroup,
-    FormControlLabel,
-    FormLabel,
-    useColorScheme,
 } from "@mui/material";
-import Radio from "@mui/material/Radio";
 
 const Settings = () => {
     const { player, loading, reloadPlayer } = useContext(AuthContext);
-    const { mode, setMode } = useColorScheme();
     const [showUpdateUsernameModal, setShowUpdateUsernameModal] = useState(false);
-
-    if (!mode) {
-        return null;
-    }
 
     const updateUsername = async (username: string) => {
         try {
@@ -58,31 +47,6 @@ const Settings = () => {
             <Typography variant="h2" gutterBottom>
                 Settings
             </Typography>
-            <Box
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    p: 3,
-                }}
-            >
-                <FormControl>
-                    <FormLabel id="theme-toggle-label">Theme</FormLabel>
-                    <RadioGroup
-                        aria-labelledby="theme-toggle-label"
-                        name="theme-toggle"
-                        row
-                        value={mode}
-                        onChange={(event) =>
-                            setMode(event.target.value as "system" | "light" | "dark")
-                        }
-                    >
-                        <FormControlLabel value="system" control={<Radio />} label="System" />
-                        <FormControlLabel value="light" control={<Radio />} label="Light" />
-                        <FormControlLabel value="dark" control={<Radio />} label="Dark" />
-                    </RadioGroup>
-                </FormControl>
-            </Box>
             <Box sx={{ pt: 2, display: "flex", justifyContent: "center" }}>
                 <Button
                     onClick={() => setShowUpdateUsernameModal(true)}

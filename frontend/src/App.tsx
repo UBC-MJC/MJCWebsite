@@ -88,14 +88,7 @@ const App = () => {
                                         }
                                     />
                                     <Route path="/games/:variant/:id" element={<Game />} />
-                                    <Route
-                                        path="/games/current/jp"
-                                        element={<LiveGames gameVariant="jp" gameType={"RANKED"} />}
-                                    />
-                                    <Route
-                                        path="/games/current/hk"
-                                        element={<LiveGames gameVariant="hk" gameType={"RANKED"} />}
-                                    />
+                                    <Route path="/games/current" element={<LiveGames />} />
                                     <Route
                                         path="/games/create/jp"
                                         element={

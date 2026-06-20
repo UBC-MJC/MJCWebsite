@@ -48,6 +48,13 @@ const openDown = keyframes`
     to   { opacity: 1; clip-path: inset(0 0 0% 0);   }
 `;
 
+// Gentle "breathing" pulse for the live dot (matches LiveGames).
+const pulse = keyframes`
+    0%   { opacity: 1;    transform: scale(1);   }
+    50%  { opacity: 0.35; transform: scale(0.8); }
+    100% { opacity: 1;    transform: scale(1);   }
+`;
+
 const EASE = `cubic-bezier(0.4, 0, 0.2, 1)`;
 
 /**
@@ -167,13 +174,11 @@ const NavBar = () => {
 
     const [leaderboardAnchor, setLeaderboardAnchor] = useState<null | HTMLElement>(null);
     const [recordGameAnchor, setRecordGameAnchor] = useState<null | HTMLElement>(null);
-    const [liveGamesAnchor, setLiveGamesAnchor] = useState<null | HTMLElement>(null);
     const [userAnchor, setUserAnchor] = useState<null | HTMLElement>(null);
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
     const [leaderboardOpen, setLeaderboardOpen] = useState(false);
     const [recordGameOpen, setRecordGameOpen] = useState(false);
-    const [liveGamesOpen, setLiveGamesOpen] = useState(false);
     const [userOpen, setUserOpen] = useState(false);
 
     const isActive = (path: string) => location.pathname.startsWith(path);
@@ -186,11 +191,6 @@ const NavBar = () => {
         { to: "/leaderboard/jp/casual", label: getGameVariantString("jp", "CASUAL") },
         { to: "/leaderboard/hk", label: getGameVariantString("hk", "RANKED") },
         { to: "/leaderboard/hk/casual", label: getGameVariantString("hk", "CASUAL") },
-    ];
-
-    const liveGamesItems = [
-        { to: "/games/current/jp", label: getGameVariantString("jp") },
-        { to: "/games/current/hk", label: getGameVariantString("hk") },
     ];
 
     const recordGameItems = player
@@ -283,25 +283,14 @@ const NavBar = () => {
                     </>
                 )}
 
-                <ListItem
-                    onClick={() => setLiveGamesOpen(!liveGamesOpen)}
-                    sx={{ cursor: "pointer", borderRadius: 2 }}
+                <ListItemButton
+                    component={Link}
+                    to="/games/current"
+                    onClick={closeDrawer}
+                    selected={isActive("/games/current")}
                 >
-                    <ListItemText primary="Live Games" primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 600 }} />
-                    <ExpandMore fontSize="small" sx={chevronSx(liveGamesOpen)} />
-                </ListItem>
-                <Collapse in={liveGamesOpen} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding sx={{ pl: 2 }}>
-                        {liveGamesItems.map((item) => (
-                            <ListItemButton key={item.to} component={Link} to={item.to} onClick={closeDrawer}>
-                                <ListItemText
-                                    primary={item.label}
-                                    primaryTypographyProps={{ fontSize: "0.875rem", color: "text.secondary" }}
-                                />
-                            </ListItemButton>
-                        ))}
-                    </List>
-                </Collapse>
+                    <ListItemText primary="Games" primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 600 }} />
+                </ListItemButton>
 
                 {[
                     { to: "/games", label: "Game Logs" },
@@ -398,11 +387,14 @@ const NavBar = () => {
             sx={{
                 zIndex: (t) => t.zIndex.drawer + 1,
                 transition: `box-shadow 0.3s ${EASE}, background-color 0.3s ${EASE}`,
-                bgcolor: (t) => alpha("rgba(0,0,0,0.02)", 0.65),
+                // Translucent black bar with white text.
+                bgcolor: "rgba(0,0,0,0.65)",
+                color: "#ffffff",
+                borderBottom: (t) => `1px solid ${alpha(t.palette.primary.main, 0.25)}`,
                 backdropFilter: "blur(10px)",
                 WebkitBackdropFilter: "blur(10px)",
                 "@supports not ((backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)))": {
-                    bgcolor: "primary.main",
+                    bgcolor: "#0B0B0C",
                 },
             }}
         >
@@ -451,7 +443,7 @@ const NavBar = () => {
                             },
                         }}
                     >
-                        UBC MJC
+                        UBC Mahjong Club
                     </Typography>
                 </Box>
 
@@ -472,37 +464,14 @@ const NavBar = () => {
                                 items={leaderboardItems}
                             />
 
-                            {!loading && player && (
-                                <>
-                                    <Button
-                                        color="inherit"
-                                        sx={navBtnSx(isActive("/games/create"))}
-                                        onClick={(e) => setRecordGameAnchor(e.currentTarget)}
-                                        endIcon={<KeyboardArrowDownIcon sx={chevronSx(Boolean(recordGameAnchor))} />}
-                                    >
-                                        Record Game
-                                    </Button>
-                                    <DropMenu
-                                        anchor={recordGameAnchor}
-                                        onClose={() => setRecordGameAnchor(null)}
-                                        items={recordGameItems}
-                                    />
-                                </>
-                            )}
-
                             <Button
                                 color="inherit"
                                 sx={navBtnSx(isActive("/games/current"))}
-                                onClick={(e) => setLiveGamesAnchor(e.currentTarget)}
-                                endIcon={<KeyboardArrowDownIcon sx={chevronSx(Boolean(liveGamesAnchor))} />}
+                                component={Link}
+                                to="/games/current"
                             >
-                                Live Games
+                                Games
                             </Button>
-                            <DropMenu
-                                anchor={liveGamesAnchor}
-                                onClose={() => setLiveGamesAnchor(null)}
-                                items={liveGamesItems}
-                            />
 
                             <Button color="inherit" sx={navBtnSx(location.pathname === "/games")} component={Link} to="/games">
                                 Logs
@@ -525,6 +494,53 @@ const NavBar = () => {
                                 >
                                     Admin
                                 </Button>
+                            )}
+                            {!loading && player && (
+                                <>
+                                    <Button
+                                        color="inherit"
+                                        onClick={(e) => setRecordGameAnchor(e.currentTarget)}
+                                        startIcon={
+                                            <Box
+                                                className="rec-dot"
+                                                sx={{
+                                                    width: 9,
+                                                    height: 9,
+                                                    borderRadius: "50%",
+                                                    bgcolor: "primary.main",
+                                                    flexShrink: 0,
+                                                    opacity: 0,
+                                                }}
+                                            />
+                                        }
+                                        endIcon={<KeyboardArrowDownIcon sx={chevronSx(Boolean(recordGameAnchor))} />}
+                                        sx={{
+                                            ...interactiveSx,
+                                            px: 1.75,
+                                            py: 0.9,
+                                            fontSize: "0.95rem",
+                                            fontWeight: 600,
+                                            borderRadius: 2,
+                                            border: "1px solid rgba(255,255,255,0.3)",
+                                            "&:hover": {
+                                                background: "rgba(255,255,255,0.18)",
+                                                transform: HOVER_TRANSFORM,
+                                                borderColor: "rgba(255,255,255,0.5)",
+                                                "& .rec-dot": {
+                                                    animation: `${pulse} 1.6s ease-in-out infinite`,
+                                                },
+                                            },
+                                        }}
+                                    >
+                                        Record
+                                    </Button>
+                                    <DropMenu
+                                        anchor={recordGameAnchor}
+                                        onClose={() => setRecordGameAnchor(null)}
+                                        items={recordGameItems}
+                                        origin="right"
+                                    />
+                                </>
                             )}
                             {loading ? (
                                 <Skeleton
