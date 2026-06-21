@@ -5,8 +5,8 @@ import { usePlayers } from "@/hooks/GameHooks";
 import { useStatistics, usePlacementHistory } from "@/hooks/LeaderboardHooks";
 import { Autocomplete, Container, Grid, Stack, TextField, Typography } from "@mui/material";
 import { PlacementHistoryGraph } from "./PlacementHistoryGraph";
+import StatisticsSummary from "./StatisticsSummary";
 import LoadingFallback from "@/common/LoadingFallback";
-import StatCard from "@/common/atoms/StatCard";
 import type { GameVariant, Season } from "@/types";
 
 const ALL_SEASONS: Season = {
@@ -32,8 +32,8 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
     const selectedPlayer = playerId ? (players.find((p) => p.playerId === playerId) ?? null) : null;
 
     return (
-        <Container>
-            <Stack spacing={3}>
+        <Container sx={{ px: { xs: 1.5, sm: 2, md: 3 }, overflowX: "hidden" }}>
+            <Stack spacing={{ xs: 2.5, sm: 3 }}>
                 <Typography variant="h1">Game Statistics</Typography>
 
                 <Grid container spacing={2}>
@@ -98,30 +98,9 @@ export const DisplayStatistics = memo(
             return <LoadingFallback minHeight="20vh" message="Loading stats…" />;
         }
 
-        const pct = (num: number, denom: number) =>
-            `${divideWithDefault(100 * num, denom).toFixed(2)}%`;
-        const avg = (num: number, denom: number) =>
-            divideWithDefault(num, denom).toFixed(0);
-
-        const statRows: Array<{ label: string; value: string; sub?: string }> = [
-            { label: "Deal-in Rate",    value: pct(stats.dealInCount, stats.totalRounds),        sub: "of total rounds"   },
-            { label: "Win Rate",        value: pct(stats.winCount, stats.totalRounds),            sub: "of total rounds"   },
-            { label: "Avg Deal-in",     value: avg(stats.dealInPoint, stats.dealInCount),         sub: "points per deal-in"},
-            { label: "Avg Agari",       value: avg(stats.winPoint, stats.winCount),               sub: "points per win"    },
-            { label: "Riichi Rate",     value: pct(stats.riichiCount, stats.totalRounds),         sub: "of total rounds"   },
-            { label: "Riichi Win %",    value: pct(stats.winRiichiCount, stats.riichiCount),      sub: "of riichi declared"},
-            { label: "Riichi Deal-in%", value: pct(stats.dealInRiichiCount, stats.riichiCount),  sub: "of riichi declared"},
-        ];
-
         return (
             <Stack spacing={3}>
-                <Grid container spacing={2}>
-                    {statRows.map((s) => (
-                        <Grid key={s.label} size={{ xs: 6, sm: 4, md: 3 }}>
-                            <StatCard label={s.label} value={s.value} sub={s.sub} />
-                        </Grid>
-                    ))}
-                </Grid>
+                <StatisticsSummary stats={stats} showRiichi={gameVariant === "jp"} />
 
                 {historySuccess && placementHistory && placementHistory.length > 0 && (
                     <PlacementHistoryGraph data={placementHistory} />
@@ -131,10 +110,5 @@ export const DisplayStatistics = memo(
     },
 );
 DisplayStatistics.displayName = "DisplayStatistics";
-
-function divideWithDefault(numerator: number, denominator: number, defaultValue = 0) {
-    const result = numerator / denominator;
-    return isNaN(result) ? defaultValue : result;
-}
 
 export default Statistics;

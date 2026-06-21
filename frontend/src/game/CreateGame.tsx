@@ -1,14 +1,23 @@
-import { useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { createGameAPI } from "@/api/GameAPI";
 import { AxiosError } from "axios";
 import { withPlayerCondition } from "@/common/withPlayerCondition";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { AuthContext } from "@/common/AuthContext";
 import { getGameVariantString } from "@/common/Utils";
 import { usePlayers } from "@/hooks/GameHooks";
 import LoadingFallback from "@/common/LoadingFallback";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import {
     Autocomplete,
     Button,
+    ButtonGroup,
+    ClickAwayListener,
+    Grow,
+    MenuItem,
+    MenuList,
+    Paper,
+    Popper,
     TextField,
     Container,
     Grid,
@@ -17,13 +26,68 @@ import {
     Box,
     Alert,
 } from "@mui/material";
-import type { GameCreationProp, GameVariant, Player, PlayerNamesDataType } from "@/types";
+import type { GameType, GameVariant, Player, PlayerNamesDataType } from "@/types";
 
-const CreateGameComponent = <T extends GameVariant>({
-    gameVariant,
-    gameType,
-}: GameCreationProp<T>) => {
+interface GameOption {
+    gameVariant: GameVariant;
+    gameType: GameType;
+}
+
+// The only variant/type combinations exposed in the create UI.
+const ALL_OPTIONS: GameOption[] = [
+    { gameVariant: "jp", gameType: "RANKED" },
+    { gameVariant: "jp", gameType: "CASUAL" },
+    { gameVariant: "hk", gameType: "RANKED" },
+    { gameVariant: "hk", gameType: "CASUAL" },
+];
+
+const isOptionPermitted = (player: Player | undefined, option: GameOption): boolean => {
+    if (player === undefined) {
+        return false;
+    }
+    if (option.gameType === "CASUAL") {
+        return true; // everyone is allowed to start casual games
+    }
+    if (option.gameVariant === "jp") {
+        return player.japaneseQualified;
+    } else if (option.gameVariant === "hk") {
+        return player.hongKongQualified;
+    }
+    return false;
+};
+
+const CreateGameComponent = () => {
     const navigate = useNavigate();
+    const { player } = useContext(AuthContext);
+    const [searchParams] = useSearchParams();
+
+    // Only offer the variant/type combos this player is permitted to record.
+    const permittedOptions = useMemo(
+        () => ALL_OPTIONS.filter((option) => isOptionPermitted(player, option)),
+        [player],
+    );
+
+    // Initial selection: honor ?variant=&type= (used by the legacy-route redirects)
+    // when permitted, otherwise default to Riichi Ranked, otherwise the first option.
+    const initialIndex = useMemo(() => {
+        const variant = searchParams.get("variant");
+        const type = searchParams.get("type");
+        const fromQuery = permittedOptions.findIndex(
+            (option) => option.gameVariant === variant && option.gameType === type,
+        );
+        if (fromQuery !== -1) {
+            return fromQuery;
+        }
+        const riichiRanked = permittedOptions.findIndex(
+            (option) => option.gameVariant === "jp" && option.gameType === "RANKED",
+        );
+        return riichiRanked !== -1 ? riichiRanked : 0;
+        // permittedOptions is stable for a given player; only compute once on mount.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const [selectedIndex, setSelectedIndex] = useState(initialIndex);
+    const { gameVariant, gameType } = permittedOptions[selectedIndex] ?? permittedOptions[0];
 
     const [eastPlayer, setEastPlayer] = useState<PlayerNamesDataType | null>(null);
     const [southPlayer, setSouthPlayer] = useState<PlayerNamesDataType | null>(null);
@@ -31,7 +95,25 @@ const CreateGameComponent = <T extends GameVariant>({
     const [northPlayer, setNorthPlayer] = useState<PlayerNamesDataType | null>(null);
     const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
+    // Split-button dropdown state.
+    const [menuOpen, setMenuOpen] = useState(false);
+    const anchorRef = useRef<HTMLDivElement>(null);
+
     const playerNamesResult = usePlayers(gameVariant, gameType);
+
+    // The eligible player set differs per variant/type — clear seat selections on change.
+    useEffect(() => {
+        setEastPlayer(null);
+        setSouthPlayer(null);
+        setWestPlayer(null);
+        setNorthPlayer(null);
+        setAttemptedSubmit(false);
+    }, [gameVariant, gameType]);
+
+    const handleMenuSelect = (index: number) => {
+        setSelectedIndex(index);
+        setMenuOpen(false);
+    };
 
     const createGame = async () => {
         setAttemptedSubmit(true);
@@ -53,9 +135,8 @@ const CreateGameComponent = <T extends GameVariant>({
         }
     };
 
-    const title = `Create ${getGameVariantString(gameVariant, gameType)} Game`;
-
-    // const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
+    const gameLabel = getGameVariantString(gameVariant, gameType);
+    const title = `Create ${gameLabel} Game`;
 
     // Get validation errors
     const getValidationErrors = () => {
@@ -205,31 +286,63 @@ const CreateGameComponent = <T extends GameVariant>({
                 )}
 
                 <Box display="flex" justifyContent="center">
-                    <Button variant="contained" onClick={createGame} size="large">
-                        Create Game
-                    </Button>
+                    <ButtonGroup variant="contained" ref={anchorRef} aria-label="create game">
+                        <Button onClick={createGame} size="large">
+                            {`Create ${gameLabel} Game`}
+                        </Button>
+                        <Button
+                            size="large"
+                            aria-controls={menuOpen ? "game-type-menu" : undefined}
+                            aria-expanded={menuOpen ? "true" : undefined}
+                            aria-label="select game type"
+                            aria-haspopup="menu"
+                            onClick={() => setMenuOpen((prev) => !prev)}
+                        >
+                            <ArrowDropDownIcon />
+                        </Button>
+                    </ButtonGroup>
+                    <Popper
+                        sx={{ zIndex: 1 }}
+                        open={menuOpen}
+                        anchorEl={anchorRef.current}
+                        role={undefined}
+                        transition
+                        disablePortal
+                        placement="bottom-end"
+                    >
+                        {({ TransitionProps }) => (
+                            <Grow {...TransitionProps} style={{ transformOrigin: "right top" }}>
+                                <Paper>
+                                    <ClickAwayListener onClickAway={() => setMenuOpen(false)}>
+                                        <MenuList id="game-type-menu" autoFocusItem>
+                                            {permittedOptions.map((option, index) => (
+                                                <MenuItem
+                                                    key={`${option.gameVariant}-${option.gameType}`}
+                                                    selected={index === selectedIndex}
+                                                    onClick={() => handleMenuSelect(index)}
+                                                >
+                                                    {getGameVariantString(
+                                                        option.gameVariant,
+                                                        option.gameType,
+                                                    )}
+                                                </MenuItem>
+                                            ))}
+                                        </MenuList>
+                                    </ClickAwayListener>
+                                </Paper>
+                            </Grow>
+                        )}
+                    </Popper>
                 </Box>
             </Stack>
         </Container>
     );
 };
 
-const hasGamePermissions = <T extends GameVariant>(
-    player: Player | undefined,
-    props: GameCreationProp<T>,
-): boolean => {
-    if (player === undefined) {
-        return false;
-    }
-    if (props.gameType === "CASUAL") {
-        return true; // everyone is allowed to start casual games
-    }
-    if (props.gameVariant === "jp") {
-        return player.japaneseQualified;
-    } else if (props.gameVariant === "hk") {
-        return player.hongKongQualified;
-    }
-    return false;
+// Page-level guard: a player must be logged in and have at least one permitted
+// option (every logged-in player may record casual games).
+const hasGamePermissions = (player: Player | undefined): boolean => {
+    return ALL_OPTIONS.some((option) => isOptionPermitted(player, option));
 };
 
 const CreateGame = withPlayerCondition(CreateGameComponent, hasGamePermissions, "/unauthorized");

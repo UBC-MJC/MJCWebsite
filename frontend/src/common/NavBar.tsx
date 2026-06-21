@@ -174,12 +174,10 @@ const NavBar = () => {
     const location = useLocation();
 
     const [leaderboardAnchor, setLeaderboardAnchor] = useState<null | HTMLElement>(null);
-    const [recordGameAnchor, setRecordGameAnchor] = useState<null | HTMLElement>(null);
     const [userAnchor, setUserAnchor] = useState<null | HTMLElement>(null);
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
     const [leaderboardOpen, setLeaderboardOpen] = useState(false);
-    const [recordGameOpen, setRecordGameOpen] = useState(false);
     const [userOpen, setUserOpen] = useState(false);
 
     const isActive = (path: string) => location.pathname.startsWith(path);
@@ -197,19 +195,6 @@ const NavBar = () => {
         { to: "/leaderboard/hk", label: getGameVariantString("hk", "RANKED") },
         { to: "/leaderboard/hk/casual", label: getGameVariantString("hk", "CASUAL") },
     ];
-
-    const recordGameItems = player
-        ? [
-              ...(player.japaneseQualified
-                  ? [{ to: "/games/create/jp", label: getGameVariantString("jp", "RANKED") }]
-                  : []),
-              { to: "/games/create/jp/casual", label: getGameVariantString("jp", "CASUAL") },
-              ...(player.hongKongQualified
-                  ? [{ to: "/games/create/hk", label: getGameVariantString("hk", "RANKED") }]
-                  : []),
-              { to: "/games/create/hk/casual", label: getGameVariantString("hk", "CASUAL") },
-          ]
-        : [];
 
     // ─── Mobile drawer ──────────────────────────────────────────────────────
 
@@ -265,27 +250,9 @@ const NavBar = () => {
                 </Collapse>
 
                 {!loading && player && (
-                    <>
-                        <ListItem
-                            onClick={() => setRecordGameOpen(!recordGameOpen)}
-                            sx={{ cursor: "pointer", borderRadius: 2 }}
-                        >
-                            <ListItemText primary="Record Game" primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 600 }} />
-                            <ExpandMore fontSize="small" sx={chevronSx(recordGameOpen)} />
-                        </ListItem>
-                        <Collapse in={recordGameOpen} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding sx={{ pl: 2 }}>
-                                {recordGameItems.map((item) => (
-                                    <ListItemButton key={item.to} component={Link} to={item.to} onClick={closeDrawer}>
-                                        <ListItemText
-                                            primary={item.label}
-                                            primaryTypographyProps={{ fontSize: "0.875rem", color: "text.secondary" }}
-                                        />
-                                    </ListItemButton>
-                                ))}
-                            </List>
-                        </Collapse>
-                    </>
+                    <ListItemButton component={Link} to="/games/create" onClick={closeDrawer}>
+                        <ListItemText primary="Record Game" primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 600 }} />
+                    </ListItemButton>
                 )}
 
                 <ListItemButton
@@ -494,51 +461,43 @@ const NavBar = () => {
                                 </Button>
                             )}
                             {!loading && player && (
-                                <>
-                                    <Button
-                                        color="inherit"
-                                        onClick={(e) => setRecordGameAnchor(e.currentTarget)}
-                                        startIcon={
-                                            <Box
-                                                className="rec-dot"
-                                                sx={{
-                                                    width: 9,
-                                                    height: 9,
-                                                    borderRadius: "50%",
-                                                    bgcolor: "primary.main",
-                                                    flexShrink: 0,
-                                                    opacity: 0,
-                                                }}
-                                            />
-                                        }
-                                        endIcon={<KeyboardArrowDownIcon sx={chevronSx(Boolean(recordGameAnchor))} />}
-                                        sx={{
-                                            ...interactiveSx,
-                                            px: 1.75,
-                                            py: 0.9,
-                                            fontSize: "0.95rem",
-                                            fontWeight: 600,
-                                            borderRadius: 2,
-                                            border: "1px solid rgba(255,255,255,0.3)",
-                                            "&:hover": {
-                                                background: "rgba(255,255,255,0.18)",
-                                                transform: HOVER_TRANSFORM,
-                                                borderColor: "rgba(255,255,255,0.5)",
-                                                "& .rec-dot": {
-                                                    animation: `${pulse} 1.6s ease-in-out infinite`,
-                                                },
+                                <Button
+                                    color="inherit"
+                                    component={Link}
+                                    to="/games/create"
+                                    startIcon={
+                                        <Box
+                                            className="rec-dot"
+                                            sx={{
+                                                width: 9,
+                                                height: 9,
+                                                borderRadius: "50%",
+                                                bgcolor: "primary.main",
+                                                flexShrink: 0,
+                                                opacity: 0,
+                                            }}
+                                        />
+                                    }
+                                    sx={{
+                                        ...interactiveSx,
+                                        px: 1.75,
+                                        py: 0.9,
+                                        fontSize: "0.95rem",
+                                        fontWeight: 600,
+                                        borderRadius: 2,
+                                        border: "1px solid rgba(255,255,255,0.3)",
+                                        "&:hover": {
+                                            background: "rgba(255,255,255,0.18)",
+                                            transform: HOVER_TRANSFORM,
+                                            borderColor: "rgba(255,255,255,0.5)",
+                                            "& .rec-dot": {
+                                                animation: `${pulse} 1.6s ease-in-out infinite`,
                                             },
-                                        }}
-                                    >
-                                        Record
-                                    </Button>
-                                    <DropMenu
-                                        anchor={recordGameAnchor}
-                                        onClose={() => setRecordGameAnchor(null)}
-                                        items={recordGameItems}
-                                        origin="right"
-                                    />
-                                </>
+                                        },
+                                    }}
+                                >
+                                    Record
+                                </Button>
                             )}
                             {loading ? (
                                 <Skeleton

@@ -66,6 +66,20 @@ export const gradient = {
     primary: `linear-gradient(90deg, ${palette.primary.main}, ${palette.primary.light})`,
 } as const;
 
+/**
+ * Finishing-position colors (1st–4th). Single source of truth shared by the
+ * placement history chart, the placement stat cards, and the distribution bar.
+ * 1st–3rd reuse the medal palette; 4th is a neutral muted gray.
+ */
+export const placement = {
+    1: palette.medal.gold.text,
+    2: palette.medal.silver.text,
+    3: palette.medal.bronze.text,
+    // Light-mid gray: stays visible as a dot on the near-black chart surface
+    // and keeps ≥4.5:1 contrast with dark text on the distribution bar.
+    4: "#8C8C92",
+} as const;
+
 export const timing = {
     fast:   "0.12s",
     normal: "0.18s",

@@ -270,7 +270,7 @@ class JapaneseGameService extends GameService {
             orderBy: {
                 createdAt: "desc",
             },
-            take: 30,
+            take: 50,
         });
 
         return games
