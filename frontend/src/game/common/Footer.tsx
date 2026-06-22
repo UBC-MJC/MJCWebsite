@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import riichiStick from "@/assets/riichiStick.png";
 import { Box, Stack, Typography, Paper, Chip, alpha } from "@mui/material";
 import { keyframes } from "@mui/system";
 import { mapWindToCharacter } from "@/common/Utils";
+import { gradient } from "@/theme/tokens";
 import { computePlaces, placeColor, placeLabel } from "./placement";
 
 // Quick "pop" played when a player's card is tapped.
@@ -72,6 +73,7 @@ const PlayerScoreCard = ({
             onAnimationEnd={() => setAnimating(false)}
             role="button"
             tabIndex={0}
+            variant="outlined"
             aria-pressed={isSelected}
             aria-label={`${wind ? `${windName(wind)} wind, ` : ""}${username}, score ${score.toLocaleString()}`}
             sx={{
@@ -87,15 +89,40 @@ const PlayerScoreCard = ({
                 transition: "background-color 0.18s ease",
                 // Finishing position is shown by a colored border plus a top→bottom
                 // gradient of the place color (transparent at top, solid at bottom).
-                borderRadius: 2,
-                border: "2px solid",
-                borderColor: alpha(colors.border, 0.7),
+                borderRadius: 1,
+                borderBottom: `5px solid ${alpha(colors.border, 0.6)}`,
                 backgroundImage: `linear-gradient(to bottom, ${alpha(colors.border, 0)} 0%, ${alpha(colors.border, 0.03)} 40%, ${alpha(colors.border, 0.05)} 70%, ${alpha(colors.border, 0.1)} 100%)`,
                 "&:focus-visible": {
                     outline: "2px solid",
                     outlineColor: "primary.main",
                     outlineOffset: -2,
                 },
+                // Accent ring marking the dealer's card. Drawn as a masked
+                // pseudo-element: the background carries the white→accent gradient
+                // hue, while the mask is the border frame (border-box minus
+                // content-box) intersected with a top→bottom fade, so the gradient
+                // border also tapers to transparent at the bottom (where the place
+                // color border takes over).
+                ...(isDealer && {
+                    "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        inset: 0,
+                        borderRadius: "inherit",
+                        padding: "2px",
+                        background: gradient.title,
+                        maskImage:
+                            "linear-gradient(to bottom, #000 0%, transparent 100%), linear-gradient(#000 0 0), linear-gradient(#000 0 0)",
+                        maskClip: "border-box, content-box, border-box",
+                        maskComposite: "intersect, exclude, add",
+                        WebkitMaskImage:
+                            "linear-gradient(to bottom, #000 0%, transparent 100%), linear-gradient(#000 0 0), linear-gradient(#000 0 0)",
+                        WebkitMaskClip: "border-box, content-box, border-box",
+                        WebkitMaskComposite: "source-in, xor, source-over",
+                        pointerEvents: "none",
+                        zIndex: 2,
+                    },
+                }),
                 ...(isSelected && {
                     bgcolor: (theme) => alpha(theme.palette.primary.main, 0.14),
                 }),
@@ -124,11 +151,12 @@ const PlayerScoreCard = ({
                         transform: "translate(-50%, -50%)",
                         zIndex: 3,
                         height: 18,
-                        fontSize: "0.6rem",
+                        fontSize: "0.65rem",
                         fontWeight: 800,
                         letterSpacing: "0.06em",
-                        color: "primary.contrastText",
-                        bgcolor: "primary.main",
+                        // Dark text so it stays legible across the light→accent gradient.
+                        color: "common.black",
+                        background: gradient.title,
                         "& .MuiChip-label": { px: 1.5 },
                     }}
                 />
@@ -149,10 +177,8 @@ const PlayerScoreCard = ({
                         fontSize: { xs: "5.5rem", sm: "5rem" },
                         fontWeight: 750,
                         lineHeight: 1,
-                        color: alpha(colors.border, 0.15),
-                        // Stamped / letterpress effect: the glyph reads as pressed into
-                        // the gradient via a dark lower shadow.
-                        textShadow: `0 3px 3px ${alpha("#000000", 0.5)}}`,
+                        color: alpha(colors.border, 0.1),
+                        textShadow: `0 5px 5px ${alpha("#000000", 0.2)}}`,
                     }}
                 >
                     {mapWindToCharacter(wind)}
@@ -245,6 +271,28 @@ const PlayerScoreCard = ({
 
 export const Footer = ({ scores, riichiList, riichiStickCount, dealerIndex }: FooterProps) => {
     const [selectedScoreIndex, setSelectedScoreIndex] = useState<number | null>(null);
+    const footerRef = useRef<HTMLDivElement>(null);
+
+    // Publish the footer's real height (including the safe-area inset) as a CSS
+    // variable so pages can pad their scroll area by exactly this much instead of
+    // guessing with magic numbers. It changes at runtime (e.g. the riichi-stick
+    // row appears/disappears), so a ResizeObserver keeps it in sync.
+    useEffect(() => {
+        const el = footerRef.current;
+        if (!el) {
+            return;
+        }
+        const root = document.documentElement;
+        const publish = () =>
+            root.style.setProperty("--game-footer-height", `${el.offsetHeight}px`);
+        publish();
+        const observer = new ResizeObserver(publish);
+        observer.observe(el);
+        return () => {
+            observer.disconnect();
+            root.style.removeProperty("--game-footer-height");
+        };
+    }, []);
     // Show the pot whenever any riichi sticks sit on the table — including ones
     // carried over from previous rounds, even if no one has riichi'd this round.
     const hasRiichiSticks = riichiStickCount !== undefined && riichiStickCount > 0;
@@ -268,6 +316,7 @@ export const Footer = ({ scores, riichiList, riichiStickCount, dealerIndex }: Fo
 
     return (
         <Paper
+            ref={footerRef}
             elevation={8}
             square
             sx={{
@@ -276,9 +325,13 @@ export const Footer = ({ scores, riichiList, riichiStickCount, dealerIndex }: Fo
                 right: 0,
                 bottom: 0,
                 zIndex: 1200,
-                borderTop: "1px solid",
-                borderColor: "divider",
-                bgcolor: "background.paper",
+                // Transparent base so the gradient's transparent end is genuinely
+                // see-through: the paper surface fades in via an alpha gradient
+                // (transparent at the top → solid toward the bottom), letting page
+                // content show behind the top of the footer for a smooth transition.
+                bgcolor: "transparent",
+                backgroundImage: (theme) =>
+                    `linear-gradient(to bottom, ${alpha(theme.palette.background.paper, 0)} 0%, ${alpha(theme.palette.background.paper, 0.6)} 55%, ${theme.palette.background.paper} 85%)`,
             }}
         >
             <Box
@@ -286,10 +339,15 @@ export const Footer = ({ scores, riichiList, riichiStickCount, dealerIndex }: Fo
                     maxWidth: "lg",
                     mx: "auto",
                     px: { xs: 1, sm: 2 },
-                    py: { xs: 1, sm: 1.5 },
+                    pt: { xs: 1, sm: 1.5 },
+                    // Keep the cards above the home indicator on notched phones.
+                    pb: {
+                        xs: "calc(8px + env(safe-area-inset-bottom))",
+                        sm: "calc(12px + env(safe-area-inset-bottom))",
+                    },
                 }}
             >
-                <Stack spacing={1}>
+                <Stack spacing={hasRiichiSticks ? 2 : 1}>
                     {hasRiichiSticks && (
                         <Box sx={{ display: "flex", justifyContent: "center" }}>
                             <Chip
@@ -298,13 +356,44 @@ export const Footer = ({ scores, riichiList, riichiStickCount, dealerIndex }: Fo
                                         component="img"
                                         src={riichiStick}
                                         alt=""
-                                        sx={{ height: 14, px: 1 }}
+                                        sx={{ height: 18, px: 1 }}
                                     />
                                 }
                                 label={`${riichiStickCount} Riichi ${riichiStickCount === 1 ? "Stick" : "Sticks"}`}
-                                color="primary"
                                 variant="outlined"
-                                size="small"
+                                sx={{
+                                    position: "relative",
+                                    height: 34,
+                                    fontSize: "0.9rem",
+                                    fontWeight: 700,
+                                    background: "transparent",
+                                    // Hide the default solid outline; the gradient border
+                                    // is drawn by the masked ::before below.
+                                    border: "1px solid transparent",
+                                    // Clip the white→accent gradient into the label text.
+                                    "& .MuiChip-label": {
+                                        px: 1.5,
+                                        background: gradient.title,
+                                        backgroundClip: "text",
+                                        WebkitBackgroundClip: "text",
+                                        WebkitTextFillColor: "transparent",
+                                    },
+                                    // Gradient outline that follows the pill shape: a
+                                    // border-box-minus-content-box mask leaves only the ring.
+                                    "&::before": {
+                                        content: '""',
+                                        position: "absolute",
+                                        inset: 0,
+                                        borderRadius: "inherit",
+                                        padding: "1.5px",
+                                        background: gradient.title,
+                                        WebkitMask:
+                                            "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                                        WebkitMaskComposite: "xor",
+                                        maskComposite: "exclude",
+                                        pointerEvents: "none",
+                                    },
+                                }}
                             />
                         </Box>
                     )}

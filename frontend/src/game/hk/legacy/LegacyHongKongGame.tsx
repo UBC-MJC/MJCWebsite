@@ -4,6 +4,8 @@ import type { HongKongRound, HongKongHandInput } from "@/types";
 import { getScoresWithPlayers, hongKongPointsWheel } from "@/common/Utils";
 import alert from "@/common/AlertDialog";
 import {
+    assignRoundAction,
+    HK_EXCLUSIVE_LABELS,
     HK_PRIMARY_TRANSACTION_TYPES,
     HK_TRANSACTION_TYPE_BUTTONS,
     HK_UNDEFINED_HAND,
@@ -16,10 +18,11 @@ import PlayerButtonRow from "@/game/common/PlayerButtonRow";
 import { LegacyGameProps } from "@/game/Game";
 import PointsInput from "@/game/common/PointsInput";
 import TransactionTypeSelector from "@/game/common/TransactionTypeSelector";
+import StepSection from "@/game/common/StepSection";
 import { Footer } from "@/game/common/Footer";
 import { createHongKongRoundRequest, generateOverallScoreDelta } from "../controller/HongKongRound";
 import { validateHongKongRound } from "../controller/ValidateHongKongRound";
-import { Box, Button, Stack, Paper, Divider } from "@mui/material";
+import { Box, Button, Stack, Card, CardContent } from "@mui/material";
 
 const LegacyHongKongGame = ({
     enableRecording,
@@ -70,9 +73,7 @@ const LegacyHongKongGame = ({
     };
 
     const actionOnChange = (playerIndex: number, label: HongKongLabel) => {
-        const newRoundActions: HongKongActions = { ...roundActions };
-        newRoundActions[label] = playerIndex;
-        setRoundActions(newRoundActions);
+        setRoundActions(assignRoundAction(roundActions, label, playerIndex, HK_EXCLUSIVE_LABELS));
     };
 
     const handOnChange = (_: string, value: string) => {
@@ -123,59 +124,60 @@ const LegacyHongKongGame = ({
     };
 
     const getRecordingInterface = () => {
+        const playerLabels = getHongKongLabels();
         return (
-            <Paper
-                elevation={2}
-                sx={{
-                    p: 3,
-                    borderRadius: 2,
-                    bgcolor: "background.paper",
-                    width: "100%",
-                    maxWidth: "600px",
-                }}
-            >
-                <Stack spacing={3}>
-                    <TransactionTypeSelector
-                        buttons={HK_TRANSACTION_TYPE_BUTTONS}
-                        primaryValues={HK_PRIMARY_TRANSACTION_TYPES}
-                        value={transactionType}
-                        onChange={transactionTypeOnChange}
-                    />
-
-                    <Divider />
-
-                    {getHongKongLabels().map(([label, labelPlayerIds]) => (
-                        <PlayerButtonRow
-                            key={label}
-                            players={players}
-                            label={label}
-                            labelPlayerIds={labelPlayerIds}
-                            onChange={actionOnChange}
-                        />
-                    ))}
-
-                    {showPointInput() && (
-                        <Box sx={{ my: 2 }}>
-                            <PointsInput
-                                pointsWheel={hongKongPointsWheel}
-                                onChange={handOnChange}
+            <Card>
+                <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                    <Stack spacing={3}>
+                        <StepSection step={1} title="Result">
+                            <TransactionTypeSelector
+                                buttons={HK_TRANSACTION_TYPE_BUTTONS}
+                                primaryValues={HK_PRIMARY_TRANSACTION_TYPES}
+                                value={transactionType}
+                                onChange={transactionTypeOnChange}
                             />
-                        </Box>
-                    )}
+                        </StepSection>
 
-                    <Button
-                        color="success"
-                        variant="contained"
-                        disabled={gameOver}
-                        onClick={submitRound}
-                        fullWidth
-                        size="large"
-                        sx={{ mt: 2 }}
-                    >
-                        Submit Round
-                    </Button>
-                </Stack>
-            </Paper>
+                        {playerLabels.length > 0 && (
+                            <StepSection step={2} title="Players">
+                                <Stack spacing={2}>
+                                    {playerLabels.map(([label, labelPlayerIds]) => (
+                                        <PlayerButtonRow
+                                            key={label}
+                                            players={players}
+                                            label={label}
+                                            labelPlayerIds={labelPlayerIds}
+                                            onChange={actionOnChange}
+                                        />
+                                    ))}
+                                </Stack>
+                            </StepSection>
+                        )}
+
+                        {showPointInput() && (
+                            <StepSection step={3} title="Points">
+                                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                                    <PointsInput
+                                        pointsWheel={hongKongPointsWheel}
+                                        onChange={handOnChange}
+                                    />
+                                </Box>
+                            </StepSection>
+                        )}
+
+                        <Button
+                            color="success"
+                            variant="contained"
+                            disabled={gameOver}
+                            onClick={submitRound}
+                            fullWidth
+                            size="large"
+                        >
+                            Submit Round
+                        </Button>
+                    </Stack>
+                </CardContent>
+            </Card>
         );
     };
 
@@ -194,7 +196,7 @@ const LegacyHongKongGame = ({
 
     return (
         <>
-            <Stack alignItems="center" spacing={3} sx={{ pb: 2 }}>
+            <Stack spacing={3}>
                 {enableRecording && !gameOver && getRecordingInterface()}
 
                 <Box sx={{ width: "100%" }}>

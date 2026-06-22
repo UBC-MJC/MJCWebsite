@@ -26,7 +26,15 @@ const DropdownInput = ({ label, data, onChange, value }: DropdownInputProps) => 
                 value={selectedOption}
                 onChange={(_event, val) => val && onChange(val.label)}
                 sx={{ width: { xs: 96, sm: 120 } }}
-                renderInput={(params) => <TextField {...params} placeholder={label} />}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        placeholder={label}
+                        // han/fu/dora are numeric — surface the number pad on mobile
+                        // instead of the full alphabetic keyboard.
+                        inputProps={{ ...params.inputProps, inputMode: "numeric" }}
+                    />
+                )}
             />
         </Stack>
     );

@@ -1,9 +1,11 @@
 import { SxProps, Theme, styled, alpha } from "@mui/material/styles";
 import ToggleButtonGroup, { toggleButtonGroupClasses } from "@mui/material/ToggleButtonGroup";
-import { palette, shadow, timing } from "@/theme/tokens";
+import { palette, shadow, timing, gradient } from "@/theme/tokens";
 
 export const responsiveDataGridContainer: SxProps<Theme> = {
-    height: { xs: "calc(100vh - 320px)", md: 580 },
+    // dvh accounts for the mobile URL bar / browser chrome so the grid isn't
+    // sized against a viewport taller than what's actually visible.
+    height: { xs: "calc(100dvh - 320px)", md: 580 },
     width: "100%",
     minHeight: 400,
 };
@@ -20,7 +22,7 @@ export const gradientTitle: SxProps<Theme> = {
     lineHeight: 1.15,
     pb: "0.08em",
     letterSpacing: "-0.02em",
-    background: `linear-gradient(90deg, #FFFFFF, ${palette.primary.light})`,
+    background: gradient.title,
     backgroundClip: "text",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",

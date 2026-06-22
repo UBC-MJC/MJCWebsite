@@ -44,19 +44,23 @@ export const createAppTheme = (): Theme => {
                 defaultProps: { disableElevation: true },
                 styleOverrides: {
                     root: {
-                        minHeight: 40,
+                        minHeight: 44,
                         padding: "8px 18px",
                         borderRadius: 8,
                         fontWeight: 500,
                         transition: `all ${timing.normal} ${timing.ease}`,
-                        "&:hover":  { transform: "translateY(-1px)" },
-                        "&:active": { transform: "translateY(0)"    },
+                        // Only lift on real hover devices; on touch a :hover transform
+                        // latches after a tap until the next interaction.
+                        "@media (hover: hover)": {
+                            "&:hover": { transform: "translateY(-1px)" },
+                        },
+                        "&:active": { transform: "translateY(0)" },
                     },
                     contained: {
                         boxShadow: "none",
                         "&:hover": { boxShadow: shadow.button },
                     },
-                    sizeSmall: { minHeight: 32, padding: "5px 12px", fontSize: "0.8rem" },
+                    sizeSmall: { minHeight: 40, padding: "5px 12px", fontSize: "0.8rem" },
                     sizeLarge: { minHeight: 46, padding: "12px 24px" },
                 },
             },
@@ -211,9 +215,14 @@ export const createAppTheme = (): Theme => {
             MuiIconButton: {
                 styleOverrides: {
                     root: {
+                        // 44px minimum keeps icon buttons within reach as touch targets.
+                        minWidth: 44,
+                        minHeight: 44,
                         borderRadius: 8,
                         transition: `background ${timing.fast}, transform ${timing.fast}`,
-                        "&:hover": { transform: "scale(1.08)" },
+                        "@media (hover: hover)": {
+                            "&:hover": { transform: "scale(1.08)" },
+                        },
                     },
                 },
             },

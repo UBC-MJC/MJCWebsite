@@ -10,16 +10,23 @@ interface LegacyGameTableProps {
 
 export type ModifiedJapaneseRound = JapaneseRound & { scoreDeltas: number[] };
 
+export function getRoundLabel(row: PartialJapaneseRound) {
+    return `${mapWindToCharacter(row.roundWind)}${mapChineseNumerals(row.roundNumber)}局`;
+}
+
+export function getBonusLabel(row: PartialJapaneseRound) {
+    return `${row.bonus}本場`;
+}
+
 export function getRowString(row: PartialJapaneseRound) {
-    return `${mapWindToCharacter(row.roundWind)}${mapChineseNumerals(row.roundNumber)}局 ${
-        row.bonus
-    }本場`;
+    return `${getRoundLabel(row)} ${getBonusLabel(row)}`;
 }
 
 const LegacyJapaneseGameTable = ({ rounds, players, dealerIndex }: LegacyGameTableProps) => {
     const rows: RoundRow[] = rounds.map((round) => ({
         id: round.roundCount,
-        label: getRowString(round),
+        label: getRoundLabel(round),
+        secondary: getBonusLabel(round),
         deltas: round.scoreDeltas,
     }));
 

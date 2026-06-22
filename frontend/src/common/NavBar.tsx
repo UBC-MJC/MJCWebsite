@@ -1,4 +1,4 @@
-import { useContext, memo, useState } from "react";
+import { useContext, memo, useState, type ReactNode } from "react";
 import {
     AppBar,
     Toolbar,
@@ -9,7 +9,7 @@ import {
     IconButton,
     Drawer,
     List,
-    ListItem,
+    ListItemIcon,
     ListItemText,
     Box,
     useTheme,
@@ -30,6 +30,16 @@ import CloseIcon from "@mui/icons-material/Close";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import HomeFilledIcon from "@mui/icons-material/HomeFilled";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
+import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
+import CasinoRoundedIcon from "@mui/icons-material/CasinoRounded";
+import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
+import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
+import AdminPanelSettingsRoundedIcon from "@mui/icons-material/AdminPanelSettingsRounded";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
 import { AuthContext } from "@/common/AuthContext";
 import { Link, useLocation } from "react-router-dom";
 import { getGameVariantString } from "@/common/Utils";
@@ -37,11 +47,6 @@ import { palette, shadow, timing } from "@/theme/tokens";
 import { gradientTitle } from "@/theme/utils";
 
 // ─── Animations ────────────────────────────────────────────────────────────
-
-const dropIn = keyframes`
-    from { opacity: 0; transform: translateY(-8px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0)    scale(1);    }
-`;
 
 // Curtain reveal — unrolls a dropdown from top to bottom.
 const openDown = keyframes`
@@ -165,6 +170,139 @@ const LogoIcon = () => (
     </Box>
 );
 
+// ─── Mobile drawer building blocks ───────────────────────────────────────────
+
+/**
+ * Row styling shared by every drawer destination. Active rows read with the
+ * pastel-red accent on three channels at once — tinted fill, a left accent bar,
+ * and bolder weight — so the current location is never signalled by color alone.
+ */
+const drawerItemSx = (active: boolean, danger = false): SxProps<Theme> => ({
+    position: "relative",
+    minHeight: 48,
+    borderRadius: 2,
+    pl: 2,
+    pr: 1.25,
+    my: 0.25,
+    color: danger ? "error.main" : active ? "primary.light" : "text.primary",
+    ...(active && { bgcolor: (t: Theme) => alpha(t.palette.primary.main, 0.12) }),
+    "& .MuiListItemIcon-root": { color: "inherit", minWidth: 40 },
+    "& .MuiListItemText-primary": { fontSize: "0.95rem", fontWeight: active ? 700 : 500 },
+    "&::before": {
+        content: '""',
+        position: "absolute",
+        left: 4,
+        top: "50%",
+        height: 22,
+        width: 3,
+        borderRadius: 3,
+        bgcolor: "primary.main",
+        transform: `translateY(-50%) scaleX(${active ? 1 : 0})`,
+        transformOrigin: "left center",
+        transition: `transform ${timing.normal} ${EASE}`,
+        "@media (prefers-reduced-motion: reduce)": { transition: "none" },
+    },
+});
+
+/** Indented, lighter styling for nested rows (the Leaderboard sub-links). */
+const drawerSubItemSx = (active: boolean): SxProps<Theme> => ({
+    minHeight: 42,
+    borderRadius: 2,
+    pl: 4.5,
+    pr: 1.25,
+    my: 0.25,
+    color: active ? "primary.light" : "text.secondary",
+    ...(active && { bgcolor: (t: Theme) => alpha(t.palette.primary.main, 0.1) }),
+    "& .MuiListItemText-primary": { fontSize: "0.875rem", fontWeight: active ? 700 : 500 },
+});
+
+const DrawerSectionLabel = ({ children }: { children: ReactNode }) => (
+    <Typography
+        component="div"
+        sx={{
+            px: 2.5,
+            pt: 2,
+            pb: 0.75,
+            fontSize: "0.7rem",
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "text.disabled",
+        }}
+    >
+        {children}
+    </Typography>
+);
+
+interface DrawerItemProps {
+    label: string;
+    icon: ReactNode;
+    to?: string;
+    onClick?: () => void;
+    active?: boolean;
+    danger?: boolean;
+}
+
+/** A single drawer destination: icon + label, with optional Link routing. */
+const DrawerItem = ({ label, icon, to, onClick, active = false, danger = false }: DrawerItemProps) => {
+    const sx = drawerItemSx(active, danger);
+    const body = (
+        <>
+            <ListItemIcon>{icon}</ListItemIcon>
+            <ListItemText primary={label} />
+        </>
+    );
+    return to ? (
+        <ListItemButton
+            component={Link}
+            to={to}
+            onClick={onClick}
+            aria-current={active ? "page" : undefined}
+            sx={sx}
+        >
+            {body}
+        </ListItemButton>
+    ) : (
+        <ListItemButton onClick={onClick} sx={sx}>
+            {body}
+        </ListItemButton>
+    );
+};
+
+const DrawerSubItem = ({
+    label,
+    to,
+    active = false,
+    onClick,
+}: {
+    label: string;
+    to: string;
+    active?: boolean;
+    onClick?: () => void;
+}) => (
+    <ListItemButton
+        component={Link}
+        to={to}
+        onClick={onClick}
+        aria-current={active ? "page" : undefined}
+        sx={drawerSubItemSx(active)}
+    >
+        <Box
+            component="span"
+            sx={{
+                width: 5,
+                height: 5,
+                borderRadius: "50%",
+                bgcolor: "currentColor",
+                opacity: 0.7,
+                mr: 1.75,
+                flexShrink: 0,
+            }}
+        />
+        <ListItemText primary={label} />
+    </ListItemButton>
+);
+
 // ─── Component ─────────────────────────────────────────────────────────────────
 
 const NavBar = () => {
@@ -178,7 +316,6 @@ const NavBar = () => {
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
     const [leaderboardOpen, setLeaderboardOpen] = useState(false);
-    const [userOpen, setUserOpen] = useState(false);
 
     const isActive = (path: string) => location.pathname.startsWith(path);
     // The combined Games page is served at both /games and /games/current —
@@ -198,134 +335,210 @@ const NavBar = () => {
 
     // ─── Mobile drawer ──────────────────────────────────────────────────────
 
-    const drawerItemSx = { animation: `${dropIn} 0.3s ${EASE} both` };
-
     const mobileDrawer = (
-        <Box sx={{ width: 280 }} role="presentation">
+        <Box
+            role="presentation"
+            sx={{
+                width: "min(86vw, 320px)",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                bgcolor: "background.paper",
+            }}
+        >
+            {/* Brand header — mirrors the top bar's gradient wordmark on a dark
+                surface, with the close affordance kept clear of the notch. */}
             <Box
                 sx={{
-                    p: 2.5,
-                    pb: 2,
+                    pt: "calc(env(safe-area-inset-top) + 14px)",
+                    px: 2,
+                    pb: 1.5,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    background: (t) => t.palette.primary.main,
-                    color: "primary.contrastText",
+                    borderBottom: (t) => `1px solid ${t.palette.divider}`,
                 }}
             >
-                <Stack direction="row" alignItems="center" spacing={1}>
+                <Box
+                    component={Link}
+                    to="/"
+                    onClick={closeDrawer}
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        textDecoration: "none",
+                        minWidth: 0,
+                    }}
+                >
                     <LogoIcon />
-                    <Typography variant="h6" fontWeight={800}>
+                    <Typography variant="h6" sx={{ ...gradientTitle, fontSize: "1.2rem" }}>
                         UBC MJC
                     </Typography>
-                </Stack>
-                <IconButton size="small" onClick={closeDrawer} sx={{ color: "inherit" }} aria-label="close menu">
-                    <CloseIcon fontSize="small" />
+                </Box>
+                <IconButton
+                    onClick={closeDrawer}
+                    aria-label="Close menu"
+                    sx={{ color: "text.secondary", flexShrink: 0 }}
+                >
+                    <CloseIcon />
                 </IconButton>
             </Box>
-            <Divider />
-            <List sx={{ px: 1, pt: 1.5 }}>
-                <ListItemButton component={Link} to="/" onClick={closeDrawer} selected={location.pathname === "/"}>
-                    <ListItemText primary="Home" primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 600 }} />
-                </ListItemButton>
 
-                <ListItem
-                    onClick={() => setLeaderboardOpen(!leaderboardOpen)}
-                    sx={{ cursor: "pointer", borderRadius: 2 }}
-                >
-                    <ListItemText primary="Leaderboard" primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 600 }} />
-                    <ExpandMore fontSize="small" sx={chevronSx(leaderboardOpen)} />
-                </ListItem>
-                <Collapse in={leaderboardOpen} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding sx={{ pl: 2 }}>
-                        {leaderboardItems.map((item) => (
-                            <ListItemButton key={item.to} component={Link} to={item.to} onClick={closeDrawer}>
-                                <ListItemText
-                                    primary={item.label}
-                                    primaryTypographyProps={{ fontSize: "0.875rem", color: "text.secondary" }}
-                                />
-                            </ListItemButton>
-                        ))}
-                    </List>
-                </Collapse>
-
-                {!loading && player && (
-                    <ListItemButton component={Link} to="/games/create" onClick={closeDrawer}>
-                        <ListItemText primary="Record Game" primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 600 }} />
-                    </ListItemButton>
-                )}
-
-                <ListItemButton
-                    component={Link}
-                    to="/games"
-                    onClick={closeDrawer}
-                    selected={isGamesActive}
-                >
-                    <ListItemText primary="Games" primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 600 }} />
-                </ListItemButton>
-
-                {[
-                    { to: "/stats/jp", label: "Stats" },
-                    { to: "/resources", label: "Resources" },
-                ].map((item) => (
-                    <ListItemButton
-                        key={item.to}
-                        component={Link}
-                        to={item.to}
+            {/* Scrollable destinations; bottom inset keeps the last row clear of
+                the home indicator on gesture-nav phones. */}
+            <Box
+                component="nav"
+                aria-label="Main navigation"
+                sx={{
+                    flex: 1,
+                    overflowY: "auto",
+                    px: 0.5,
+                    pb: "calc(env(safe-area-inset-bottom) + 16px)",
+                }}
+            >
+                <DrawerSectionLabel>Menu</DrawerSectionLabel>
+                <List disablePadding>
+                    <DrawerItem
+                        to="/"
+                        label="Home"
+                        icon={<HomeRoundedIcon />}
+                        active={location.pathname === "/"}
                         onClick={closeDrawer}
-                        selected={isActive(item.to)}
+                    />
+
+                    <ListItemButton
+                        onClick={() => setLeaderboardOpen((prev) => !prev)}
+                        aria-expanded={leaderboardOpen}
+                        sx={drawerItemSx(isActive("/leaderboard"))}
                     >
-                        <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 600 }} />
+                        <ListItemIcon>
+                            <EmojiEventsRoundedIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Leaderboard" />
+                        <ExpandMore fontSize="small" sx={chevronSx(leaderboardOpen)} />
                     </ListItemButton>
-                ))}
+                    <Collapse in={leaderboardOpen} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            {leaderboardItems.map((item) => (
+                                <DrawerSubItem
+                                    key={item.to}
+                                    to={item.to}
+                                    label={item.label}
+                                    active={location.pathname === item.to}
+                                    onClick={closeDrawer}
+                                />
+                            ))}
+                        </List>
+                    </Collapse>
 
-                <Divider sx={{ my: 1 }} />
-
-                {!loading && player?.admin && (
-                    <ListItemButton component={Link} to="/admin" onClick={closeDrawer}>
-                        <ListItemText
-                            primary="Admin"
-                            primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 700, color: "warning.main" }}
+                    {!loading && player && (
+                        <DrawerItem
+                            to="/games/create"
+                            label="Record Game"
+                            icon={<AddCircleRoundedIcon />}
+                            active={location.pathname.startsWith("/games/create")}
+                            onClick={closeDrawer}
                         />
-                    </ListItemButton>
-                )}
+                    )}
+                    <DrawerItem
+                        to="/games"
+                        label="Games"
+                        icon={<CasinoRoundedIcon />}
+                        active={isGamesActive}
+                        onClick={closeDrawer}
+                    />
+                    <DrawerItem
+                        to="/stats/jp"
+                        label="Stats"
+                        icon={<InsightsRoundedIcon />}
+                        active={isActive("/stats")}
+                        onClick={closeDrawer}
+                    />
+                    <DrawerItem
+                        to="/resources"
+                        label="Resources"
+                        icon={<MenuBookRoundedIcon />}
+                        active={isActive("/resources")}
+                        onClick={closeDrawer}
+                    />
+                </List>
+
+                <Divider sx={{ my: 1, mx: 2 }} />
+                <DrawerSectionLabel>Account</DrawerSectionLabel>
 
                 {loading ? (
-                    <ListItemButton>
-                        <Skeleton variant="text" width="100%" height={32} />
-                    </ListItemButton>
+                    <Box sx={{ px: 2, py: 1 }}>
+                        <Skeleton variant="rounded" height={44} />
+                    </Box>
                 ) : player ? (
-                    <>
-                        <ListItem onClick={() => setUserOpen(!userOpen)} sx={{ cursor: "pointer", borderRadius: 2 }}>
-                            <ListItemText primary={player.username} primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 700 }} />
-                            <ExpandMore fontSize="small" sx={chevronSx(userOpen)} />
-                        </ListItem>
-                        <Collapse in={userOpen} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding sx={{ pl: 2 }}>
-                                <ListItemButton component={Link} to="/settings" onClick={closeDrawer}>
-                                    <ListItemText
-                                        primary="Settings"
-                                        primaryTypographyProps={{ fontSize: "0.875rem", color: "text.secondary" }}
-                                    />
-                                </ListItemButton>
-                                <ListItemButton onClick={() => { logout(); closeDrawer(); }}>
-                                    <ListItemText
-                                        primary="Log Out"
-                                        primaryTypographyProps={{ fontSize: "0.875rem", color: "error.main" }}
-                                    />
-                                </ListItemButton>
-                            </List>
-                        </Collapse>
-                    </>
-                ) : (
-                    <ListItemButton component={Link} to="/login" onClick={closeDrawer} sx={drawerItemSx}>
-                        <ListItemText
-                            primary="Login"
-                            primaryTypographyProps={{ fontSize: "0.95rem", fontWeight: 700, color: "primary.main" }}
+                    <List disablePadding>
+                        <Box sx={{ px: 2, py: 1, display: "flex", alignItems: "center", gap: 1.25 }}>
+                            <Box
+                                aria-hidden
+                                sx={{
+                                    width: 38,
+                                    height: 38,
+                                    flexShrink: 0,
+                                    borderRadius: "50%",
+                                    display: "grid",
+                                    placeItems: "center",
+                                    fontWeight: 800,
+                                    fontSize: "1rem",
+                                    color: "primary.light",
+                                    bgcolor: (t) => alpha(t.palette.primary.main, 0.16),
+                                }}
+                            >
+                                {player.username.charAt(0).toUpperCase()}
+                            </Box>
+                            <Box sx={{ minWidth: 0 }}>
+                                <Typography noWrap sx={{ fontWeight: 700, fontSize: "0.95rem" }}>
+                                    {player.username}
+                                </Typography>
+                                <Typography sx={{ fontSize: "0.72rem", color: "text.secondary" }}>
+                                    {player.admin ? "Administrator" : "Member"}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        {player.admin && (
+                            <DrawerItem
+                                to="/admin"
+                                label="Admin"
+                                icon={<AdminPanelSettingsRoundedIcon />}
+                                active={isActive("/admin")}
+                                onClick={closeDrawer}
+                            />
+                        )}
+                        <DrawerItem
+                            to="/settings"
+                            label="Settings"
+                            icon={<SettingsRoundedIcon />}
+                            active={isActive("/settings")}
+                            onClick={closeDrawer}
                         />
-                    </ListItemButton>
+                        <Divider sx={{ my: 0.5, mx: 2 }} />
+                        <DrawerItem
+                            label="Log Out"
+                            icon={<LogoutRoundedIcon />}
+                            danger
+                            onClick={() => {
+                                logout();
+                                closeDrawer();
+                            }}
+                        />
+                    </List>
+                ) : (
+                    <List disablePadding>
+                        <DrawerItem
+                            to="/login"
+                            label="Log In"
+                            icon={<LoginRoundedIcon />}
+                            active={isActive("/login")}
+                            onClick={closeDrawer}
+                        />
+                    </List>
                 )}
-            </List>
+            </Box>
         </Box>
     );
 

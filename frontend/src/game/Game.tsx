@@ -226,9 +226,18 @@ const Game = <T extends GameVariant>() => {
     }
     const canUpdateGame =
         game.status === "IN_PROGRESS" && (isRecording(game) || (player && player.admin));
-    const spectatorPadding: number = canUpdateGame ? 0 : 16;
     return (
-        <Container sx={{ pb: { xs: 6 + spectatorPadding, sm: 10 + spectatorPadding } }}>
+        <Container
+            sx={{
+                // Clear the fixed score footer: pad by its measured height
+                // (--game-footer-height, published by <Footer>) plus breathing
+                // room. The fallbacks cover the first paint before it measures.
+                pb: {
+                    xs: "calc(var(--game-footer-height, 112px) + 16px)",
+                    sm: "calc(var(--game-footer-height, 128px) + 24px)",
+                },
+            }}
+        >
             <Stack spacing={3}>
                 <Card sx={{ overflow: "hidden" }}>
                     <Box
@@ -299,7 +308,7 @@ const Game = <T extends GameVariant>() => {
 
                 {getLegacyDisplayGame(game)}
                 {canUpdateGame && (
-                    <Box sx={{ pb: { xs: 23, sm: 20 } }}>
+                    <Box>
                         <Card sx={{ p: 1.5 }}>
                             <Typography
                                 sx={{
@@ -314,36 +323,40 @@ const Game = <T extends GameVariant>() => {
                             >
                                 Game Actions
                             </Typography>
-                            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
-                                <Button
-                                    variant="outlined"
-                                    color="error"
-                                    startIcon={<UndoIcon />}
-                                    disabled={game.rounds.length == 0}
-                                    fullWidth
-                                    onClick={() => handleDeleteRound()}
-                                >
-                                    Delete Last Round
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    color="error"
-                                    startIcon={<DeleteOutlineIcon />}
-                                    fullWidth
-                                    onClick={() => handleDeleteGame()}
-                                >
-                                    Delete Game
-                                </Button>
+                            <Stack spacing={1.5}>
                                 <Button
                                     variant="contained"
                                     color="success"
+                                    size="large"
                                     startIcon={<CheckCircleOutlineIcon />}
                                     disabled={!isGameEnd(game, variant)}
                                     fullWidth
                                     onClick={() => handleSubmitGame()}
+                                    sx={{ py: 1.5, fontSize: "1.05rem", fontWeight: 700 }}
                                 >
                                     Submit Game
                                 </Button>
+                                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        startIcon={<UndoIcon />}
+                                        disabled={game.rounds.length == 0}
+                                        fullWidth
+                                        onClick={() => handleDeleteRound()}
+                                    >
+                                        Delete Last Round
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        startIcon={<DeleteOutlineIcon />}
+                                        fullWidth
+                                        onClick={() => handleDeleteGame()}
+                                    >
+                                        Delete Game
+                                    </Button>
+                                </Stack>
                             </Stack>
                         </Card>
                     </Box>

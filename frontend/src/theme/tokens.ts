@@ -64,6 +64,8 @@ export const shadow = {
 
 export const gradient = {
     primary: `linear-gradient(90deg, ${palette.primary.main}, ${palette.primary.light})`,
+    // White → accent; the hero "gradient title" look, reused for accents elsewhere.
+    title: `linear-gradient(90deg, #FFFFFF, ${palette.primary.light})`,
 } as const;
 
 /**

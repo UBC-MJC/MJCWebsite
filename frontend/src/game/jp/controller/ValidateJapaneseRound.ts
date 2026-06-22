@@ -1,6 +1,6 @@
 import type { JapaneseTransaction, JapaneseHandInput } from "@/types";
 import { findProminentPlayerRound, findProminentPlayers } from "./HonbaProcessing";
-import { JapaneseTransactionType } from "@/game/common/constants";
+import { JapaneseActions, JapaneseTransactionType } from "@/game/common/constants";
 
 const E_NOWIN = "A winner is required";
 const E_NOLOSE = "A loser is required";
@@ -206,6 +206,70 @@ const checkPao = (hand: JapaneseHandInput): void => {
     if (hand.han < 13) {
         throw new Error("Only yakuman can be pao");
     }
+};
+
+export interface RoundRequirement {
+    id: string;
+    description: string;
+}
+
+/** A hand is valid when dora is at least one less than han, and 1 han 20 fu (not a real hand) is excluded. */
+const isValidHand = (hand: JapaneseHandInput): boolean =>
+    hand.han > hand.dora && !(hand.han === 1 && hand.fu === 20);
+
+/**
+ * Soft, non-throwing counterpart to {@link validateTransaction} /
+ * {@link validateJapaneseRound}: returns the list of requirements not yet met for
+ * the round currently being entered, so the UI can gray out the Submit button and
+ * explain what's missing. Unlike the throwing validators (which stop at the first
+ * failure on submit), this reports every outstanding requirement at once.
+ *
+ * Scope covers Deal In, Self Draw, their pao variants, and Nagashi Mangan. Pao
+ * variants share the requirements of their non-pao counterparts plus a pao
+ * player. Other round types (including Deck Out, which can proceed with nobody
+ * tenpai) return no requirements here and continue to rely on the throwing
+ * validators as the final safety net at submit time.
+ */
+export const getUnmetJapaneseRoundRequirements = (
+    transactionType: JapaneseTransactionType,
+    roundActions: JapaneseActions,
+    hand: JapaneseHandInput,
+): RoundRequirement[] => {
+    const isDealIn = transactionType === JapaneseTransactionType.DEAL_IN;
+    const isDealInPao = transactionType === JapaneseTransactionType.DEAL_IN_PAO;
+    const isSelfDraw = transactionType === JapaneseTransactionType.SELF_DRAW;
+    const isSelfDrawPao = transactionType === JapaneseTransactionType.SELF_DRAW_PAO;
+    const isNagashiMangan = transactionType === JapaneseTransactionType.NAGASHI_MANGAN;
+
+    // Pao variants mirror their non-pao counterparts; Nagashi Mangan needs only a winner.
+    const needsWinner = isDealIn || isSelfDraw || isDealInPao || isSelfDrawPao || isNagashiMangan;
+    const needsLoser = isDealIn || isDealInPao;
+    const needsHand = isDealIn || isSelfDraw || isDealInPao || isSelfDrawPao;
+    const needsPao = isDealInPao || isSelfDrawPao;
+
+    const requirements: RoundRequirement[] = [];
+
+    // 1. A winner is required.
+    if (needsWinner && roundActions.WINNER === undefined) {
+        requirements.push({ id: "winner", description: "Select a Winner." });
+    }
+    // 2. A loser is required for deal-ins.
+    if (needsLoser && roundActions.LOSER === undefined) {
+        requirements.push({ id: "loser", description: "Select a Loser." });
+    }
+    // 3. A valid hand is required for scored hands.
+    if (needsHand && !isValidHand(hand)) {
+        requirements.push({ id: "hand", description: "Select a Valid Hand." });
+    }
+    // 4. Pao variants require a pao player, who cannot be the winner.
+    if (needsPao) {
+        if (roundActions.PAO === undefined) {
+            requirements.push({ id: "pao", description: "Select a Pao Player." });
+        } else if (roundActions.PAO === roundActions.WINNER) {
+            requirements.push({ id: "pao-winner", description: "Pao cannot be the Winner." });
+        }
+    }
+    return requirements;
 };
 
 export { validateTransaction, validateJapaneseRound };

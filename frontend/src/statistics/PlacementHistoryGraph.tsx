@@ -185,7 +185,7 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
                         color: "text.secondary",
                         fontWeight: 600,
                         lineHeight: 1.2,
-                        fontSize: "clamp(1.5rem, 2vw, 1.1rem)",
+                        fontSize: "clamp(1.1rem, 3.2vw, 1.5rem)",
                     }}
                 >
                     AVERAGE PLACEMENT:

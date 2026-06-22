@@ -80,6 +80,9 @@ const JP_PRIMARY_TRANSACTION_TYPES = [
     JapaneseTransactionType.DECK_OUT,
 ] as const;
 
+// Roles a single player cannot hold at the same time within one round.
+const JP_EXCLUSIVE_LABELS = [JapaneseLabel.WINNER, JapaneseLabel.LOSER] as const;
+
 const JP_LABEL_MAP: Record<JapaneseLabel, string> = {
     WINNER: "Winner",
     LOSER: "Loser",
@@ -140,6 +143,9 @@ const HK_PRIMARY_TRANSACTION_TYPES = [
     HongKongTransactionType.DECK_OUT,
 ] as const;
 
+// Roles a single player cannot hold at the same time within one round.
+const HK_EXCLUSIVE_LABELS = [HongKongLabel.WINNER, HongKongLabel.LOSER] as const;
+
 const HK_LABEL_MAP: Record<HongKongLabel, string> = {
     WINNER: "Winner",
     LOSER: "Loser",
@@ -177,6 +183,32 @@ const gameRoundString = <T extends GameVariant>(game: Game<T>, variant: GameVari
     }
 };
 
+/**
+ * Assigns `playerIndex` to `label` within a set of round actions while enforcing
+ * role validity: a player may not simultaneously hold two mutually-exclusive
+ * roles (e.g. winner and loser). The just-assigned label wins any conflict and
+ * the colliding role is cleared. Centralizing the rule here keeps every
+ * assignment path valid — direct button selection as well as indirect ones such
+ * as riichi auto-selecting a winner — instead of each call site re-checking.
+ */
+export function assignRoundAction<L extends string>(
+    actions: Partial<Record<L, number>>,
+    label: L,
+    playerIndex: number,
+    exclusiveLabels: readonly L[],
+): Partial<Record<L, number>> {
+    const next: Partial<Record<L, number>> = { ...actions };
+    next[label] = playerIndex;
+    if (exclusiveLabels.includes(label)) {
+        for (const other of exclusiveLabels) {
+            if (other !== label && next[other] === playerIndex) {
+                delete next[other];
+            }
+        }
+    }
+    return next;
+}
+
 export {
     Wind,
     JapaneseLabel,
@@ -186,10 +218,12 @@ export {
     JP_UNDEFINED_HAND,
     JP_SINGLE_ACTION_BUTTONS,
     JP_PRIMARY_TRANSACTION_TYPES,
+    JP_EXCLUSIVE_LABELS,
     HongKongLabel,
     HongKongTransactionType,
     HK_TRANSACTION_TYPE_BUTTONS,
     HK_PRIMARY_TRANSACTION_TYPES,
+    HK_EXCLUSIVE_LABELS,
     HK_LABEL_MAP,
     HK_UNDEFINED_HAND,
     isGameEnd,
