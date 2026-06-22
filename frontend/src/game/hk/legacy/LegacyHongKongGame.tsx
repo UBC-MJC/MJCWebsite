@@ -4,6 +4,7 @@ import type { HongKongRound, HongKongHandInput } from "@/types";
 import { getScoresWithPlayers, hongKongPointsWheel } from "@/common/Utils";
 import alert from "@/common/AlertDialog";
 import {
+    HK_PRIMARY_TRANSACTION_TYPES,
     HK_TRANSACTION_TYPE_BUTTONS,
     HK_UNDEFINED_HAND,
     HongKongActions,
@@ -14,10 +15,11 @@ import {
 import PlayerButtonRow from "@/game/common/PlayerButtonRow";
 import { LegacyGameProps } from "@/game/Game";
 import PointsInput from "@/game/common/PointsInput";
+import TransactionTypeSelector from "@/game/common/TransactionTypeSelector";
 import { Footer } from "@/game/common/Footer";
 import { createHongKongRoundRequest, generateOverallScoreDelta } from "../controller/HongKongRound";
 import { validateHongKongRound } from "../controller/ValidateHongKongRound";
-import { Box, Button, ToggleButton, Stack, Paper, ToggleButtonGroup, Divider } from "@mui/material";
+import { Box, Button, Stack, Paper, Divider } from "@mui/material";
 
 const LegacyHongKongGame = ({
     enableRecording,
@@ -133,32 +135,12 @@ const LegacyHongKongGame = ({
                 }}
             >
                 <Stack spacing={3}>
-                    <Box>
-                        <ToggleButtonGroup
-                            exclusive
-                            value={transactionType}
-                            onChange={(_event, value) => value && transactionTypeOnChange(value)}
-                            sx={{
-                                display: "flex",
-                                flexWrap: "wrap",
-                                gap: 1,
-                                "& .MuiToggleButton-root": {
-                                    flex: "1 1 auto",
-                                    minWidth: "120px",
-                                    borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
-                                    "&:hover": {
-                                        borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
-                                    },
-                                },
-                            }}
-                        >
-                            {HK_TRANSACTION_TYPE_BUTTONS.map((button, idx) => (
-                                <ToggleButton key={idx} value={button.value} id={button.name}>
-                                    {button.name}
-                                </ToggleButton>
-                            ))}
-                        </ToggleButtonGroup>
-                    </Box>
+                    <TransactionTypeSelector
+                        buttons={HK_TRANSACTION_TYPE_BUTTONS}
+                        primaryValues={HK_PRIMARY_TRANSACTION_TYPES}
+                        value={transactionType}
+                        onChange={transactionTypeOnChange}
+                    />
 
                     <Divider />
 
@@ -219,10 +201,16 @@ const LegacyHongKongGame = ({
                     <LegacyHongKongGameTable
                         rounds={mapRoundsToModifiedRounds(game.rounds)}
                         players={players}
+                        dealerIndex={
+                            game.currentRound ? game.currentRound.roundNumber - 1 : undefined
+                        }
                     />
                 </Box>
             </Stack>
-            <Footer scores={getScoresWithPlayers(game, "hk")} />
+            <Footer
+                scores={getScoresWithPlayers(game, "hk")}
+                dealerIndex={game.currentRound ? game.currentRound.roundNumber - 1 : undefined}
+            />
         </>
     );
 };

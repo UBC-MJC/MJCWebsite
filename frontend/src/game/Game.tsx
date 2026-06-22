@@ -226,7 +226,7 @@ const Game = <T extends GameVariant>() => {
     }
     const canUpdateGame =
         game.status === "IN_PROGRESS" && (isRecording(game) || (player && player.admin));
-    const spectatorPadding: number = canUpdateGame ? 0 : 12;
+    const spectatorPadding: number = canUpdateGame ? 0 : 16;
     return (
         <Container sx={{ pb: { xs: 6 + spectatorPadding, sm: 10 + spectatorPadding } }}>
             <Stack spacing={3}>
@@ -299,7 +299,7 @@ const Game = <T extends GameVariant>() => {
 
                 {getLegacyDisplayGame(game)}
                 {canUpdateGame && (
-                    <Box sx={{ pb: { xs: 18, sm: 16 } }}>
+                    <Box sx={{ pb: { xs: 23, sm: 20 } }}>
                         <Card sx={{ p: 1.5 }}>
                             <Typography
                                 sx={{

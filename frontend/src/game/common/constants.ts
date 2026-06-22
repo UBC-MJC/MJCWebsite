@@ -73,6 +73,13 @@ const JP_SINGLE_ACTION_BUTTONS: JapaneseActionButtons = [
     { name: "Deck Out", value: JapaneseTransactionType.DECK_OUT },
 ];
 
+// The common actions that stay visible; everything else collapses behind "More options".
+const JP_PRIMARY_TRANSACTION_TYPES = [
+    JapaneseTransactionType.DEAL_IN,
+    JapaneseTransactionType.SELF_DRAW,
+    JapaneseTransactionType.DECK_OUT,
+] as const;
+
 const JP_LABEL_MAP: Record<JapaneseLabel, string> = {
     WINNER: "Winner",
     LOSER: "Loser",
@@ -81,8 +88,8 @@ const JP_LABEL_MAP: Record<JapaneseLabel, string> = {
 };
 
 const JP_UNDEFINED_HAND: JapaneseHandInput = {
-    han: -2,
-    fu: 10,
+    han: 1,
+    fu: 30,
     dora: 0,
 };
 
@@ -126,6 +133,12 @@ const HK_TRANSACTION_TYPE_BUTTONS: HongKongTransactionTypeButtons = [
         value: HongKongTransactionType.DECK_OUT,
     },
 ];
+
+const HK_PRIMARY_TRANSACTION_TYPES = [
+    HongKongTransactionType.DEAL_IN,
+    HongKongTransactionType.SELF_DRAW,
+    HongKongTransactionType.DECK_OUT,
+] as const;
 
 const HK_LABEL_MAP: Record<HongKongLabel, string> = {
     WINNER: "Winner",
@@ -172,9 +185,11 @@ export {
     JP_LABEL_MAP,
     JP_UNDEFINED_HAND,
     JP_SINGLE_ACTION_BUTTONS,
+    JP_PRIMARY_TRANSACTION_TYPES,
     HongKongLabel,
     HongKongTransactionType,
     HK_TRANSACTION_TYPE_BUTTONS,
+    HK_PRIMARY_TRANSACTION_TYPES,
     HK_LABEL_MAP,
     HK_UNDEFINED_HAND,
     isGameEnd,

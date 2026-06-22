@@ -1,11 +1,11 @@
-import { GridColDef } from "@mui/x-data-grid";
 import { mapChineseNumerals, mapWindToCharacter } from "@/common/Utils";
-import TableDisplay from "@/game/common/TableDisplay";
+import TableDisplay, { RoundRow } from "@/game/common/TableDisplay";
 import type { JapaneseRound, PartialJapaneseRound, GamePlayer } from "@/types";
 
 interface LegacyGameTableProps {
     rounds: ModifiedJapaneseRound[];
     players: GamePlayer[];
+    dealerIndex?: number;
 }
 
 export type ModifiedJapaneseRound = JapaneseRound & { scoreDeltas: number[] };
@@ -16,45 +16,14 @@ export function getRowString(row: PartialJapaneseRound) {
     }本場`;
 }
 
-const LegacyJapaneseGameTable = ({ rounds, players }: LegacyGameTableProps) => {
-    const columns: GridColDef<ModifiedJapaneseRound>[] = [
-        {
-            field: "round",
-            headerName: "Round",
-            flex: 1.5,
-            valueGetter: (_, row: ModifiedJapaneseRound) => getRowString(row),
-        },
-        {
-            field: "eastScore",
-            headerName: players[0].username,
-            flex: 1,
-            valueGetter: (_, row: ModifiedJapaneseRound) => row.scoreDeltas[0],
-            type: "number",
-        },
-        {
-            field: "southScore",
-            headerName: players[1].username,
-            flex: 1,
-            valueGetter: (_, row: ModifiedJapaneseRound) => row.scoreDeltas[1],
-            type: "number",
-        },
-        {
-            field: "westScore",
-            headerName: players[2].username,
-            flex: 1,
-            valueGetter: (_, row: ModifiedJapaneseRound) => row.scoreDeltas[2],
-            type: "number",
-        },
-        {
-            field: "northScore",
-            headerName: players[3].username,
-            flex: 1,
-            valueGetter: (_, row: ModifiedJapaneseRound) => row.scoreDeltas[3],
-            type: "number",
-        },
-    ];
+const LegacyJapaneseGameTable = ({ rounds, players, dealerIndex }: LegacyGameTableProps) => {
+    const rows: RoundRow[] = rounds.map((round) => ({
+        id: round.roundCount,
+        label: getRowString(round),
+        deltas: round.scoreDeltas,
+    }));
 
-    return <TableDisplay<ModifiedJapaneseRound> rounds={rounds} columns={columns} />;
+    return <TableDisplay rows={rows} players={players} dealerIndex={dealerIndex} />;
 };
 
 export default LegacyJapaneseGameTable;

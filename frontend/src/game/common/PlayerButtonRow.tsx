@@ -1,4 +1,4 @@
-import { Stack, ToggleButton, Typography } from "@mui/material";
+import { Box, Stack, ToggleButton, Typography } from "@mui/material";
 import type { GamePlayer } from "@/types";
 
 interface PlayerButtonRow<T extends string> {
@@ -15,25 +15,36 @@ const PlayerButtonRow = <T extends string>({
     onChange,
 }: PlayerButtonRow<T>) => {
     return (
-        <Stack spacing={1}>
-            <Typography variant="h3">{label[0] + label.slice(1).toLowerCase()}:</Typography>
-            <Stack
-                direction="row"
-                spacing={1}
-                alignContent={"center"}
-                maxWidth={"100%"}
-                justifyContent={"center"}
+        <Box sx={{ width: "100%" }}>
+            <Typography
+                sx={{
+                    fontWeight: 700,
+                    fontSize: "0.78rem",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    color: "text.secondary",
+                    textAlign: "center",
+                    mb: 0.75,
+                }}
             >
+                {label[0] + label.slice(1).toLowerCase()}
+            </Typography>
+            <Stack direction="row" spacing={1} sx={{ width: "100%" }}>
                 {players.map((player, idx) => (
                     <ToggleButton
                         key={idx}
                         id={`name-${label}-${idx}`}
                         color={getVariant(label)}
                         sx={{
-                            maxWidth: "22.5%",
-                            overflow: "clip",
+                            flex: 1,
+                            minWidth: 0,
+                            minHeight: 44,
+                            px: 1,
+                            display: "block",
+                            textAlign: "center",
                             whiteSpace: "nowrap",
-                            // textOverflow: "ellipsis"
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
                         }}
                         value={player.id}
                         selected={labelPlayerIds.includes(idx)}
@@ -43,7 +54,7 @@ const PlayerButtonRow = <T extends string>({
                     </ToggleButton>
                 ))}
             </Stack>
-        </Stack>
+        </Box>
     );
 };
 

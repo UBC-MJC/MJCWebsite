@@ -14,12 +14,14 @@ import {
     JapaneseActions,
     JapaneseLabel,
     JapaneseTransactionType,
+    JP_PRIMARY_TRANSACTION_TYPES,
     JP_SINGLE_ACTION_BUTTONS,
     JP_TRANSACTION_TYPE_BUTTONS,
     JP_UNDEFINED_HAND,
 } from "@/game/common/constants";
 import PlayerButtonRow from "@/game/common/PlayerButtonRow";
 import PointsInput from "@/game/common/PointsInput";
+import TransactionTypeSelector from "@/game/common/TransactionTypeSelector";
 import { Footer } from "@/game/common/Footer";
 import { LegacyGameProps } from "@/game/Game";
 import {
@@ -35,7 +37,6 @@ import {
 import { validateJapaneseRound, validateTransaction } from "../controller/ValidateJapaneseRound";
 import {
     Button,
-    ToggleButton,
     FormControlLabel,
     Switch,
     Stack,
@@ -43,7 +44,6 @@ import {
     Card,
     CardContent,
 } from "@mui/material";
-import { SpacedToggleButtonGroup } from "@/theme/utils";
 
 function getTransaction(
     game: Game<"jp">,
@@ -87,6 +87,9 @@ function getTransactionListRender(transactions: Transaction[]) {
         </ul>
     );
 }
+
+// Riichi declarations raise the conventional default fu from 30 to 40.
+const defaultFu = (riichiList: number[]) => (riichiList.length > 0 ? 40 : 30);
 
 const showPointInput = (transactionType: JapaneseTransactionType) => {
     return ![
@@ -162,7 +165,7 @@ const LegacyJapaneseGame = ({
 
         setTransactionType(type);
         if (!showPointInput(transactionType)) {
-            setHand(JP_UNDEFINED_HAND);
+            setHand({ ...JP_UNDEFINED_HAND, fu: defaultFu(riichiList) });
         }
     };
 
@@ -182,11 +185,12 @@ const LegacyJapaneseGame = ({
     };
 
     const riichiOnChange = (playerIndex: number) => {
-        if (riichiList.includes(playerIndex)) {
-            setRiichiList(riichiList.filter((index: number) => index !== playerIndex));
-        } else {
-            setRiichiList([...riichiList, playerIndex]);
-        }
+        const newRiichiList = riichiList.includes(playerIndex)
+            ? riichiList.filter((index: number) => index !== playerIndex)
+            : [...riichiList, playerIndex];
+        setRiichiList(newRiichiList);
+        // Fu defaults to 40 once anyone has declared riichi, otherwise 30.
+        setHand((prev) => ({ ...prev, fu: defaultFu(newRiichiList) }));
     };
 
     const handOnChange = (label: string, value: string) => {
@@ -294,41 +298,26 @@ const LegacyJapaneseGame = ({
         return (
             <Card>
                 <CardContent>
-                    <Stack alignItems="center">
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    onChange={(_e, checked) => setMultipleHandInputMode(checked)}
+                    <Stack alignItems="center" spacing={2.5}>
+                        <TransactionTypeSelector
+                            buttons={getActions()}
+                            primaryValues={JP_PRIMARY_TRANSACTION_TYPES}
+                            value={transactionType}
+                            onChange={transactionTypeOnChange}
+                            extraOptions={
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={multipleHandInputMode}
+                                            onChange={(_e, checked) =>
+                                                setMultipleHandInputMode(checked)
+                                            }
+                                        />
+                                    }
+                                    label="Multiple Transactions"
                                 />
                             }
-                            label="Multiple Transactions"
                         />
-                        <Box>
-                            <SpacedToggleButtonGroup
-                                exclusive
-                                value={transactionType}
-                                onChange={(_event, value) =>
-                                    value && transactionTypeOnChange(value)
-                                }
-                                sx={{
-                                    display: "flex",
-                                    flexWrap: "wrap",
-                                    justifyContent: "space-evenly",
-                                }}
-                                aria-label="round type"
-                            >
-                                {getActions().map((button, idx) => (
-                                    <ToggleButton
-                                        key={idx}
-                                        value={button.value}
-                                        id={button.name}
-                                        sx={{ minWidth: "100px", flexGrow: 1 }}
-                                    >
-                                        {button.name}
-                                    </ToggleButton>
-                                ))}
-                            </SpacedToggleButtonGroup>
-                        </Box>
 
                         <PlayerButtonRow
                             players={players}
@@ -352,6 +341,11 @@ const LegacyJapaneseGame = ({
                                 <PointsInput
                                     pointsWheel={japanesePointsWheel}
                                     onChange={handOnChange}
+                                    values={{
+                                        han: String(hand.han),
+                                        fu: String(hand.fu),
+                                        dora: String(hand.dora),
+                                    }}
                                 />
                             </Box>
                         )}
@@ -418,6 +412,9 @@ const LegacyJapaneseGame = ({
                     <LegacyJapaneseGameTable
                         rounds={mapRoundsToModifiedRounds(game.rounds)}
                         players={players}
+                        dealerIndex={
+                            game.currentRound ? game.currentRound.roundNumber - 1 : undefined
+                        }
                     />
                 </Box>
             </Stack>
@@ -425,6 +422,7 @@ const LegacyJapaneseGame = ({
                 scores={getScoresWithPlayers(game, "jp")}
                 riichiList={riichiList}
                 riichiStickCount={riichiStickCount}
+                dealerIndex={game.currentRound ? game.currentRound.roundNumber - 1 : undefined}
             />
         </>
     );

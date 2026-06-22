@@ -1,25 +1,7 @@
 import { Box, Chip, Divider, Stack, Typography, alpha } from "@mui/material";
 import { getScoresWithPlayers } from "@/common/Utils";
 import type { Game, GameVariant } from "@/types";
-import { palette } from "@/theme/tokens";
-
-const placeLabel = (idx: number) => {
-    switch (idx) {
-        case 0: return "1st";
-        case 1: return "2nd";
-        case 2: return "3rd";
-        default: return `${idx + 1}th`;
-    }
-};
-
-const PLACE_COLORS = [
-    { bg: palette.medal.gold.bg,   text: palette.medal.gold.text,   border: "#F5D060" },
-    { bg: palette.medal.silver.bg, text: palette.medal.silver.text, border: "#C0C0C0" },
-    { bg: palette.medal.bronze.bg, text: palette.medal.bronze.text, border: "#CD7F32" },
-] as const;
-
-const placeColor = (idx: number) =>
-    PLACE_COLORS[idx] ?? { bg: "background.default", text: "text.secondary", border: "divider" };
+import { placeColor, placeLabel } from "./placement";
 
 const columnTitleSx = {
     display: "block",
