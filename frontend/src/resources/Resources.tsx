@@ -83,18 +83,39 @@ const hkResources: ResourceGroup[] = [
 const ResourceSection = ({ title, icon, groups }: { title: string; icon: React.ReactNode; groups: ResourceGroup[] }) => (
     <Card>
         <CardContent sx={{ p: 2.5 }}>
-            <Stack direction="row" spacing={1.5} alignItems="center" mb={2}>
+            <Stack direction="row" spacing={1.5} alignItems="center" justifyContent="center" mb={2}>
                 <IconBadge>{icon}</IconBadge>
                 <Typography variant="h4">{title}</Typography>
             </Stack>
 
             <Stack divider={<Divider sx={{ my: 0.25 }} />} spacing={0}>
                 {groups.map((group) => (
-                    <Box key={group.title} sx={{ py: 1.25, display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                        <Typography variant="body2" color="text.secondary" sx={{ minWidth: 180, fontWeight: 500 }}>
+                    <Box
+                        key={group.title}
+                        sx={{
+                            py: 1.5,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            gap: 1,
+                        }}
+                    >
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ fontWeight: 600, textAlign: "center" }}
+                        >
                             {group.title}
                         </Typography>
-                        <Stack direction="row" spacing={1} flexWrap="wrap">
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                justifyContent: "center",
+                                gap: 1,
+                                width: "100%",
+                            }}
+                        >
                             {group.links.map((link) => (
                                 <Link
                                     key={link.href}
@@ -135,7 +156,7 @@ const ResourceSection = ({ title, icon, groups }: { title: string; icon: React.R
                                     <OpenInNewIcon sx={{ fontSize: 11 }} />
                                 </Link>
                             ))}
-                        </Stack>
+                        </Box>
                     </Box>
                 ))}
             </Stack>
@@ -146,12 +167,12 @@ const ResourceSection = ({ title, icon, groups }: { title: string; icon: React.R
 export const Resources = () => (
     <Container maxWidth="md">
         <Stack spacing={3}>
-            <Box>
+            <Box sx={{ textAlign: "center" }}>
                 <Typography variant="h1" gutterBottom>
                     Study Resources
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    Learning materials for Riichi and Hong Kong mahjong
+                    Learning Materials for Riichi and Hong Kong Mahjong
                 </Typography>
             </Box>
 

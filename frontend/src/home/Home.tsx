@@ -21,7 +21,6 @@ import IconBadge from "@/common/atoms/IconBadge";
 import SectionHeader from "@/common/atoms/SectionHeader";
 import { gradientTitle } from "@/theme/utils";
 import logo from "../assets/MJC square.png";
-import riichiStick from "../assets/riichiStick.png";
 
 interface LinkItem {
     icon: React.ReactNode;
@@ -105,9 +104,9 @@ const ContactPill = ({ item }: { item: ContactItem }) => {
             alignItems="center"
             justifyContent="center"
             sx={{
-                flex: { xs: "1 1 100%", sm: "1 1 200px" },
+                flex: { xs: "1 1 100%", sm: "1 1 240px" },
                 minWidth: 0,
-                px: 2,
+                px: 2.25,
                 py: 1.25,
                 borderRadius: 2,
                 border: "1px solid",
@@ -130,7 +129,7 @@ const ContactPill = ({ item }: { item: ContactItem }) => {
             <Typography
                 variant="body2"
                 noWrap
-                sx={{ fontWeight: 500, lineHeight: 1, minWidth: 0 }}
+                sx={{ fontWeight: 500, lineHeight: 1.5, minWidth: 0 }}
             >
                 {item.label}
             </Typography>
@@ -190,7 +189,7 @@ const LinkCard = ({ item }: { item: LinkItem }) => (
                     />
                 )}
             </Stack>
-            <Typography variant="caption" color="text.secondary" noWrap sx={{ display: "block" }}>
+            <Typography variant="caption" color="text.secondary" noWrap sx={{ display: "block", textAlign: "left" }}>
                 {item.desc}
             </Typography>
         </Box>
@@ -221,39 +220,23 @@ const Home = () => (
                 background: "linear-gradient(135deg, #1A1416 0%, #161617 45%, #0B0B0C 100%)",
                 borderBottom: "1px solid",
                 borderColor: (t) => alpha(t.palette.primary.main, 0.18),
-                // Soft accent glow in the top-right corner.
+                // Linear accent glow descending from the top of the hero.
                 "&::before": {
                     content: '""',
                     position: "absolute",
-                    top: -140,
-                    right: { xs: "-30%", sm: "-8%" },
-                    width: 480,
-                    height: 480,
-                    borderRadius: "50%",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: { xs: 220, md: 300 },
                     background: (t) =>
-                        `radial-gradient(circle, ${alpha(t.palette.primary.main, 0.24)}, transparent 70%)`,
+                        `linear-gradient(180deg, ${alpha(t.palette.primary.main, 0.28)} 0%, ${alpha(
+                            t.palette.primary.main,
+                            0.08,
+                        )} 45%, transparent 100%)`,
                     pointerEvents: "none",
                 },
             }}
         >
-            {/* Decorative riichi stick */}
-            <Box
-                component="img"
-                src={riichiStick}
-                alt=""
-                aria-hidden
-                sx={{
-                    position: "absolute",
-                    right: { sm: -20, md: 60 },
-                    bottom: { sm: -60, md: -80 },
-                    width: { sm: 340, md: 460 },
-                    opacity: 0.06,
-                    transform: "rotate(-18deg)",
-                    pointerEvents: "none",
-                    display: { xs: "none", sm: "block" },
-                }}
-            />
-
             <Container
                 maxWidth="lg"
                 sx={{ position: "relative", py: { xs: 4, sm: 5, md: 7 } }}

@@ -5,11 +5,11 @@ import {
     Stack,
     ToggleButton,
     ToggleButtonGroup,
-    Typography,
 } from "@mui/material";
 import { getGameVariantString } from "@/common/Utils";
 import { LiveGamesSection } from "./LiveGames";
 import GameLogsSection from "./GameLogs";
+import GameSectionHeader from "./common/GameSectionHeader";
 import type { GameVariant } from "@/types";
 
 // Page header with the title and the shared Riichi/Hong Kong variant selector
@@ -21,13 +21,7 @@ const GamesHeader = ({
     variant: GameVariant;
     onChange: (v: GameVariant) => void;
 }) => (
-    <Stack
-        direction={{ xs: "column", sm: "row" }}
-        spacing={2}
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        justifyContent="space-between"
-    >
-        <Typography variant="h1">Games</Typography>
+    <GameSectionHeader title="Games">
         <ToggleButtonGroup
             exclusive
             size="medium"
@@ -58,7 +52,7 @@ const GamesHeader = ({
             <ToggleButton value="jp">{getGameVariantString("jp")}</ToggleButton>
             <ToggleButton value="hk">{getGameVariantString("hk")}</ToggleButton>
         </ToggleButtonGroup>
-    </Stack>
+    </GameSectionHeader>
 );
 
 const Games = () => {

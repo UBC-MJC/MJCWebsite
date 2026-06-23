@@ -5,9 +5,7 @@ import { logger } from "@/common/logger";
 import {
     Box,
     Card,
-    CardActionArea,
     CardContent,
-    CardHeader,
     Grid,
     Typography,
     Autocomplete,
@@ -16,23 +14,17 @@ import {
     CircularProgress,
     Pagination,
     Stack,
-    Chip,
-    Tooltip,
     Collapse,
     IconButton,
 } from "@mui/material";
-import { Link } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import alert from "@/common/AlertDialog";
-import GameSummaryBody from "./common/GameSummaryBody";
+import GameSummaryCard, { gameSummaryGrid } from "./common/GameSummaryCard";
+import GameSectionHeader from "./common/GameSectionHeader";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayers } from "@/hooks/GameHooks";
-import { getGameVariantString } from "@/common/Utils";
 import type { GameVariant, Season, Game, PlayerNamesDataType } from "@/types";
-import { responsiveCardHover } from "@/theme/utils";
-import { overlay, shadow } from "@/theme/tokens";
 
 const MAX_GAMES_PER_PAGE = 12;
 
@@ -110,15 +102,7 @@ const GameLogsSection = <T extends GameVariant>({ gameVariant }: { gameVariant: 
 
     return (
         <Stack spacing={3}>
-            <Stack
-                direction="row"
-                spacing={2}
-                alignItems="center"
-                justifyContent="space-between"
-                onClick={() => setExpanded((prev) => !prev)}
-                sx={{ cursor: "pointer", userSelect: "none" }}
-            >
-                <Typography variant="h1">Logs</Typography>
+            <GameSectionHeader title="Logs" onClick={() => setExpanded((prev) => !prev)}>
                 <IconButton
                     aria-label={expanded ? "Collapse game logs" : "Expand game logs"}
                     aria-expanded={expanded}
@@ -129,7 +113,7 @@ const GameLogsSection = <T extends GameVariant>({ gameVariant }: { gameVariant: 
                 >
                     <ExpandMoreIcon />
                 </IconButton>
-            </Stack>
+            </GameSectionHeader>
 
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 {!seasonsSuccess || !playersResult.isSuccess ? (
@@ -197,122 +181,18 @@ const GameLogsSection = <T extends GameVariant>({ gameVariant }: { gameVariant: 
                 )}
 
                 {/* Game cards */}
-                <Grid container spacing={3}>
+                <Box sx={gameSummaryGrid}>
                     {getPaginatedGames().map((game) => (
-                        <Grid size={{ xs: 12, md: 6 }} key={game.id}>
-                            <Card
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    ...responsiveCardHover,
-                                    // Keep the gradient/shadow/border hover effects
-                                    // but remove the upward lift (translateY).
-                                    "&:hover": {
-                                        transform: "none",
-                                        boxShadow: { xs: "none", sm: shadow.card },
-                                        borderColor: "primary.light",
-                                        "&::after": { transform: "scaleX(1)" },
-                                    },
-                                }}
-                            >
-                                <CardActionArea
-                                    component={Link}
-                                    to={`/games/${gameVariant}/${game.id}`}
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "stretch",
-                                        flexGrow: 1,
-                                    }}
-                                >
-                                    <CardHeader
-                                        title={
-                                            <Box
-                                                sx={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "space-between",
-                                                    flexWrap: "wrap",
-                                                }}
-                                            >
-                                                <Box
-                                                    sx={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        gap: 1,
-                                                        minWidth: 0,
-                                                    }}
-                                                >
-                                                    <Typography
-                                                        variant="h6"
-                                                        component="div"
-                                                        sx={{
-                                                            fontSize: "1.45rem",
-                                                            fontWeight: 700,
-                                                        }}
-                                                    >
-                                                        {getGameVariantString(gameVariant, game.type)}{" "}
-                                                        #{game.id}
-                                                    </Typography>
-                                                    <Tooltip
-                                                        title={new Date(game.createdAt).toLocaleString()}
-                                                        arrow
-                                                    >
-                                                        <Box
-                                                            sx={{
-                                                                display: "flex",
-                                                                alignItems: "center",
-                                                                gap: 0.5,
-                                                                color: "text.secondary",
-                                                                flexShrink: 0,
-                                                            }}
-                                                        >
-                                                            <AccessTimeIcon sx={{ fontSize: "1.15rem" }} />
-                                                            <Typography
-                                                                variant="body2"
-                                                                sx={{ whiteSpace: "nowrap", fontSize: "1rem" }}
-                                                            >
-                                                                {formatDate(game.createdAt)}
-                                                            </Typography>
-                                                        </Box>
-                                                    </Tooltip>
-                                                </Box>
-                                                <Chip
-                                                    label={game.type}
-                                                    size="medium"
-                                                    variant="filled"
-                                                    sx={{
-                                                        height: 45,
-                                                        fontSize: "1.1rem",
-                                                        fontWeight: 600,
-                                                        letterSpacing: "0.04em",
-                                                        border: "none",
-                                                        bgcolor: overlay.primary.row,
-                                                        color: "primary.light",
-                                                        "& .MuiChip-label": { px: 1.75 },
-                                                    }}
-                                                />
-                                            </Box>
-                                        }
-                                        sx={{
-                                            bgcolor: "action.hover",
-                                        }}
-                                    />
-                                    <CardContent
-                                        sx={{
-                                            flexGrow: 1,
-                                            px: 1,
-                                            pt: 1,
-                                            "&:last-child": { pb: 1 },
-                                        }}
-                                    >
-                                        <GameSummaryBody game={game} gameVariant={gameVariant} />
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        </Grid>
+                        <GameSummaryCard
+                            key={game.id}
+                            variant="log"
+                            game={game}
+                            gameVariant={gameVariant}
+                            chipLabel={game.type}
+                            timeText={formatDate(game.createdAt)}
+                        />
                     ))}
-                </Grid>
+                </Box>
 
                 {/* Pagination */}
                 {games.length > MAX_GAMES_PER_PAGE && (
