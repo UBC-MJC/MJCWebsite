@@ -1,6 +1,7 @@
-import type { GameCreationProp, Season, GameVariant, GameType, LeaderboardType } from "@/types";
+import type { Season, GameVariant, GameType, LeaderboardType } from "@/types";
 import { palette as tokens } from "@/theme/tokens";
 import { memo, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { getGameVariantString } from "@/common/Utils";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayerLeaderboard } from "@/hooks/LeaderboardHooks";
@@ -16,6 +17,7 @@ import {
     DialogContent,
     DialogTitle,
     IconButton,
+    MenuItem,
     Stack,
     TextField,
     Typography,
@@ -26,7 +28,28 @@ import CloseIcon from "@mui/icons-material/Close";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { DisplayStatistics } from "@/statistics/Statistics";
 
-const Leaderboard = <T extends GameVariant>({ gameVariant, gameType }: GameCreationProp<T>) => {
+// The four available leaderboards, ordered to match the NavBar dropdown. The
+// first entry (Riichi Ranked) is the default shown when the page opens.
+const LEADERBOARD_OPTIONS = [
+    { gameVariant: "jp", gameType: "RANKED" },
+    { gameVariant: "jp", gameType: "CASUAL" },
+    { gameVariant: "hk", gameType: "RANKED" },
+    { gameVariant: "hk", gameType: "CASUAL" },
+] as const satisfies readonly { gameVariant: GameVariant; gameType: GameType }[];
+
+const optionKey = (gameVariant: GameVariant, gameType: GameType) => `${gameVariant}-${gameType}`;
+
+// Resolve the active board from the URL (so NavBar deep-links land on the right
+// one), falling back to the default Riichi Ranked board.
+const resolveOption = (variant: string | null, type: string | null) =>
+    LEADERBOARD_OPTIONS.find((o) => o.gameVariant === variant && o.gameType === type) ??
+    LEADERBOARD_OPTIONS[0];
+
+const Leaderboard = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const selected = resolveOption(searchParams.get("variant"), searchParams.get("type"));
+    const { gameVariant, gameType } = selected;
+
     const [season, setSeason] = useState<Season | null>(null);
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons();
 
@@ -63,19 +86,50 @@ const Leaderboard = <T extends GameVariant>({ gameVariant, gameType }: GameCreat
                     )}
                 </Box>
 
-                <Autocomplete
-                    isOptionEqualToValue={(o, v) => o.id === v.id}
-                    getOptionLabel={(o) => o.name}
-                    options={seasons}
-                    value={season!}
-                    blurOnSelect
-                    disableClearable
-                    onChange={(_e, v) => setSeason(v)}
-                    sx={{ maxWidth: 320 }}
-                    renderInput={(params) => (
-                        <TextField {...params} label="Season" placeholder="Select a season" />
-                    )}
-                />
+                <Stack
+                    direction="row"
+                    spacing={{ xs: 1.5, sm: 2 }}
+                    sx={{ width: "100%" }}
+                >
+                    <Autocomplete
+                        isOptionEqualToValue={(o, v) => o.id === v.id}
+                        getOptionLabel={(o) => o.name}
+                        options={seasons}
+                        value={season!}
+                        blurOnSelect
+                        disableClearable
+                        onChange={(_e, v) => setSeason(v)}
+                        sx={{ flex: 1, minWidth: 0 }}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Season" placeholder="Select a season" />
+                        )}
+                    />
+
+                    <TextField
+                        select
+                        label="Leaderboard"
+                        value={optionKey(gameVariant, gameType)}
+                        onChange={(e) => {
+                            const next = LEADERBOARD_OPTIONS.find(
+                                (o) => optionKey(o.gameVariant, o.gameType) === e.target.value,
+                            )!;
+                            setSearchParams(
+                                { variant: next.gameVariant, type: next.gameType },
+                                { replace: true },
+                            );
+                        }}
+                        sx={{ flex: 1, minWidth: 0, "& .MuiSelect-select": { textAlign: "left" } }}
+                    >
+                        {LEADERBOARD_OPTIONS.map((o) => (
+                            <MenuItem
+                                key={optionKey(o.gameVariant, o.gameType)}
+                                value={optionKey(o.gameVariant, o.gameType)}
+                            >
+                                {getGameVariantString(o.gameVariant, o.gameType)}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                </Stack>
 
                 {!season ? (
                     <Typography variant="body1" color="text.secondary">
@@ -127,7 +181,7 @@ const rankCell = (params: { value: number }) => {
 };
 
 const eloCell = (params: { value: string }) => (
-    <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
+    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
         <Typography variant="body2" fontWeight={600} fontVariantNumeric="tabular-nums">
             {params.value}
         </Typography>
@@ -136,7 +190,7 @@ const eloCell = (params: { value: string }) => (
 
 const chomboCell = (params: { value: number }) =>
     params.value > 0 ? (
-        <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
             <Chip
                 label={params.value}
                 size="small"
@@ -146,7 +200,7 @@ const chomboCell = (params: { value: number }) =>
             />
         </Box>
     ) : (
-        <Box sx={{ display: "flex", alignItems: "center", height: "100%", color: "text.disabled" }}>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end", height: "100%", color: "text.disabled" }}>
             {params.value}
         </Box>
     );
@@ -208,7 +262,7 @@ const LeaderboardDisplay = memo(
                         columns={columns}
                         initialState={{
                             columns: {
-                                columnVisibilityModel: { chomboCount: !isMobile },
+                                columnVisibilityModel: { chomboCount: false },
                             },
                         }}
                         onRowClick={(p) => isMobile && setPlayer(p.row)}

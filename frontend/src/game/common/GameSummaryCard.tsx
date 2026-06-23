@@ -24,7 +24,9 @@ import { overlay, shadow } from "@/theme/tokens";
 export const gameSummaryGrid = {
     display: "grid",
     gap: 3,
-    gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 360px), 1fr))",
+    // Cap the layout at two cards per row: a single column on narrow
+    // screens, two equal columns once there's room.
+    gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
 } as const;
 
 // Gentle "breathing" pulse for the live indicator dot.

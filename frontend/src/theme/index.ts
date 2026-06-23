@@ -94,14 +94,19 @@ export const createAppTheme = (): Theme => {
             MuiTextField: {
                 defaultProps: { size: "small" },
                 styleOverrides: {
-                    root: {
+                    root: ({ theme }) => ({
                         "& .MuiOutlinedInput-root": {
                             borderRadius: 8,
                             transition: `box-shadow ${timing.fast} ease`,
                             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: t.primary.light },
                             "&.Mui-focused": { boxShadow: `0 0 0 3px ${overlay.primary.focus}` },
                         },
-                    },
+                        // iOS auto-zooms when a focused input's font is < 16px. Keep
+                        // the compact 0.9rem on ≥sm, but bump to 16px on phones.
+                        "& .MuiInputBase-input": {
+                            [theme.breakpoints.down("sm")]: { fontSize: 16 },
+                        },
+                    }),
                 },
             },
             MuiAutocomplete: {

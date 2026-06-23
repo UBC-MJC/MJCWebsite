@@ -15,7 +15,6 @@ import {
     useTheme,
     useMediaQuery,
     Divider,
-    Collapse,
     Stack,
     Skeleton,
     ListItemButton,
@@ -27,7 +26,6 @@ import { keyframes } from "@mui/system";
 import type { SxProps, Theme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import ExpandMore from "@mui/icons-material/ExpandMore";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import HomeFilledIcon from "@mui/icons-material/HomeFilled";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
@@ -42,7 +40,6 @@ import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
 import { AuthContext } from "@/common/AuthContext";
 import { Link, useLocation } from "react-router-dom";
-import { getGameVariantString } from "@/common/Utils";
 import { palette, shadow, timing } from "@/theme/tokens";
 import { gradientTitle } from "@/theme/utils";
 
@@ -204,18 +201,6 @@ const drawerItemSx = (active: boolean, danger = false): SxProps<Theme> => ({
     },
 });
 
-/** Indented, lighter styling for nested rows (the Leaderboard sub-links). */
-const drawerSubItemSx = (active: boolean): SxProps<Theme> => ({
-    minHeight: 42,
-    borderRadius: 2,
-    pl: 4.5,
-    pr: 1.25,
-    my: 0.25,
-    color: active ? "primary.light" : "text.secondary",
-    ...(active && { bgcolor: (t: Theme) => alpha(t.palette.primary.main, 0.1) }),
-    "& .MuiListItemText-primary": { fontSize: "0.875rem", fontWeight: active ? 700 : 500 },
-});
-
 const DrawerSectionLabel = ({ children }: { children: ReactNode }) => (
     <Typography
         component="div"
@@ -269,39 +254,6 @@ const DrawerItem = ({ label, icon, to, onClick, active = false, danger = false }
     );
 };
 
-const DrawerSubItem = ({
-    label,
-    to,
-    active = false,
-    onClick,
-}: {
-    label: string;
-    to: string;
-    active?: boolean;
-    onClick?: () => void;
-}) => (
-    <ListItemButton
-        component={Link}
-        to={to}
-        onClick={onClick}
-        aria-current={active ? "page" : undefined}
-        sx={drawerSubItemSx(active)}
-    >
-        <Box
-            component="span"
-            sx={{
-                width: 5,
-                height: 5,
-                borderRadius: "50%",
-                bgcolor: "currentColor",
-                opacity: 0.7,
-                mr: 1.75,
-                flexShrink: 0,
-            }}
-        />
-        <ListItemText primary={label} />
-    </ListItemButton>
-);
 
 // ─── Component ─────────────────────────────────────────────────────────────────
 
@@ -311,11 +263,8 @@ const NavBar = () => {
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
     const location = useLocation();
 
-    const [leaderboardAnchor, setLeaderboardAnchor] = useState<null | HTMLElement>(null);
     const [userAnchor, setUserAnchor] = useState<null | HTMLElement>(null);
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-
-    const [leaderboardOpen, setLeaderboardOpen] = useState(false);
 
     const isActive = (path: string) => location.pathname.startsWith(path);
     // The combined Games page is served at both /games and /games/current —
@@ -325,13 +274,6 @@ const NavBar = () => {
 
     const handleDrawerToggle = () => setMobileDrawerOpen(!mobileDrawerOpen);
     const closeDrawer = () => setMobileDrawerOpen(false);
-
-    const leaderboardItems = [
-        { to: "/leaderboard/jp", label: getGameVariantString("jp", "RANKED") },
-        { to: "/leaderboard/jp/casual", label: getGameVariantString("jp", "CASUAL") },
-        { to: "/leaderboard/hk", label: getGameVariantString("hk", "RANKED") },
-        { to: "/leaderboard/hk/casual", label: getGameVariantString("hk", "CASUAL") },
-    ];
 
     // ─── Mobile drawer ──────────────────────────────────────────────────────
 
@@ -406,30 +348,13 @@ const NavBar = () => {
                         onClick={closeDrawer}
                     />
 
-                    <ListItemButton
-                        onClick={() => setLeaderboardOpen((prev) => !prev)}
-                        aria-expanded={leaderboardOpen}
-                        sx={drawerItemSx(isActive("/leaderboard"))}
-                    >
-                        <ListItemIcon>
-                            <EmojiEventsRoundedIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Leaderboard" />
-                        <ExpandMore fontSize="small" sx={chevronSx(leaderboardOpen)} />
-                    </ListItemButton>
-                    <Collapse in={leaderboardOpen} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            {leaderboardItems.map((item) => (
-                                <DrawerSubItem
-                                    key={item.to}
-                                    to={item.to}
-                                    label={item.label}
-                                    active={location.pathname === item.to}
-                                    onClick={closeDrawer}
-                                />
-                            ))}
-                        </List>
-                    </Collapse>
+                    <DrawerItem
+                        to="/leaderboard"
+                        label="Leaderboard"
+                        icon={<EmojiEventsRoundedIcon />}
+                        active={isActive("/leaderboard")}
+                        onClick={closeDrawer}
+                    />
 
                     {!loading && player && (
                         <DrawerItem
@@ -542,28 +467,6 @@ const NavBar = () => {
         </Box>
     );
 
-    // ─── Reusable desktop dropdown ──────────────────────────────────────────
-
-    const DropMenu = ({
-        anchor,
-        onClose,
-        items,
-        origin = "left",
-    }: {
-        anchor: null | HTMLElement;
-        onClose: () => void;
-        items: { to: string; label: string }[];
-        origin?: "left" | "right";
-    }) => (
-        <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={onClose} {...menuTransition(origin)}>
-            {items.map((item) => (
-                <MenuItem key={item.to} component={Link} to={item.to} onClick={onClose}>
-                    {item.label}
-                </MenuItem>
-            ))}
-        </Menu>
-    );
-
     return (
         <AppBar
             position="sticky"
@@ -635,16 +538,11 @@ const NavBar = () => {
                             <Button
                                 color="inherit"
                                 sx={navBtnSx(isActive("/leaderboard"))}
-                                onClick={(e) => setLeaderboardAnchor(e.currentTarget)}
-                                endIcon={<KeyboardArrowDownIcon sx={chevronSx(Boolean(leaderboardAnchor))} />}
+                                component={Link}
+                                to="/leaderboard"
                             >
                                 Leaderboard
                             </Button>
-                            <DropMenu
-                                anchor={leaderboardAnchor}
-                                onClose={() => setLeaderboardAnchor(null)}
-                                items={leaderboardItems}
-                            />
 
                             <Button
                                 color="inherit"

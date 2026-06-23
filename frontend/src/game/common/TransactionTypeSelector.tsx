@@ -34,6 +34,14 @@ const buttonSx = {
     fontWeight: 600,
 } as const;
 
+// The primary group (Deal In / Self Draw / Deck Out) is the most-used control,
+// so give it a taller hit target and larger label than the secondary actions.
+const primaryButtonSx = {
+    ...buttonSx,
+    minHeight: 56,
+    fontSize: "1.05rem",
+} as const;
+
 /**
  * Splits transaction-type buttons into an always-visible primary group
  * (e.g. Deal In / Self Draw / Deck Out) and a collapsible secondary group for
@@ -62,7 +70,7 @@ const TransactionTypeSelector = <V extends string>({
         }
     }, [selectionInSecondary]);
 
-    const renderGroup = (group: ActionButton<V>[], ariaLabel: string) => (
+    const renderGroup = (group: ActionButton<V>[], ariaLabel: string, isPrimary = false) => (
         <SpacedToggleButtonGroup
             exclusive
             value={value}
@@ -75,7 +83,7 @@ const TransactionTypeSelector = <V extends string>({
                     key={button.value}
                     value={button.value}
                     id={button.name}
-                    sx={buttonSx}
+                    sx={isPrimary ? primaryButtonSx : buttonSx}
                 >
                     {button.name}
                 </ToggleButton>
@@ -85,7 +93,7 @@ const TransactionTypeSelector = <V extends string>({
 
     return (
         <Box sx={{ width: "100%" }}>
-            {renderGroup(primaryButtons, "round type")}
+            {renderGroup(primaryButtons, "round type", true)}
 
             {hasCollapsible && (
                 <>

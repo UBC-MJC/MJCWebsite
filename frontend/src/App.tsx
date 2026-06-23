@@ -60,28 +60,44 @@ const App = () => {
                             <Routes>
                                 <Route element={<WithNav />}>
                                     <Route path="/" element={<Home />} />
+                                    <Route path="/leaderboard" element={<Leaderboard />} />
+                                    {/* Legacy per-board leaderboard URLs now redirect to the
+                                        single condensed page, carrying the intended board so it
+                                        opens on that selection. */}
                                     <Route
                                         path="/leaderboard/jp"
                                         element={
-                                            <Leaderboard gameVariant="jp" gameType={"RANKED"} />
+                                            <Navigate
+                                                to="/leaderboard?variant=jp&type=RANKED"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route
                                         path="/leaderboard/jp/casual"
                                         element={
-                                            <Leaderboard gameVariant="jp" gameType={"CASUAL"} />
+                                            <Navigate
+                                                to="/leaderboard?variant=jp&type=CASUAL"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route
                                         path="/leaderboard/hk"
                                         element={
-                                            <Leaderboard gameVariant="hk" gameType={"RANKED"} />
+                                            <Navigate
+                                                to="/leaderboard?variant=hk&type=RANKED"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route
                                         path="/leaderboard/hk/casual"
                                         element={
-                                            <Leaderboard gameVariant="hk" gameType={"CASUAL"} />
+                                            <Navigate
+                                                to="/leaderboard?variant=hk&type=CASUAL"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route path="/games/:variant/:id" element={<Game />} />

@@ -99,15 +99,6 @@ function getTransactionListRender(transactions: Transaction[]) {
 // Riichi declarations raise the conventional default fu from 30 to 40.
 const defaultFu = (riichiList: number[]) => (riichiList.length > 0 ? 40 : 30);
 
-// Round types with a single winner, where declaring riichi auto-selects that
-// player as the winner.
-const WINNER_AUTO_TYPES: JapaneseTransactionType[] = [
-    JapaneseTransactionType.DEAL_IN,
-    JapaneseTransactionType.SELF_DRAW,
-    JapaneseTransactionType.DEAL_IN_PAO,
-    JapaneseTransactionType.SELF_DRAW_PAO,
-];
-
 const showPointInput = (transactionType: JapaneseTransactionType) => {
     return ![
         JapaneseTransactionType.NAGASHI_MANGAN,
@@ -218,16 +209,6 @@ const LegacyJapaneseGame = ({
 
         if (!isAdding) {
             return;
-        }
-
-        // For deal-in / self-draw rounds, the player who just declared riichi is
-        // the most likely winner — auto-select them to save a tap. Routed through
-        // assignRoundAction so the winner/loser exclusivity rule still applies
-        // (e.g. they're cleared from loser if they were marked as one).
-        if (WINNER_AUTO_TYPES.includes(transactionType)) {
-            setRoundActions((prev) =>
-                assignRoundAction(prev, JapaneseLabel.WINNER, playerIndex, JP_EXCLUSIVE_LABELS),
-            );
         }
 
         // On a deck out, a riichi player is tenpai by definition.
