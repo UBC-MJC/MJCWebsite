@@ -3,7 +3,6 @@ import riichiStick from "@/assets/riichiStick.png";
 import { Box, Stack, Typography, Paper, Chip, alpha } from "@mui/material";
 import { keyframes } from "@mui/system";
 import { mapWindToCharacter } from "@/common/Utils";
-import { gradient } from "@/theme/tokens";
 import { computePlaces, placeColor, placeLabel } from "./placement";
 
 // Quick "pop" played when a player's card is tapped.
@@ -73,7 +72,6 @@ const PlayerScoreCard = ({
             onAnimationEnd={() => setAnimating(false)}
             role="button"
             tabIndex={0}
-            variant="outlined"
             aria-pressed={isSelected}
             aria-label={`${wind ? `${windName(wind)} wind, ` : ""}${username}, score ${score.toLocaleString()}`}
             sx={{
@@ -110,7 +108,7 @@ const PlayerScoreCard = ({
                         inset: 0,
                         borderRadius: "inherit",
                         padding: "2px",
-                        background: gradient.title,
+                        background: "var(--mui-palette-gradient-title)",
                         maskImage:
                             "linear-gradient(to bottom, #000 0%, transparent 100%), linear-gradient(#000 0 0), linear-gradient(#000 0 0)",
                         maskClip: "border-box, content-box, border-box",
@@ -154,9 +152,10 @@ const PlayerScoreCard = ({
                         fontSize: "0.65rem",
                         fontWeight: 800,
                         letterSpacing: "0.06em",
-                        // Dark text so it stays legible across the light→accent gradient.
-                        color: "common.black",
-                        background: gradient.title,
+                        // Ink that contrasts the title gradient's neutral end in
+                        // either scheme (dark on the light end, light on the dark end).
+                        color: "var(--mui-palette-background-default)",
+                        background: "var(--mui-palette-gradient-title)",
                         "& .MuiChip-label": { px: 1.5 },
                     }}
                 />
@@ -178,7 +177,7 @@ const PlayerScoreCard = ({
                         fontWeight: 750,
                         lineHeight: 1,
                         color: alpha(colors.border, 0.1),
-                        textShadow: `0 5px 5px ${alpha("#000000", 0.2)}}`,
+                        textShadow: `0 5px 5px ${alpha("#000000", 0.2)}`,
                     }}
                 >
                     {mapWindToCharacter(wind)}
@@ -330,8 +329,7 @@ export const Footer = ({ scores, riichiList, riichiStickCount, dealerIndex }: Fo
                 // (transparent at the top → solid toward the bottom), letting page
                 // content show behind the top of the footer for a smooth transition.
                 bgcolor: "transparent",
-                backgroundImage: (theme) =>
-                    `linear-gradient(to bottom, ${alpha(theme.palette.background.paper, 0)} 0%, ${alpha(theme.palette.background.paper, 0.6)} 55%, ${theme.palette.background.paper} 85%)`,
+                backgroundImage: "var(--mui-palette-gradient-footerFade)",
             }}
         >
             <Box
@@ -373,7 +371,7 @@ export const Footer = ({ scores, riichiList, riichiStickCount, dealerIndex }: Fo
                                     // Clip the white→accent gradient into the label text.
                                     "& .MuiChip-label": {
                                         px: 1.5,
-                                        background: gradient.title,
+                                        background: "var(--mui-palette-gradient-title)",
                                         backgroundClip: "text",
                                         WebkitBackgroundClip: "text",
                                         WebkitTextFillColor: "transparent",
@@ -386,7 +384,7 @@ export const Footer = ({ scores, riichiList, riichiStickCount, dealerIndex }: Fo
                                         inset: 0,
                                         borderRadius: "inherit",
                                         padding: "1.5px",
-                                        background: gradient.title,
+                                        background: "var(--mui-palette-gradient-title)",
                                         WebkitMask:
                                             "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
                                         WebkitMaskComposite: "xor",

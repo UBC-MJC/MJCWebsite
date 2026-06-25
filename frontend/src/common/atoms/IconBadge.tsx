@@ -1,5 +1,4 @@
 import { Box, type SxProps, type Theme } from "@mui/material";
-import { palette } from "@/theme/tokens";
 
 interface IconBadgeProps {
     children: React.ReactNode;
@@ -10,8 +9,7 @@ interface IconBadgeProps {
 }
 
 /**
- * Atom — a themed square container for a single icon.
- * Adapts background colour between light and dark modes automatically.
+ * Atom — a themed square container for a single icon (dark theme).
  */
 const IconBadge = ({ children, size = 36, sx }: IconBadgeProps) => (
     <Box
@@ -19,8 +17,7 @@ const IconBadge = ({ children, size = 36, sx }: IconBadgeProps) => (
             width: size,
             height: size,
             borderRadius: 2,
-            bgcolor: (t) =>
-                t.palette.mode === "dark" ? palette.icon.badgeDark : palette.icon.badgeLight,
+            bgcolor: "var(--mui-palette-accentTint-badgeDark)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import {
     Box,
     Table,
@@ -40,10 +39,10 @@ const ScoreDelta = ({ value }: { value: number }) => {
         <Typography
             component="span"
             sx={{
-                fontWeight: 700,
+                fontWeight: 800,
                 // Scale the figures down on narrow viewports so large deltas
                 // (e.g. +48,000) stay inside their column instead of spilling out.
-                fontSize: { xs: "0.8rem", sm: "1rem" },
+                fontSize: { xs: "0.75rem", sm: "1rem" },
                 fontVariantNumeric: "tabular-nums",
                 color,
             }}
@@ -75,6 +74,7 @@ const bodyCellSx = {
     // Clip any content that can't fit the fixed-width cell so nothing escapes
     // the table on narrow screens.
     overflow: "hidden",
+    textOverflow: "ellipsis",
 } as const;
 
 // The Round column is narrow; trim its horizontal padding so the round number
@@ -82,22 +82,6 @@ const bodyCellSx = {
 const roundCellPx = { xs: 0.5, sm: 0.75 } as const;
 
 function TableDisplay({ rows, players, dealerIndex }: RoundsTableProps) {
-    const latestRowRef = useRef<HTMLTableRowElement>(null);
-    const prevRowCount = useRef(rows.length);
-
-    // Bring the most recent round into view when a new round is added (not on
-    // initial mount or deletion), respecting reduced-motion preferences.
-    useEffect(() => {
-        if (rows.length > prevRowCount.current && latestRowRef.current) {
-            const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-            latestRowRef.current.scrollIntoView({
-                block: "nearest",
-                behavior: reduceMotion ? "auto" : "smooth",
-            });
-        }
-        prevRowCount.current = rows.length;
-    }, [rows.length]);
-
     return (
         <Box
             sx={{
@@ -204,13 +188,9 @@ function TableDisplay({ rows, players, dealerIndex }: RoundsTableProps) {
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            rows.map((row, idx) => {
-                                const isLatest = idx === rows.length - 1;
+                            rows.map((row) => {
                                 return (
-                                    <TableRow
-                                        key={row.id}
-                                        ref={isLatest ? latestRowRef : undefined}
-                                    >
+                                    <TableRow key={row.id}>
                                         <TableCell sx={{ ...bodyCellSx, px: roundCellPx }}>
                                             <Box
                                                 sx={{
@@ -225,65 +205,48 @@ function TableDisplay({ rows, players, dealerIndex }: RoundsTableProps) {
                                                     flexWrap: "nowrap",
                                                 }}
                                             >
+                                            <Box
+                                                component="span"
+                                                sx={{
+                                                    // Round text is the top priority: it never
+                                                    // shrinks or truncates, so it always stays
+                                                    // fully visible ahead of every other element.
+                                                    flexShrink: 0,
+                                                    fontSize: {
+                                                        xs: "0.8125rem",
+                                                        sm: "0.9375rem",
+                                                    },
+                                                    fontWeight: 600,
+                                                    lineHeight: 1.2,
+                                                    whiteSpace: "nowrap",
+                                                }}
+                                            >
+                                                {row.label}
+                                            </Box>
+                                            {row.secondary !== undefined && (
                                                 <Box
                                                     component="span"
                                                     sx={{
-                                                        flexShrink: 0,
-                                                        minWidth: 18,
-                                                        textAlign: "center",
-                                                        fontSize: "0.75rem",
-                                                        fontWeight: 700,
-                                                        color: "text.secondary",
-                                                        fontVariantNumeric: "tabular-nums",
-                                                    }}
-                                                >
-                                                    {idx + 1}
-                                                </Box>
-                                                <Box
-                                                    component="span"
-                                                    sx={{
-                                                        // Round itself stays prominent and on one
-                                                        // line; shrink the font on narrow viewports
-                                                        // and ellipsis before ever wrapping.
+                                                        // Bonus is secondary: smaller and more
+                                                        // muted than the round, and the first to
+                                                        // truncate when space runs out.
                                                         minWidth: 0,
-                                                        flexShrink: 1,
+                                                        flexShrink: 0,
                                                         fontSize: {
-                                                            xs: "0.8125rem",
-                                                            sm: "0.9375rem",
+                                                            xs: "0.625rem",
+                                                            sm: "0.75rem",
                                                         },
-                                                        fontWeight: 600,
+                                                        fontWeight: 500,
                                                         lineHeight: 1.2,
+                                                        color: "text.disabled",
                                                         whiteSpace: "nowrap",
                                                         overflow: "hidden",
                                                         textOverflow: "ellipsis",
                                                     }}
                                                 >
-                                                    {row.label}
+                                                    {row.secondary}
                                                 </Box>
-                                                {row.secondary !== undefined && (
-                                                    <Box
-                                                        component="span"
-                                                        sx={{
-                                                            // Bonus is secondary: smaller and more
-                                                            // muted than the round, and the first to
-                                                            // truncate when space runs out.
-                                                            minWidth: 0,
-                                                            flexShrink: 2,
-                                                            fontSize: {
-                                                                xs: "0.625rem",
-                                                                sm: "0.75rem",
-                                                            },
-                                                            fontWeight: 500,
-                                                            lineHeight: 1.2,
-                                                            color: "text.disabled",
-                                                            whiteSpace: "nowrap",
-                                                            overflow: "hidden",
-                                                            textOverflow: "ellipsis",
-                                                        }}
-                                                    >
-                                                        {row.secondary}
-                                                    </Box>
-                                                )}
+                                            )}
                                             </Box>
                                         </TableCell>
                                         {row.deltas.map((delta, i) => (

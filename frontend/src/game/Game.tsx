@@ -29,18 +29,11 @@ import {
     Chip,
     Tooltip,
 } from "@mui/material";
-import { keyframes } from "@mui/system";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import UndoIcon from "@mui/icons-material/Undo";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-
-// Gentle "breathing" pulse for the live indicator dot (matches LiveGames).
-const pulse = keyframes`
-    0%   { opacity: 1;    transform: scale(1);   }
-    50%  { opacity: 0.35; transform: scale(0.8); }
-    100% { opacity: 1;    transform: scale(1);   }
-`;
+import { pulse } from "@/theme/animations";
 
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -262,12 +255,15 @@ const Game = <T extends GameVariant>() => {
                                         bgcolor: "primary.main",
                                         flexShrink: 0,
                                         animation: `${pulse} 1.6s ease-in-out infinite`,
+                                        "@media (prefers-reduced-motion: reduce)": {
+                                            animation: "none",
+                                        },
                                     }}
                                 />
                             )}
                             <Typography
                                 variant="h1"
-                                sx={{ fontSize: { xs: "1.6rem", md: "2rem" }, fontWeight: 800 }}
+                                sx={{ fontSize: { xs: "1.25rem", md: "2rem" }, fontWeight: 800 }}
                             >
                                 {getGameVariantString(variant, game.type)}
                             </Typography>
@@ -281,28 +277,25 @@ const Game = <T extends GameVariant>() => {
                                         flexShrink: 0,
                                     }}
                                 >
-                                    <AccessTimeIcon sx={{ fontSize: "1.15rem" }} />
-                                    <Typography variant="body2" sx={{ whiteSpace: "nowrap", fontSize: "1rem" }}>
+                                    <AccessTimeIcon sx={{ fontSize: { xs: "0.875rem", md: "1.15rem" }}} />
+                                    <Typography variant="body2" sx={{ whiteSpace: "nowrap", fontSize: { xs: "0.875rem", md: "1.15rem" }}}>
                                         {formatDate(game.createdAt)}
                                     </Typography>
                                 </Box>
                             </Tooltip>
                         </Box>
-                        {game.status === "IN_PROGRESS" ? (
+                        <Stack direction="row" justifyContent="right" spacing={1}>
                             <Chip
-                                label={gameRoundString(game, variant)}
-                                color="primary"
+                                label={
+                                    game.status === "IN_PROGRESS"
+                                        ? gameRoundString(game, variant)
+                                        : "Finished"
+                                }
+                                color={game.status === "IN_PROGRESS" ? "primary" : "success"}
                                 variant="outlined"
-                                sx={{ height: 40, fontSize: "0.95rem", fontWeight: 600 }}
+                                sx={{ height: 40, fontSize: "0.95rem", fontWeight: 600, flexShrink: 0 }}
                             />
-                        ) : (
-                            <Chip
-                                label="Finished"
-                                color="success"
-                                variant="outlined"
-                                sx={{ height: 40, fontSize: "0.95rem", fontWeight: 600 }}
-                            />
-                        )}
+                        </Stack>
                     </Box>
                 </Card>
 
@@ -341,7 +334,7 @@ const Game = <T extends GameVariant>() => {
                                         variant="outlined"
                                         color="error"
                                         startIcon={<UndoIcon />}
-                                        disabled={game.rounds.length == 0}
+                                        disabled={game.rounds.length === 0}
                                         fullWidth
                                         onClick={() => handleDeleteRound()}
                                     >

@@ -111,15 +111,16 @@ const ContactPill = ({ item }: { item: ContactItem }) => {
                 borderRadius: 2,
                 border: "1px solid",
                 borderColor: "divider",
-                bgcolor: (t) =>
-                    t.palette.mode === "dark" ? "rgba(255,255,255,0.04)" : "grey.50",
+                bgcolor: "var(--mui-palette-overlayN-header)",
                 color: "text.primary",
                 textDecoration: "none",
                 transition: "border-color 0.16s ease, background 0.16s ease, transform 0.16s ease",
-                "&:hover": {
-                    borderColor: "primary.main",
-                    bgcolor: (t) => alpha(t.palette.primary.main, 0.1),
-                    transform: "translateY(-1px)",
+                "@media (hover: hover)": {
+                    "&:hover": {
+                        borderColor: "primary.main",
+                        bgcolor: (t) => alpha(t.palette.primary.main, 0.1),
+                        transform: "translateY(-1px)",
+                    },
                 },
             }}
         >
@@ -158,18 +159,19 @@ const LinkCard = ({ item }: { item: LinkItem }) => (
             textDecoration: "none",
             color: "text.primary",
             transition: "border-color 0.16s ease, background 0.16s ease, transform 0.16s ease",
-            "&:hover": {
-                borderColor: "primary.main",
-                bgcolor: "action.hover",
-                transform: "translateY(-2px)",
-                "& .link-arrow": { opacity: 1, transform: "translateX(3px)" },
+            "@media (hover: hover)": {
+                "&:hover": {
+                    borderColor: "primary.main",
+                    bgcolor: "action.hover",
+                    transform: "translateY(-2px)",
+                    "& .link-arrow": { opacity: 1, transform: "translateX(3px)" },
+                },
             },
         }}
     >
         <IconBadge
             sx={{
-                bgcolor: (t) =>
-                    t.palette.mode === "dark" ? "rgba(255,255,255,0.06)" : "grey.100",
+                bgcolor: "var(--mui-palette-overlayN-hover)",
                 color: "primary.main",
             }}
         >
@@ -217,7 +219,7 @@ const Home = () => (
             sx={{
                 position: "relative",
                 overflow: "hidden",
-                background: "linear-gradient(135deg, #1A1416 0%, #161617 45%, #0B0B0C 100%)",
+                background: "var(--mui-palette-gradient-hero)",
                 borderBottom: "1px solid",
                 borderColor: (t) => alpha(t.palette.primary.main, 0.18),
                 // Guarantee enough vertical room for the portrait artwork on wide
@@ -264,8 +266,7 @@ const Home = () => (
                 sx={{
                     position: "absolute",
                     inset: 0,
-                    background:
-                        "linear-gradient(90deg, rgba(16,16,17,0.97) 0%, rgba(18,18,19,0.88) 40%, rgba(22,22,23,0.45) 70%, rgba(22,22,23,0) 95%)",
+                    background: "var(--mui-palette-gradient-heroScrim)",
                     pointerEvents: "none",
                 }}
             />

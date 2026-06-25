@@ -47,7 +47,7 @@ const Login = () => {
     return (
         <Container
             maxWidth="xs"
-            sx={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", py: 4 }}
+            sx={{ minHeight: "100dvh", display: "flex", flexDirection: "column", justifyContent: "center", py: 4 }}
         >
             <Stack spacing={3}>
                 {/* Brand */}

@@ -13,7 +13,6 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import GavelIcon from "@mui/icons-material/Gavel";
 import IconBadge from "@/common/atoms/IconBadge";
-import { shadow } from "@/theme/tokens";
 
 interface ResourceLink {
     label: string;
@@ -136,12 +135,14 @@ const ResourceSection = ({ title, icon, groups }: { title: string; icon: React.R
                                         fontSize: "0.8rem",
                                         fontWeight: 500,
                                         transition: "all 0.14s",
-                                        "&:hover": {
-                                            bgcolor: "primary.main",
-                                            color: "white",
-                                            borderColor: "primary.main",
-                                            transform: "translateY(-1px)",
-                                            boxShadow: shadow.button,
+                                        "@media (hover: hover)": {
+                                            "&:hover": {
+                                                bgcolor: "primary.main",
+                                                color: "white",
+                                                borderColor: "primary.main",
+                                                transform: "translateY(-1px)",
+                                                boxShadow: "var(--mui-palette-appShadow-button)",
+                                            },
                                         },
                                     }}
                                 >

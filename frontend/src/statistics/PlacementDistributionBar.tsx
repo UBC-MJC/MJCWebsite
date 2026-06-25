@@ -1,21 +1,13 @@
 import { memo } from "react";
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
-import { placement as placementColors } from "@/theme/tokens";
+import { placement as placementColors, onAccent, timing } from "@/theme/tokens";
+import { ORDINALS, PLACEMENTS } from "./placementConstants";
 
 interface PlacementDistributionBarProps {
     /** Count of games finished in each position. */
     counts: Record<1 | 2 | 3 | 4, number>;
     total: number;
 }
-
-const ORDINALS: Record<1 | 2 | 3 | 4, string> = {
-    1: "1st",
-    2: "2nd",
-    3: "3rd",
-    4: "4th",
-};
-
-const PLACEMENTS: (1 | 2 | 3 | 4)[] = [1, 2, 3, 4];
 
 /**
  * Horizontal stacked bar visualising how a player's finishes are distributed
@@ -57,10 +49,10 @@ const PlacementDistributionBar = memo(({ counts, total }: PlacementDistributionB
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        color: "rgba(0,0,0,0.75)",
+                                        color: onAccent.muted,
                                         fontSize: "0.7rem",
                                         fontWeight: 700,
-                                        transition: "width 0.3s cubic-bezier(0.4,0,0.2,1)",
+                                        transition: `width 0.3s ${timing.ease}`,
                                         minWidth: 0,
                                         whiteSpace: "nowrap",
                                     }}

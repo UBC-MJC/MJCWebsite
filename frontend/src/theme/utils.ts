@@ -1,6 +1,6 @@
-import { SxProps, Theme, styled, alpha } from "@mui/material/styles";
+import { SxProps, Theme, styled } from "@mui/material/styles";
 import ToggleButtonGroup, { toggleButtonGroupClasses } from "@mui/material/ToggleButtonGroup";
-import { palette, shadow, timing, gradient } from "@/theme/tokens";
+import { timing } from "@/theme/tokens";
 
 export const responsiveDataGridContainer: SxProps<Theme> = {
     // dvh accounts for the mobile URL bar / browser chrome so the grid isn't
@@ -22,7 +22,7 @@ export const gradientTitle: SxProps<Theme> = {
     lineHeight: 1.15,
     pb: "0.08em",
     letterSpacing: "-0.02em",
-    background: gradient.title,
+    background: "var(--mui-palette-gradient-title)",
     backgroundClip: "text",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
@@ -39,14 +39,14 @@ export const responsiveCardHover: SxProps<Theme> = {
         left: 0,
         right: 0,
         height: "2px",
-        background: `linear-gradient(90deg, ${palette.icon.badgeLight}, ${alpha(palette.icon.badgeLight, 0)})`,
+        background: `linear-gradient(90deg, var(--mui-palette-primary-light), transparent)`,
         transform: "scaleX(0)",
         transformOrigin: "left",
         transition: `transform 0.25s ${timing.ease}`,
     },
     "&:hover": {
         transform: { xs: "none", sm: "translateY(-3px)" },
-        boxShadow: { xs: "none", sm: shadow.card },
+        boxShadow: { xs: "none", sm: "var(--mui-palette-appShadow-card)" },
         borderColor: "primary.light",
         "&::after": { transform: "scaleX(1)" },
     },
@@ -70,7 +70,7 @@ export const navButton: SxProps<Theme> = {
     color: "inherit",
     transition: "background 0.12s, color 0.12s",
     "&:hover": {
-        background: "rgba(255,255,255,0.15)",
+        background: "var(--mui-palette-glass-fillSubtle)",
         transform: "none",
     },
 };

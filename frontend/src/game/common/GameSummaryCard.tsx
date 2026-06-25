@@ -8,14 +8,13 @@ import {
     Typography,
     Tooltip,
 } from "@mui/material";
-import { keyframes } from "@mui/system";
 import { Link } from "react-router-dom";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import GameSummaryBody from "./GameSummaryBody";
 import { getGameVariantString } from "@/common/Utils";
 import type { GameVariant, Game } from "@/types";
 import { responsiveCardHover } from "@/theme/utils";
-import { overlay, shadow } from "@/theme/tokens";
+import { pulse } from "@/theme/animations";
 
 // Shared responsive grid for laying out GameSummaryCards. Snaps to two (or
 // more) columns when the container is wide enough for another ≥360px card,
@@ -28,13 +27,6 @@ export const gameSummaryGrid = {
     // screens, two equal columns once there's room.
     gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
 } as const;
-
-// Gentle "breathing" pulse for the live indicator dot.
-const pulse = keyframes`
-    0%   { opacity: 1;   transform: scale(1);    }
-    50%  { opacity: 0.35; transform: scale(0.8); }
-    100% { opacity: 1;   transform: scale(1);    }
-`;
 
 // Shared header text sizing — identical across both variants. Text scales
 // with the card's own width (cqi units) and truncates as a last resort, so
@@ -90,7 +82,7 @@ const GameSummaryCard = <T extends GameVariant>({
                 // but remove the upward lift (translateY).
                 "&:hover": {
                     transform: "none",
-                    boxShadow: { xs: "none", sm: shadow.card },
+                    boxShadow: { xs: "none", sm: "var(--mui-palette-appShadow-card)" },
                     borderColor: "primary.light",
                     "&::after": { transform: "scaleX(1)" },
                 },
@@ -134,6 +126,9 @@ const GameSummaryCard = <T extends GameVariant>({
                                             bgcolor: "primary.main",
                                             flexShrink: 0,
                                             animation: `${pulse} 1.6s ease-in-out infinite`,
+                                            "@media (prefers-reduced-motion: reduce)": {
+                                                animation: "none",
+                                            },
                                         }}
                                     />
                                 )}
@@ -181,7 +176,7 @@ const GameSummaryCard = <T extends GameVariant>({
                                     letterSpacing: "0.04em",
                                     ...(s.chipTabularNums && { fontVariantNumeric: "tabular-nums" }),
                                     border: "none",
-                                    bgcolor: overlay.primary.row,
+                                    bgcolor: "var(--mui-palette-accentTint-row)",
                                     color: "primary.light",
                                     "& .MuiChip-label": { px: { xs: 1, sm: 1.75 } },
                                 }}

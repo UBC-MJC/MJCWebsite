@@ -12,8 +12,9 @@ import {
     useTheme,
 } from "@mui/material";
 import { LineChart } from "@mui/x-charts/LineChart";
-import { palette, placement as placementColors } from "@/theme/tokens";
+import { placement as placementColors } from "@/theme/tokens";
 import PlacementDistributionBar from "./PlacementDistributionBar";
+import { ORDINALS, PLACEMENTS } from "./placementConstants";
 
 interface PlacementHistoryEntry {
     gameId: number;
@@ -26,9 +27,6 @@ interface PlacementHistoryEntry {
 interface PlacementHistoryGraphProps {
     data: PlacementHistoryEntry[];
 }
-
-const ORDINALS: Record<1 | 2 | 3 | 4, string> = { 1: "1st", 2: "2nd", 3: "3rd", 4: "4th" };
-const PLACEMENTS: (1 | 2 | 3 | 4)[] = [1, 2, 3, 4];
 
 // Default (and maximum) number of recent games shown. The slider lets the user
 // dial down from here; capped at 30 to keep backend query load light.
@@ -137,10 +135,11 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
                         py: 0.75,
                         fontWeight: 800,
                         fontSize: "1.1rem",
-                        color: "rgba(0,0,0,0.85)",
+                        // Ink that contrasts the title gradient's neutral end in either scheme.
+                        color: "var(--mui-palette-background-default)",
                         border: "none",
-                        // Matches the slider track's white → pastel-red gradient.
-                        background: `linear-gradient(90deg, #FFFFFF, ${palette.primary.light})`,
+                        // Matches the slider track's neutral → pastel-red gradient.
+                        background: "var(--mui-palette-gradient-title)",
                         "& .MuiChip-label": { fontWeight: 800, fontSize: "1.1rem" },
                     }}
                 />
@@ -162,12 +161,12 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
                             height: 10,
                             borderRadius: 5,
                             border: "none",
-                            background: `linear-gradient(90deg, #FFFFFF, ${palette.primary.light})`,
+                            background: "var(--mui-palette-gradient-title)",
                         },
                         "& .MuiSlider-thumb": {
                             width: 22,
                             height: 22,
-                            backgroundColor: palette.primary.light,
+                            backgroundColor: "var(--mui-palette-primary-light)",
                         },
                     }}
                 />
@@ -232,7 +231,7 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
                 <Box sx={{ minWidth: chartWidth }}>
                     <LineChart
                         dataset={chartData}
-                        colors={[palette.primary.main]}
+                        colors={[theme.palette.primary.main]}
                         xAxis={[{ dataKey: "game", label: "Game (oldest → most recent)", tickMinStep: 1 }]}
                         yAxis={[
                             {
@@ -250,7 +249,7 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
                             mark: (props) => {
                                 const { x, y, dataIndex } = props;
                                 const place = chartData[dataIndex]?.placement as 1 | 2 | 3 | 4;
-                                const color = placementColors[place] ?? palette.primary.main;
+                                const color = placementColors[place] ?? theme.palette.primary.main;
                                 return (
                                     <circle
                                         cx={x}

@@ -22,7 +22,6 @@ import {
     alpha,
     type MenuProps,
 } from "@mui/material";
-import { keyframes } from "@mui/system";
 import type { SxProps, Theme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
@@ -40,8 +39,10 @@ import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
 import { AuthContext } from "@/common/AuthContext";
 import { Link, useLocation } from "react-router-dom";
-import { palette, shadow, timing } from "@/theme/tokens";
+import { keyframes } from "@mui/system";
+import { palette, timing } from "@/theme/tokens";
 import { gradientTitle } from "@/theme/utils";
+import { pulse } from "@/theme/animations";
 
 // ─── Animations ────────────────────────────────────────────────────────────
 
@@ -51,14 +52,7 @@ const openDown = keyframes`
     to   { opacity: 1; clip-path: inset(0 0 0% 0);   }
 `;
 
-// Gentle "breathing" pulse for the live dot (matches LiveGames).
-const pulse = keyframes`
-    0%   { opacity: 1;    transform: scale(1);   }
-    50%  { opacity: 0.35; transform: scale(0.8); }
-    100% { opacity: 1;    transform: scale(1);   }
-`;
-
-const EASE = `cubic-bezier(0.4, 0, 0.2, 1)`;
+const EASE = timing.ease;
 
 /**
  * Hover nudge shared by every nav button — a small rightward slide that
@@ -71,6 +65,28 @@ const HOVER_TRANSFORM = "translateX(4px)";
 const interactiveSx: SxProps<Theme> = {
     transformOrigin: "left center",
     transition: `all ${timing.normal} ${EASE}`,
+};
+
+/**
+ * Frosted top-bar control shared by the Record button and the user-menu
+ * button — a translucent bordered pill. The matching hover effect lives in
+ * `frostedButtonHover` so callers can extend it (e.g. the Record dot).
+ */
+const frostedButtonBase: SxProps<Theme> = {
+    ...interactiveSx,
+    px: 1.75,
+    py: 0.9,
+    fontSize: "0.95rem",
+    fontWeight: 600,
+    borderRadius: 2,
+    border: `1px solid var(--mui-palette-glass-border)`,
+};
+
+/** Shared hover for frosted controls — fills and nudges right. */
+const frostedButtonHover = {
+    background: "var(--mui-palette-glass-fill)",
+    transform: HOVER_TRANSFORM,
+    borderColor: "var(--mui-palette-glass-borderHover)",
 };
 
 // ─── Shared styles ───────────────────────────────────────────────────────────
@@ -96,17 +112,19 @@ const navBtnSx = (active: boolean): SxProps<Theme> => ({
         bottom: 6,
         height: "2px",
         borderRadius: "2px",
-        // theme badgeLight blue, slightly opaque
-        backgroundColor: palette.icon.badgeLight,
+        // Scheme-aware accent (pastel red in dark, deeper rose in light).
+        backgroundColor: "var(--mui-palette-primary-light)",
         opacity: 0.85,
         transform: active ? "scaleX(1)" : "scaleX(0)",
         transformOrigin: "left center",
         transition: `transform 0.25s ${EASE}`,
     },
-    "&:hover": {
-        background: "rgba(255,255,255,0.14)",
-        transform: HOVER_TRANSFORM,
-        "&::after": { transform: "scaleX(1)" },
+    "@media (hover: hover)": {
+        "&:hover": {
+            background: "var(--mui-palette-glass-fillSubtle)",
+            transform: HOVER_TRANSFORM,
+            "&::after": { transform: "scaleX(1)" },
+        },
     },
 });
 
@@ -124,7 +142,7 @@ const menuTransition = (
                 mt: 1,
                 overflow: "hidden",
                 transformOrigin: "top center",
-                boxShadow: shadow.nav,
+                boxShadow: "var(--mui-palette-appShadow-nav)",
                 animation: `${openDown} 0.26s ${EASE}`,
                 "& .MuiMenuItem-root": {
                     transition: `background ${timing.fast}, padding-left 0.18s ${EASE}`,
@@ -150,20 +168,22 @@ const LogoIcon = () => (
             width: 38,
             height: 38,
             borderRadius: 2,
-            background: "rgba(255,255,255,0.18)",
+            background: "var(--mui-palette-glass-fill)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             mr: 1.25,
             flexShrink: 0,
             transition: `transform 0.3s ${EASE}, background 0.3s ${EASE}`,
-            "&:hover": {
-                transform: "rotate(-8deg) scale(1.08)",
-                background: "rgba(255,255,255,0.28)",
+            "@media (hover: hover)": {
+                "&:hover": {
+                    transform: "rotate(-8deg) scale(1.08)",
+                    background: "var(--mui-palette-glass-iconHover)",
+                },
             },
         }}
     >
-        <HomeFilledIcon sx={{ color: "white", fontSize: "1.4rem" }} aria-hidden="true" />
+        <HomeFilledIcon sx={{ color: "text.primary", fontSize: "1.4rem" }} aria-hidden="true" />
     </Box>
 );
 
@@ -474,14 +494,15 @@ const NavBar = () => {
             sx={{
                 zIndex: (t) => t.zIndex.drawer + 1,
                 transition: `box-shadow 0.3s ${EASE}, background-color 0.3s ${EASE}`,
-                // Translucent black bar with white text.
-                bgcolor: "rgba(0,0,0,0.65)",
-                color: "#ffffff",
+                // Translucent frosted bar; text adapts to the scheme so it stays
+                // legible on the dark (near-black) and light (near-white) bars alike.
+                bgcolor: "var(--mui-palette-glass-bar)",
+                color: "text.primary",
                 borderBottom: (t) => `1px solid ${alpha(t.palette.primary.main, 0.25)}`,
                 backdropFilter: "blur(10px)",
                 WebkitBackdropFilter: "blur(10px)",
                 "@supports not ((backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)))": {
-                    bgcolor: "#0B0B0C",
+                    bgcolor: "var(--mui-palette-background-default)",
                 },
             }}
         >
@@ -495,7 +516,9 @@ const NavBar = () => {
                         sx={{
                             mr: 1.5,
                             transition: `transform 0.25s ${EASE}`,
-                            "&:hover": { transform: "scale(1.15) rotate(6deg)" },
+                            "@media (hover: hover)": {
+                                "&:hover": { transform: "scale(1.15) rotate(6deg)" },
+                            },
                         }}
                     >
                         <MenuIcon />
@@ -522,9 +545,11 @@ const NavBar = () => {
                             fontSize: { xs: "1.15rem", md: "1.35rem" },
                             transition: `transform 0.25s ${EASE}, letter-spacing 0.25s ${EASE}`,
                             transformOrigin: "left center",
-                            "&:hover": {
-                                transform: "translateX(2px) scale(1.04)",
-                                letterSpacing: "0.01em",
+                            "@media (hover: hover)": {
+                                "&:hover": {
+                                    transform: "translateX(2px) scale(1.04)",
+                                    letterSpacing: "0.01em",
+                                },
                             },
                         }}
                     >
@@ -590,19 +615,16 @@ const NavBar = () => {
                                         />
                                     }
                                     sx={{
-                                        ...interactiveSx,
-                                        px: 1.75,
-                                        py: 0.9,
-                                        fontSize: "0.95rem",
-                                        fontWeight: 600,
-                                        borderRadius: 2,
-                                        border: "1px solid rgba(255,255,255,0.3)",
-                                        "&:hover": {
-                                            background: "rgba(255,255,255,0.18)",
-                                            transform: HOVER_TRANSFORM,
-                                            borderColor: "rgba(255,255,255,0.5)",
-                                            "& .rec-dot": {
-                                                animation: `${pulse} 1.6s ease-in-out infinite`,
+                                        ...frostedButtonBase,
+                                        "@media (hover: hover)": {
+                                            "&:hover": {
+                                                ...frostedButtonHover,
+                                                "& .rec-dot": {
+                                                    animation: `${pulse} 1.6s ease-in-out infinite`,
+                                                    "@media (prefers-reduced-motion: reduce)": {
+                                                        animation: "none",
+                                                    },
+                                                },
                                             },
                                         },
                                     }}
@@ -615,7 +637,7 @@ const NavBar = () => {
                                     variant="rectangular"
                                     width={100}
                                     height={38}
-                                    sx={{ borderRadius: 2, bgcolor: "rgba(255,255,255,0.12)" }}
+                                    sx={{ borderRadius: 2, bgcolor: "var(--mui-palette-glass-skeleton)" }}
                                 />
                             ) : player ? (
                                 <>
@@ -624,17 +646,9 @@ const NavBar = () => {
                                         onClick={(e) => setUserAnchor(e.currentTarget)}
                                         endIcon={<KeyboardArrowDownIcon sx={chevronSx(Boolean(userAnchor))} />}
                                         sx={{
-                                            ...interactiveSx,
-                                            px: 1.75,
-                                            py: 0.9,
-                                            fontSize: "0.95rem",
-                                            fontWeight: 600,
-                                            borderRadius: 2,
-                                            border: "1px solid rgba(255,255,255,0.3)",
-                                            "&:hover": {
-                                                background: "rgba(255,255,255,0.18)",
-                                                transform: HOVER_TRANSFORM,
-                                                borderColor: "rgba(255,255,255,0.5)",
+                                            ...frostedButtonBase,
+                                            "@media (hover: hover)": {
+                                                "&:hover": frostedButtonHover,
                                             },
                                         }}
                                     >
@@ -664,18 +678,20 @@ const NavBar = () => {
                                     to="/login"
                                     sx={{
                                         ...interactiveSx,
-                                        bgcolor: "rgba(255,255,255,0.2)",
-                                        color: "white",
+                                        bgcolor: "var(--mui-palette-glass-cta)",
+                                        color: "text.primary",
                                         fontWeight: 700,
                                         px: 2.5,
                                         py: 1,
                                         borderRadius: 2,
-                                        border: "1px solid rgba(255,255,255,0.3)",
+                                        border: `1px solid var(--mui-palette-glass-border)`,
                                         backdropFilter: "blur(4px)",
-                                        "&:hover": {
-                                            bgcolor: "rgba(255,255,255,0.32)",
-                                            transform: HOVER_TRANSFORM,
-                                            boxShadow: "none",
+                                        "@media (hover: hover)": {
+                                            "&:hover": {
+                                                bgcolor: "var(--mui-palette-glass-fillStrong)",
+                                                transform: HOVER_TRANSFORM,
+                                                boxShadow: "none",
+                                            },
                                         },
                                     }}
                                 >

@@ -13,8 +13,16 @@ import {
     DialogContent,
     DialogActions,
     TextField,
+    ToggleButton,
     Typography,
+    useColorScheme,
 } from "@mui/material";
+import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
+import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
+import SettingsBrightnessRoundedIcon from "@mui/icons-material/SettingsBrightnessRounded";
+import { SpacedToggleButtonGroup } from "@/theme/utils";
+import { useAccent } from "@/theme/AccentContext";
+import { accents, type AccentKey } from "@/theme/tokens";
 
 const Settings = () => {
     const { player, loading, reloadPlayer } = useContext(AuthContext);
@@ -47,6 +55,8 @@ const Settings = () => {
             <Typography variant="h2" gutterBottom>
                 Settings
             </Typography>
+            <AppearanceSetting />
+            <AccentSetting />
             <Box sx={{ pt: 2, display: "flex", justifyContent: "center" }}>
                 <Button
                     onClick={() => setShowUpdateUsernameModal(true)}
@@ -62,6 +72,109 @@ const Settings = () => {
                 handleSubmit={updateUsername}
             />
         </Container>
+    );
+};
+
+/**
+ * Color-scheme picker. Persists the literal choice (including "system") via
+ * MUI's useColorScheme — "system" follows the OS preference live and survives
+ * reloads, rather than being flattened to whatever it currently resolves to.
+ */
+const AppearanceSetting = () => {
+    const { mode, setMode } = useColorScheme();
+
+    // `mode` is briefly undefined before MUI reads the stored value; fall back to
+    // the configured default ("system") so the control always shows a selection.
+    const value = mode ?? "system";
+
+    return (
+        <Box sx={{ pt: 3 }}>
+            <Typography variant="h6" gutterBottom>
+                Appearance
+            </Typography>
+            <SpacedToggleButtonGroup
+                exclusive
+                value={value}
+                onChange={(_e, next) => {
+                    // Exclusive groups emit null when the active button is re-clicked;
+                    // ignore that so a mode always stays selected.
+                    if (next !== null) {
+                        setMode(next as "light" | "dark" | "system");
+                    }
+                }}
+                aria-label="Color theme"
+                size="small"
+            >
+                <ToggleButton value="light" aria-label="Light mode">
+                    <LightModeRoundedIcon fontSize="small" sx={{ mr: 1 }} />
+                    Light
+                </ToggleButton>
+                <ToggleButton value="dark" aria-label="Dark mode">
+                    <DarkModeRoundedIcon fontSize="small" sx={{ mr: 1 }} />
+                    Dark
+                </ToggleButton>
+                <ToggleButton value="system" aria-label="System mode">
+                    <SettingsBrightnessRoundedIcon fontSize="small" sx={{ mr: 1 }} />
+                    System
+                </ToggleButton>
+            </SpacedToggleButtonGroup>
+        </Box>
+    );
+};
+
+const ACCENT_OPTIONS: { value: AccentKey; label: string; swatch: string }[] = [
+    { value: "red", label: "中 - Red", swatch: accents.red.pastel.main },
+    { value: "blue", label: "白 - Blue", swatch: accents.blue.pastel.main },
+    { value: "green", label: "發 - Green", swatch: accents.green.pastel.main },
+];
+
+/**
+ * Accent-color picker. Independent of the color scheme above — it rebuilds the
+ * theme from the chosen accent variant and persists the choice (default "red").
+ */
+const AccentSetting = () => {
+    const { accent, setAccent } = useAccent();
+
+    return (
+        <Box sx={{ pt: 3 }}>
+            <Typography variant="h6" gutterBottom>
+                Accent
+            </Typography>
+            <SpacedToggleButtonGroup
+                exclusive
+                value={accent}
+                onChange={(_e, next) => {
+                    // Keep a selection when the active button is re-clicked.
+                    if (next !== null) {
+                        setAccent(next as AccentKey);
+                    }
+                }}
+                aria-label="Accent color"
+                size="small"
+            >
+                {ACCENT_OPTIONS.map((option) => (
+                    <ToggleButton
+                        key={option.value}
+                        value={option.value}
+                        aria-label={`${option.label} accent`}
+                    >
+                        <Box
+                            component="span"
+                            sx={{
+                                width: 14,
+                                height: 14,
+                                borderRadius: "50%",
+                                bgcolor: option.swatch,
+                                border: "1px solid",
+                                borderColor: "divider",
+                                mr: 1,
+                            }}
+                        />
+                        {option.label}
+                    </ToggleButton>
+                ))}
+            </SpacedToggleButtonGroup>
+        </Box>
     );
 };
 

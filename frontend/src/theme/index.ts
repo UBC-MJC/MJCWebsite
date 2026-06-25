@@ -1,29 +1,92 @@
-import { createTheme, Theme, ThemeOptions } from "@mui/material/styles";
+import { createTheme, Theme, ThemeOptions, PaletteOptions } from "@mui/material/styles";
 import { enUS } from "@mui/x-date-pickers/locales";
-import { palette as t, overlay, shadow, surface, timing } from "@/theme/tokens";
+import {
+    AccentKey,
+    AccentTokens,
+    buildAccentTokens,
+    buildSchemeTokens,
+    SchemeTokens,
+    timing,
+} from "@/theme/tokens";
 
-export const createAppTheme = (): Theme => {
+/**
+ * Accent tint tokens exposed as CSS variables so components that aren't covered
+ * by the MUI `primary` palette (faint badge/row tints) still follow a runtime
+ * accent switch via `var(--mui-palette-accentTint-*)`.
+ */
+interface AccentTint {
+    row: string;
+    focus: string;
+    glow: string;
+    card: string;
+    badgeLight: string;
+    badgeDark: string;
+}
+
+/**
+ * Custom, scheme-aware palette tokens. Registering them under each scheme's
+ * `palette` lets MUI emit `--mui-palette-*` CSS variables that flip between
+ * light and dark automatically. Components read them via `theme.vars.palette.*`
+ * (callbacks/styled) or `var(--mui-palette-*)` (static sx objects).
+ */
+declare module "@mui/material/styles" {
+    interface Palette {
+        glass: SchemeTokens["glass"];
+        gradient: SchemeTokens["gradient"] & { primary: string };
+        overlayN: SchemeTokens["overlay"];
+        appShadow: SchemeTokens["shadow"];
+        accentTint: AccentTint;
+    }
+    interface PaletteOptions {
+        glass?: SchemeTokens["glass"];
+        gradient?: SchemeTokens["gradient"] & { primary: string };
+        overlayN?: SchemeTokens["overlay"];
+        appShadow?: SchemeTokens["shadow"];
+        accentTint?: AccentTint;
+    }
+}
+
+const schemePalette = (
+    scheme: "light" | "dark",
+    schemes: { light: SchemeTokens; dark: SchemeTokens },
+    accentTokens: AccentTokens,
+): PaletteOptions => {
+    const s = schemes[scheme];
+    return {
+        mode: scheme,
+        // Accent is toned per scheme (pastel in dark, deeper ramp in light)
+        // so it stays readable on each background; see schemeTokens[*].accent.
+        primary: { ...s.accent },
+        // Info reuses the accent so info alerts/icons match the theme.
+        info: { ...s.accent },
+        background: {
+            default: s.surface.background,
+            paper:   s.surface.paper,
+        },
+        divider: s.overlay.border,
+        glass: s.glass,
+        gradient: { primary: accentTokens.gradientAccent.primary, ...s.gradient },
+        overlayN: s.overlay,
+        appShadow: s.shadow,
+        accentTint: {
+            ...accentTokens.overlayAccent,
+            badgeLight: accentTokens.icon.badgeLight,
+            badgeDark:  accentTokens.icon.badgeDark,
+        },
+    };
+};
+
+export const createAppTheme = (accent: AccentKey): Theme => {
+    const schemes = buildSchemeTokens(accent);
+    const accentTokens = buildAccentTokens(accent);
+    const { overlayAccent } = accentTokens;
     const baseThemeOptions: ThemeOptions = {
-        palette: {
-            mode: "dark",
-            primary: {
-                main:  t.primary.main,
-                light: t.primary.light,
-                dark:  t.primary.dark,
-                contrastText: "#0B0B0C",
-            },
-            // Info reuses the accent so info alerts/icons match the theme (no blue).
-            info: {
-                main:  t.primary.main,
-                light: t.primary.light,
-                dark:  t.primary.dark,
-                contrastText: "#0B0B0C",
-            },
-            background: {
-                default: surface.background,
-                paper:   surface.paper,
-            },
-            divider: overlay.dark.border,
+        // CSS variables let both schemes coexist; the manual toggle flips the
+        // `data-mui-color-scheme` attribute on <html> with no re-render flash.
+        cssVariables: { colorSchemeSelector: "data" },
+        colorSchemes: {
+            light: { palette: schemePalette("light", schemes, accentTokens) },
+            dark:  { palette: schemePalette("dark", schemes, accentTokens) },
         },
         typography: {
             fontFamily: '"Manrope", "system-ui", -apple-system, sans-serif',
@@ -56,10 +119,10 @@ export const createAppTheme = (): Theme => {
                         },
                         "&:active": { transform: "translateY(0)" },
                     },
-                    contained: {
+                    contained: ({ theme }) => ({
                         boxShadow: "none",
-                        "&:hover": { boxShadow: shadow.button },
-                    },
+                        "&:hover": { boxShadow: theme.vars.palette.appShadow.button },
+                    }),
                     sizeSmall: { minHeight: 40, padding: "5px 12px", fontSize: "0.8rem" },
                     sizeLarge: { minHeight: 46, padding: "12px 24px" },
                 },
@@ -69,10 +132,10 @@ export const createAppTheme = (): Theme => {
                     root: ({ theme }) => ({
                         borderRadius: 12,
                         border: "1px solid",
-                        borderColor: theme.palette.divider,
+                        borderColor: theme.vars.palette.divider,
                         boxShadow: "none",
                         transition: `border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease`,
-                        "&:hover": { borderColor: theme.palette.primary.light },
+                        "&:hover": { borderColor: theme.vars.palette.primary.light },
                     }),
                 },
             },
@@ -87,8 +150,8 @@ export const createAppTheme = (): Theme => {
             MuiPaper: {
                 styleOverrides: {
                     root:       { backgroundImage: "none" },
-                    elevation1: { boxShadow: shadow.sm },
-                    elevation3: { boxShadow: shadow.md },
+                    elevation1: ({ theme }) => ({ boxShadow: theme.vars.palette.appShadow.sm }),
+                    elevation3: ({ theme }) => ({ boxShadow: theme.vars.palette.appShadow.md }),
                 },
             },
             MuiTextField: {
@@ -98,8 +161,8 @@ export const createAppTheme = (): Theme => {
                         "& .MuiOutlinedInput-root": {
                             borderRadius: 8,
                             transition: `box-shadow ${timing.fast} ease`,
-                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: t.primary.light },
-                            "&.Mui-focused": { boxShadow: `0 0 0 3px ${overlay.primary.focus}` },
+                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: theme.vars.palette.primary.light },
+                            "&.Mui-focused": { boxShadow: `0 0 0 3px ${overlayAccent.focus}` },
                         },
                         // iOS auto-zooms when a focused input's font is < 16px. Keep
                         // the compact 0.9rem on ≥sm, but bump to 16px on phones.
@@ -112,7 +175,7 @@ export const createAppTheme = (): Theme => {
             MuiAutocomplete: {
                 defaultProps: { size: "small" },
                 styleOverrides: {
-                    paper:  { borderRadius: 10, boxShadow: shadow.nav },
+                    paper:  ({ theme }) => ({ borderRadius: 10, boxShadow: theme.vars.palette.appShadow.nav }),
                     option: { borderRadius: 6, margin: "2px 6px", padding: "6px 8px", fontSize: "0.875rem" },
                 },
             },
@@ -138,19 +201,19 @@ export const createAppTheme = (): Theme => {
             },
             MuiAppBar: {
                 styleOverrides: {
-                    root: {
+                    root: ({ theme }) => ({
                         boxShadow: "none",
-                        borderBottom: `1px solid ${overlay.dark.border}`,
-                    },
+                        borderBottom: `1px solid ${theme.vars.palette.divider}`,
+                    }),
                 },
             },
             MuiMenu: {
                 styleOverrides: {
-                    paper: {
+                    paper: ({ theme }) => ({
                         borderRadius: 10,
-                        boxShadow: shadow.nav,
-                        border: `1px solid ${overlay.dark.border}`,
-                    },
+                        boxShadow: theme.vars.palette.appShadow.nav,
+                        border: `1px solid ${theme.vars.palette.divider}`,
+                    }),
                 },
             },
             MuiMenuItem: {
@@ -168,28 +231,28 @@ export const createAppTheme = (): Theme => {
             MuiAlert: {
                 defaultProps: { variant: "outlined" },
                 styleOverrides: {
-                    root: {
+                    root: ({ theme }) => ({
                         borderRadius: 12,
                         padding: "10px 16px",
                         fontSize: "0.9rem",
                         alignItems: "center",
-                        backgroundColor: surface.paper,
+                        backgroundColor: theme.vars.palette.background.paper,
                         backdropFilter: "blur(8px)",
                         border: "1px solid",
-                        borderColor: overlay.dark.border,
-                    },
+                        borderColor: theme.vars.palette.divider,
+                    }),
                     icon: { opacity: 0.9 },
                     message: { paddingTop: 0, paddingBottom: 0, fontWeight: 500 },
                     standardError:   { borderColor: "rgba(244,67,54,0.4)" },
                     standardSuccess: { borderColor: "rgba(102,187,106,0.4)" },
                     standardWarning: { borderColor: "rgba(255,167,38,0.4)" },
-                    standardInfo:    { borderColor: overlay.primary.focus },
-                    outlinedInfo:    { borderColor: overlay.primary.focus, color: t.primary.light },
+                    standardInfo:    { borderColor: overlayAccent.focus },
+                    outlinedInfo:    ({ theme }) => ({ borderColor: overlayAccent.focus, color: theme.vars.palette.primary.light }),
                 },
             },
             MuiDialog: {
                 styleOverrides: {
-                    paper: { borderRadius: 16, boxShadow: shadow.dialog },
+                    paper: ({ theme }) => ({ borderRadius: 16, boxShadow: theme.vars.palette.appShadow.dialog }),
                 },
             },
             MuiTooltip: {
@@ -199,22 +262,22 @@ export const createAppTheme = (): Theme => {
             },
             MuiDataGrid: {
                 styleOverrides: {
-                    root: {
+                    root: ({ theme }) => ({
                         borderRadius: 12,
-                        border: `1px solid ${overlay.dark.border}`,
+                        border: `1px solid ${theme.vars.palette.divider}`,
                         "& .MuiDataGrid-columnHeader": {
-                            backgroundColor: overlay.dark.header,
+                            backgroundColor: theme.vars.palette.overlayN.header,
                             fontWeight: 600,
                         },
                         "& .MuiDataGrid-row": { transition: `background ${timing.fast}` },
                         "& .MuiDataGrid-row:hover": {
-                            backgroundColor: overlay.primary.row,
+                            backgroundColor: overlayAccent.row,
                             cursor: "pointer",
                         },
                         "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within": {
                             outline: "none",
                         },
-                    },
+                    }),
                 },
             },
             MuiIconButton: {
