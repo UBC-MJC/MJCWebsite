@@ -19,6 +19,7 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import { Link as RouterLink } from "react-router-dom";
 import type { LoginDataType } from "@/types";
 import { logger } from "@/common/logger";
 
@@ -93,12 +94,14 @@ const Login = () => {
                                 helperText={errors.username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 autoComplete="username"
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <PersonOutlineIcon fontSize="small" sx={{ color: "text.disabled" }} />
-                                        </InputAdornment>
-                                    ),
+                                slotProps={{
+                                    input: {
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <PersonOutlineIcon fontSize="small" sx={{ color: "text.disabled" }} />
+                                            </InputAdornment>
+                                        ),
+                                    },
                                 }}
                             />
 
@@ -113,34 +116,37 @@ const Login = () => {
                                 helperText={errors.password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 autoComplete="current-password"
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <LockOutlinedIcon fontSize="small" sx={{ color: "text.disabled" }} />
-                                        </InputAdornment>
-                                    ),
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                edge="end"
-                                                size="small"
-                                                aria-label="toggle password visibility"
-                                            >
-                                                {showPassword ? (
-                                                    <VisibilityOffOutlinedIcon fontSize="small" />
-                                                ) : (
-                                                    <VisibilityOutlinedIcon fontSize="small" />
-                                                )}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
+                                slotProps={{
+                                    input: {
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <LockOutlinedIcon fontSize="small" sx={{ color: "text.disabled" }} />
+                                            </InputAdornment>
+                                        ),
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    edge="end"
+                                                    size="small"
+                                                    aria-label="toggle password visibility"
+                                                >
+                                                    {showPassword ? (
+                                                        <VisibilityOffOutlinedIcon fontSize="small" />
+                                                    ) : (
+                                                        <VisibilityOutlinedIcon fontSize="small" />
+                                                    )}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    },
                                 }}
                             />
 
                             <Box display="flex" justifyContent="flex-end">
                                 <Link
-                                    href="/request-password-reset"
+                                    component={RouterLink}
+                                    to="/request-password-reset"
                                     variant="caption"
                                     underline="hover"
                                     color="primary"
@@ -159,7 +165,7 @@ const Login = () => {
                 <Box textAlign="center">
                     <Typography variant="body2" color="text.secondary">
                         Don&apos;t have an account?{" "}
-                        <Link href="/register" underline="hover" fontWeight={600}>
+                        <Link component={RouterLink} to="/register" underline="hover" fontWeight={600}>
                             Create account
                         </Link>
                     </Typography>
@@ -172,7 +178,7 @@ const Login = () => {
                 </Divider>
 
                 <Box display="flex" justifyContent="center">
-                    <Button href="/" variant="text" size="small" color="inherit" sx={{ color: "text.secondary" }}>
+                    <Button component={RouterLink} to="/" variant="text" size="small" color="inherit" sx={{ color: "text.secondary" }}>
                         ← Back to home
                     </Button>
                 </Box>

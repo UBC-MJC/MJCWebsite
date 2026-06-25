@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AxiosError } from "axios";
 import { submitRequestPasswordResetAPI } from "@/api/AccountAPI";
+import { Link as RouterLink } from "react-router-dom";
 import alert from "@/common/AlertDialog";
 import {
     Button,
@@ -86,7 +87,7 @@ const RequestPasswordReset = () => {
                             <Box display="flex" justifyContent="center">
                                 <Typography variant="body2" color="text.secondary">
                                     Remember your password?{" "}
-                                    <Link href="/login" underline="hover" fontWeight={600}>
+                                    <Link component={RouterLink} to="/login" underline="hover" fontWeight={600}>
                                         Login
                                     </Link>
                                 </Typography>
@@ -96,7 +97,7 @@ const RequestPasswordReset = () => {
                 </Card>
 
                 <Box display="flex" justifyContent="center">
-                    <Button href="/" variant="text">
+                    <Button component={RouterLink} to="/" variant="text">
                         Back to Home
                     </Button>
                 </Box>

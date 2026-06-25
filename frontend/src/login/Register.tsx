@@ -13,6 +13,7 @@ import {
     Link,
     Box,
 } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 import type { RegisterDataType } from "@/types";
 import { logger } from "@/common/logger";
 
@@ -84,18 +85,47 @@ const Register = () => {
         <Container
             maxWidth="sm"
             sx={{
-                minHeight: "100vh",
+                minHeight: "100dvh",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
+                py: 4,
             }}
         >
-            <Stack>
-                <Card>
-                    <CardContent>
-                        <Stack component="form" noValidate onSubmit={handleSubmit}>
-                            <Typography variant="h1">UBC Mahjong Club</Typography>
+            <Stack spacing={3}>
+                {/* Brand */}
+                <Box textAlign="center">
+                    <Box
+                        sx={{
+                            width: 52,
+                            height: 52,
+                            borderRadius: 3,
+                            bgcolor: "primary.main",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            mx: "auto",
+                            mb: 2,
+                        }}
+                    >
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+                            <rect x="2" y="2" width="11" height="11" rx="2" fill="white" />
+                            <rect x="15" y="2" width="11" height="11" rx="2" fill="white" opacity="0.5" />
+                            <rect x="2" y="15" width="11" height="11" rx="2" fill="white" opacity="0.5" />
+                            <rect x="15" y="15" width="11" height="11" rx="2" fill="white" />
+                        </svg>
+                    </Box>
+                    <Typography variant="h3" fontWeight={700} gutterBottom>
+                        UBC Mahjong Club
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        Create an account to record games and track your rating
+                    </Typography>
+                </Box>
 
+                <Card>
+                    <CardContent sx={{ p: 3 }}>
+                        <Stack component="form" noValidate onSubmit={handleSubmit} spacing={2}>
                             <TextField
                                 fullWidth
                                 required
@@ -179,22 +209,29 @@ const Register = () => {
                             <Button fullWidth variant="contained" type="submit" size="large">
                                 Sign Up
                             </Button>
-
-                            <Box display="flex" justifyContent="center">
-                                <Typography variant="body2" color="text.secondary">
-                                    Already have an account?{" "}
-                                    <Link href="/login" underline="hover" fontWeight={600}>
-                                        Login
-                                    </Link>
-                                </Typography>
-                            </Box>
                         </Stack>
                     </CardContent>
                 </Card>
 
+                <Box textAlign="center">
+                    <Typography variant="body2" color="text.secondary">
+                        Already have an account?{" "}
+                        <Link component={RouterLink} to="/login" underline="hover" fontWeight={600}>
+                            Login
+                        </Link>
+                    </Typography>
+                </Box>
+
                 <Box display="flex" justifyContent="center">
-                    <Button href="/" variant="text">
-                        Back to Home
+                    <Button
+                        component={RouterLink}
+                        to="/"
+                        variant="text"
+                        size="small"
+                        color="inherit"
+                        sx={{ color: "text.secondary" }}
+                    >
+                        ← Back to home
                     </Button>
                 </Box>
             </Stack>
