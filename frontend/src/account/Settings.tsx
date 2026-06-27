@@ -23,6 +23,9 @@ import SettingsBrightnessRoundedIcon from "@mui/icons-material/SettingsBrightnes
 import { SpacedToggleButtonGroup } from "@/theme/utils";
 import { useAccent } from "@/theme/AccentContext";
 import { accents, type AccentKey } from "@/theme/tokens";
+import redDragonTile from "@/assets/red_dragon_tile.svg";
+import whiteDragonTile from "@/assets/white_dragon_tile.svg";
+import greenDragonTile from "@/assets/green_dragon_tile.svg";
 
 const Settings = () => {
     const { player, loading, reloadPlayer } = useContext(AuthContext);
@@ -122,10 +125,10 @@ const AppearanceSetting = () => {
     );
 };
 
-const ACCENT_OPTIONS: { value: AccentKey; label: string; swatch: string }[] = [
-    { value: "red", label: "中 - Red", swatch: accents.red.pastel.main },
-    { value: "blue", label: "白 - Blue", swatch: accents.blue.pastel.main },
-    { value: "green", label: "發 - Green", swatch: accents.green.pastel.main },
+const ACCENT_OPTIONS: { value: AccentKey; label: string; tile: string; color: string }[] = [
+    { value: "red", label: "Red", tile: redDragonTile, color: accents.red.pastel.main },
+    { value: "blue", label: "Blue", tile: whiteDragonTile, color: accents.blue.pastel.main },
+    { value: "green", label: "Green", tile: greenDragonTile, color: accents.green.pastel.main },
 ];
 
 /**
@@ -157,20 +160,12 @@ const AccentSetting = () => {
                         key={option.value}
                         value={option.value}
                         aria-label={`${option.label} accent`}
+                        sx={{
+                            borderTop: "3px solid",
+                            borderTopColor: option.color,
+                        }}
                     >
-                        <Box
-                            component="span"
-                            sx={{
-                                width: 14,
-                                height: 14,
-                                borderRadius: "50%",
-                                bgcolor: option.swatch,
-                                border: "1px solid",
-                                borderColor: "divider",
-                                mr: 1,
-                            }}
-                        />
-                        {option.label}
+                        <img src={option.tile} alt={option.label} style={{ height: 56, width: "auto" }} />
                     </ToggleButton>
                 ))}
             </SpacedToggleButtonGroup>
