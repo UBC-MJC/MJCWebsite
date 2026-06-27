@@ -56,10 +56,6 @@ export const accents: Record<AccentKey, AccentDefinition> = {
         light: { main: "#4266AE", light: "#587BC1", dark: "#2F4D8A" },
         lightTitleStart: "#527CCF",
     },
-    // Emerald (hue ~148). The pastel ramp is a straight hue-rotation of red; the
-    // light ramp can't be (green is far brighter than red at equal HSL lightness,
-    // so it'd fail contrast), so it's darkened to match red's exact contrast
-    // ratios on white (main ~5.7:1, light ~4.3:1, dark ~8.2:1).
     green: {
         pastel: { main: "#8BE7B6", light: "#B0F2CF", dark: "#6AC594" },
         mainRgb: "139,231,182",
@@ -135,14 +131,14 @@ export const onAccent = {
 /**
  * Finishing-position colors (1st–4th). Single source of truth shared by the
  * placement history chart, the placement stat cards, and the distribution bar.
- * 1st–3rd reuse the (frozen) medal palette; 4th is a neutral muted gray that
+ * 1st–3rd reuse the (frozen) medal palette; 4th is a dark grayish copper that
  * stays legible on both light and dark surfaces.
  */
 export const placement = {
     1: palette.medal.gold.text,
     2: palette.medal.silver.text,
     3: palette.medal.bronze.text,
-    4: "#8C8C92",
+    4: "#3c2823",
 } as const;
 
 export const timing = {
