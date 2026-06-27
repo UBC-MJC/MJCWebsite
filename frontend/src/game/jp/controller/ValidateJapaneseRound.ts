@@ -1,6 +1,7 @@
 import type { JapaneseTransaction, JapaneseHandInput } from "@/types";
 import { findProminentPlayerRound, findProminentPlayers } from "./HonbaProcessing";
 import { JapaneseActions, JapaneseTransactionType } from "@/game/common/constants";
+import type { RoundRequirement } from "@/game/common/RoundRequirements";
 
 const E_NOWIN = "A winner is required";
 const E_NOLOSE = "A loser is required";
@@ -207,11 +208,6 @@ const checkPao = (hand: JapaneseHandInput): void => {
         throw new Error("Only yakuman can be pao");
     }
 };
-
-export interface RoundRequirement {
-    id: string;
-    description: string;
-}
 
 /** A hand is valid when dora is at least one less than han, and 1 han 20 fu (not a real hand) is excluded. */
 const isValidHand = (hand: JapaneseHandInput): boolean =>

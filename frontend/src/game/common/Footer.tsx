@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import riichiStick from "@/assets/riichiStick.png";
 import { Box, Stack, Typography, Paper, Chip, alpha } from "@mui/material";
 import { keyframes } from "@mui/system";
-import { mapWindToCharacter } from "@/common/Utils";
 import { computePlaces, placeColor, placeLabel } from "./placement";
 
 // Quick "pop" played when a player's card is tapped.
@@ -89,7 +88,7 @@ const PlayerScoreCard = ({
                 // gradient of the place color (transparent at top, solid at bottom).
                 borderRadius: 1,
                 borderBottom: `5px solid ${alpha(colors.border, 0.6)}`,
-                backgroundImage: `linear-gradient(to bottom, ${alpha(colors.border, 0)} 0%, ${alpha(colors.border, 0.03)} 40%, ${alpha(colors.border, 0.05)} 70%, ${alpha(colors.border, 0.1)} 100%)`,
+                backgroundImage: `linear-gradient(to bottom, ${alpha(colors.border, 0)} 50%, ${alpha(colors.border, 0.05)} 75%, ${alpha(colors.border, 0.1)} 100%)`,
                 "&:focus-visible": {
                     outline: "2px solid",
                     outlineColor: "primary.main",
@@ -160,109 +159,86 @@ const PlayerScoreCard = ({
                     }}
                 />
             )}
-            {/* Large wind character watermark, tinted to blend into the position gradient. */}
-            {wind && (
-                <Box
-                    aria-hidden
+            <Box sx={{ position: "relative", zIndex: 1 }}>
+                <Typography
+                    variant="caption"
+                    title={username}
                     sx={{
-                        position: "absolute",
-                        inset: 0,
+                        display: "block",
+                        color: "text.secondary",
+                        fontWeight: 600,
+                        fontSize: { xs: "0.85rem", sm: "0.95rem" },
                         overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        // Nudge the name slightly upward within the restored top padding.
+                        mt: { xs: -0.75, sm: -1 },
+                        mb: 0.25,
+                    }}
+                >
+                    {username}
+                </Typography>
+
+                <Typography
+                    component="div"
+                    sx={{
+                        fontWeight: 800,
+                        lineHeight: 1.1,
+                        fontSize: { xs: "1.05rem", sm: "1.35rem" },
+                        fontVariantNumeric: "tabular-nums",
+                        ...(showDifference
+                            ? { color: isPositiveDifference ? "error.main" : "success.main" }
+                            : { color: "text.primary" }),
+                    }}
+                >
+                    {showDifference
+                        ? `${scoreDifference >= 0 ? "+" : ""}${scoreDifference.toLocaleString()}`
+                        : score.toLocaleString()}
+                </Typography>
+
+                <Box
+                    sx={{
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        zIndex: 0,
-                        pointerEvents: "none",
-                        fontSize: { xs: "5.5rem", sm: "5rem" },
-                        fontWeight: 750,
-                        lineHeight: 1,
-                        color: alpha(colors.border, 0.1),
-                        textShadow: `0 5px 5px ${alpha("#000000", 0.2)}`,
+                        gap: 0.5,
+                        mt: 0.5,
                     }}
                 >
-                    {mapWindToCharacter(wind)}
+                    {/* Finishing position — keeps rank legible without relying on color. */}
+                    <Chip
+                        label={placeLabel(place)}
+                        size="small"
+                        sx={{
+                            flexShrink: 0,
+                            height: 18,
+                            fontSize: "0.62rem",
+                            fontWeight: 700,
+                            color: colors.text,
+                            bgcolor: alpha(colors.border, 0.16),
+                            border: "none",
+                            "& .MuiChip-label": { px: 0.75 },
+                        }}
+                    />
+                    <Chip
+                        label={`${isPositiveDelta ? "+" : ""}${eloDelta.toFixed(1)}`}
+                        size="small"
+                        sx={{
+                            fontWeight: 700,
+                            fontVariantNumeric: "tabular-nums",
+                            height: 22,
+                            bgcolor: (theme) =>
+                                alpha(
+                                    isPositiveDelta
+                                        ? theme.palette.success.main
+                                        : theme.palette.error.main,
+                                    0.16,
+                                ),
+                            color: isPositiveDelta ? "success.main" : "error.main",
+                            border: "none",
+                        }}
+                    />
                 </Box>
-            )}
-            <Box sx={{ position: "relative", zIndex: 1 }}>
-            <Typography
-                variant="caption"
-                title={username}
-                sx={{
-                    display: "block",
-                    color: "text.secondary",
-                    fontWeight: 600,
-                    fontSize: { xs: "0.85rem", sm: "0.95rem" },
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    // Nudge the name slightly upward within the restored top padding.
-                    mt: { xs: -0.75, sm: -1 },
-                    mb: 0.25,
-                }}
-            >
-                {username}
-            </Typography>
-
-            <Typography
-                component="div"
-                sx={{
-                    fontWeight: 800,
-                    lineHeight: 1.1,
-                    fontSize: { xs: "1.05rem", sm: "1.35rem" },
-                    fontVariantNumeric: "tabular-nums",
-                    ...(showDifference
-                        ? { color: isPositiveDifference ? "error.main" : "success.main" }
-                        : { color: "text.primary" }),
-                }}
-            >
-                {showDifference
-                    ? `${scoreDifference >= 0 ? "+" : ""}${scoreDifference.toLocaleString()}`
-                    : score.toLocaleString()}
-            </Typography>
-
-            <Box
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 0.5,
-                    mt: 0.5,
-                }}
-            >
-                {/* Finishing position — keeps rank legible without relying on color. */}
-                <Chip
-                    label={placeLabel(place)}
-                    size="small"
-                    sx={{
-                        flexShrink: 0,
-                        height: 18,
-                        fontSize: "0.62rem",
-                        fontWeight: 700,
-                        color: colors.text,
-                        bgcolor: alpha(colors.border, 0.16),
-                        border: "none",
-                        "& .MuiChip-label": { px: 0.75 },
-                    }}
-                />
-                <Chip
-                    label={`${isPositiveDelta ? "+" : ""}${eloDelta.toFixed(1)}`}
-                    size="small"
-                    sx={{
-                        fontWeight: 700,
-                        fontVariantNumeric: "tabular-nums",
-                        height: 22,
-                        bgcolor: (theme) =>
-                            alpha(
-                                isPositiveDelta
-                                    ? theme.palette.success.main
-                                    : theme.palette.error.main,
-                                0.16,
-                            ),
-                        color: isPositiveDelta ? "success.main" : "error.main",
-                        border: "none",
-                    }}
-                />
-            </Box>
             </Box>
         </Box>
     );

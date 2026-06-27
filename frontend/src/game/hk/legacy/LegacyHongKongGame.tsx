@@ -8,7 +8,7 @@ import {
     HK_EXCLUSIVE_LABELS,
     HK_PRIMARY_TRANSACTION_TYPES,
     HK_TRANSACTION_TYPE_BUTTONS,
-    HK_UNDEFINED_HAND,
+    HK_DEFAULT_HAND,
     HongKongActions,
     HongKongLabel,
     HongKongTransactionType,
@@ -19,9 +19,13 @@ import { LegacyGameProps } from "@/game/Game";
 import PointsInput from "@/game/common/PointsInput";
 import TransactionTypeSelector from "@/game/common/TransactionTypeSelector";
 import StepSection from "@/game/common/StepSection";
+import RoundRequirements from "@/game/common/RoundRequirements";
 import { Footer } from "@/game/common/Footer";
 import { createHongKongRoundRequest, generateOverallScoreDelta } from "../controller/HongKongRound";
-import { validateHongKongRound } from "../controller/ValidateHongKongRound";
+import {
+    getUnmetHongKongRoundRequirements,
+    validateHongKongRound,
+} from "../controller/ValidateHongKongRound";
 import { Box, Button, Stack, Card, CardContent } from "@mui/material";
 
 const LegacyHongKongGame = ({
@@ -34,8 +38,9 @@ const LegacyHongKongGame = ({
         HongKongTransactionType.DEAL_IN,
     );
     const [roundActions, setRoundActions] = useState<HongKongActions>({});
-    const [hand, setHand] = useState<HongKongHandInput>(HK_UNDEFINED_HAND);
+    const [hand, setHand] = useState<HongKongHandInput>(HK_DEFAULT_HAND);
     const gameOver = isGameEnd(game, "hk");
+    const unmetRequirements = getUnmetHongKongRoundRequirements(transactionType, roundActions);
 
     const transactionTypeOnChange = (type: HongKongTransactionType) => {
         const prevWinner = roundActions.WINNER;
@@ -68,7 +73,7 @@ const LegacyHongKongGame = ({
         setRoundActions(newRoundActions);
         setTransactionType(type);
         if (!showPointInput()) {
-            setHand(HK_UNDEFINED_HAND);
+            setHand(HK_DEFAULT_HAND);
         }
     };
 
@@ -160,21 +165,25 @@ const LegacyHongKongGame = ({
                                     <PointsInput
                                         pointsWheel={hongKongPointsWheel}
                                         onChange={handOnChange}
+                                        values={{ points: String(hand) }}
                                     />
                                 </Box>
                             </StepSection>
                         )}
 
-                        <Button
-                            color="success"
-                            variant="contained"
-                            disabled={gameOver}
-                            onClick={submitRound}
-                            fullWidth
-                            size="large"
-                        >
-                            Submit Round
-                        </Button>
+                        <Stack spacing={1.5} sx={{ width: "100%" }}>
+                            <Button
+                                color="success"
+                                variant="contained"
+                                disabled={gameOver || unmetRequirements.length > 0}
+                                onClick={submitRound}
+                                fullWidth
+                                size="large"
+                            >
+                                Submit Round
+                            </Button>
+                            <RoundRequirements requirements={unmetRequirements} />
+                        </Stack>
                     </Stack>
                 </CardContent>
             </Card>

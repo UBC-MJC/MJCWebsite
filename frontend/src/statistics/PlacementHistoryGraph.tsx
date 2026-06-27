@@ -32,6 +32,11 @@ interface PlacementHistoryGraphProps {
 // dial down from here; capped at 30 to keep backend query load light.
 const DEFAULT_WINDOW = 30;
 
+// Fixed width (px) for the "Last N Games" chip, sized to fit the widest label
+// ("Last 30 Games") so the chip never resizes as the count changes and the
+// adjacent slider stays anchored. Keyed by breakpoint.
+const CHIP_WIDTH = { xs: 132, sm: 150 } as const;
+
 /** Compact, colored card for a single finishing position. */
 const PlacementStatCard = ({
     place,
@@ -131,6 +136,9 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
                     label={`Last ${total} Game${total === 1 ? "" : "s"}`}
                     sx={{
                         flexShrink: 0,
+                        // Fixed width so the chip never resizes as the game count
+                        // grows from 1 to 30 digits — keeps the slider anchored.
+                        width: CHIP_WIDTH,
                         height: "auto",
                         py: 0.75,
                         fontWeight: 800,
@@ -140,7 +148,14 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
                         border: "none",
                         // Matches the slider track's neutral → pastel-red gradient.
                         background: "var(--mui-palette-gradient-title)",
-                        "& .MuiChip-label": { fontWeight: 800, fontSize: "1.1rem" },
+                        "& .MuiChip-label": {
+                            width: "100%",
+                            textAlign: "center",
+                            fontWeight: 800,
+                            fontSize: "1.1rem",
+                            // Even digit widths so 1 vs 2 digit counts stay aligned.
+                            fontVariantNumeric: "tabular-nums",
+                        },
                     }}
                 />
                 <Slider

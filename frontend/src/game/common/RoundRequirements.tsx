@@ -3,7 +3,12 @@ import { Box, ButtonBase, Collapse, Stack, Typography, alpha } from "@mui/materi
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import type { RoundRequirement } from "@/game/jp/controller/ValidateJapaneseRound";
+
+/** A single, not-yet-satisfied prerequisite for submitting the round being entered. */
+export interface RoundRequirement {
+    id: string;
+    description: string;
+}
 
 interface RoundRequirementsProps {
     requirements: RoundRequirement[];

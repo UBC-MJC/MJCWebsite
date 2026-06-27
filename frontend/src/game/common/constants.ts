@@ -152,7 +152,8 @@ const HK_LABEL_MAP: Record<HongKongLabel, string> = {
     PAO: "Pao Player",
 };
 
-const HK_UNDEFINED_HAND: HongKongHandInput = -1;
+// Hong Kong hands start at the minimum winning size (3 points) rather than unset.
+const HK_DEFAULT_HAND: HongKongHandInput = 3;
 
 const isGameEnd = <T extends GameVariant>(game: Game<T>, variant: T): boolean => {
     if (variant === "jp") {
@@ -225,7 +226,7 @@ export {
     HK_PRIMARY_TRANSACTION_TYPES,
     HK_EXCLUSIVE_LABELS,
     HK_LABEL_MAP,
-    HK_UNDEFINED_HAND,
+    HK_DEFAULT_HAND,
     isGameEnd,
     gameRoundString,
 };

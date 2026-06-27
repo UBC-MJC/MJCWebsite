@@ -276,7 +276,7 @@ export const buildSchemeTokens = (key: AccentKey): { light: SchemeTokens; dark: 
                     "linear-gradient(90deg, rgba(16,16,17,0.97) 0%, rgba(18,18,19,0.88) 40%, rgba(22,22,23,0.45) 70%, rgba(22,22,23,0) 95%)",
                 // Game Footer fades to the near-black paper surface (#161617).
                 footerFade:
-                    "linear-gradient(to bottom, rgba(22,22,23,0) 0%, rgba(22,22,23,0.6) 55%, rgba(22,22,23,1) 85%)",
+                    "linear-gradient(to bottom, rgba(22,22,23,0) 0%, rgba(22,22,23,0.6) 25%, rgba(22,22,23,1) 50%)",
             },
             shadow: buildShadow(darkOverlay),
         },
@@ -314,7 +314,7 @@ export const buildSchemeTokens = (key: AccentKey): { light: SchemeTokens; dark: 
                     "linear-gradient(90deg, rgba(250,247,245,0.97) 0%, rgba(248,245,243,0.88) 40%, rgba(246,244,242,0.45) 70%, rgba(246,244,242,0) 95%)",
                 // Game Footer fades to the white paper surface (#FFFFFF).
                 footerFade:
-                    "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 55%, rgba(255,255,255,1) 85%)",
+                    "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,1) 50%)",
             },
             shadow: buildShadow(lightOverlay),
         },
