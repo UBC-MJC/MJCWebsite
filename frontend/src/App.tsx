@@ -5,8 +5,8 @@ import WithNav from "@/common/WithNav";
 import { AuthContextProvider } from "@/common/AuthContext";
 import ErrorBoundary from "@/common/ErrorBoundary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import { createAppTheme } from "@/theme";
+import { CssBaseline } from "@mui/material";
+import { AccentProvider } from "@/theme/AccentContext";
 import { GameNotFound } from "@/game/common/GameNotFound";
 import React from "react";
 import Tournament from "./resources/Tournament";
@@ -14,9 +14,7 @@ import Tournament from "./resources/Tournament";
 // Lazy load route components for code splitting
 const Home = React.lazy(() => import("./home/Home"));
 const Leaderboard = React.lazy(() => import("./leaderboard/Leaderboard"));
-const LiveGames = React.lazy(() =>
-    import("./game/LiveGames").then((module) => ({ default: module.LiveGames })),
-);
+const Games = React.lazy(() => import("./game/Games"));
 const CreateGame = React.lazy(() => import("./game/CreateGame"));
 const Game = React.lazy(() => import("./game/Game"));
 const Statistics = React.lazy(() => import("./statistics/Statistics"));
@@ -30,7 +28,6 @@ const PasswordReset = React.lazy(() => import("./login/PasswordReset"));
 const Resources = React.lazy(() =>
     import("./resources/Resources").then((module) => ({ default: module.Resources })),
 );
-const GameLogs = React.lazy(() => import("./game/GameLogs"));
 
 // Create QueryClient outside component to prevent recreation on every render
 const queryClient = new QueryClient({
@@ -51,11 +48,10 @@ const useQuery = () => {
 
 const App = () => {
     const query = useQuery();
-    const theme = createAppTheme();
 
     return (
         <ErrorBoundary>
-            <ThemeProvider theme={theme}>
+            <AccentProvider>
                 <QueryClientProvider client={queryClient}>
                     <AuthContextProvider>
                         <CssBaseline />
@@ -63,65 +59,89 @@ const App = () => {
                             <Routes>
                                 <Route element={<WithNav />}>
                                     <Route path="/" element={<Home />} />
+                                    <Route path="/leaderboard" element={<Leaderboard />} />
+                                    {/* Legacy per-board leaderboard URLs now redirect to the
+                                        single condensed page, carrying the intended board so it
+                                        opens on that selection. */}
                                     <Route
                                         path="/leaderboard/jp"
                                         element={
-                                            <Leaderboard gameVariant="jp" gameType={"RANKED"} />
+                                            <Navigate
+                                                to="/leaderboard?variant=jp&type=RANKED"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route
                                         path="/leaderboard/jp/casual"
                                         element={
-                                            <Leaderboard gameVariant="jp" gameType={"CASUAL"} />
+                                            <Navigate
+                                                to="/leaderboard?variant=jp&type=CASUAL"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route
                                         path="/leaderboard/hk"
                                         element={
-                                            <Leaderboard gameVariant="hk" gameType={"RANKED"} />
+                                            <Navigate
+                                                to="/leaderboard?variant=hk&type=RANKED"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route
                                         path="/leaderboard/hk/casual"
                                         element={
-                                            <Leaderboard gameVariant="hk" gameType={"CASUAL"} />
+                                            <Navigate
+                                                to="/leaderboard?variant=hk&type=CASUAL"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route path="/games/:variant/:id" element={<Game />} />
-                                    <Route
-                                        path="/games/current/jp"
-                                        element={<LiveGames gameVariant="jp" gameType={"RANKED"} />}
-                                    />
-                                    <Route
-                                        path="/games/current/hk"
-                                        element={<LiveGames gameVariant="hk" gameType={"RANKED"} />}
-                                    />
+                                    <Route path="/games/current" element={<Games />} />
+                                    <Route path="/games/create" element={<CreateGame />} />
+                                    {/* Legacy per-type create routes now redirect, carrying the
+                                        intended variant/type so the page opens on that selection. */}
                                     <Route
                                         path="/games/create/jp"
                                         element={
-                                            <CreateGame gameVariant="jp" gameType={"RANKED"} />
+                                            <Navigate
+                                                to="/games/create?variant=jp&type=RANKED"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route
                                         path="/games/create/jp/casual"
                                         element={
-                                            <CreateGame gameVariant="jp" gameType={"CASUAL"} />
+                                            <Navigate
+                                                to="/games/create?variant=jp&type=CASUAL"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route
                                         path="/games/create/hk"
                                         element={
-                                            <CreateGame gameVariant="hk" gameType={"RANKED"} />
+                                            <Navigate
+                                                to="/games/create?variant=hk&type=RANKED"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route
                                         path="/games/create/hk/casual"
                                         element={
-                                            <CreateGame gameVariant="hk" gameType={"CASUAL"} />
+                                            <Navigate
+                                                to="/games/create?variant=hk&type=CASUAL"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route path="/games/not-found" element={<GameNotFound />} />
-                                    <Route path="/games" element={<GameLogs />} />
+                                    <Route path="/games" element={<Games />} />
                                     <Route path="/resources" element={<Resources />} />
                                     <Route path="/vro2026" element={<Tournament />} />
                                     <Route
@@ -157,7 +177,7 @@ const App = () => {
                         </main>
                     </AuthContextProvider>
                 </QueryClientProvider>
-            </ThemeProvider>
+            </AccentProvider>
         </ErrorBoundary>
     );
 };

@@ -39,12 +39,10 @@ const AdminPlayers = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    // Call all hooks unconditionally at the top
     const { isPending, data, error } = useAdminPlayers(player || undefined);
     const deletePlayerMut = useDeletePlayerMutation(player || undefined);
     const savePlayerMut = useSavePlayerMutation(player || undefined);
 
-    // Early return after all hooks
     if (loading) {
         return <LoadingFallback />;
     }

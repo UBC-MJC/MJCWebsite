@@ -32,7 +32,6 @@ const AuthContextProvider = (props: ChildProps) => {
         const abortController = new AbortController();
 
         const checkAuth = async () => {
-            // Check if user is already authenticated via cookie
             try {
                 const response = await getCurrentPlayer();
                 if (!abortController.signal.aborted) {

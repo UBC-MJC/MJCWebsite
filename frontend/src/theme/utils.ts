@@ -1,35 +1,72 @@
 import { SxProps, Theme, styled } from "@mui/material/styles";
 import ToggleButtonGroup, { toggleButtonGroupClasses } from "@mui/material/ToggleButtonGroup";
+import { timing } from "@/theme/tokens";
 
-/**
- * Responsive DataGrid container with mobile-optimized heights
- * Mobile: viewport-based height
- * Desktop: 600px
- */
 export const responsiveDataGridContainer: SxProps<Theme> = {
-    height: {
-        xs: "calc(100vh - 350px)", // Mobile: Adapt to available space
-        md: 600,
-    },
+    // dvh accounts for the mobile URL bar / browser chrome so the grid isn't
+    // sized against a viewport taller than what's actually visible.
+    height: { xs: "calc(100dvh - 320px)", md: 580 },
     width: "100%",
-    minHeight: 400, // Ensure usability even on small screens
+    minHeight: 400,
 };
 
 /**
- * Responsive card hover effects
- * Reduced transform on mobile to prevent layout shifts
+ * Text preset — the bold, fluid white→accent gradient title used for the
+ * hero heading ("UBC Mahjong Club"). Layout spacing (e.g. `mb`) is intentionally
+ * left out so it can be reused anywhere; spread it and add margins as needed:
+ *   <Typography variant="h1" sx={{ ...gradientTitle, mb: 2.5 }}>…</Typography>
  */
+export const gradientTitle: SxProps<Theme> = {
+    fontWeight: 800,
+    fontSize: { xs: "2rem", sm: "2.6rem", md: "3.15rem" },
+    lineHeight: 1.15,
+    pb: "0.08em",
+    letterSpacing: "-0.02em",
+    background: "var(--mui-palette-gradient-title)",
+    backgroundClip: "text",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+};
+
+/**
+ * Eyebrow / overline label preset — the small, uppercase, letter-spaced caps
+ * used to title sections and table columns (e.g. "Score", "Game Actions",
+ * drawer section headers). Spread it and layer on spacing/overrides as needed:
+ *   <Typography sx={{ ...eyebrowLabel, mb: 0.5 }}>…</Typography>
+ */
+export const eyebrowLabel: SxProps<Theme> = {
+    display: "block",
+    fontWeight: 700,
+    fontSize: "0.78rem",
+    textTransform: "uppercase",
+    letterSpacing: "0.08em",
+    color: "text.secondary",
+};
+
 export const responsiveCardHover: SxProps<Theme> = {
-    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    position: "relative",
+    overflow: "hidden",
+    transition: `all ${timing.slow} ${timing.ease}`,
+    "&::after": {
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "2px",
+        background: `linear-gradient(90deg, var(--mui-palette-primary-light), transparent)`,
+        transform: "scaleX(0)",
+        transformOrigin: "left",
+        transition: `transform 0.25s ${timing.ease}`,
+    },
     "&:hover": {
-        transform: { xs: "none", sm: "translateY(-4px)" },
-        boxShadow: { xs: 2, sm: 6 },
+        transform: { xs: "none", sm: "translateY(-3px)" },
+        boxShadow: { xs: "none", sm: "var(--mui-palette-appShadow-card)" },
+        borderColor: "primary.light",
+        "&::after": { transform: "scaleX(1)" },
     },
 };
 
-/**
- * Responsive text truncation with overflow handling
- */
 export const responsiveTextTruncate: SxProps<Theme> = {
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -37,16 +74,20 @@ export const responsiveTextTruncate: SxProps<Theme> = {
     maxWidth: { xs: "200px", sm: "300px", md: "100%" },
 };
 
-/**
- * Shared navbar button styling - overrides theme defaults for compact nav buttons
- */
 export const navButton: SxProps<Theme> = {
     minWidth: "auto",
     minHeight: "auto",
-    padding: "6px 8px",
-    borderRadius: 1,
-    fontSize: "1rem",
+    padding: "5px 10px",
+    borderRadius: 1.5,
+    fontSize: "0.875rem",
+    fontWeight: 500,
     whiteSpace: "nowrap",
+    color: "inherit",
+    transition: "background 0.12s, color 0.12s",
+    "&:hover": {
+        background: "var(--mui-palette-glass-fillSubtle)",
+        transform: "none",
+    },
 };
 
 export const SpacedToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
