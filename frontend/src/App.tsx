@@ -5,8 +5,8 @@ import WithNav from "@/common/WithNav";
 import { AuthContextProvider } from "@/common/AuthContext";
 import ErrorBoundary from "@/common/ErrorBoundary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import { createAppTheme } from "@/theme";
+import { CssBaseline } from "@mui/material";
+import { AccentProvider } from "@/theme/AccentContext";
 import { GameNotFound } from "@/game/common/GameNotFound";
 import React from "react";
 import Tournament from "./resources/Tournament";
@@ -51,11 +51,10 @@ const useQuery = () => {
 
 const App = () => {
     const query = useQuery();
-    const theme = createAppTheme();
 
     return (
         <ErrorBoundary>
-            <ThemeProvider theme={theme}>
+            <AccentProvider>
                 <QueryClientProvider client={queryClient}>
                     <AuthContextProvider>
                         <CssBaseline />
@@ -157,7 +156,7 @@ const App = () => {
                         </main>
                     </AuthContextProvider>
                 </QueryClientProvider>
-            </ThemeProvider>
+            </AccentProvider>
         </ErrorBoundary>
     );
 };
