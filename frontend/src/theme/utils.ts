@@ -28,6 +28,21 @@ export const gradientTitle: SxProps<Theme> = {
     WebkitTextFillColor: "transparent",
 };
 
+/**
+ * Eyebrow / overline label preset — the small, uppercase, letter-spaced caps
+ * used to title sections and table columns (e.g. "Score", "Game Actions",
+ * drawer section headers). Spread it and layer on spacing/overrides as needed:
+ *   <Typography sx={{ ...eyebrowLabel, mb: 0.5 }}>…</Typography>
+ */
+export const eyebrowLabel: SxProps<Theme> = {
+    display: "block",
+    fontWeight: 700,
+    fontSize: "0.78rem",
+    textTransform: "uppercase",
+    letterSpacing: "0.08em",
+    color: "text.secondary",
+};
+
 export const responsiveCardHover: SxProps<Theme> = {
     position: "relative",
     overflow: "hidden",

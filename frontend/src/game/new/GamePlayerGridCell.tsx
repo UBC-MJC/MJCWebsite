@@ -10,7 +10,6 @@ const GamePlayerGridCell = ({ player }: GamePlayerGridCellProps) => {
         <div>
             <div>{player.trueWind}</div>
             <div>{player.username}</div>
-            {/*<div>{player.score}</div>*/}
             <Badge color="primary">Tenpai</Badge>
         </div>
     );

@@ -138,7 +138,6 @@ const CreateGameComponent = () => {
     const gameLabel = getGameVariantString(gameVariant, gameType);
     const title = `Create ${gameLabel} Game`;
 
-    // Get validation errors
     const getValidationErrors = () => {
         const errors: string[] = [];
 

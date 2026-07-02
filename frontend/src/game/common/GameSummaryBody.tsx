@@ -1,17 +1,10 @@
 import { Box, Chip, Divider, Stack, Typography, alpha } from "@mui/material";
 import { getScoresWithPlayers } from "@/common/Utils";
 import type { Game, GameVariant } from "@/types";
+import { eyebrowLabel } from "@/theme/utils";
 import { placeColor, placeLabel } from "./placement";
 
-const columnTitleSx = {
-    display: "block",
-    fontWeight: 700,
-    fontSize: "0.78rem",
-    textTransform: "uppercase",
-    letterSpacing: "0.08em",
-    color: "text.secondary",
-    mb: 0.5,
-} as const;
+const columnTitleSx = { ...eyebrowLabel, mb: 0.5 } as const;
 
 const GameSummaryBody = <T extends GameVariant>({
     game,

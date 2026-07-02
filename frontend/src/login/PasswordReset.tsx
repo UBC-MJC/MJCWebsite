@@ -7,7 +7,6 @@ import {
     Button,
     Card,
     CardContent,
-    Container,
     TextField,
     Stack,
     Typography,
@@ -15,6 +14,7 @@ import {
     Box,
     Link,
 } from "@mui/material";
+import AuthLayout from "./AuthLayout";
 
 interface PasswordResetProps {
     playerId: string | null;
@@ -59,114 +59,93 @@ const PasswordReset = ({ playerId, token }: PasswordResetProps) => {
 
     if (!playerId || !token) {
         return (
-            <Container
-                maxWidth="sm"
-                sx={{
-                    minHeight: "100vh",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                }}
-            >
-                <Stack spacing={2}>
-                    <Card>
-                        <CardContent>
-                            <Stack spacing={2} alignItems="center">
-                                <Typography variant="h2" component="h1" align="center">
-                                    Invalid Request
-                                </Typography>
-                                <Typography variant="body1" align="center" color="text.secondary">
-                                    The password reset link has expired or is invalid.
-                                </Typography>
-                            </Stack>
-                        </CardContent>
-                    </Card>
-
-                    <Box display="flex" justifyContent="center">
-                        <Button component={RouterLink} to="/request-password-reset" variant="text">
-                            Request a new reset link
-                        </Button>
-                    </Box>
-                </Stack>
-            </Container>
-        );
-    }
-
-    return (
-        <Container
-            maxWidth="sm"
-            sx={{
-                minHeight: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-            }}
-        >
-            <Stack>
+            <AuthLayout maxWidth="sm">
                 <Card>
                     <CardContent>
-                        <Stack component="form" noValidate onSubmit={handleSubmit}>
-                            <Typography variant="h2" component="h1">
-                                Reset Password
+                        <Stack spacing={2} alignItems="center">
+                            <Typography variant="h2" component="h1" align="center">
+                                Invalid Request
                             </Typography>
-
-                            {error && (
-                                <Alert severity="error" variant="standard">
-                                    {error}
-                                </Alert>
-                            )}
-
-                            <TextField
-                                fullWidth
-                                required
-                                label="New Password"
-                                type="password"
-                                placeholder="Enter your new password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                autoComplete="new-password"
-                            />
-
-                            <TextField
-                                fullWidth
-                                required
-                                label="Confirm Password"
-                                type="password"
-                                placeholder="Re-enter your new password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                autoComplete="new-password"
-                            />
-
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                type="submit"
-                                size="large"
-                                disabled={isWaiting}
-                            >
-                                {isWaiting ? "Resetting..." : "Reset Password"}
-                            </Button>
-
-                            <Box display="flex" justifyContent="center">
-                                <Typography variant="body2" color="text.secondary">
-                                    Remember your password?{" "}
-                                    <Link component={RouterLink} to="/login" underline="hover" fontWeight={600}>
-                                        Login
-                                    </Link>
-                                </Typography>
-                            </Box>
+                            <Typography variant="body1" align="center" color="text.secondary">
+                                The password reset link has expired or is invalid.
+                            </Typography>
                         </Stack>
                     </CardContent>
                 </Card>
 
                 <Box display="flex" justifyContent="center">
-                    <Button component={RouterLink} to="/" variant="text">
-                        Back to Home
+                    <Button component={RouterLink} to="/request-password-reset" variant="text">
+                        Request a new reset link
                     </Button>
                 </Box>
-            </Stack>
-        </Container>
+            </AuthLayout>
+        );
+    }
+
+    return (
+        <AuthLayout maxWidth="sm">
+            <Card>
+                <CardContent>
+                    <Stack component="form" noValidate onSubmit={handleSubmit}>
+                        <Typography variant="h2" component="h1">
+                            Reset Password
+                        </Typography>
+
+                        {error && (
+                            <Alert severity="error" variant="standard">
+                                {error}
+                            </Alert>
+                        )}
+
+                        <TextField
+                            fullWidth
+                            required
+                            label="New Password"
+                            type="password"
+                            placeholder="Enter your new password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="new-password"
+                        />
+
+                        <TextField
+                            fullWidth
+                            required
+                            label="Confirm Password"
+                            type="password"
+                            placeholder="Re-enter your new password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            autoComplete="new-password"
+                        />
+
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            type="submit"
+                            size="large"
+                            disabled={isWaiting}
+                        >
+                            {isWaiting ? "Resetting..." : "Reset Password"}
+                        </Button>
+
+                        <Box display="flex" justifyContent="center">
+                            <Typography variant="body2" color="text.secondary">
+                                Remember your password?{" "}
+                                <Link
+                                    component={RouterLink}
+                                    to="/login"
+                                    underline="hover"
+                                    fontWeight={600}
+                                >
+                                    Login
+                                </Link>
+                            </Typography>
+                        </Box>
+                    </Stack>
+                </CardContent>
+            </Card>
+        </AuthLayout>
     );
 };
 

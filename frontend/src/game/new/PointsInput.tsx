@@ -16,9 +16,7 @@ export const NewPointsInput = ({
     pointsValue: _pointsValue,
     isLegacy: _isLegacy = false,
 }: PointsInputProps) => {
-    const handleOnChange = (_target: PickerData, _label: string) => {
-        // handleOnChange
-    };
+    const handleOnChange = (_target: PickerData, _label: string) => {};
 
     return (
         <div className="d-flex justify-content-center mt-4 wheel-picker-container">

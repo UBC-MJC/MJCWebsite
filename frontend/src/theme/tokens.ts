@@ -138,7 +138,7 @@ export const placement = {
     1: palette.medal.gold.text,
     2: palette.medal.silver.text,
     3: palette.medal.bronze.text,
-    4: "#3c2823",
+    4: "#563a33",
 } as const;
 
 export const timing = {
@@ -202,7 +202,7 @@ export interface SchemeTokens {
 
 const darkOverlay: SchemeTokens["overlay"] = {
     // Separators/surfaces on the dark theme are light-on-dark so they stay visible.
-    header: "rgba(255,255,255,0.03)",
+    header: "rgba(255,255,255,0.05)",
     hover: "rgba(255,255,255,0.06)",
     border: "rgba(255,255,255,0.12)",
     shadow: "rgba(0,0,0,0.5)",

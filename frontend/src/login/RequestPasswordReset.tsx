@@ -3,17 +3,8 @@ import { AxiosError } from "axios";
 import { submitRequestPasswordResetAPI } from "@/api/AccountAPI";
 import { Link as RouterLink } from "react-router-dom";
 import alert from "@/common/AlertDialog";
-import {
-    Button,
-    Card,
-    CardContent,
-    Container,
-    TextField,
-    Stack,
-    Typography,
-    Box,
-    Link,
-} from "@mui/material";
+import { Button, Card, CardContent, TextField, Stack, Typography, Box, Link } from "@mui/material";
+import AuthLayout from "./AuthLayout";
 
 const RequestPasswordReset = () => {
     const [username, setUsername] = useState("");
@@ -41,68 +32,57 @@ const RequestPasswordReset = () => {
     };
 
     return (
-        <Container
-            maxWidth="sm"
-            sx={{
-                minHeight: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-            }}
-        >
-            <Stack>
-                <Card>
-                    <CardContent>
-                        <Stack component="form" onSubmit={handleSubmit}>
-                            <Stack spacing={1}>
-                                <Typography variant="h2" component="h1">
-                                    Reset Your Password
-                                </Typography>
-                                <Typography variant="body2" align="center" color="text.secondary">
-                                    Enter your username or email and we&apos;ll send you a link to
-                                    reset your password.
-                                </Typography>
-                            </Stack>
-
-                            <TextField
-                                fullWidth
-                                required
-                                label="Username or Email"
-                                placeholder="Enter your username or email"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                autoComplete="username"
-                            />
-
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                type="submit"
-                                size="large"
-                                disabled={isWaiting}
-                            >
-                                {isWaiting ? "Sending..." : "Send Reset Link"}
-                            </Button>
-
-                            <Box display="flex" justifyContent="center">
-                                <Typography variant="body2" color="text.secondary">
-                                    Remember your password?{" "}
-                                    <Link component={RouterLink} to="/login" underline="hover" fontWeight={600}>
-                                        Login
-                                    </Link>
-                                </Typography>
-                            </Box>
+        <AuthLayout maxWidth="sm">
+            <Card>
+                <CardContent>
+                    <Stack component="form" onSubmit={handleSubmit}>
+                        <Stack spacing={1}>
+                            <Typography variant="h2" component="h1">
+                                Reset Your Password
+                            </Typography>
+                            <Typography variant="body2" align="center" color="text.secondary">
+                                Enter your username or email and we&apos;ll send you a link to reset
+                                your password.
+                            </Typography>
                         </Stack>
-                    </CardContent>
-                </Card>
 
-                <Box display="flex" justifyContent="center">
-                    <Button component={RouterLink} to="/" variant="text">
-                        Back to Home
-                    </Button>
-                </Box>
-            </Stack>
-        </Container>
+                        <TextField
+                            fullWidth
+                            required
+                            label="Username or Email"
+                            placeholder="Enter your username or email"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            autoComplete="username"
+                        />
+
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            type="submit"
+                            size="large"
+                            disabled={isWaiting}
+                        >
+                            {isWaiting ? "Sending..." : "Send Reset Link"}
+                        </Button>
+
+                        <Box display="flex" justifyContent="center">
+                            <Typography variant="body2" color="text.secondary">
+                                Remember your password?{" "}
+                                <Link
+                                    component={RouterLink}
+                                    to="/login"
+                                    underline="hover"
+                                    fontWeight={600}
+                                >
+                                    Login
+                                </Link>
+                            </Typography>
+                        </Box>
+                    </Stack>
+                </CardContent>
+            </Card>
+        </AuthLayout>
     );
 };
 

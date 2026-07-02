@@ -10,7 +10,7 @@ import {
     submitGameAPI,
 } from "@/api/GameAPI";
 import { AuthContext } from "@/common/AuthContext";
-import { getGameVariantString, validateGameVariant } from "@/common/Utils";
+import { formatRelativeTime, getGameVariantString, validateGameVariant } from "@/common/Utils";
 import { logger } from "@/common/logger";
 import LoadingFallback from "@/common/LoadingFallback";
 import alert from "@/common/AlertDialog";
@@ -34,21 +34,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { pulse } from "@/theme/animations";
-
-const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-    });
-};
+import { eyebrowLabel } from "@/theme/utils";
 
 const Game = <T extends GameVariant>() => {
     const { id, variant: variantParam } = useParams();
@@ -56,7 +42,6 @@ const Game = <T extends GameVariant>() => {
     const navigate = useNavigate();
     const gameId = Number(id);
 
-    // Validate and cast variant to GameVariant type
     const variant = (validateGameVariant(variantParam) ? variantParam : undefined) as T | undefined;
 
     const [game, setGame] = useState<Game<T> | undefined>(undefined);
@@ -279,7 +264,7 @@ const Game = <T extends GameVariant>() => {
                                 >
                                     <AccessTimeIcon sx={{ fontSize: { xs: "0.875rem", md: "1.15rem" }}} />
                                     <Typography variant="body2" sx={{ whiteSpace: "nowrap", fontSize: { xs: "0.875rem", md: "1.15rem" }}}>
-                                        {formatDate(game.createdAt)}
+                                        {formatRelativeTime(game.createdAt)}
                                     </Typography>
                                 </Box>
                             </Tooltip>
@@ -303,17 +288,7 @@ const Game = <T extends GameVariant>() => {
                 {canUpdateGame && (
                     <Box>
                         <Card sx={{ p: 1.5 }}>
-                            <Typography
-                                sx={{
-                                    fontWeight: 700,
-                                    fontSize: "0.78rem",
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.08em",
-                                    color: "text.secondary",
-                                    mb: 1.25,
-                                    ml: 0.5,
-                                }}
-                            >
+                            <Typography sx={{ ...eyebrowLabel, mb: 1.25, ml: 0.5 }}>
                                 Game Actions
                             </Typography>
                             <Stack spacing={1.5}>
