@@ -1,3 +1,5 @@
+import { Link as RouterLink } from "react-router-dom";
+
 const Unauthorized = () => {
     return (
         <div>
@@ -10,7 +12,7 @@ const Unauthorized = () => {
                 Please log in with an account that has the necessary access rights.
                 If you believe this is an error, contact your administrator.
             </p>
-            <a href="/">Return to Home</a>
+            <RouterLink to="/">Return to Home</RouterLink>
         </div>
     );
 };

@@ -96,7 +96,6 @@ const AdminChombo = () => {
                 message: "Chombo count updated successfully!",
                 severity: "success",
             });
-            // Reset form
             setGameId("");
             setPlayerId("");
             setChomboCount("");
