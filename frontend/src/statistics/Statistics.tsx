@@ -5,6 +5,8 @@ import { usePlayers } from "@/hooks/GameHooks";
 import { useStatistics, usePlacementHistory } from "@/hooks/LeaderboardHooks";
 import { Autocomplete, Container, Grid, Stack, TextField, Typography } from "@mui/material";
 import { PlacementHistoryGraph } from "./PlacementHistoryGraph";
+import StatisticsSummary from "./StatisticsSummary";
+import LoadingFallback from "@/common/LoadingFallback";
 import type { GameVariant, Season } from "@/types";
 
 const ALL_SEASONS: Season = {
@@ -24,18 +26,18 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
     const allSeasons = [ALL_SEASONS, ...(seasons ?? [])];
 
     if (!seasonsSuccess || !playersSuccess || !seasons || !players) {
-        return <>Loading ...</>;
+        return <LoadingFallback message="Loading statistics…" />;
     }
 
     const selectedPlayer = playerId ? (players.find((p) => p.playerId === playerId) ?? null) : null;
 
     return (
-        <Container>
-            <Stack spacing={2}>
+        <Container sx={{ px: { xs: 1.5, sm: 2, md: 3 }, overflowX: "hidden" }}>
+            <Stack spacing={{ xs: 2.5, sm: 3 }}>
                 <Typography variant="h1">Game Statistics</Typography>
 
                 <Grid container spacing={2}>
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.id === value.id}
                             getOptionLabel={(option) => option.name}
@@ -43,17 +45,12 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
                             blurOnSelect
                             disableClearable
                             onChange={(_e, value) => setSeason(value)}
-                            sx={{ flex: 1 }}
                             renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Season"
-                                    placeholder="Select a season"
-                                />
+                                <TextField {...params} label="Season" placeholder="Select a season" />
                             )}
                         />
                     </Grid>
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <Autocomplete
                             isOptionEqualToValue={(option, value) =>
                                 option.playerId === value.playerId
@@ -62,20 +59,14 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
                             options={players}
                             value={selectedPlayer}
                             blurOnSelect
-                            onChange={(_e, value) => {
-                                setPlayerId(value?.playerId ?? null);
-                            }}
-                            sx={{ flex: 1 }}
+                            onChange={(_e, value) => setPlayerId(value?.playerId ?? null)}
                             renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Player"
-                                    placeholder="Select a player"
-                                />
+                                <TextField {...params} label="Player" placeholder="Select a player" />
                             )}
                         />
                     </Grid>
                 </Grid>
+
                 <DisplayStatistics
                     playerId={playerId === null ? undefined : playerId}
                     gameVariant={gameVariant}
@@ -104,34 +95,12 @@ export const DisplayStatistics = memo(
         );
 
         if (!isSuccess) {
-            return "";
+            return <LoadingFallback minHeight="20vh" message="Loading stats…" />;
         }
 
         return (
             <Stack spacing={3}>
-                    <Grid container spacing={2}>
-                        <Grid size={6}>
-                            Deal-in %: {divideWithDefault(100 * stats.dealInCount, stats.totalRounds).toFixed(2)}%
-                        </Grid>
-                        <Grid size={6}>
-                            Avg Deal-in size: {divideWithDefault(stats.dealInPoint, stats.dealInCount).toFixed(0)}
-                        </Grid>
-                        <Grid size={6}>
-                            Win %: {divideWithDefault(100 * stats.winCount, stats.totalRounds).toFixed(2)}%
-                        </Grid>
-                        <Grid size={6}>
-                            Avg Agari size: {divideWithDefault(stats.winPoint, stats.winCount).toFixed(0)}
-                        </Grid>
-                        <Grid size={6}>
-                            Riichi Rate: {divideWithDefault(100 * stats.riichiCount, stats.totalRounds).toFixed(2)}%
-                        </Grid>
-                        <Grid size={6}>
-                            Riichi Win Rate: {divideWithDefault(100 * stats.winRiichiCount, stats.riichiCount).toFixed(2)}%
-                        </Grid>
-                        <Grid size={6}>
-                            Riichi Deal-in Rate: {divideWithDefault(100 * stats.dealInRiichiCount, stats.riichiCount).toFixed(2)}%
-                        </Grid>
-                    </Grid>
+                <StatisticsSummary stats={stats} showRiichi={gameVariant === "jp"} />
 
                 {historySuccess && placementHistory && placementHistory.length > 0 && (
                     <PlacementHistoryGraph data={placementHistory} />
@@ -141,13 +110,5 @@ export const DisplayStatistics = memo(
     },
 );
 DisplayStatistics.displayName = "DisplayStatistics";
-
-function divideWithDefault(numerator: number, denominator: number, defaultValue = 0) {
-    const result = numerator / denominator;
-    if (isNaN(result)) {
-        return defaultValue;
-    }
-    return result;
-}
 
 export default Statistics;
