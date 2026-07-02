@@ -1,11 +1,30 @@
-// Game input component styles
+// App-level styles
 .App {
   text-align: center;
 }
 
+// Smooth page transitions
+main#main-content {
+  animation: fadeIn 0.18s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// Game round input component styles
 .game-round-input {
-  border: 1px solid black;
+  border: 1px solid;
+  border-color: rgba(0, 0, 0, 0.2);
   position: relative;
+}
+
+// Dark-mode aware border
+@media (prefers-color-scheme: dark) {
+  .game-round-input {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
 }
 
 .game-round-input .game-round-input-grid {
@@ -36,9 +55,8 @@
   -ms-overflow-style: none;
 }
 
+// Link styles
 .link {
-   color: #60a5fa;
-}
-.link:visited {
-  color: #c084fc;
+  color: #60a5fa;
+  &:visited { color: #c084fc; }
 }

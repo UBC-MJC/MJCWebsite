@@ -49,7 +49,6 @@ const playerColumns: GridColDef<Season>[] = [
 const AdminSeason = () => {
     const { player, loading } = useContext(AuthContext);
 
-    // Call all hooks unconditionally at the top
     const [showCreateSeasonModal, setShowCreateSeasonModal] = useState<boolean>(false);
     const [name, setName] = useState<string>("");
     const [endDate, setEndDate] = useState<Dayjs | null>(dayjs().add(9, "weeks").add(5, "days"));
@@ -57,7 +56,6 @@ const AdminSeason = () => {
     const createSeasonMut = useCreateSeasonMutation(player || undefined);
     const updateSeasonMut = useUpdateSeasonMutation(player || undefined);
 
-    // Early return after all hooks
     if (loading) {
         return <LoadingFallback />;
     }
