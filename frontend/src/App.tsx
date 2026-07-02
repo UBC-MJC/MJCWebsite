@@ -14,9 +14,7 @@ import Tournament from "./resources/Tournament";
 // Lazy load route components for code splitting
 const Home = React.lazy(() => import("./home/Home"));
 const Leaderboard = React.lazy(() => import("./leaderboard/Leaderboard"));
-const LiveGames = React.lazy(() =>
-    import("./game/LiveGames").then((module) => ({ default: module.LiveGames })),
-);
+const Games = React.lazy(() => import("./game/Games"));
 const CreateGame = React.lazy(() => import("./game/CreateGame"));
 const Game = React.lazy(() => import("./game/Game"));
 const Statistics = React.lazy(() => import("./statistics/Statistics"));
@@ -30,7 +28,6 @@ const PasswordReset = React.lazy(() => import("./login/PasswordReset"));
 const Resources = React.lazy(() =>
     import("./resources/Resources").then((module) => ({ default: module.Resources })),
 );
-const GameLogs = React.lazy(() => import("./game/GameLogs"));
 
 // Create QueryClient outside component to prevent recreation on every render
 const queryClient = new QueryClient({
@@ -103,14 +100,7 @@ const App = () => {
                                         }
                                     />
                                     <Route path="/games/:variant/:id" element={<Game />} />
-                                    <Route
-                                        path="/games/current/jp"
-                                        element={<LiveGames gameVariant="jp" gameType={"RANKED"} />}
-                                    />
-                                    <Route
-                                        path="/games/current/hk"
-                                        element={<LiveGames gameVariant="hk" gameType={"RANKED"} />}
-                                    />
+                                    <Route path="/games/current" element={<Games />} />
                                     <Route
                                         path="/games/create/jp"
                                         element={
@@ -136,7 +126,7 @@ const App = () => {
                                         }
                                     />
                                     <Route path="/games/not-found" element={<GameNotFound />} />
-                                    <Route path="/games" element={<GameLogs />} />
+                                    <Route path="/games" element={<Games />} />
                                     <Route path="/resources" element={<Resources />} />
                                     <Route path="/vro2026" element={<Tournament />} />
                                     <Route

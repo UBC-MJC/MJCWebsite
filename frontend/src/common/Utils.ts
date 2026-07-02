@@ -118,6 +118,22 @@ const range = (end: number): number[] => {
     return Array.from({ length: end }, (_, i) => i);
 };
 
+/** "Just now" / "5m ago" / "3h ago", falling back to an absolute date past 24h. */
+export const formatRelativeTime = (dateString: string): string => {
+    const date = new Date(dateString);
+    const diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+};
+
 export function getRiichiStickCount(rounds: JapaneseRound[], riichiList: number[]) {
     if (rounds.length === 0) {
         return 0;
