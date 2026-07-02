@@ -4,8 +4,11 @@ import type { HongKongRound, HongKongHandInput } from "@/types";
 import { getScoresWithPlayers, hongKongPointsWheel } from "@/common/Utils";
 import alert from "@/common/AlertDialog";
 import {
+    assignRoundAction,
+    HK_EXCLUSIVE_LABELS,
+    HK_PRIMARY_TRANSACTION_TYPES,
     HK_TRANSACTION_TYPE_BUTTONS,
-    HK_UNDEFINED_HAND,
+    HK_DEFAULT_HAND,
     HongKongActions,
     HongKongLabel,
     HongKongTransactionType,
@@ -14,10 +17,16 @@ import {
 import PlayerButtonRow from "@/game/common/PlayerButtonRow";
 import { LegacyGameProps } from "@/game/Game";
 import PointsInput from "@/game/common/PointsInput";
+import TransactionTypeSelector from "@/game/common/TransactionTypeSelector";
+import StepSection from "@/game/common/StepSection";
+import RoundRequirements from "@/game/common/RoundRequirements";
 import { Footer } from "@/game/common/Footer";
 import { createHongKongRoundRequest, generateOverallScoreDelta } from "../controller/HongKongRound";
-import { validateHongKongRound } from "../controller/ValidateHongKongRound";
-import { Box, Button, ToggleButton, Stack, Paper, ToggleButtonGroup, Divider } from "@mui/material";
+import {
+    getUnmetHongKongRoundRequirements,
+    validateHongKongRound,
+} from "../controller/ValidateHongKongRound";
+import { Box, Button, Stack, Card, CardContent } from "@mui/material";
 
 const LegacyHongKongGame = ({
     enableRecording,
@@ -29,8 +38,9 @@ const LegacyHongKongGame = ({
         HongKongTransactionType.DEAL_IN,
     );
     const [roundActions, setRoundActions] = useState<HongKongActions>({});
-    const [hand, setHand] = useState<HongKongHandInput>(HK_UNDEFINED_HAND);
+    const [hand, setHand] = useState<HongKongHandInput>(HK_DEFAULT_HAND);
     const gameOver = isGameEnd(game, "hk");
+    const unmetRequirements = getUnmetHongKongRoundRequirements(transactionType, roundActions);
 
     const transactionTypeOnChange = (type: HongKongTransactionType) => {
         const prevWinner = roundActions.WINNER;
@@ -63,14 +73,12 @@ const LegacyHongKongGame = ({
         setRoundActions(newRoundActions);
         setTransactionType(type);
         if (!showPointInput()) {
-            setHand(HK_UNDEFINED_HAND);
+            setHand(HK_DEFAULT_HAND);
         }
     };
 
     const actionOnChange = (playerIndex: number, label: HongKongLabel) => {
-        const newRoundActions: HongKongActions = { ...roundActions };
-        newRoundActions[label] = playerIndex;
-        setRoundActions(newRoundActions);
+        setRoundActions(assignRoundAction(roundActions, label, playerIndex, HK_EXCLUSIVE_LABELS));
     };
 
     const handOnChange = (_: string, value: string) => {
@@ -121,79 +129,64 @@ const LegacyHongKongGame = ({
     };
 
     const getRecordingInterface = () => {
+        const playerLabels = getHongKongLabels();
         return (
-            <Paper
-                elevation={2}
-                sx={{
-                    p: 3,
-                    borderRadius: 2,
-                    bgcolor: "background.paper",
-                    width: "100%",
-                    maxWidth: "600px",
-                }}
-            >
-                <Stack spacing={3}>
-                    <Box>
-                        <ToggleButtonGroup
-                            exclusive
-                            value={transactionType}
-                            onChange={(_event, value) => value && transactionTypeOnChange(value)}
-                            sx={{
-                                display: "flex",
-                                flexWrap: "wrap",
-                                gap: 1,
-                                "& .MuiToggleButton-root": {
-                                    flex: "1 1 auto",
-                                    minWidth: "120px",
-                                    borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
-                                    "&:hover": {
-                                        borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
-                                    },
-                                },
-                            }}
-                        >
-                            {HK_TRANSACTION_TYPE_BUTTONS.map((button, idx) => (
-                                <ToggleButton key={idx} value={button.value} id={button.name}>
-                                    {button.name}
-                                </ToggleButton>
-                            ))}
-                        </ToggleButtonGroup>
-                    </Box>
-
-                    <Divider />
-
-                    {getHongKongLabels().map(([label, labelPlayerIds]) => (
-                        <PlayerButtonRow
-                            key={label}
-                            players={players}
-                            label={label}
-                            labelPlayerIds={labelPlayerIds}
-                            onChange={actionOnChange}
-                        />
-                    ))}
-
-                    {showPointInput() && (
-                        <Box sx={{ my: 2 }}>
-                            <PointsInput
-                                pointsWheel={hongKongPointsWheel}
-                                onChange={handOnChange}
+            <Card>
+                <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                    <Stack spacing={3}>
+                        <StepSection step={1} title="Result">
+                            <TransactionTypeSelector
+                                buttons={HK_TRANSACTION_TYPE_BUTTONS}
+                                primaryValues={HK_PRIMARY_TRANSACTION_TYPES}
+                                value={transactionType}
+                                onChange={transactionTypeOnChange}
                             />
-                        </Box>
-                    )}
+                        </StepSection>
 
-                    <Button
-                        color="success"
-                        variant="contained"
-                        disabled={gameOver}
-                        onClick={submitRound}
-                        fullWidth
-                        size="large"
-                        sx={{ mt: 2 }}
-                    >
-                        Submit Round
-                    </Button>
-                </Stack>
-            </Paper>
+                        {playerLabels.length > 0 && (
+                            <StepSection step={2} title="Players">
+                                <Stack spacing={2}>
+                                    {playerLabels.map(([label, labelPlayerIds]) => (
+                                        <PlayerButtonRow
+                                            key={label}
+                                            players={players}
+                                            label={label}
+                                            labelPlayerIds={labelPlayerIds}
+                                            onChange={actionOnChange}
+                                        />
+                                    ))}
+                                </Stack>
+                            </StepSection>
+                        )}
+
+                        {showPointInput() && (
+                            <StepSection step={3} title="Points">
+                                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                                    <PointsInput
+                                        pointsWheel={hongKongPointsWheel}
+                                        onChange={handOnChange}
+                                        values={{ points: String(hand) }}
+                                    />
+                                </Box>
+                            </StepSection>
+                        )}
+
+                        <Stack spacing={1.5} sx={{ width: "100%" }}>
+                            <Button
+                                color="success"
+                                variant="contained"
+                                disabled={gameOver || unmetRequirements.length > 0}
+                                onClick={submitRound}
+                                fullWidth
+                                size="large"
+                            >
+                                Submit Round
+                            </Button>
+                            <RoundRequirements requirements={unmetRequirements} />
+                        </Stack>
+                    </Stack>
+                </CardContent>
+            </Card>
         );
     };
 
@@ -212,17 +205,23 @@ const LegacyHongKongGame = ({
 
     return (
         <>
-            <Stack alignItems="center" spacing={3} sx={{ pb: 2 }}>
+            <Stack spacing={3}>
                 {enableRecording && !gameOver && getRecordingInterface()}
 
                 <Box sx={{ width: "100%" }}>
                     <LegacyHongKongGameTable
                         rounds={mapRoundsToModifiedRounds(game.rounds)}
                         players={players}
+                        dealerIndex={
+                            game.currentRound ? game.currentRound.roundNumber - 1 : undefined
+                        }
                     />
                 </Box>
             </Stack>
-            <Footer scores={getScoresWithPlayers(game, "hk")} />
+            <Footer
+                scores={getScoresWithPlayers(game, "hk")}
+                dealerIndex={game.currentRound ? game.currentRound.roundNumber - 1 : undefined}
+            />
         </>
     );
 };

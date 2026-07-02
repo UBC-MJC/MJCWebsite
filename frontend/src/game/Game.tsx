@@ -10,7 +10,7 @@ import {
     submitGameAPI,
 } from "@/api/GameAPI";
 import { AuthContext } from "@/common/AuthContext";
-import { getGameVariantString, validateGameVariant } from "@/common/Utils";
+import { formatRelativeTime, getGameVariantString, validateGameVariant } from "@/common/Utils";
 import { logger } from "@/common/logger";
 import LoadingFallback from "@/common/LoadingFallback";
 import alert from "@/common/AlertDialog";
@@ -19,7 +19,22 @@ import LegacyJapaneseGame from "./jp/legacy/LegacyJapaneseGame";
 import LegacyHongKongGame from "./hk/legacy/LegacyHongKongGame";
 import { gameRoundString, isGameEnd } from "./common/constants";
 import { baseUrl } from "@/api/APIUtils";
-import { Button, Stack, Container, Typography } from "@mui/material";
+import {
+    Button,
+    Stack,
+    Container,
+    Typography,
+    Box,
+    Card,
+    Chip,
+    Tooltip,
+} from "@mui/material";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import UndoIcon from "@mui/icons-material/Undo";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { pulse } from "@/theme/animations";
+import { eyebrowLabel } from "@/theme/utils";
 
 const Game = <T extends GameVariant>() => {
     const { id, variant: variantParam } = useParams();
@@ -27,7 +42,6 @@ const Game = <T extends GameVariant>() => {
     const navigate = useNavigate();
     const gameId = Number(id);
 
-    // Validate and cast variant to GameVariant type
     const variant = (validateGameVariant(variantParam) ? variantParam : undefined) as T | undefined;
 
     const [game, setGame] = useState<Game<T> | undefined>(undefined);
@@ -190,46 +204,130 @@ const Game = <T extends GameVariant>() => {
     }
     const canUpdateGame =
         game.status === "IN_PROGRESS" && (isRecording(game) || (player && player.admin));
-    const spectatorPadding: number = canUpdateGame ? 0 : 12;
     return (
-        <Container sx={{ pb: { xs: 6 + spectatorPadding, sm: 10 + spectatorPadding } }}>
-            <Stack>
-                <Typography variant="h1">{getGameVariantString(variant, game.type)}</Typography>
-                {game.status === "IN_PROGRESS" && (
-                    <Typography variant="h2" color="text.secondary">
-                        {gameRoundString(game, variant)}
-                    </Typography>
-                )}
+        <Container
+            sx={{
+                // Clear the fixed score footer: pad by its measured height
+                // (--game-footer-height, published by <Footer>) plus breathing
+                // room. The fallbacks cover the first paint before it measures.
+                pb: {
+                    xs: "calc(var(--game-footer-height, 112px) + 16px)",
+                    sm: "calc(var(--game-footer-height, 128px) + 24px)",
+                },
+            }}
+        >
+            <Stack spacing={3}>
+                <Card sx={{ overflow: "hidden" }}>
+                    <Box
+                        sx={{
+                            bgcolor: "action.hover",
+                            px: { xs: 2, md: 3 },
+                            py: 2,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            flexWrap: "wrap",
+                            gap: 1.5,
+                        }}
+                    >
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, minWidth: 0 }}>
+                            {game.status === "IN_PROGRESS" && (
+                                <Box
+                                    sx={{
+                                        width: 11,
+                                        height: 11,
+                                        borderRadius: "50%",
+                                        bgcolor: "primary.main",
+                                        flexShrink: 0,
+                                        animation: `${pulse} 1.6s ease-in-out infinite`,
+                                        "@media (prefers-reduced-motion: reduce)": {
+                                            animation: "none",
+                                        },
+                                    }}
+                                />
+                            )}
+                            <Typography
+                                variant="h1"
+                                sx={{ fontSize: { xs: "1.25rem", md: "2rem" }, fontWeight: 800 }}
+                            >
+                                {getGameVariantString(variant, game.type)}
+                            </Typography>
+                            <Tooltip title={new Date(game.createdAt).toLocaleString()} arrow>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 0.5,
+                                        color: "text.secondary",
+                                        flexShrink: 0,
+                                    }}
+                                >
+                                    <AccessTimeIcon sx={{ fontSize: { xs: "0.875rem", md: "1.15rem" }}} />
+                                    <Typography variant="body2" sx={{ whiteSpace: "nowrap", fontSize: { xs: "0.875rem", md: "1.15rem" }}}>
+                                        {formatRelativeTime(game.createdAt)}
+                                    </Typography>
+                                </Box>
+                            </Tooltip>
+                        </Box>
+                        <Stack direction="row" justifyContent="right" spacing={1}>
+                            <Chip
+                                label={
+                                    game.status === "IN_PROGRESS"
+                                        ? gameRoundString(game, variant)
+                                        : "Finished"
+                                }
+                                color={game.status === "IN_PROGRESS" ? "primary" : "success"}
+                                variant="outlined"
+                                sx={{ height: 40, fontSize: "0.95rem", fontWeight: 600, flexShrink: 0 }}
+                            />
+                        </Stack>
+                    </Box>
+                </Card>
+
                 {getLegacyDisplayGame(game)}
                 {canUpdateGame && (
-                    <Stack direction={{ xs: "column", sm: "row" }} sx={{ pb: { xs: 18, sm: 16 } }}>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            disabled={game.rounds.length == 0}
-                            fullWidth
-                            onClick={() => handleDeleteRound()}
-                        >
-                            Delete Last Round
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            fullWidth
-                            onClick={() => handleDeleteGame()}
-                        >
-                            Delete Game
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="success"
-                            disabled={!isGameEnd(game, variant)}
-                            fullWidth
-                            onClick={() => handleSubmitGame()}
-                        >
-                            Submit Game
-                        </Button>
-                    </Stack>
+                    <Box>
+                        <Card sx={{ p: 1.5 }}>
+                            <Typography sx={{ ...eyebrowLabel, mb: 1.25, ml: 0.5 }}>
+                                Game Actions
+                            </Typography>
+                            <Stack spacing={1.5}>
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    size="large"
+                                    startIcon={<CheckCircleOutlineIcon />}
+                                    disabled={!isGameEnd(game, variant)}
+                                    fullWidth
+                                    onClick={() => handleSubmitGame()}
+                                    sx={{ py: 1.5, fontSize: "1.05rem", fontWeight: 700 }}
+                                >
+                                    Submit Game
+                                </Button>
+                                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        startIcon={<UndoIcon />}
+                                        disabled={game.rounds.length === 0}
+                                        fullWidth
+                                        onClick={() => handleDeleteRound()}
+                                    >
+                                        Delete Last Round
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        startIcon={<DeleteOutlineIcon />}
+                                        fullWidth
+                                        onClick={() => handleDeleteGame()}
+                                    >
+                                        Delete Game
+                                    </Button>
+                                </Stack>
+                            </Stack>
+                        </Card>
+                    </Box>
                 )}
             </Stack>
         </Container>
