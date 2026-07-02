@@ -101,28 +101,43 @@ const App = () => {
                                     />
                                     <Route path="/games/:variant/:id" element={<Game />} />
                                     <Route path="/games/current" element={<Games />} />
+                                    <Route path="/games/create" element={<CreateGame />} />
+                                    {/* Legacy per-type create routes now redirect, carrying the
+                                        intended variant/type so the page opens on that selection. */}
                                     <Route
                                         path="/games/create/jp"
                                         element={
-                                            <CreateGame gameVariant="jp" gameType={"RANKED"} />
+                                            <Navigate
+                                                to="/games/create?variant=jp&type=RANKED"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route
                                         path="/games/create/jp/casual"
                                         element={
-                                            <CreateGame gameVariant="jp" gameType={"CASUAL"} />
+                                            <Navigate
+                                                to="/games/create?variant=jp&type=CASUAL"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route
                                         path="/games/create/hk"
                                         element={
-                                            <CreateGame gameVariant="hk" gameType={"RANKED"} />
+                                            <Navigate
+                                                to="/games/create?variant=hk&type=RANKED"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route
                                         path="/games/create/hk/casual"
                                         element={
-                                            <CreateGame gameVariant="hk" gameType={"CASUAL"} />
+                                            <Navigate
+                                                to="/games/create?variant=hk&type=CASUAL"
+                                                replace
+                                            />
                                         }
                                     />
                                     <Route path="/games/not-found" element={<GameNotFound />} />
