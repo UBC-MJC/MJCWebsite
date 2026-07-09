@@ -3,6 +3,7 @@
 ## Prerequisites
 
 The setup instructions below will guide you through installing and configuring:
+
 - MySQL server (database)
 - Nginx (reverse proxy)
 - Node.js and npm (should already be installed)
@@ -58,6 +59,7 @@ EXIT;
 ```
 
 Create your `.env.production` file with the database credentials:
+
 ```bash
 # .env.production (on production server only)
 NODE_ENV=production
@@ -68,6 +70,7 @@ DATABASE_URL=mysql://your_username:your_password@localhost:3306/your_database_na
 ```
 
 For local development, create a `.env.development` file:
+
 ```bash
 # .env.development (local machine only)
 NODE_ENV=development
@@ -92,6 +95,7 @@ nginx -v
 ### 3. Configure Nginx
 
 Edit `config/nginx/mjc-website.conf` and replace placeholders:
+
 - `YOUR_DOMAIN.com` → your domain name
 - `/path/to/MJCWebsite` → absolute path to this project
 
@@ -127,6 +131,7 @@ Before deploying, build the application:
 ```
 
 This will:
+
 - Install frontend dependencies
 - Build the frontend (TypeScript + Vite)
 - Install backend dependencies
@@ -137,6 +142,7 @@ This will:
 ### 5. Configure the Systemd Service File
 
 Edit `config/mjc-website.service` and replace placeholders:
+
 - `YOUR_USERNAME` → your system username
 - `/path/to/MJCWebsite` → absolute path to this project
 
@@ -171,86 +177,15 @@ tail -f logs/backend-*.log
 
 ## Deployment Workflow
 
-There are two deployment methods available:
-
-### Method 1: Local Build + Remote Deploy (Recommended)
-
-This method builds on your local machine and deploys only the build artifacts to the server. **Much faster** since the server doesn't need to install dependencies or compile code.
-
-#### Initial Setup
-
-1. **Configure the deployment script:**
-   ```bash
-   # Edit scripts/deploy.sh
-   nano scripts/deploy.sh
-
-   # Update these values:
-   SERVER_USER="your_username"
-   SERVER_HOST="your.server.ip"
-   SERVER_PATH="/path/to/MJCWebsite"
-   ```
-
-2. **Set up SSH key authentication (if not already done):**
-   ```bash
-   # Generate SSH key (if you don't have one)
-   ssh-keygen -t ed25519
-
-   # Copy to server
-   ssh-copy-id your_username@your.server.ip
-   ```
-
-3. **Ensure server has the systemd service installed:**
-   ```bash
-   # On server - one time setup
-   ssh your_username@your.server.ip
-   sudo cp /path/to/MJCWebsite/config/mjc-website.service /etc/systemd/system/
-   sudo systemctl daemon-reload
-   sudo systemctl enable mjc-website
-   ```
-
-4. **Create .env.production on server (one time):**
-   ```bash
-   ssh your_username@your.server.ip
-   cd /path/to/MJCWebsite
-   nano .env.production
-   # Add your production environment variables
-   ```
-
-#### Deploying Updates
-
-Simply run the deployment script from your local machine:
-
-```bash
-./scripts/deploy.sh
-```
-
-This will:
-1. Build the application locally
-2. Stop the remote service
-3. Deploy build artifacts via rsync
-4. Deploy .env.production (if exists locally)
-5. Start the remote service
-6. Show service status
-
-**Benefits:**
-- ⚡ Fast deployment (only transfers changed files)
-- 🛡️ Server doesn't need build tools (TypeScript, etc.)
-- 💻 Can deploy from any developer machine
-- 🔄 Easy rollbacks
-
-### Method 2: Server-Side Build
-
 Build and deploy directly on the production server.
 
 #### Initial Deployment
 
 1. **On Production Server:**
+
    ```bash
    # Clone or pull latest code
    git pull origin main
-
-   # Create .env.production file (if not exists)
-   nano .env.production
 
    # Run production build
    ./scripts/prod.sh
@@ -267,16 +202,19 @@ Build and deploy directly on the production server.
 When you update the code:
 
 1. **Stop the service:**
+
    ```bash
    sudo systemctl stop mjc-website
    ```
 
 2. **Pull latest code:**
+
    ```bash
    git pull origin main
    ```
 
 3. **Rebuild the application:**
+
    ```bash
    ./scripts/prod.sh
    ```
@@ -287,6 +225,7 @@ When you update the code:
    ```
 
 **Drawbacks:**
+
 - ⏱️ Slower (must install dependencies and compile)
 - 🔧 Requires build tools on server
 - 📦 Larger server footprint
@@ -384,6 +323,7 @@ sudo systemctl disable mysql
 ## Logs
 
 ### Application Logs
+
 - **Systemd logs**: `sudo journalctl -u mjc-website`
 - **Backend logs**: `logs/backend-YYYYMMDD.log` (daily rotation)
 - **Build logs**: Output from `prod.sh` (shown during build)
@@ -391,11 +331,13 @@ sudo systemctl disable mysql
 - **Systemd errors**: `logs/systemd-error.log`
 
 ### Nginx Logs
+
 - **Access logs**: `/var/log/nginx/mjc-website-access.log`
 - **Error logs**: `/var/log/nginx/mjc-website-error.log`
 - **General nginx logs**: `/var/log/nginx/access.log` and `/var/log/nginx/error.log`
 
 To view nginx logs in real-time:
+
 ```bash
 sudo tail -f /var/log/nginx/mjc-website-access.log
 sudo tail -f /var/log/nginx/mjc-website-error.log
@@ -404,12 +346,14 @@ sudo tail -f /var/log/nginx/mjc-website-error.log
 ## Environment Variables
 
 The application uses environment-specific `.env` files:
+
 - **Development**: `.env.development` (local machine, gitignored)
 - **Production**: `.env.production` (production server, gitignored)
 
 The correct file is loaded automatically based on the `NODE_ENV` environment variable.
 
 ### Common Environment Variables
+
 - `NODE_ENV` - Set to `production` or `development`
 - `HTTP_PORT` (default: 8080) - HTTP port for Node.js server
 - `HTTPS_PORT` (default: 8443) - HTTPS port for Node.js server
@@ -448,16 +392,19 @@ If nginx fails to start or proxy correctly:
 ### Common Issues
 
 **502 Bad Gateway Error**:
+
 - Node.js application is not running
 - Check: `sudo systemctl status mjc-website`
 - Verify Node.js is listening: `curl -k https://localhost:8443`
 
 **Connection Refused**:
+
 - Nginx is not running
 - Check: `sudo systemctl status nginx`
 - Firewall blocking ports 80/443
 
 **SSL Certificate Errors**:
+
 - Verify certificate paths in `config/nginx/mjc-website.conf`
 - Ensure certificates are readable by nginx user
 - Check certificate validity: `openssl x509 -in /path/to/cert.crt -text -noout`

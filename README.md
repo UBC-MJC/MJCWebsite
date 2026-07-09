@@ -34,22 +34,22 @@ MJCWebsite/
 │   ├── dev.sh        # Development server launcher
 │   ├── prod.sh       # Production build script
 │   ├── start.sh      # Production server starter
-│   └── deploy.sh     # Automated deployment script
 └── build/            # Production build output (gitignored)
 ```
 
 ## Scripts
 
 ### Development
+
 ```bash
 ./scripts/dev.sh      # Start development server locally
 ```
 
 ### Production
+
 ```bash
 ./scripts/prod.sh     # Build for production
 ./scripts/start.sh    # Start production server
-./scripts/deploy.sh   # Deploy to remote server
 ```
 
 ## Contributing

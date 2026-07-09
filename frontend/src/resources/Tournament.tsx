@@ -22,7 +22,7 @@ export default function Tournament() {
                     <Stack spacing={2} p={2}>
                         <Typography variant="h2">Location (Tentative)</Typography>
                         <Typography>
-                            <strong>Room 2306/2309, AMS Student Nest</strong>
+                            <strong>The Great Hall, AMS Student Nest</strong>
                             <br />
                             6133 University Blvd,
                             <br />
