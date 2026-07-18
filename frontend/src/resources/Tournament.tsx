@@ -127,11 +127,11 @@ export default function Tournament() {
 
                                     <ListItem>10:00 &ndash; 10:30: Player Check-in</ListItem>
                                     <ListItem>10:43 &ndash; 12:13: Round 1</ListItem>
-                                    <ListItem>12:25 &ndash; 13:55: Round 2</ListItem>
-                                    <ListItem>13:55 &ndash; 15:00: Intermission + Lunch</ListItem>
-                                    <ListItem>15:00 &ndash; 16:30: Round 3</ListItem>
-                                    <ListItem>16:45 &ndash; 18:15: Round 4</ListItem>
-                                    <ListItem>18:15 onwards: Free Play</ListItem>
+                                    <ListItem>12:35 &ndash; 14:05: Round 2</ListItem>
+                                    <ListItem>14:05 &ndash; 15:10: Intermission + Lunch</ListItem>
+                                    <ListItem>15:10 &ndash; 16:40: Round 3</ListItem>
+                                    <ListItem>16:55 &ndash; 18:25: Round 4</ListItem>
+                                    <ListItem>18:25 onwards: Free Play</ListItem>
                                 </List>
                             </Grid>
                             <Grid size={6}>
