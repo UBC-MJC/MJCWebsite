@@ -126,9 +126,9 @@ export default function Tournament() {
                                     </ListItem>
 
                                     <ListItem>10:00 &ndash; 10:30: Player Check-in</ListItem>
-                                    <ListItem>10:30 &ndash; 12:00: Round 1</ListItem>
-                                    <ListItem>12:15 &ndash; 13:45: Round 2</ListItem>
-                                    <ListItem>13:45 &ndash; 15:00: Intermission + Lunch</ListItem>
+                                    <ListItem>10:43 &ndash; 12:13: Round 1</ListItem>
+                                    <ListItem>12:25 &ndash; 13:55: Round 2</ListItem>
+                                    <ListItem>13:55 &ndash; 15:00: Intermission + Lunch</ListItem>
                                     <ListItem>15:00 &ndash; 16:30: Round 3</ListItem>
                                     <ListItem>16:45 &ndash; 18:15: Round 4</ListItem>
                                     <ListItem>18:15 onwards: Free Play</ListItem>
@@ -140,13 +140,13 @@ export default function Tournament() {
                                         <b>Day 2 (2026-07-19)</b>
                                     </ListItem>
 
-                                    <ListItem>10:00 &ndash; 10:30: Player Check-in</ListItem>
-                                    <ListItem>10:30 &ndash; 12:00: Round 5</ListItem>
-                                    <ListItem>12:15 &ndash; 13:45: Round 6</ListItem>
-                                    <ListItem>13:45 &ndash; 15:00: Intermission + Lunch</ListItem>
-                                    <ListItem>15:00 &ndash; 16:30: Playoff Game 1</ListItem>
-                                    <ListItem>16:45 &ndash; 18:15: Playoff Game 2</ListItem>
-                                    <ListItem>18:15 onwards: Awards Ceremony + Free Play</ListItem>
+                                    <ListItem>09:00 &ndash; 09:30: Player Check-in</ListItem>
+                                    <ListItem>09:30 &ndash; 11:00: Round 5</ListItem>
+                                    <ListItem>11:15 &ndash; 12:45: Round 6</ListItem>
+                                    <ListItem>12:45 &ndash; 14:00: Intermission + Lunch</ListItem>
+                                    <ListItem>14:00 &ndash; 15:30: Playoff Game 1</ListItem>
+                                    <ListItem>15:45 &ndash; 17:15: Playoff Game 2</ListItem>
+                                    <ListItem>17:15 onwards: Awards Ceremony + Free Play</ListItem>
                                 </List>
                             </Grid>
                         </Grid>
