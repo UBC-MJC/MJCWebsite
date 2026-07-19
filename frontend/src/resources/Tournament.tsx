@@ -137,7 +137,7 @@ export default function Tournament() {
                             <Grid size={6}>
                                 <List>
                                     <ListItem>
-                                        <b>Day 2 (2026-07-19) (Provisional Schedule)</b>
+                                        <b>Day 2 (2026-07-19)</b>
                                     </ListItem>
 
                                     <ListItem>10:00 &ndash; 10:30: Player Check-in</ListItem>
