@@ -137,16 +137,16 @@ export default function Tournament() {
                             <Grid size={6}>
                                 <List>
                                     <ListItem>
-                                        <b>Day 2 (2026-07-19)</b>
+                                        <b>Day 2 (2026-07-19) (Provisional Schedule)</b>
                                     </ListItem>
 
-                                    <ListItem>09:00 &ndash; 09:30: Player Check-in</ListItem>
-                                    <ListItem>09:30 &ndash; 11:00: Round 5</ListItem>
-                                    <ListItem>11:15 &ndash; 12:45: Round 6</ListItem>
-                                    <ListItem>12:45 &ndash; 14:30: Intermission + Lunch</ListItem>
-                                    <ListItem>14:30 &ndash; 16:00: Playoff Game 1</ListItem>
-                                    <ListItem>16:15 &ndash; 17:45: Playoff Game 2</ListItem>
-                                    <ListItem>17:45 onwards: Awards Ceremony + Free Play</ListItem>
+                                    <ListItem>10:00 &ndash; 10:30: Player Check-in</ListItem>
+                                    <ListItem>10:30 &ndash; 12:00: Round 5</ListItem>
+                                    <ListItem>12:15 &ndash; 13:45: Round 6</ListItem>
+                                    <ListItem>13:45 &ndash; 15:15: Intermission + Lunch</ListItem>
+                                    <ListItem>15:15 &ndash; 16:45: Playoff Game 1</ListItem>
+                                    <ListItem>17:00 &ndash; 18:30: Playoff Game 2</ListItem>
+                                    <ListItem>18:30 onwards: Awards Ceremony + Free Play</ListItem>
                                 </List>
                             </Grid>
                         </Grid>
