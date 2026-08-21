@@ -20,6 +20,7 @@ const LiveGames = React.lazy(() =>
 const CreateGame = React.lazy(() => import("./game/CreateGame"));
 const Game = React.lazy(() => import("./game/Game"));
 const Statistics = React.lazy(() => import("./statistics/Statistics"));
+const CheckIn = React.lazy(() => import("./activity/CheckIn"));
 const Login = React.lazy(() => import("./login/Login"));
 const Admin = React.lazy(() => import("./admin/Admin"));
 const Register = React.lazy(() => import("./login/Register"));
@@ -128,6 +129,7 @@ const App = () => {
                                         path="/stats/jp"
                                         element={<Statistics gameVariant={"jp"} />}
                                     />
+                                    <Route path="/activity" element={<CheckIn />} />
                                     <Route path="/admin" element={<Admin />} />
                                     <Route path="/settings" element={<Settings />} />
                                     <Route path="/unauthorized" element={<Unauthorized />} />

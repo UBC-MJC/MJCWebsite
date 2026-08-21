@@ -58,6 +58,7 @@ model Player {
     japaneseGamesRecorded JapaneseGame[]
     hongKongGames         HongKongPlayerGame[]
     hongKongGamesRecorded HongKongGame[]
+    checkedInAt           DateTime?
 }
 
 model JapanesePlayerGame {
