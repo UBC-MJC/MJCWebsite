@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { AuthContextProvider } from "@/common/AuthContext";
 import ErrorBoundary from "@/common/ErrorBoundary";
+import { pageMeta } from "@/common/pageMeta";
 import { createAppTheme } from "@/theme";
 import "@/App.scss";
 
@@ -19,6 +20,8 @@ const queryClient = new QueryClient({
 
 const theme = createAppTheme();
 
+export const meta = () => pageMeta();
+
 export function Layout({ children }: { children: ReactNode }) {
     return (
         <html lang="en">
@@ -30,7 +33,6 @@ export function Layout({ children }: { children: ReactNode }) {
                 <link rel="icon" href="/favicon.ico" />
                 <link rel="apple-touch-icon" href="/logo192.png" />
                 <link rel="manifest" href="/manifest.json" />
-                <title>UBC Mahjong Club</title>
                 <Meta />
                 <Links />
             </head>

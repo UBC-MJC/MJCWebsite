@@ -114,9 +114,7 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
                                     );
                                 },
                             }}
-                            slotProps={{
-                                legend: { hidden: true },
-                            }}
+                            hideLegend
                             height={isMobile ? 250 : 300}
                             width={chartWidth}
                             sx={{ pointerEvents: "none" }}
