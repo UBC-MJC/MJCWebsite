@@ -1,10 +1,4 @@
 import {
-    checkInAPI,
-    checkOutAPI,
-    getCheckedInPlayersAPI,
-    getStatusAPI
-} from "@/api/CheckInAPI";
-import {
     Container,
     Typography,
     Stack,
@@ -13,66 +7,19 @@ import {
     Alert,
 } from "@mui/material";
 import { AuthContext } from "@/common/AuthContext";
-import { useEffect, useState, useContext } from "react";
+import { useContext } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { responsiveDataGridContainer } from "@/theme/utils";
-
+import { useCheckedInPlayers, useCheckInAction, useCheckInStatus } from "@/hooks/CheckInHooks";
 
 const CheckIn = () => {
-
-    const [checkedIn, setCheckedIn] = useState(true);
-    const [checkedInPlayers, setCheckedInPlayers] = useState<{ id: string; username: string; checkedInAt: string }[]>([]);
     const { player, loading } = useContext(AuthContext);
-    const [statusLoading, setStatusLoading] = useState(true);
-
-    useEffect(() => {
-        const loadCheckInData = async () => {
-            try {
-                await loadCheckedInPlayers();
-
-                if (player) {
-                    const statusResponse = await getStatusAPI();
-                    setCheckedIn(statusResponse.data.checkedInAt !== null);
-                }
-            } catch (err) {
-                console.error("Failed to load check-in status:", err);
-            } finally {
-                setStatusLoading(false);
-            }
-        };
-        if (!loading) {
-            loadCheckInData();
-        }
-    }, [loading, player]);
-
-    const handleCheckIn = async () => {
-        try {
-            await checkInAPI();
-            setCheckedIn(true);
-            await loadCheckedInPlayers();
-        } catch (err) {
-            console.error("Failed to check in: ", err);
-        }
-    };
-
-    const handleCheckOut = async () => {
-        try {
-            await checkOutAPI();
-            setCheckedIn(false);
-            await loadCheckedInPlayers();
-        } catch (err) {
-            console.error("Failed to check out: ", err);
-        }
-    }
-
-    const loadCheckedInPlayers = async () => {
-        try {
-            const response = await getCheckedInPlayersAPI();
-            setCheckedInPlayers(response.data.players);
-        } catch (err) {
-            console.error("Failed to load checked-in players:", err);
-        }
-    };
+    const { data: checkedInPlayers = [] } = useCheckedInPlayers();
+    const {
+        data: checkedIn = false,
+        isLoading: statusLoading,
+    } = useCheckInStatus(!loading && !!player);
+    const { checkIn, checkOut } = useCheckInAction();
 
     return (
         <Container>
@@ -84,7 +31,7 @@ const CheckIn = () => {
                             <Button
                                 size="large"
                                 variant="contained"
-                                onClick={handleCheckIn}
+                                onClick={() => checkIn.mutate()}
                                 disabled={checkedIn || statusLoading}
                             >
                                 Check In
@@ -92,7 +39,7 @@ const CheckIn = () => {
                             <Button
                                 size="large"
                                 variant="outlined"
-                                onClick={handleCheckOut}
+                                onClick={() => checkOut.mutate()}
                                 disabled={!checkedIn || statusLoading}
                             >
                                 Check Out
@@ -107,7 +54,6 @@ const CheckIn = () => {
                         </Alert>
                     </Box>
                 )}
-                <Typography variant="h5">Number of people checked in: {checkedInPlayers.length} </Typography>
                 <Box sx={responsiveDataGridContainer}>
                     <DataGrid
                         rows={checkedInPlayers}
