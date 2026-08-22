@@ -6,7 +6,7 @@ The setup instructions below will guide you through installing and configuring:
 
 - MySQL server (database)
 - Nginx (reverse proxy)
-- Node.js v24.11.0 or higher and npm (should already be installed)
+- Node.js v24 or higher and npm (should already be installed)
 - Systemd (built-in on Ubuntu/Debian for service management)
 
 ## Architecture
