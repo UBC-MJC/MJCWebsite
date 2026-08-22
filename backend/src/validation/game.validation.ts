@@ -1,7 +1,6 @@
 import * as z from "zod";
 
 import { GameType, HongKongTransactionType, JapaneseTransactionType, Wind } from "@prisma/client";
-
 import { FullJapaneseGame } from "../services/game/japaneseGame.service";
 
 const gameVariantSchema = z.enum(["jp", "hk"]);
@@ -11,18 +10,39 @@ const createGameSchema = z.object({
     players: z.array(z.string()).length(4),
 });
 
-const JapaneseTransactionSchema = z.object({
-    transactionType: z.enum(JapaneseTransactionType),
+const JapaneseTransactionBaseSchema = z.object({
     scoreDeltas: z.array(z.number()).length(4),
-    paoPlayerIndex: z.number().optional(),
-    hand: z
-        .object({
-            fu: z.number(),
-            han: z.number(),
-            dora: z.number(),
-        })
-        .optional(),
 });
+
+const JapaneseHandSchema = z.object({
+    fu: z.number(),
+    han: z.number(),
+    dora: z.number(),
+});
+
+const JapaneseTransactionSchema = z.discriminatedUnion("transactionType", [
+    JapaneseTransactionBaseSchema.extend({
+        transactionType: z.enum([
+            JapaneseTransactionType.DEAL_IN,
+            JapaneseTransactionType.SELF_DRAW,
+        ]),
+        hand: JapaneseHandSchema,
+    }).strict(),
+    JapaneseTransactionBaseSchema.extend({
+        transactionType: z.enum([
+            JapaneseTransactionType.DEAL_IN_PAO,
+            JapaneseTransactionType.SELF_DRAW_PAO,
+        ]),
+        hand: JapaneseHandSchema,
+        paoPlayerIndex: z.number(),
+    }).strict(),
+    JapaneseTransactionBaseSchema.extend({
+        transactionType: z.enum([
+            JapaneseTransactionType.NAGASHI_MANGAN,
+            JapaneseTransactionType.INROUND_RYUUKYOKU,
+        ]),
+    }).strict(),
+]);
 
 const ConcludedJapaneseRoundSchema = z.object({
     roundCount: z.int(),
@@ -78,6 +98,7 @@ const validateCreateHongKongRound = (round: any, game: any): void => {
 export {
     createGameSchema,
     gameVariantSchema,
+    JapaneseTransactionSchema,
     GameVariant,
     ConcludedJapaneseRoundT,
     JapaneseTransactionT,
