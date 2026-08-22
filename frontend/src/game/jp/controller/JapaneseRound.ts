@@ -245,34 +245,34 @@ const isJapaneseGameEnd = (
         // ends at north regardless of what happens
         return true;
     }
-    const totalScore = generateJapaneseCurrentScore(concludedRounds);
-    let exceedsHanten = false;
-    for (const score of totalScore) {
-        if (score < 0) {
-            return true;
-        }
-        if (score >= JAPANESE_RETURNING_POINT) {
-            exceedsHanten = true;
-        }
+    const totalScores = generateJapaneseCurrentScore(concludedRounds);
+    if (totalScores.some((score) => score < 0)) {
+        return true;
     }
-    if (!exceedsHanten) {
+
+    if (totalScores.every((score) => score < JAPANESE_RETURNING_POINT)) {
         return false;
     }
-    // At least one person is more than 30k
+
     if (newRound.roundWind === Wind.WEST) {
-        return true; // dealership gone; someone's more than 30k
+        return true; // S4 dealership gone; someone's more than 30k
     }
     const lastRound = concludedRounds[concludedRounds.length - 1];
     if (lastRound.roundWind !== Wind.SOUTH || lastRound.roundNumber !== NUM_PLAYERS) {
         return false; // not even S4 yet
     }
-    for (let i = 0; i < totalScore.length - 1; i++) {
-        if (totalScore[i] >= totalScore[totalScore.length - 1]) {
-            // winning by position
-            return false;
-        }
+    if (
+        lastRound.transactions.length === 1 &&
+        lastRound.transactions[0].transactionType === JapaneseTransactionType.INROUND_RYUUKYOKU
+    ) {
+        return false; // short circuit for S4 inround ryuukyoku
     }
-    return true;
+    const dealerIndex = lastRound.roundNumber - 1;
+    const dealerScore = totalScores[dealerIndex];
+
+    return totalScores.every(
+        (score, playerIndex) => playerIndex === dealerIndex || dealerScore > score,
+    ); // S4, dealer has the highest score
 };
 
 export {
