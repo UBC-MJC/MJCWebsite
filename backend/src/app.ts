@@ -1,11 +1,12 @@
 import * as dotenv from "dotenv";
-import express, { Express, NextFunction, Request, Response } from "express";
+import express, { Express } from "express";
 import cors from "cors";
-import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import router from "./routes";
 import path from "path";
 import { Player } from "@prisma/client";
+import { errorHandler } from "./middleware/error";
+import createError from "http-errors";
 
 // Load environment-specific .env file
 const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
@@ -34,23 +35,22 @@ if (process.env.NODE_ENV === "production") {
     );
 }
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api", router);
+app.use("/api", () => {
+    throw createError.NotFound("API route not found");
+});
 
 if (process.env.NODE_ENV === "production") {
-    app.get("*", (req, res) => {
+    app.get("/{*splat}", (_req, res) => {
         res.sendFile(path.join(__dirname, "../../dist/index.html"));
     });
 }
 
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    console.error("Error: ", err.message);
-    res.status(err.status || 500).json(err.message);
-    next();
-});
+app.use(errorHandler);
 
 const PORT: number = process.env.PORT
     ? parseInt(process.env.PORT)
@@ -58,7 +58,10 @@ const PORT: number = process.env.PORT
       ? 8080
       : 4000;
 
-app.listen(PORT, () => {
+app.listen(PORT, (error?: Error) => {
+    if (error) {
+        throw error;
+    }
     console.log(`Server running on http://localhost:${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV}`);
 });
