@@ -1,14 +1,16 @@
 import { it, describe, expect, beforeEach, vi } from "vitest";
-import { getGameService } from "../../../services/game/game.util";
 import prisma from "../../../db";
 import { testGameServiceCommon } from "./game.service.test.common";
 import { JapaneseTransactionType, Wind } from "@prisma/client";
-import { generateOverallScoreDelta } from "../../../services/game/japaneseGame.service";
+import {
+    generateOverallScoreDelta,
+    JapaneseGameService,
+} from "../../../services/game/japaneseGame.service";
 import { initialise, initialiseGame } from "../util";
 vi.mock("@prisma/client");
 describe("Japanese Game Service Tests", async () => {
-    const gameService = getGameService("jp");
-    let initState;
+    const gameService = new JapaneseGameService();
+    let initState: Awaited<ReturnType<typeof initialise>>;
     beforeEach(async () => {
         initState = await initialise();
     });
@@ -19,7 +21,7 @@ describe("Japanese Game Service Tests", async () => {
     it("should have the correct first round", async () => {
         const game = await initialiseGame(gameService, initState.season.id);
         const id = game.id;
-        const fullGame = await gameService.getGame(id);
+        const fullGame = await gameService.getGameOrThrow(id);
         const firstRound = await gameService.getNextRound(fullGame);
         expect(firstRound).deep.equal({
             bonus: 0,
@@ -29,7 +31,6 @@ describe("Japanese Game Service Tests", async () => {
             startRiichiStickCount: 0,
         });
     });
-
     describe("should calculate points correctly", async () => {
         it("should handle normal deal in 30fu 1han 0 -> 2", async () => {
             const game = await initialiseGame(gameService, initState.season.id, {
@@ -59,7 +60,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-1000, 0, 1000, 0]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 2,
@@ -96,7 +99,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([1500, 0, -1500, 0]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 1,
@@ -133,7 +138,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([3900, -3900, 0, 0]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 3,
@@ -175,7 +182,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([8000, 12000, -20000, 0]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 4,
@@ -217,7 +226,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([0, 4300, 11000, -15300]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.SOUTH,
                 roundNumber: 1,
@@ -259,7 +270,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([0, -21300, 4300, 17000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 4,
@@ -301,7 +314,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([0, 4300, 11000, -15300]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.SOUTH,
                 roundNumber: 1,
@@ -339,7 +354,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-2000, 6000, -2000, -2000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 2,
@@ -376,7 +393,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-1000, -2000, -1000, 4000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 3,
@@ -407,7 +426,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([3000, -1000, -1000, -1000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 1,
@@ -438,7 +459,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-1000, 3000, -1000, -1000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 2,
@@ -469,7 +492,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-1000, 0, 0, 0]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 1,
@@ -500,7 +525,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([0, 0, 0, 0]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 3,
@@ -541,7 +568,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-1000, -1000, -2000, 5000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.SOUTH,
                 roundNumber: 4,
@@ -602,7 +631,7 @@ describe("Japanese Game Service Tests", async () => {
         //     expect(generateOverallScoreDelta(round)).deep.equal([0, 0, -1500, 1500]);
         //
         //     await gameService.createRound(game, round);
-        //     const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+        //     const currState = await gameService.mapGameObject(await gameService.getGameOrThrow(game.id));
         //     expect(currState.currentRound).deep.equal({
         //         roundWind: Wind.SOUTH,
         //         roundNumber: 4,
@@ -623,7 +652,7 @@ describe("Japanese Game Service Tests", async () => {
         //     expect(generateOverallScoreDelta(round)).deep.equal([-1000, -1000, -1000, 5000]);
         //
         //     await gameService.createRound(game, round);
-        //     const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+        //     const currState = await gameService.mapGameObject(await gameService.getGameOrThrow(game.id));
         //     expect(currState.currentRound).deep.equal({
         //         roundWind: Wind.SOUTH,
         //         roundNumber: 4,
@@ -668,7 +697,7 @@ describe("Japanese Game Service Tests", async () => {
         //     expect(generateOverallScoreDelta(round)).deep.equal([8000, 0, -13800, 5800]);
         //
         //     await gameService.createRound(game, round);
-        //     const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+        //     const currState = await gameService.mapGameObject(await gameService.getGameOrThrow(game.id));
         //     expect(currState.currentRound).deep.equal({
         //         roundWind: Wind.SOUTH,
         //         roundNumber: 4,
@@ -689,7 +718,7 @@ describe("Japanese Game Service Tests", async () => {
         //     expect(generateOverallScoreDelta(round)).deep.equal([12000, 0, -24000, 12000]);
         //
         //     await gameService.createRound(game, round);
-        //     const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+        //     const currState = await gameService.mapGameObject(await gameService.getGameOrThrow(game.id));
         //     expect(currState.currentRound).deep.equal({
         //         roundWind: Wind.SOUTH,
         //         roundNumber: 4,
@@ -729,7 +758,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([4000, -1000, -2000, -1000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
 
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.SOUTH,
@@ -750,9 +781,11 @@ describe("Japanese Game Service Tests", async () => {
                 transactions: [],
             };
             expect(generateOverallScoreDelta(round2)).deep.equal([1000, 1000, 1000, -3000]);
-            const updatedGame = await gameService.getGame(game.id);
+            const updatedGame = await gameService.getGameOrThrow(game.id);
             await gameService.createRound(updatedGame, round2);
-            const currState2 = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState2 = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
 
             expect(currState2.currentRound).deep.equal({
                 roundWind: Wind.WEST,
@@ -784,7 +817,9 @@ describe("Japanese Game Service Tests", async () => {
             expect(generateOverallScoreDelta(round)).deep.equal([3000, -1000, -1000, -1000]);
 
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.WEST,
                 roundNumber: 1,
@@ -825,7 +860,9 @@ describe("Japanese Game Service Tests", async () => {
             expect(generateOverallScoreDelta(round)).deep.equal([1000, -1000, 0, 0]);
 
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.NORTH,
                 roundNumber: 1,
@@ -866,7 +903,9 @@ describe("Japanese Game Service Tests", async () => {
             expect(generateOverallScoreDelta(round)).deep.equal([0, -25000, 0, 25000]);
 
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 4,
@@ -908,7 +947,9 @@ describe("Japanese Game Service Tests", async () => {
             expect(generateOverallScoreDelta(round)).deep.equal([0, -25300, 0, 25300]);
 
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 4,
@@ -945,7 +986,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-4000, -2000, 8000, -2000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 2,
@@ -981,7 +1024,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([12000, -4000, -4000, -4000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 2,
@@ -1017,7 +1062,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-4000, -2000, 8000, -2000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 1,
@@ -1053,7 +1100,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-4000, -2000, -2000, 8000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 2,
@@ -1089,7 +1138,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-4000, -3000, -3000, 8000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 2,
@@ -1133,7 +1184,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-12000, 4000, 4000, 4000]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 2,
@@ -1164,7 +1217,7 @@ describe("Japanese Game Service Tests", async () => {
                     {
                         transactionType: JapaneseTransactionType.SELF_DRAW_PAO,
                         hand: { dora: 0, fu: 40, han: 13 },
-                        paoTarget: 0,
+                        paoPlayerIndex: 0,
                         scoreDeltas: [-48000, 0, 0, 48000],
                     },
                     {
@@ -1176,7 +1229,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-64100, -16100, -16100, 96300]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 4,
@@ -1206,7 +1261,7 @@ describe("Japanese Game Service Tests", async () => {
                     {
                         transactionType: JapaneseTransactionType.DEAL_IN_PAO,
                         hand: { dora: 0, fu: 40, han: 13 },
-                        paoTarget: 0,
+                        paoPlayerIndex: 0,
                         scoreDeltas: [-24000, -24000, 0, 48000],
                     },
                     {
@@ -1218,7 +1273,9 @@ describe("Japanese Game Service Tests", async () => {
             };
             expect(generateOverallScoreDelta(round)).deep.equal([-24000, -72300, 0, 96300]);
             await gameService.createRound(game, round);
-            const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+            const currState = await gameService.mapGameObject(
+                await gameService.getGameOrThrow(game.id),
+            );
             expect(currState.currentRound).deep.equal({
                 roundWind: Wind.EAST,
                 roundNumber: 4,

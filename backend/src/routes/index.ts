@@ -20,6 +20,7 @@ import {
     deleteGameHandler,
     deleteLastRoundHandler,
     getLiveGamesHandler,
+    getLiveGameHandler,
     getGameHandler,
     getGamesHandler,
     recalcSeasonHandler,
@@ -50,9 +51,7 @@ router.get("/games/:gameVariant", getGamesHandler);
 router.post("/games/:gameVariant", isAuthenticated, createGameHandler);
 router.get("/games/:gameVariant/live", getLiveGamesHandler);
 router.get("/games/:gameVariant/:id", getGameHandler);
-router.get("/games/:gameVariant/:id/live", (req, res, next) =>
-    getGameHandler(req, res, next, true),
-);
+router.get("/games/:gameVariant/:id/live", getLiveGameHandler);
 router.post("/games/:gameVariant/:id", isAuthenticated, submitGameHandler);
 router.delete("/games/:gameVariant/:id", isAuthenticated, deleteGameHandler);
 router.post("/games/:gameVariant/:id/rounds", isAuthenticated, createRoundHandler);
@@ -66,7 +65,10 @@ router.get("/players/current", isAuthenticated, getCurrentPlayerHandler);
 router.put("/players/current/settings", isAuthenticated, updateSettingsHandler);
 router.put("/players/current/username", isAuthenticated, updateUsernameHandler);
 router.get("/players/:playerId/:gameVariant/:seasonId", getUserStatisticsHandler);
-router.get("/players/:playerId/:gameVariant/:seasonId/placement-history", getPlacementHistoryHandler);
+router.get(
+    "/players/:playerId/:gameVariant/:seasonId/placement-history",
+    getPlacementHistoryHandler,
+);
 router.get("/seasons/current", getCurrentSeasonHandler);
 router.get("/seasons", getSeasonsHandler);
 

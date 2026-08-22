@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { initialise } from "../util";
-import { getGameService } from "../../../services/game/game.util";
+import { getGameService } from "../../../services/game/gameService.factory";
 import { GameStatus, GameType, Wind } from "@prisma/client";
+import type { GameVariant } from "../../../validation/game.validation";
 
-export function testGameServiceCommon(gameVariant) {
+export function testGameServiceCommon(gameVariant: GameVariant) {
     return describe("Common Game Service Tests", () => {
         const gameService = getGameService(gameVariant);
-        let initState;
+        let initState: Awaited<ReturnType<typeof initialise>>;
         beforeEach(async () => {
             initState = await initialise();
         });
@@ -25,7 +26,7 @@ export function testGameServiceCommon(gameVariant) {
                 status: GameStatus.IN_PROGRESS,
                 type: GameType.RANKED,
             });
-            const fullGame = await gameService.getGame(id);
+            const fullGame = await gameService.getGameOrThrow(id);
             const mappedGame = await gameService.mapGameObject(fullGame);
             expect(mappedGame).toMatchObject({
                 currentRound: {

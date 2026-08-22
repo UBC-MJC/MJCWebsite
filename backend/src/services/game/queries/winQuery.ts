@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-export function winQuery(seasonId, playerId) {
+export function winQuery(seasonId: string, playerId: string) {
     return Prisma.sql`
 SELECT SUM(CASE pg.wind
                 WHEN 'EAST' THEN t.player0ScoreChange

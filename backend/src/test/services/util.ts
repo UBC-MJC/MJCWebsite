@@ -1,7 +1,7 @@
 import prisma from "../../db";
 import { createSeason } from "../../services/season.service";
 import { GameType } from "@prisma/client";
-import { GameService } from "../../services/game/game.service";
+import { GameService, GameWithRelations } from "../../services/game/game.service";
 
 export async function createTestPlayers() {
     const players = [
@@ -54,10 +54,16 @@ export async function initialise() {
     return { players, season };
 }
 
-export async function initialiseGame(
-    gameService: GameService,
+export async function initialiseGame<
+    TGame extends GameWithRelations,
+    TConcludedRound,
+    TTransformedRound,
+    TNextRound,
+    TCreatedRound,
+>(
+    gameService: GameService<TGame, TConcludedRound, TTransformedRound, TNextRound, TCreatedRound>,
     seasonID: string,
-    state: any = {},
+    state: Record<string, unknown> = {},
     playerUsernames: string[] = ["testUser1", "testUser2", "testUser3", "testUser4"],
     recordingPlayerID = "test1",
 ) {
@@ -67,5 +73,6 @@ export async function initialiseGame(
         recordingPlayerID,
         seasonID,
     );
-    return await gameService.updateGame(initGame.id, state);
+    await gameService.updateGame(initGame.id, state);
+    return gameService.getGameOrThrow(initGame.id);
 }

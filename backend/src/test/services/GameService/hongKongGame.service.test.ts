@@ -1,14 +1,16 @@
 import { it, describe, expect, beforeEach, vi } from "vitest";
-import { getGameService } from "../../../services/game/game.util";
 import prisma from "../../../db";
 import { testGameServiceCommon } from "./game.service.test.common";
 import { initialise, initialiseGame } from "../util";
 import { HongKongTransactionType, Wind } from "@prisma/client";
-import { generateOverallScoreDelta } from "../../../services/game/hongKongGame.service";
+import {
+    generateOverallScoreDelta,
+    HongKongGameService,
+} from "../../../services/game/hongKongGame.service";
 vi.mock("@prisma/client");
 describe("Hong Kong Game Service Tests", async () => {
-    const gameService = getGameService("hk");
-    let initState;
+    const gameService = new HongKongGameService();
+    let initState: Awaited<ReturnType<typeof initialise>>;
     beforeEach(async () => {
         initState = await initialise();
     });
@@ -19,7 +21,7 @@ describe("Hong Kong Game Service Tests", async () => {
     it("should have the correct first round", async () => {
         const game = await initialiseGame(gameService, initState.season.id);
         const id = game.id;
-        const fullGame = await gameService.getGame(id);
+        const fullGame = await gameService.getGameOrThrow(id);
         const firstRound = await gameService.getNextRound(fullGame);
         expect(firstRound).deep.equal({
             bonus: 0,
@@ -44,7 +46,9 @@ describe("Hong Kong Game Service Tests", async () => {
         };
         expect(generateOverallScoreDelta(round)).deep.equal([-32, 32, 0, 0]);
         await gameService.createRound(game, round);
-        const currState = await gameService.mapGameObject(await gameService.getGame(game.id));
+        const currState = await gameService.mapGameObject(
+            await gameService.getGameOrThrow(game.id),
+        );
         expect(currState.currentRound).deep.equal({
             roundCount: 1,
             roundNumber: 2,

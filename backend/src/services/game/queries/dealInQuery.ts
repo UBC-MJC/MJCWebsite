@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-export function dealInQuery(seasonId, playerId) {
+export function dealInQuery(seasonId: string, playerId: string) {
     return Prisma.sql`
  SELECT 
     SUM(CASE pg.wind
