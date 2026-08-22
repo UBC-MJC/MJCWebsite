@@ -1,9 +1,8 @@
 import { GameStatus, GameType, Player, Wind } from "@prisma/client";
 import { EloCalculatorInput } from "./eloCalculator";
-import { GameVariant, Transaction } from "../../validation/game.validation";
-import { JapaneseGameService } from "./japaneseGame.service";
-import { HongKongGameService } from "./hongKongGame.service";
-import { EloDict, GameService } from "./game.service";
+import { Transaction } from "../../validation/game.validation";
+import type { EloDict } from "./game.service";
+import { InvalidGameInputError } from "../../errors/domain.error";
 interface GameFilterArgs {
     seasonId?: string;
     playerIds?: string[];
@@ -27,7 +26,7 @@ export const STARTING_ELO = 1500;
 // Throws error if the player list contains duplicates
 const checkPlayerListUnique = (playerNameList: string[]): void => {
     if (new Set(playerNameList).size !== playerNameList.length) {
-        throw new Error("Player list contains duplicates");
+        throw new InvalidGameInputError("Player list contains duplicates");
     }
 };
 
@@ -124,16 +123,6 @@ const getWind = (index: number): Wind => {
 export const getNextRoundWind = (wind: Wind): Wind => {
     return getWind((WIND_ORDER.indexOf(wind) + 1) % NUM_PLAYERS);
 };
-const getGameService = (gameVariant: GameVariant): GameService => {
-    switch (gameVariant) {
-        case "jp":
-            return new JapaneseGameService() as GameService;
-        case "hk":
-            return new HongKongGameService() as GameService;
-        default:
-            throw new Error(`Invalid game variant ${gameVariant}`);
-    }
-};
 export {
     checkPlayerListUnique,
     generatePlayerQuery,
@@ -143,5 +132,4 @@ export {
     WIND_ORDER,
     Wind,
     GameFilterArgs,
-    getGameService,
 };

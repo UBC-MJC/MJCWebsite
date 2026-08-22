@@ -18,11 +18,7 @@ import {
     Wind,
 } from "./game.util";
 import { GameService } from "./game.service";
-import {
-    ConcludedJapaneseRoundT,
-    JapaneseTransactionT,
-    validateCreateJapaneseRound,
-} from "../../validation/game.validation";
+import { ConcludedJapaneseRoundT, JapaneseTransactionT } from "../../validation/game.validation";
 import { dealInQuery } from "./queries/dealInQuery";
 import { winQuery } from "./queries/winQuery";
 import { roundQuery } from "./queries/roundQuery";
@@ -53,7 +49,13 @@ type PartialJapaneseRound = Pick<
 
 export const RIICHI_STICK_VALUE = 1000;
 
-class JapaneseGameService extends GameService {
+class JapaneseGameService extends GameService<
+    FullJapaneseGame,
+    ConcludedJapaneseRoundT,
+    ConcludedJapaneseRoundT,
+    PartialJapaneseRound,
+    JapaneseRound
+> {
     constructor() {
         super(prisma.japaneseGame, prisma.japanesePlayerGame, {
             STARTING_SCORE: 25000,
@@ -62,10 +64,10 @@ class JapaneseGameService extends GameService {
         });
     }
 
-    public async createRound(game: FullJapaneseGame, roundRequest: any): Promise<JapaneseRound> {
-        validateCreateJapaneseRound(roundRequest, game);
-        const concludedRound = roundRequest as ConcludedJapaneseRoundT;
-
+    public async createRound(
+        game: Pick<FullJapaneseGame, "id">,
+        concludedRound: ConcludedJapaneseRoundT,
+    ): Promise<JapaneseRound> {
         const query = {
             data: {
                 game: {
@@ -161,8 +163,20 @@ class JapaneseGameService extends GameService {
     }
 
     public transformDBRound(dbRound: FullJapaneseRound): ConcludedJapaneseRoundT {
-        const riichis = range(NUM_PLAYERS).filter((i) => dbRound[`player${i}Riichi`]);
-        const tenpais = range(NUM_PLAYERS).filter((i) => dbRound[`player${i}Tenpai`]);
+        const riichiStates = [
+            dbRound.player0Riichi,
+            dbRound.player1Riichi,
+            dbRound.player2Riichi,
+            dbRound.player3Riichi,
+        ];
+        const tenpaiStates = [
+            dbRound.player0Tenpai,
+            dbRound.player1Tenpai,
+            dbRound.player2Tenpai,
+            dbRound.player3Tenpai,
+        ];
+        const riichis = range(NUM_PLAYERS).filter((i) => riichiStates[i]);
+        const tenpais = range(NUM_PLAYERS).filter((i) => tenpaiStates[i]);
         return {
             roundCount: dbRound.roundCount,
             roundWind: dbRound.roundWind,
@@ -273,25 +287,23 @@ class JapaneseGameService extends GameService {
             take: 30,
         });
 
-        return games
-            .reverse()
-            .map((game: any) => {
-                const scores = this.getGameFinalScore(game);
-                const playerIndex = game.players.findIndex((pg: any) => pg.playerId === playerId);
-                const playerScore = scores[playerIndex];
+        return games.reverse().map((game) => {
+            const scores = this.getGameFinalScore(game);
+            const playerIndex = game.players.findIndex((pg) => pg.playerId === playerId);
+            const playerScore = scores[playerIndex];
 
-                // Calculate placement (1st, 2nd, 3rd, 4th)
-                const sortedScores = scores.slice().sort((a: number, b: number) => b - a);
-                const placement = sortedScores.findIndex((score: number) => score === playerScore) + 1;
+            // Calculate placement (1st, 2nd, 3rd, 4th)
+            const sortedScores = scores.slice().sort((a: number, b: number) => b - a);
+            const placement = sortedScores.findIndex((score: number) => score === playerScore) + 1;
 
-                return {
-                    gameId: game.id,
-                    createdAt: game.createdAt,
-                    placement: placement,
-                    score: playerScore,
-                    scores: scores,
-                };
-            });
+            return {
+                gameId: game.id,
+                createdAt: game.createdAt,
+                placement: placement,
+                score: playerScore,
+                scores: scores,
+            };
+        });
     }
 }
 
@@ -448,30 +460,34 @@ function transformDBTransaction(dbTransaction: JapaneseTransaction): JapaneseTra
             return {
                 scoreDeltas: scoreDeltas,
                 transactionType: transactionType,
-                hand: {
-                    han: dbTransaction.han,
-                    fu: dbTransaction.fu,
-                    dora: dbTransaction.dora,
-                },
+                hand: getDBHand(dbTransaction),
             };
         case "DEAL_IN_PAO":
-        case "SELF_DRAW_PAO":
+        case "SELF_DRAW_PAO": {
+            if (dbTransaction.paoPlayerIndex === null) {
+                throw new Error(`Pao transaction ${dbTransaction.id} is missing a pao player`);
+            }
             return {
                 scoreDeltas: scoreDeltas,
                 transactionType: transactionType,
-                hand: {
-                    han: dbTransaction.han,
-                    fu: dbTransaction.fu,
-                    dora: dbTransaction.dora,
-                },
+                hand: getDBHand(dbTransaction),
                 paoPlayerIndex: dbTransaction.paoPlayerIndex,
             };
+        }
         default:
             return {
                 scoreDeltas: scoreDeltas,
                 transactionType: transactionType,
             };
     }
+}
+
+function getDBHand(dbTransaction: JapaneseTransaction) {
+    const { han, fu, dora } = dbTransaction;
+    if (han === null || fu === null || dora === null) {
+        throw new Error(`Winning transaction ${dbTransaction.id} is missing hand data`);
+    }
+    return { han, fu, dora };
 }
 
 function transformConcludedRound(concludedRound: ConcludedJapaneseRoundT) {

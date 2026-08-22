@@ -1,13 +1,13 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from "vite";
+import { reactRouter } from "@react-router/dev/vite";
+import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [react()],
+    plugins: [reactRouter()],
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './src'),
+            "@": path.resolve(__dirname, "./src"),
         },
     },
     server: {
@@ -16,5 +16,4 @@ export default defineConfig({
         // this sets a default port to 3000
         port: 3000,
     },
-})
-
+});

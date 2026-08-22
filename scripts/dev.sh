@@ -7,6 +7,8 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKEND_DIR="$PROJECT_ROOT/backend"
 FRONTEND_DIR="$PROJECT_ROOT/frontend"
 
+source "$PROJECT_ROOT/scripts/use-node.sh"
+
 # ANSI color codes
 BACKEND_COLOR="\033[1;34m"  # Blue
 FRONTEND_COLOR="\033[1;32m" # Green

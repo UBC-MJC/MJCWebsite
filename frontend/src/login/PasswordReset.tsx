@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AxiosError } from "axios";
 import { submitPasswordResetAPI } from "@/api/AccountAPI";
 import alert from "@/common/AlertDialog";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import {
     Button,
     Card,

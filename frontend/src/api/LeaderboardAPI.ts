@@ -30,7 +30,7 @@ async function getPlacementHistory(playerId: string, gameVariant: string, season
         {
             gameId: number;
             createdAt: string;
-            placement: number;
+            placement: 1 | 2 | 3 | 4;
             score: number;
             scores: number[];
         }[]

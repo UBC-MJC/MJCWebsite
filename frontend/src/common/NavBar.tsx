@@ -25,7 +25,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { AuthContext } from "@/common/AuthContext";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { getGameVariantString } from "@/common/Utils";
 import { navButton } from "@/theme/utils";
 

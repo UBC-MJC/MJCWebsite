@@ -30,4 +30,35 @@ const loginSchema = z.object({
 
 type LoginType = z.infer<typeof loginSchema>;
 
-export { playerSchema, PlayerType, registerSchema, RegisterType, loginSchema, LoginType };
+const requestPasswordResetSchema = z.object({
+    username: z.string().min(1),
+});
+
+const passwordResetSchema = z.object({
+    playerId: z.string().min(1),
+    token: z.string().min(1),
+    newPassword: z.string().min(1),
+});
+
+const updateSettingsSchema = z.object({
+    settings: z.object({
+        legacyDisplayGame: z.boolean(),
+    }),
+});
+
+const updateUsernameSchema = z.object({
+    username: z.string().min(1),
+});
+
+export {
+    playerSchema,
+    PlayerType,
+    registerSchema,
+    RegisterType,
+    loginSchema,
+    LoginType,
+    requestPasswordResetSchema,
+    passwordResetSchema,
+    updateSettingsSchema,
+    updateUsernameSchema,
+};

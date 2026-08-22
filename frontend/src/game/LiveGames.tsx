@@ -12,7 +12,7 @@ import {
     Stack,
     CardActionArea,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { getGameVariantString } from "@/common/Utils";

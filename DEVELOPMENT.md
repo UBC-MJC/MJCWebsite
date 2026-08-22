@@ -6,7 +6,7 @@ This guide will help you set up a local development environment for the UBC Mahj
 
 ### Required Software
 
-1. **Node.js** (v18 or higher) - [Download](https://nodejs.org/en/download/)
+1. **Node.js** (v24 or higher) - [Download](https://nodejs.org/en/download/)
 2. **npm** (comes with Node.js)
 3. **MySQL** (v8.0 or higher) - [Download](https://dev.mysql.com/downloads/mysql/)
 4. **Git** - [Download](https://git-scm.com/downloads)

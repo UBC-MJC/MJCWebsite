@@ -2,27 +2,52 @@ import * as z from "zod";
 
 import { GameType, HongKongTransactionType, JapaneseTransactionType, Wind } from "@prisma/client";
 
-import { FullJapaneseGame } from "../services/game/japaneseGame.service";
-
 const gameVariantSchema = z.enum(["jp", "hk"]);
+const gameTypeSchema = z.enum(GameType);
 
 const createGameSchema = z.object({
-    gameType: z.enum(GameType),
+    gameType: gameTypeSchema,
     players: z.array(z.string()).length(4),
 });
 
-const JapaneseTransactionSchema = z.object({
-    transactionType: z.enum(JapaneseTransactionType),
-    scoreDeltas: z.array(z.number()).length(4),
-    paoPlayerIndex: z.number().optional(),
-    hand: z
-        .object({
-            fu: z.number(),
-            han: z.number(),
-            dora: z.number(),
-        })
-        .optional(),
+const setChomboSchema = z.object({
+    playerId: z.string().min(1),
+    chomboCount: z.int().nonnegative(),
 });
+
+const JapaneseTransactionBaseSchema = z.object({
+    scoreDeltas: z.array(z.number()).length(4),
+});
+
+const JapaneseHandSchema = z.object({
+    fu: z.number(),
+    han: z.number(),
+    dora: z.number(),
+});
+
+const JapaneseTransactionSchema = z.discriminatedUnion("transactionType", [
+    JapaneseTransactionBaseSchema.extend({
+        transactionType: z.enum([
+            JapaneseTransactionType.DEAL_IN,
+            JapaneseTransactionType.SELF_DRAW,
+        ]),
+        hand: JapaneseHandSchema,
+    }).strict(),
+    JapaneseTransactionBaseSchema.extend({
+        transactionType: z.enum([
+            JapaneseTransactionType.DEAL_IN_PAO,
+            JapaneseTransactionType.SELF_DRAW_PAO,
+        ]),
+        hand: JapaneseHandSchema,
+        paoPlayerIndex: z.number(),
+    }).strict(),
+    JapaneseTransactionBaseSchema.extend({
+        transactionType: z.enum([
+            JapaneseTransactionType.NAGASHI_MANGAN,
+            JapaneseTransactionType.INROUND_RYUUKYOKU,
+        ]),
+    }).strict(),
+]);
 
 const ConcludedJapaneseRoundSchema = z.object({
     roundCount: z.int(),
@@ -57,33 +82,18 @@ type HongKongTransactionT = z.infer<typeof HongKongTransactionSchema>;
 
 type Transaction = JapaneseTransactionT | HongKongTransactionT;
 
-const validateCreateJapaneseRound = (round: any, game: FullJapaneseGame): void => {
-    round.transactions.forEach((transaction: JapaneseTransactionT) => {
-        JapaneseTransactionSchema.parse(transaction);
-    });
-    ConcludedJapaneseRoundSchema.parse(round);
-};
-
-const validateCreateHongKongRound = (round: any, game: any): void => {
-    try {
-        ConcludedHongKongRoundSchema.parse(round);
-        round.transactions.forEach((transaction: HongKongTransactionT) => {
-            HongKongTransactionSchema.parse(transaction);
-        });
-    } catch (errors: any) {
-        throw new Error("Invalid create Hong Kong round: " + errors);
-    }
-};
-
 export {
     createGameSchema,
     gameVariantSchema,
+    gameTypeSchema,
+    setChomboSchema,
+    ConcludedJapaneseRoundSchema,
+    JapaneseTransactionSchema,
+    ConcludedHongKongRoundSchema,
     GameVariant,
     ConcludedJapaneseRoundT,
     JapaneseTransactionT,
     ConcludedHongKongRoundT,
     HongKongTransactionT,
-    validateCreateJapaneseRound,
-    validateCreateHongKongRound,
     Transaction,
 };

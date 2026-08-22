@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useCallback } from "react";
 import { createContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { loginAPICall, registerAPICall } from "@/api/AuthAPI";
 import { getCurrentPlayer } from "@/api/AccountAPI";
 import { baseUrl } from "@/api/APIUtils";
@@ -56,25 +56,19 @@ const AuthContextProvider = (props: ChildProps) => {
         };
     }, []);
 
-    const authLogin = useCallback(
-        async (loginData: LoginDataType) => {
-            const apiResponse = await loginAPICall(loginData);
-            const playerAPIData = apiResponse.data;
-            setPlayer(playerAPIData.player);
-            navigate("/");
-        },
-        [],
-    );
+    const authLogin = useCallback(async (loginData: LoginDataType) => {
+        const apiResponse = await loginAPICall(loginData);
+        const playerAPIData = apiResponse.data;
+        setPlayer(playerAPIData.player);
+        navigate("/");
+    }, []);
 
-    const authRegister = useCallback(
-        async (registerData: RegisterDataType) => {
-            const apiResponse = await registerAPICall(registerData);
-            const playerAPIData = apiResponse.data;
-            setPlayer(playerAPIData.player);
-            navigate("/");
-        },
-        [],
-    );
+    const authRegister = useCallback(async (registerData: RegisterDataType) => {
+        const apiResponse = await registerAPICall(registerData);
+        const playerAPIData = apiResponse.data;
+        setPlayer(playerAPIData.player);
+        navigate("/");
+    }, []);
 
     const authLogout = useCallback(async () => {
         try {

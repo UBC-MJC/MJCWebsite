@@ -1,5 +1,13 @@
 import prisma from "../../db";
-import { GameType, GameStatus, HongKongTransaction, Player, Prisma, Wind } from "@prisma/client";
+import {
+    GameType,
+    GameStatus,
+    HongKongRound,
+    HongKongTransaction,
+    Player,
+    Prisma,
+    Wind,
+} from "@prisma/client";
 import { GameService } from "./game.service";
 import {
     addScoreDeltas,
@@ -7,11 +15,7 @@ import {
     getNextRoundWind,
     reduceScoreDeltas,
 } from "./game.util";
-import {
-    ConcludedHongKongRoundT,
-    HongKongTransactionT,
-    validateCreateHongKongRound,
-} from "../../validation/game.validation";
+import { ConcludedHongKongRoundT, HongKongTransactionT } from "../../validation/game.validation";
 
 type FullHongKongGame = Prisma.HongKongGameGetPayload<{
     include: {
@@ -32,8 +36,18 @@ type FullHongKongRound = Prisma.HongKongRoundGetPayload<{
         transactions: true;
     };
 }>;
+type PartialHongKongRound = Pick<
+    ConcludedHongKongRoundT,
+    "roundCount" | "roundNumber" | "roundWind"
+>;
 
-class HongKongGameService extends GameService {
+class HongKongGameService extends GameService<
+    FullHongKongGame,
+    ConcludedHongKongRoundT,
+    ConcludedHongKongRoundT,
+    PartialHongKongRound,
+    HongKongRound
+> {
     constructor() {
         super(prisma.hongKongGame, prisma.hongKongPlayerGame, {
             STARTING_SCORE: 750,
@@ -42,10 +56,10 @@ class HongKongGameService extends GameService {
         });
     }
 
-    public async createRound(game: FullHongKongGame, roundRequest: any): Promise<any> {
-        validateCreateHongKongRound(roundRequest, game);
-        const concludedRound = roundRequest as ConcludedHongKongRoundT;
-
+    public async createRound(
+        game: Pick<FullHongKongGame, "id">,
+        concludedRound: ConcludedHongKongRoundT,
+    ): Promise<HongKongRound> {
         const query = {
             data: {
                 game: {
@@ -92,7 +106,7 @@ class HongKongGameService extends GameService {
         };
     }
 
-    public getNextRound(game: FullHongKongGame) {
+    public getNextRound(game: FullHongKongGame): PartialHongKongRound {
         if (game.rounds.length === 0) {
             return getFirstHongKongRound();
         }
@@ -175,25 +189,23 @@ class HongKongGameService extends GameService {
             take: 30,
         });
 
-        return games
-            .reverse()
-            .map((game: any) => {
-                const scores = this.getGameFinalScore(game);
-                const playerIndex = game.players.findIndex((pg: any) => pg.playerId === playerId);
-                const playerScore = scores[playerIndex];
+        return games.reverse().map((game: any) => {
+            const scores = this.getGameFinalScore(game);
+            const playerIndex = game.players.findIndex((pg: any) => pg.playerId === playerId);
+            const playerScore = scores[playerIndex];
 
-                // Calculate placement (1st, 2nd, 3rd, 4th)
-                const sortedScores = scores.slice().sort((a: number, b: number) => b - a);
-                const placement = sortedScores.findIndex((score: number) => score === playerScore) + 1;
+            // Calculate placement (1st, 2nd, 3rd, 4th)
+            const sortedScores = scores.slice().sort((a: number, b: number) => b - a);
+            const placement = sortedScores.findIndex((score: number) => score === playerScore) + 1;
 
-                return {
-                    gameId: game.id,
-                    createdAt: game.createdAt,
-                    placement: placement,
-                    score: playerScore,
-                    scores: scores,
-                };
-            });
+            return {
+                gameId: game.id,
+                createdAt: game.createdAt,
+                placement: placement,
+                score: playerScore,
+                scores: scores,
+            };
+        });
     }
 }
 export function generateOverallScoreDelta(concludedGame: ConcludedHongKongRoundT) {
@@ -204,7 +216,7 @@ const getFirstHongKongRound = () => {
     return {
         roundCount: 1,
         roundNumber: 1,
-        roundWind: "EAST",
+        roundWind: Wind.EAST,
         bonus: 0,
     };
 };

@@ -10,6 +10,8 @@ BUILD_DIR="$PROJECT_ROOT/build"
 LOG_DIR="$PROJECT_ROOT/logs"
 LOG_FILE="$LOG_DIR/production-$(date +%Y%m%d-%H%M%S).log"
 
+source "$PROJECT_ROOT/scripts/use-node.sh"
+
 # Create logs directory if it doesn't exist
 mkdir -p "$LOG_DIR"
 
@@ -34,9 +36,9 @@ npm ci
 echo "Running frontend build..."
 npm run build
 
-# Copy frontend build to build directory
+# Copy the React Router SPA build to the directory served by the backend
 echo "Copying frontend build artifacts..."
-cp -r dist "$BUILD_DIR/"
+cp -r build/client "$BUILD_DIR/dist"
 
 # Prepare backend
 echo "Preparing backend..."

@@ -224,11 +224,11 @@ const AdminPlayers = () => {
                 <Button
                     variant="outlined"
                     onClick={() => {
-                        if (process.env.NODE_ENV !== "production") {
+                        if (!import.meta.env.PROD) {
                             makeTestAdmins();
                         }
                     }}
-                    disabled={process.env.NODE_ENV === "production"}
+                    disabled={import.meta.env.PROD}
                 >
                     Make Test Admins
                 </Button>

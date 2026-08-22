@@ -7,7 +7,7 @@ import * as reactHooks from "eslint-plugin-react-hooks";
 
 export default tseslint.config(
     {
-        ignores: ["node_modules", "dist", "./eslint.config.mjs"],
+        ignores: ["node_modules", "build", ".react-router", "./eslint.config.mjs"],
     },
     eslint.configs.recommended,
     tseslint.configs.recommended,

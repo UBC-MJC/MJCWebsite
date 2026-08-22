@@ -8,7 +8,6 @@ import {
     List,
     ListItem,
     Grid,
-    ListItemText,
 } from "@mui/material";
 
 export default function Tournament() {
