@@ -1,5 +1,5 @@
 import { ComponentType, useContext } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 import { AuthContext } from "@/common/AuthContext";
 import LoadingFallback from "@/common/LoadingFallback";
 import type { Player } from "@/types";

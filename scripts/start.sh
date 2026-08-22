@@ -8,6 +8,8 @@ BUILD_DIR="$PROJECT_ROOT/build"
 LOG_DIR="$PROJECT_ROOT/logs"
 BACKEND_LOG="$LOG_DIR/backend-$(date +%Y%m%d).log"
 
+source "$PROJECT_ROOT/scripts/use-node.sh"
+
 # Create logs directory if it doesn't exist
 mkdir -p "$LOG_DIR"
 

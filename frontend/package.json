@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=24.11.0"
+  },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -11,20 +14,22 @@
     "@mui/x-charts": "^7.0.0",
     "@mui/x-data-grid": "^8.7.0",
     "@mui/x-date-pickers": "^8.7.0",
+    "@react-router/node": "^8.3.0",
     "@tanstack/react-query": "^5.61.0",
-    "@vitejs/plugin-react": "^4.3.3",
     "axios": "^1.9.0",
     "dayjs": "^1.11.13",
-    "react": "^19.2.0",
+    "isbot": "^5.2.1",
+    "react": "^19.2.8",
     "react-confirm": "^0.5.0",
-    "react-dom": "^19.2.0",
-    "react-router-dom": "^7.14.0",
+    "react-dom": "^19.2.8",
+    "react-router": "^8.3.0",
     "react-simple-wheel-picker": "^1.2.0",
     "vite": "^7.0.2",
     "web-vitals": "^4.2.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
+    "@react-router/dev": "^8.3.0",
     "@types/node": "^22.9.1",
     "@types/react": "^18.3.11",
     "@types/react-confirm": "^0.2.3",
@@ -43,9 +48,10 @@
     "typescript-eslint": "^8.58.0"
   },
   "scripts": {
-    "start": "vite --host",
-    "build": "tsc && vite build",
-    "serve": "vite preview",
+    "start": "react-router dev --host 0.0.0.0",
+    "build": "npm run typecheck && react-router build",
+    "serve": "vite preview --outDir build/client",
+    "typecheck": "react-router typegen && tsc -b",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
     "format": "prettier --ignore-path .eslintignore --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}'"

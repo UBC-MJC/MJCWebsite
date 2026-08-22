@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createGameAPI } from "@/api/GameAPI";
 import { AxiosError } from "axios";
 import { withPlayerCondition } from "@/common/withPlayerCondition";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { getGameVariantString } from "@/common/Utils";
 import { usePlayers } from "@/hooks/GameHooks";
 import LoadingFallback from "@/common/LoadingFallback";

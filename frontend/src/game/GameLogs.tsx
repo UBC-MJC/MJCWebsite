@@ -18,7 +18,7 @@ import {
     CardHeader,
     Stack,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import alert from "@/common/AlertDialog";
 import GameSummaryBody from "./common/GameSummaryBody";
