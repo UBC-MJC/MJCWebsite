@@ -1,7 +1,8 @@
 import { Prisma, Season } from "@prisma/client";
 import prisma from "../db";
+import { NoCurrentSeasonError } from "../errors/domain.error";
 
-const getCurrentSeason = async (): Promise<Season> => {
+const findCurrentSeason = async (): Promise<Season | null> => {
     const seasons: Season[] = await prisma.season.findMany({
         orderBy: {
             endDate: Prisma.SortOrder.desc,
@@ -9,10 +10,19 @@ const getCurrentSeason = async (): Promise<Season> => {
     });
 
     if (seasons.length === 0 || seasons[0].endDate < new Date()) {
-        throw new Error("No season in progress");
+        return null;
     }
 
     return seasons[0];
+};
+
+const getCurrentSeason = async (): Promise<Season> => {
+    const season = await findCurrentSeason();
+    if (!season) {
+        throw new NoCurrentSeasonError();
+    }
+
+    return season;
 };
 
 const findAllSeasons = async (): Promise<Season[]> => {
@@ -58,4 +68,11 @@ const deleteSeason = async (id: string): Promise<Season> => {
     });
 };
 
-export { getCurrentSeason, findAllSeasons, createSeason, updateSeason, deleteSeason };
+export {
+    findCurrentSeason,
+    getCurrentSeason,
+    findAllSeasons,
+    createSeason,
+    updateSeason,
+    deleteSeason,
+};
