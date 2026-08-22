@@ -34,45 +34,45 @@ const PlayerScoreCard = ({
     return (
         <Box
             onClick={onClick}
+            flex={1}
+            minWidth={0}
+            px={{ xs: 1, sm: 2 }}
+            py={1.5}
+            borderRadius={2}
+            border={2}
+            borderColor={isSelected ? "primary.main" : "transparent"}
+            bgcolor={isSelected ? (theme) => alpha(theme.palette.primary.main, 0.08) : undefined}
             sx={{
-                flex: 1,
-                minWidth: 0,
-                px: { xs: 1, sm: 2 },
-                py: 1.5,
-                borderRadius: 2,
                 cursor: "pointer",
                 transition: "all 0.2s ease-in-out",
-                border: 2,
-                borderColor: "transparent",
                 userSelect: "none",
-                // Selected state styling
-                ...(isSelected && {
-                    borderColor: (theme) => theme.palette.primary.main,
-                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-                    transform: "scale(1.02)",
-                }),
-                // Hover effect (disabled when selected)
-                ...(!isSelected && {
-                    "&:hover": {
-                        bgcolor: (theme) => alpha(theme.palette.primary.main, 0.05),
-                        transform: "translateY(-2px)",
-                    },
-                }),
+                ...(isSelected
+                    ? {
+                          transform: "scale(1.02)",
+                      }
+                    : {
+                          "&:hover": {
+                              bgcolor: (theme) => alpha(theme.palette.primary.main, 0.05),
+                              transform: "translateY(-2px)",
+                          },
+                      }),
             }}
         >
-            <Typography variant="body2" sx={responsiveTextTruncate}>
+            <Typography variant="body2" {...responsiveTextTruncate}>
                 {username}
             </Typography>
 
             <Typography
                 variant="h5"
                 component="div"
-                sx={{
-                    fontWeight: 700,
-                    ...(showDifference && {
-                        color: isPositiveDifference ? "error.main" : "success.main",
-                    }),
-                }}
+                fontWeight={700}
+                color={
+                    showDifference
+                        ? isPositiveDifference
+                            ? "error.main"
+                            : "success.main"
+                        : undefined
+                }
             >
                 {showDifference
                     ? `${scoreDifference >= 0 ? "+" : ""}${scoreDifference.toLocaleString()}`
@@ -121,75 +121,69 @@ export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) =>
                 right: 0,
                 bottom: 0,
                 zIndex: 1200,
+                maxWidth: "lg",
+                mx: "auto",
+                py: 2,
             }}
         >
-            <Box
-                sx={{
-                    maxWidth: "lg",
-                    mx: "auto",
-                    py: 2,
-                }}
-            >
-                <Stack spacing={1}>
-                    {riichiStickCount !== undefined && hasRiichiSticks && (
-                        <Box sx={{ display: "flex", justifyContent: "center" }}>
-                            <Chip
-                                icon={
-                                    <Box
-                                        component="img"
-                                        src={riichiStick}
-                                        alt="Riichi stick"
-                                        sx={{ height: 14, px: 1 }}
-                                    />
-                                }
-                                label={`${riichiStickCount} Riichi ${riichiStickCount === 1 ? "Stick" : "Sticks"}`}
-                                color="primary"
-                                variant="outlined"
-                                size="small"
-                            />
-                        </Box>
-                    )}
-                    <Stack
-                        direction="row"
-                        spacing={{ xs: 1, sm: 2 }}
-                        justifyContent="center"
-                        alignItems="stretch"
-                        sx={{
-                            flexWrap: { xs: "wrap", sm: "nowrap" },
-                            px: 1,
-                        }}
-                    >
-                        {scores.map(({ username, score, eloDelta }, idx) => {
-                            const hasRiichiStick = riichiList?.includes(idx) ?? false;
-                            const adjustedScore = hasRiichiStick ? score - 1000 : score;
-
-                            // Calculate difference if a score is selected
-                            let scoreDifference: number | null = null;
-                            if (selectedScoreIndex !== null && selectedScoreIndex !== idx) {
-                                const selectedHasRiichi =
-                                    riichiList?.includes(selectedScoreIndex) ?? false;
-                                const selectedAdjustedScore = selectedHasRiichi
-                                    ? scores[selectedScoreIndex].score - 1000
-                                    : scores[selectedScoreIndex].score;
-                                scoreDifference = adjustedScore - selectedAdjustedScore;
-                            }
-
-                            return (
-                                <PlayerScoreCard
-                                    key={idx}
-                                    username={username}
-                                    score={adjustedScore}
-                                    eloDelta={eloDelta}
-                                    hasRiichiStick={hasRiichiStick}
-                                    isSelected={selectedScoreIndex === idx}
-                                    scoreDifference={scoreDifference}
-                                    onClick={() => handleScoreClick(idx)}
+            <Stack spacing={1}>
+                {riichiStickCount !== undefined && hasRiichiSticks && (
+                    <Box display="flex" justifyContent="center">
+                        <Chip
+                            icon={
+                                <Box
+                                    component="img"
+                                    src={riichiStick}
+                                    alt="Riichi stick"
+                                    height={14}
+                                    px={1}
                                 />
-                            );
-                        })}
-                    </Stack>
+                            }
+                            label={`${riichiStickCount} Riichi ${riichiStickCount === 1 ? "Stick" : "Sticks"}`}
+                            color="primary"
+                            variant="outlined"
+                            size="small"
+                        />
+                    </Box>
+                )}
+                <Stack
+                    direction="row"
+                    spacing={{ xs: 1, sm: 2 }}
+                    justifyContent="center"
+                    alignItems="stretch"
+                    flexWrap={{ xs: "wrap", sm: "nowrap" }}
+                    px={1}
+                >
+                    {scores.map(({ username, score, eloDelta }, idx) => {
+                        const hasRiichiStick = riichiList?.includes(idx) ?? false;
+                        const adjustedScore = hasRiichiStick ? score - 1000 : score;
+
+                        // Calculate difference if a score is selected
+                        let scoreDifference: number | null = null;
+                        if (selectedScoreIndex !== null && selectedScoreIndex !== idx) {
+                            const selectedHasRiichi =
+                                riichiList?.includes(selectedScoreIndex) ?? false;
+                            const selectedAdjustedScore = selectedHasRiichi
+                                ? scores[selectedScoreIndex].score - 1000
+                                : scores[selectedScoreIndex].score;
+                            scoreDifference = adjustedScore - selectedAdjustedScore;
+                        }
+
+                        return (
+                            <PlayerScoreCard
+                                key={idx}
+                                username={username}
+                                score={adjustedScore}
+                                eloDelta={eloDelta}
+                                hasRiichiStick={hasRiichiStick}
+                                isSelected={selectedScoreIndex === idx}
+                                scoreDifference={scoreDifference}
+                                onClick={() => handleScoreClick(idx)}
+                            />
+                        );
+                    })}
                 </Stack>
-            </Box>
+            </Stack>
         </Paper>
     );
 };

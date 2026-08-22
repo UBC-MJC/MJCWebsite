@@ -186,8 +186,8 @@ const AdminPlayers = () => {
 
     if (error) return <>{"An error has occurred: " + error.message}</>;
     return (
-        <Stack>
-            <Box sx={responsiveDataGridContainer}>
+        <>
+            <Box {...responsiveDataGridContainer}>
                 <DataGrid
                     rows={data}
                     columns={playerColumns}
@@ -211,7 +211,7 @@ const AdminPlayers = () => {
                     editMode="row"
                 />
             </Box>
-            <Stack direction={{ xs: "column", sm: "row" }}>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
                 <Button variant="outlined" color="warning" onClick={removeQualificationAPI}>
                     Remove all qualification
                 </Button>
@@ -233,7 +233,7 @@ const AdminPlayers = () => {
                     Make Test Admins
                 </Button>
             </Stack>
-        </Stack>
+        </>
     );
 };
 

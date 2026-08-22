@@ -9,7 +9,6 @@ import {
     Typography,
     CircularProgress,
     Alert,
-    Stack,
     CardActionArea,
 } from "@mui/material";
 import { Link } from "react-router";
@@ -60,95 +59,83 @@ export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationPr
 
     return (
         <Container>
-            <Stack>
-                <Typography variant="h1">Live {getGameVariantString(gameVariant)} Games</Typography>
+            <Typography variant="h1">Live {getGameVariantString(gameVariant)} Games</Typography>
 
-                {liveGames.length === 0 ? (
-                    <Alert severity="info" variant="standard">
-                        No live games at the moment.
-                    </Alert>
-                ) : (
-                    <Grid container spacing={3}>
-                        {liveGames.map((game) => (
-                            <Grid size={{ xs: 12, md: 6 }} key={game.id}>
-                                <Card
+            {liveGames.length === 0 ? (
+                <Alert severity="info" variant="standard">
+                    No live games at the moment.
+                </Alert>
+            ) : (
+                <Grid container spacing={3}>
+                    {liveGames.map((game) => (
+                        <Grid size={{ xs: 12, md: 6 }} key={game.id}>
+                            <Card
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    ...responsiveCardHover,
+                                }}
+                            >
+                                <CardActionArea
+                                    component={Link}
+                                    to={`/games/${gameVariant}/${game.id}`}
                                     sx={{
                                         display: "flex",
                                         flexDirection: "column",
-                                        ...responsiveCardHover,
+                                        alignItems: "stretch",
+                                        flexGrow: 1,
                                     }}
                                 >
-                                    <CardActionArea
-                                        component={Link}
-                                        to={`/games/${gameVariant}/${game.id}`}
+                                    <CardHeader
+                                        title={
+                                            <Box
+                                                display="flex"
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                flexWrap="wrap"
+                                            >
+                                                <Typography variant="h6" component="div">
+                                                    {getGameVariantString(gameVariant, game.type)} #
+                                                    {game.id}
+                                                </Typography>
+                                                <Chip
+                                                    icon={<AccessTimeIcon />}
+                                                    label={gameRoundString(game, gameVariant)}
+                                                    color="primary"
+                                                    size="small"
+                                                    variant="outlined"
+                                                />
+                                            </Box>
+                                        }
+                                        subheader={
+                                            <Box
+                                                display="flex"
+                                                alignItems="center"
+                                                gap={0.5}
+                                                mt={1}
+                                            >
+                                                <CalendarTodayIcon fontSize="small" />
+                                                <Typography variant="caption">
+                                                    {formatDate(game.createdAt)}
+                                                </Typography>
+                                            </Box>
+                                        }
                                         sx={{
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "stretch",
-                                            flexGrow: 1,
+                                            bgcolor: "action.hover",
+                                            "& .MuiCardHeader-subheader": {
+                                                color: "text.secondary",
+                                            },
                                         }}
-                                    >
-                                        <CardHeader
-                                            title={
-                                                <Box
-                                                    sx={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "space-between",
-                                                        flexWrap: "wrap",
-                                                    }}
-                                                >
-                                                    <Typography variant="h6" component="div">
-                                                        {getGameVariantString(
-                                                            gameVariant,
-                                                            game.type,
-                                                        )}{" "}
-                                                        #{game.id}
-                                                    </Typography>
-                                                    <Chip
-                                                        icon={<AccessTimeIcon />}
-                                                        label={gameRoundString(game, gameVariant)}
-                                                        color="primary"
-                                                        size="small"
-                                                        variant="outlined"
-                                                    />
-                                                </Box>
-                                            }
-                                            subheader={
-                                                <Box
-                                                    sx={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        gap: 0.5,
-                                                        mt: 1,
-                                                    }}
-                                                >
-                                                    <CalendarTodayIcon fontSize="small" />
-                                                    <Typography variant="caption">
-                                                        {formatDate(game.createdAt)}
-                                                    </Typography>
-                                                </Box>
-                                            }
-                                            sx={{
-                                                bgcolor: "action.hover",
-                                                "& .MuiCardHeader-subheader": {
-                                                    color: "text.secondary",
-                                                },
-                                            }}
-                                        />
-                                        <CardContent sx={{ flexGrow: 1 }}>
-                                            <GameSummaryBody
-                                                game={game}
-                                                gameVariant={gameVariant}
-                                            />
-                                        </CardContent>
-                                    </CardActionArea>
-                                </Card>
-                            </Grid>
-                        ))}
-                    </Grid>
-                )}
-            </Stack>
+                                    />
+                                    <CardContent sx={{ flexGrow: 1 }}>
+                                        <GameSummaryBody game={game} gameVariant={gameVariant} />
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+            )}
         </Container>
     );
 };

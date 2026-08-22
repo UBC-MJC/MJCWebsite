@@ -193,45 +193,43 @@ const Game = <T extends GameVariant>() => {
     const spectatorPadding: number = canUpdateGame ? 0 : 12;
     return (
         <Container sx={{ pb: { xs: 6 + spectatorPadding, sm: 10 + spectatorPadding } }}>
-            <Stack>
-                <Typography variant="h1">{getGameVariantString(variant, game.type)}</Typography>
-                {game.status === "IN_PROGRESS" && (
-                    <Typography variant="h2" color="text.secondary">
-                        {gameRoundString(game, variant)}
-                    </Typography>
-                )}
-                {getLegacyDisplayGame(game)}
-                {canUpdateGame && (
-                    <Stack direction={{ xs: "column", sm: "row" }} sx={{ pb: { xs: 18, sm: 16 } }}>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            disabled={game.rounds.length == 0}
-                            fullWidth
-                            onClick={() => handleDeleteRound()}
-                        >
-                            Delete Last Round
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            fullWidth
-                            onClick={() => handleDeleteGame()}
-                        >
-                            Delete Game
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="success"
-                            disabled={!isGameEnd(game, variant)}
-                            fullWidth
-                            onClick={() => handleSubmitGame()}
-                        >
-                            Submit Game
-                        </Button>
-                    </Stack>
-                )}
-            </Stack>
+            <Typography variant="h1">{getGameVariantString(variant, game.type)}</Typography>
+            {game.status === "IN_PROGRESS" && (
+                <Typography variant="h2" color="text.secondary">
+                    {gameRoundString(game, variant)}
+                </Typography>
+            )}
+            {getLegacyDisplayGame(game)}
+            {canUpdateGame && (
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1} pb={{ xs: 18, sm: 16 }}>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        disabled={game.rounds.length == 0}
+                        fullWidth
+                        onClick={() => handleDeleteRound()}
+                    >
+                        Delete Last Round
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        fullWidth
+                        onClick={() => handleDeleteGame()}
+                    >
+                        Delete Game
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="success"
+                        disabled={!isGameEnd(game, variant)}
+                        fullWidth
+                        onClick={() => handleSubmitGame()}
+                    >
+                        Submit Game
+                    </Button>
+                </Stack>
+            )}
         </Container>
     );
 };

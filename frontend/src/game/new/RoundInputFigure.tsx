@@ -10,15 +10,8 @@ interface RoundInputFigureProps {
 const RoundInputFigure = ({ players }: RoundInputFigureProps) => {
     return (
         <Grid container justifyContent="center">
-            <Grid
-                size={{ xs: 12, sm: 10, md: 8, lg: 9, xl: 8 }}
-                className="game-round-input"
-                sx={{ p: 0 }}
-            >
-                <Box
-                    className="game-round-input-grid"
-                    sx={{ display: "flex", flexDirection: "column", p: 0 }}
-                >
+            <Grid size={{ xs: 12, sm: 10, md: 8, lg: 9, xl: 8 }} className="game-round-input" p={0}>
+                <Box className="game-round-input-grid" display="flex" flexDirection="column" p={0}>
                     <Grid container>
                         <Grid size={{ xs: 4 }}></Grid>
                         <Grid size={{ xs: 4 }}>
@@ -44,7 +37,7 @@ const RoundInputFigure = ({ players }: RoundInputFigureProps) => {
                     </Grid>
                 </Box>
 
-                <Box sx={{ aspectRatio: "1/1", width: "100%" }}>
+                <Box width="100%" sx={{ aspectRatio: "1/1" }}>
                     <svg viewBox="0 0 100 100" style={{ width: "100%", height: "100%" }}>
                         <polygon
                             points="0,100 100,100 67.5,67.5 32.5,67.5"

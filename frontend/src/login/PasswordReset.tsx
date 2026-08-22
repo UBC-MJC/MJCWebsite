@@ -102,70 +102,66 @@ const PasswordReset = ({ playerId, token }: PasswordResetProps) => {
                 justifyContent: "center",
             }}
         >
-            <Stack>
-                <Card>
-                    <CardContent>
-                        <Stack component="form" noValidate onSubmit={handleSubmit}>
-                            <Typography variant="h2" component="h1">
-                                Reset Password
-                            </Typography>
+            <Card>
+                <CardContent>
+                    <Stack component="form" noValidate onSubmit={handleSubmit}>
+                        <Typography variant="h2" component="h1">
+                            Reset Password
+                        </Typography>
 
-                            {error && (
-                                <Alert severity="error" variant="standard">
-                                    {error}
-                                </Alert>
-                            )}
+                        {error && (
+                            <Alert severity="error" variant="standard">
+                                {error}
+                            </Alert>
+                        )}
 
-                            <TextField
-                                fullWidth
-                                required
-                                label="New Password"
-                                type="password"
-                                placeholder="Enter your new password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                autoComplete="new-password"
-                            />
+                        <TextField
+                            fullWidth
+                            required
+                            label="New Password"
+                            type="password"
+                            placeholder="Enter your new password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="new-password"
+                        />
 
-                            <TextField
-                                fullWidth
-                                required
-                                label="Confirm Password"
-                                type="password"
-                                placeholder="Re-enter your new password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                autoComplete="new-password"
-                            />
+                        <TextField
+                            fullWidth
+                            required
+                            label="Confirm Password"
+                            type="password"
+                            placeholder="Re-enter your new password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            autoComplete="new-password"
+                        />
 
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                type="submit"
-                                size="large"
-                                disabled={isWaiting}
-                            >
-                                {isWaiting ? "Resetting..." : "Reset Password"}
-                            </Button>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            type="submit"
+                            size="large"
+                            disabled={isWaiting}
+                        >
+                            {isWaiting ? "Resetting..." : "Reset Password"}
+                        </Button>
 
-                            <Box display="flex" justifyContent="center">
-                                <Typography variant="body2" color="text.secondary">
-                                    Remember your password?{" "}
-                                    <Link href="/login" underline="hover" fontWeight={600}>
-                                        Login
-                                    </Link>
-                                </Typography>
-                            </Box>
-                        </Stack>
-                    </CardContent>
-                </Card>
+                        <Typography variant="body2" color="text.secondary" align="center">
+                            Remember your password?{" "}
+                            <Link href="/login" underline="hover" fontWeight={600}>
+                                Login
+                            </Link>
+                        </Typography>
+                    </Stack>
+                </CardContent>
+            </Card>
 
-                <Box display="flex" justifyContent="center">
-                    <Button href="/" variant="text">
-                        Back to Home
-                    </Button>
-                </Box>
-            </Stack>
+            <Box display="flex" justifyContent="center">
+                <Button href="/" variant="text">
+                    Back to Home
+                </Button>
+            </Box>
         </Container>
     );
 };

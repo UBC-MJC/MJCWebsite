@@ -55,7 +55,7 @@ const NavBar = () => {
     };
 
     const mobileDrawer = (
-        <Box sx={{ width: 250 }} role="presentation">
+        <Box width={250} role="presentation">
             <List>
                 <ListItem>
                     <Typography variant="h6">UBC Mahjong Club</Typography>
@@ -239,7 +239,7 @@ const NavBar = () => {
                 </Typography>
                 {!isMobile && (
                     <>
-                        <Stack direction="row" spacing={1} sx={{ flexGrow: 1 }}>
+                        <Stack direction="row" spacing={1} flexGrow={1}>
                             <Button
                                 color="inherit"
                                 sx={navButton}

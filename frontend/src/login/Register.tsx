@@ -90,114 +90,110 @@ const Register = () => {
                 justifyContent: "center",
             }}
         >
-            <Stack>
-                <Card>
-                    <CardContent>
-                        <Stack component="form" noValidate onSubmit={handleSubmit}>
-                            <Typography variant="h1">UBC Mahjong Club</Typography>
+            <Card>
+                <CardContent>
+                    <Stack component="form" noValidate onSubmit={handleSubmit}>
+                        <Typography variant="h1">UBC Mahjong Club</Typography>
 
-                            <TextField
-                                fullWidth
-                                required
-                                label="Username"
-                                placeholder="Choose a username"
-                                value={username}
-                                error={!!errors.username}
-                                helperText={errors.username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                autoComplete="username"
-                            />
+                        <TextField
+                            fullWidth
+                            required
+                            label="Username"
+                            placeholder="Choose a username"
+                            value={username}
+                            error={!!errors.username}
+                            helperText={errors.username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            autoComplete="username"
+                        />
 
-                            <Grid container spacing={2}>
-                                <Grid size={{ xs: 12, sm: 6 }}>
-                                    <TextField
-                                        fullWidth
-                                        required
-                                        label="First Name"
-                                        placeholder="Enter your first name"
-                                        value={firstName}
-                                        error={!!errors.firstName}
-                                        helperText={errors.firstName}
-                                        onChange={(e) => setFirstName(e.target.value)}
-                                        autoComplete="given-name"
-                                    />
-                                </Grid>
-                                <Grid size={{ xs: 12, sm: 6 }}>
-                                    <TextField
-                                        fullWidth
-                                        required
-                                        label="Last Name"
-                                        placeholder="Enter your last name"
-                                        value={lastName}
-                                        error={!!errors.lastName}
-                                        helperText={errors.lastName}
-                                        onChange={(e) => setLastName(e.target.value)}
-                                        autoComplete="family-name"
-                                    />
-                                </Grid>
+                        <Grid container spacing={2}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="First Name"
+                                    placeholder="Enter your first name"
+                                    value={firstName}
+                                    error={!!errors.firstName}
+                                    helperText={errors.firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    autoComplete="given-name"
+                                />
                             </Grid>
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Last Name"
+                                    placeholder="Enter your last name"
+                                    value={lastName}
+                                    error={!!errors.lastName}
+                                    helperText={errors.lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    autoComplete="family-name"
+                                />
+                            </Grid>
+                        </Grid>
 
-                            <TextField
-                                fullWidth
-                                required
-                                label="Email"
-                                type="email"
-                                placeholder="Enter your email address"
-                                value={email}
-                                error={!!errors.email}
-                                helperText={errors.email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                autoComplete="email"
-                            />
+                        <TextField
+                            fullWidth
+                            required
+                            label="Email"
+                            type="email"
+                            placeholder="Enter your email address"
+                            value={email}
+                            error={!!errors.email}
+                            helperText={errors.email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            autoComplete="email"
+                        />
 
-                            <TextField
-                                fullWidth
-                                required
-                                label="Password"
-                                type="password"
-                                placeholder="Create a password (min 6 characters)"
-                                value={password}
-                                error={!!errors.password}
-                                helperText={errors.password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                autoComplete="new-password"
-                            />
+                        <TextField
+                            fullWidth
+                            required
+                            label="Password"
+                            type="password"
+                            placeholder="Create a password (min 6 characters)"
+                            value={password}
+                            error={!!errors.password}
+                            helperText={errors.password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="new-password"
+                        />
 
-                            <TextField
-                                fullWidth
-                                required
-                                label="Confirm Password"
-                                type="password"
-                                placeholder="Re-enter your password"
-                                value={confirmPassword}
-                                error={!!errors.confirmPassword}
-                                helperText={errors.confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                autoComplete="new-password"
-                            />
+                        <TextField
+                            fullWidth
+                            required
+                            label="Confirm Password"
+                            type="password"
+                            placeholder="Re-enter your password"
+                            value={confirmPassword}
+                            error={!!errors.confirmPassword}
+                            helperText={errors.confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            autoComplete="new-password"
+                        />
 
-                            <Button fullWidth variant="contained" type="submit" size="large">
-                                Sign Up
-                            </Button>
+                        <Button fullWidth variant="contained" type="submit" size="large">
+                            Sign Up
+                        </Button>
 
-                            <Box display="flex" justifyContent="center">
-                                <Typography variant="body2" color="text.secondary">
-                                    Already have an account?{" "}
-                                    <Link href="/login" underline="hover" fontWeight={600}>
-                                        Login
-                                    </Link>
-                                </Typography>
-                            </Box>
-                        </Stack>
-                    </CardContent>
-                </Card>
+                        <Typography variant="body2" color="text.secondary" align="center">
+                            Already have an account?{" "}
+                            <Link href="/login" underline="hover" fontWeight={600}>
+                                Login
+                            </Link>
+                        </Typography>
+                    </Stack>
+                </CardContent>
+            </Card>
 
-                <Box display="flex" justifyContent="center">
-                    <Button href="/" variant="text">
-                        Back to Home
-                    </Button>
-                </Box>
-            </Stack>
+            <Box display="flex" justifyContent="center">
+                <Button href="/" variant="text">
+                    Back to Home
+                </Button>
+            </Box>
         </Container>
     );
 };

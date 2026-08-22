@@ -46,9 +46,9 @@ const ConfirmationDialog = ({
                 },
             }}
         >
-            {title && <DialogTitle sx={{ color: "text.primary" }}>{title}</DialogTitle>}
+            {title && <DialogTitle color="text.primary">{title}</DialogTitle>}
             <DialogContent>
-                <DialogContentText sx={{ color: "text.primary" }}>{confirmation}</DialogContentText>
+                <DialogContentText color="text.primary">{confirmation}</DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button

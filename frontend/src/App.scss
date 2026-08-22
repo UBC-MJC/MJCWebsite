@@ -1,44 +1,44 @@
 // Game input component styles
 .App {
-  text-align: center;
+    text-align: center;
 }
 
 .game-round-input {
-  border: 1px solid black;
-  position: relative;
+    border: 1px solid black;
+    position: relative;
 }
 
 .game-round-input .game-round-input-grid {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  pointer-events: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
 }
 
 .game-round-input svg {
-  position: absolute;
-  left: 0;
-  top: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .game-round-input svg polygon {
-  stroke-width: 1px;
-  stroke: black;
-  cursor: pointer;
+    stroke-width: 1px;
+    stroke: black;
+    cursor: pointer;
 }
 
 // Wheel picker scrollbar hiding
 .wheel-picker-container ul::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 .wheel-picker-container ul {
-  -ms-overflow-style: none;
+    -ms-overflow-style: none;
 }
 
 .link {
-   color: #60a5fa;
+    color: #60a5fa;
 }
 .link:visited {
-  color: #c084fc;
+    color: #c084fc;
 }

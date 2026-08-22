@@ -133,32 +133,30 @@ const LegacyHongKongGame = ({
                 }}
             >
                 <Stack spacing={3}>
-                    <Box>
-                        <ToggleButtonGroup
-                            exclusive
-                            value={transactionType}
-                            onChange={(_event, value) => value && transactionTypeOnChange(value)}
-                            sx={{
-                                display: "flex",
-                                flexWrap: "wrap",
-                                gap: 1,
-                                "& .MuiToggleButton-root": {
-                                    flex: "1 1 auto",
-                                    minWidth: "120px",
+                    <ToggleButtonGroup
+                        exclusive
+                        value={transactionType}
+                        onChange={(_event, value) => value && transactionTypeOnChange(value)}
+                        sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 1,
+                            "& .MuiToggleButton-root": {
+                                flex: "1 1 auto",
+                                minWidth: "120px",
+                                borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
+                                "&:hover": {
                                     borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
-                                    "&:hover": {
-                                        borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
-                                    },
                                 },
-                            }}
-                        >
-                            {HK_TRANSACTION_TYPE_BUTTONS.map((button, idx) => (
-                                <ToggleButton key={idx} value={button.value} id={button.name}>
-                                    {button.name}
-                                </ToggleButton>
-                            ))}
-                        </ToggleButtonGroup>
-                    </Box>
+                            },
+                        }}
+                    >
+                        {HK_TRANSACTION_TYPE_BUTTONS.map((button, idx) => (
+                            <ToggleButton key={idx} value={button.value} id={button.name}>
+                                {button.name}
+                            </ToggleButton>
+                        ))}
+                    </ToggleButtonGroup>
 
                     <Divider />
 
@@ -173,7 +171,7 @@ const LegacyHongKongGame = ({
                     ))}
 
                     {showPointInput() && (
-                        <Box sx={{ my: 2 }}>
+                        <Box my={2}>
                             <PointsInput
                                 pointsWheel={hongKongPointsWheel}
                                 onChange={handOnChange}
@@ -212,15 +210,13 @@ const LegacyHongKongGame = ({
 
     return (
         <>
-            <Stack alignItems="center" spacing={3} sx={{ pb: 2 }}>
+            <Stack alignItems="center" spacing={3} pb={2}>
                 {enableRecording && !gameOver && getRecordingInterface()}
 
-                <Box sx={{ width: "100%" }}>
-                    <LegacyHongKongGameTable
-                        rounds={mapRoundsToModifiedRounds(game.rounds)}
-                        players={players}
-                    />
-                </Box>
+                <LegacyHongKongGameTable
+                    rounds={mapRoundsToModifiedRounds(game.rounds)}
+                    players={players}
+                />
             </Stack>
             <Footer scores={getScoresWithPlayers(game, "hk")} />
         </>

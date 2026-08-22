@@ -18,7 +18,7 @@ const LoadingFallback = ({ minHeight = "50vh", message = "Loading..." }: Loading
         aria-label="Loading content"
     >
         <CircularProgress aria-hidden="true" />
-        <Typography variant="body1" sx={{ mt: 2, color: "text.secondary" }}>
+        <Typography variant="body1" mt={2} color="text.secondary">
             {message}
         </Typography>
     </Box>

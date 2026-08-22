@@ -225,31 +225,17 @@ const GameLogs = <T extends GameVariant>() => {
                                 >
                                     <CardHeader
                                         title={
-                                            <Box
-                                                sx={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "space-between",
-                                                    flexWrap: "wrap",
-                                                }}
-                                            >
-                                                <Typography variant="h6" component="div">
-                                                    {getGameVariantString(
-                                                        queryGameVariant,
-                                                        game.type,
-                                                    )}{" "}
-                                                    #{game.id}
-                                                </Typography>
-                                            </Box>
+                                            <Typography variant="h6" component="div">
+                                                {getGameVariantString(queryGameVariant, game.type)}{" "}
+                                                #{game.id}
+                                            </Typography>
                                         }
                                         subheader={
                                             <Box
-                                                sx={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    gap: 0.5,
-                                                    mt: 1,
-                                                }}
+                                                display="flex"
+                                                alignItems="center"
+                                                gap={0.5}
+                                                mt={1}
                                             >
                                                 <CalendarTodayIcon fontSize="small" />
                                                 <Typography variant="caption">
