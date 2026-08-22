@@ -458,6 +458,7 @@ abstract class GameService<
         });
         const eloDict: EloDict = {};
         const debugStats: EloChange[][] = []; // to be removed once it has been established that this is correct
+        const eloUpdates: PlayerGameEloUpdate[] = [];
         for (const game of finishedGames) {
             const playerScores = this.getGameFinalScore(game);
             const calculatedElos = this.getEloDeltas(game.players, playerScores, eloDict);
@@ -468,9 +469,10 @@ abstract class GameService<
                 }
                 eloDict[calculatedElo.playerId] += calculatedElo.eloChange;
             }
-            await this.updatePlayerGameElo(calculatedElos, game);
+            eloUpdates.push(...this.getPlayerGameEloUpdates(calculatedElos, game));
             debugStats.push(calculatedElos);
         }
+        await this.updatePlayerGameElos(eloUpdates);
         return { eloDict: eloDict, orderedGames: finishedGames, debugStats: debugStats };
     }
     abstract isEligible(player: Player): boolean;

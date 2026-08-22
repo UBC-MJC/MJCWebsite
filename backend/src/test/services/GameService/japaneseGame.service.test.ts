@@ -1,7 +1,7 @@
 import { it, describe, expect, beforeEach, vi } from "vitest";
 import prisma from "../../../db";
 import { testGameServiceCommon } from "./game.service.test.common";
-import { JapaneseTransactionType, Wind } from "@prisma/client";
+import { GameStatus, JapaneseTransactionType, Wind } from "@prisma/client";
 import {
     generateOverallScoreDelta,
     JapaneseGameService,
@@ -31,6 +31,24 @@ describe("Japanese Game Service Tests", async () => {
             startRiichiStickCount: 0,
         });
     });
+    it("should persist a season recalculation in one transaction", async () => {
+        await initialiseGame(gameService, initState.season.id, {
+            status: GameStatus.FINISHED,
+            endedAt: new Date("2025-01-01"),
+        });
+        await initialiseGame(gameService, initState.season.id, {
+            status: GameStatus.FINISHED,
+            endedAt: new Date("2025-01-02"),
+        });
+        const transactionSpy = vi.spyOn(prisma, "$transaction");
+
+        await gameService.recalcSeason(initState.season.id);
+
+        expect(transactionSpy).toHaveBeenCalledTimes(1);
+        expect(transactionSpy.mock.calls[0][0]).toHaveLength(8);
+        transactionSpy.mockRestore();
+    });
+
     describe("should calculate points correctly", async () => {
         it("should handle normal deal in 30fu 1han 0 -> 2", async () => {
             const game = await initialiseGame(gameService, initState.season.id, {
