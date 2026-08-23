@@ -23,10 +23,10 @@ const CheckIn = () => {
 
     return (
         <Container>
-            <Typography variant="h1">Daily Check-In</Typography>
+            <Typography variant="h1">Check-In</Typography>
             <Stack spacing={2}>
-                {!loading && player && (
-                    <Container>
+                <Container>
+                    {!loading && player && (
                         <Box sx={{ "& > button": { m: 1 } }}>
                             <Button
                                 size="large"
@@ -45,15 +45,15 @@ const CheckIn = () => {
                                 Check Out
                             </Button>
                         </Box>
-                    </Container>
-                )}
-                {!loading && !player && (
-                    <Box sx={{ display: "flex", justifyContent: "center" }}>
-                        <Alert severity="info" variant="outlined">
-                            Login to check in/out.
-                        </Alert>
-                    </Box>
-                )}
+                    )}
+                    {!loading && !player && (
+                        <Box sx={{ display: "flex", justifyContent: "center" }}>
+                            <Alert severity="info" variant="outlined">
+                                Login to check in/out.
+                            </Alert>
+                        </Box>
+                    )}
+                </Container>
                 <Box sx={responsiveDataGridContainer}>
                     <DataGrid
                         rows={checkedInPlayers}
@@ -78,7 +78,7 @@ const CheckIn = () => {
                     />
                 </Box>
             </Stack>
-            <Typography variant="subtitle1" color="text.secondary">Status resets daily at 12:00 AM PDT</Typography>
+            <Typography variant="subtitle1" color="text.secondary">Check-in expires after 8 hours</Typography>
         </Container>
     );
 };

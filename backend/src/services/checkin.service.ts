@@ -1,30 +1,9 @@
 import prisma from "../db";
 
-const generateMidnight = (): Date => {
-    const date = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "America/Vancouver",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    }).format(new Date());
+const CHECK_IN_EXPIRATION_HR = 8; // 8 hours
+const CHECK_IN_EXPIRATION_MS = CHECK_IN_EXPIRATION_HR * 60 * 60 * 1000;
 
-    return new Date(`${date}T00:00:00-07:00`);
-};
-
-const resetPastCheckIns = async () => {
-    const resetTime = generateMidnight();
-
-    await prisma.player.updateMany({
-        where: {
-            checkedInAt: {
-                lt: resetTime,
-            },
-        },
-        data: {
-            checkedInAt: null,
-        },
-    });
-};
+const getCheckInCutoffTime = (): Date => { return new Date(Date.now() - CHECK_IN_EXPIRATION_MS); };
 
 const checkInPlayer = async (playerId: string) => {
     return prisma.player.update({
@@ -49,9 +28,12 @@ const checkOutPlayer = async (playerId: string) => {
 };
 
 const getStatus = async (playerId: string) => {
-    return prisma.player.findUnique({
+    return prisma.player.findFirst({
         where: {
             id: playerId,
+            checkedInAt: {
+                gt: getCheckInCutoffTime(),
+            }
         },
         select: {
             checkedInAt: true,
@@ -60,8 +42,6 @@ const getStatus = async (playerId: string) => {
 };
 
 const getCheckedInPlayers = async () => {
-    await resetPastCheckIns();
-
     return prisma.player.findMany({
         where: {
             checkedInAt: {
