@@ -59,9 +59,18 @@ const getCheckedInPlayers = async () => {
     });
 };
 
+const resetAllCheckIns = async () => {
+    return prisma.player.updateMany({
+        data: {
+            checkedInAt: null,
+        },
+    });
+};
+
 export {
     checkInPlayer,
     checkOutPlayer,
     getStatus,
-    getCheckedInPlayers
+    getCheckedInPlayers,
+    resetAllCheckIns
 }

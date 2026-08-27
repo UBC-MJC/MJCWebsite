@@ -34,6 +34,7 @@ import {
     getPlayersHandler,
     makeTestAdminsHandler,
     removeQualificationHandler,
+    resetAllCheckInsHandler,
     updatePlayerHandler,
     updateSeasonHandler,
 } from "../controllers/admin.controller";
@@ -89,6 +90,7 @@ router.put("/admin/seasons/:id", isAuthenticated, isAdmin, updateSeasonHandler);
 router.delete("/admin/seasons/:id", isAuthenticated, isAdmin, deleteSeasonHandler);
 
 router.post("/admin/makeDummyAdmins", isAuthenticated, isAdmin, makeTestAdminsHandler);
+router.post("/admin/checkin/reset", isAuthenticated, isAdmin, resetAllCheckInsHandler)
 
 router.post("/checkin", isAuthenticated, checkInHandler);
 router.post("/checkout", isAuthenticated, checkOutHandler);

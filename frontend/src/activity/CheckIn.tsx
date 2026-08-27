@@ -11,6 +11,7 @@ import { useContext } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { responsiveDataGridContainer } from "@/theme/utils";
 import { useCheckedInPlayers, useCheckInAction, useCheckInStatus } from "@/hooks/CheckInHooks";
+import confirmDialog from "@/common/ConfirmationDialog";
 
 const CheckIn = () => {
     const { player, loading } = useContext(AuthContext);
@@ -19,7 +20,18 @@ const CheckIn = () => {
         data: checkedIn = false,
         isLoading: statusLoading,
     } = useCheckInStatus(!loading && !!player);
-    const { checkIn, checkOut } = useCheckInAction();
+    const { checkIn, checkOut, resetCheckIns } = useCheckInAction();
+
+    const handleResetCheckIns = async () => {
+        const response = await confirmDialog("Are you sure you want to reset all check-ins?", {
+            okText: "Reset",
+            okButtonStyle: "error",
+        });
+        if (!response) {
+            return;
+        }
+        resetCheckIns.mutate();
+    }
 
     return (
         <Container>
@@ -44,6 +56,16 @@ const CheckIn = () => {
                             >
                                 Check Out
                             </Button>
+                            {player.admin && (<Button
+                                size="large"
+                                variant="outlined"
+                                color="warning"
+                                onClick={handleResetCheckIns}
+                                disabled={false}
+                            >
+                                Manual Reset
+                            </Button>)
+                            }
                         </Box>
                     )}
                     {!loading && !player && (

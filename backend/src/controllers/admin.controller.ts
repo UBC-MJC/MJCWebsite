@@ -11,6 +11,7 @@ import { makeDummyAdmins } from "../services/admin.service";
 import { playerSchema } from "../validation/player.validation";
 import { createSeasonSchema, updateSeasonSchema } from "../validation/season.validation";
 import prisma from "../db";
+import { resetAllCheckIns } from "../services/checkin.service";
 
 const requireStringParam = (value: unknown, errorMessage: string): string => {
     if (typeof value !== "string" || value.length === 0) {
@@ -93,6 +94,11 @@ async function removeQualificationHandler(_req: Request, res: Response): Promise
     res.json(result);
 }
 
+const resetAllCheckInsHandler = async (req: Request, res: Response): Promise<void> => {
+    await resetAllCheckIns();
+    res.json({ message: "All players have been checked out" });
+};
+
 export {
     getPlayersHandler,
     updatePlayerHandler,
@@ -102,4 +108,5 @@ export {
     deleteSeasonHandler,
     makeTestAdminsHandler,
     removeQualificationHandler,
+    resetAllCheckInsHandler,
 };
