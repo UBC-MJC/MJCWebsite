@@ -45,7 +45,7 @@ const getCheckedInPlayers = async () => {
     return prisma.player.findMany({
         where: {
             checkedInAt: {
-                not: null,
+                gt: getCheckInCutoffTime(),
             },
         },
         select: {
