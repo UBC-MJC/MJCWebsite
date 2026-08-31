@@ -33,8 +33,8 @@ interface PlayerWithPlacement {
  *   Weight of final table points on Elo change.
  *   If you want placement to dominate more strongly, reduce SCORE_K.
  */
-const ELO_DIVISOR = 838; // So that a 100-point Elo difference corresponds to about 1.3x strength difference
-const SCORE_K = 0.05;
+const ELO_DIVISOR = 1263; // So that a 100-point Elo difference corresponds to about 1.2x strength difference
+const SCORE_K = 0.2;
 
 /**
  * Placement Elo values.
@@ -86,7 +86,7 @@ const getEloChanges = (
         /**
          * Final score component.
          *
-         * Centered at startingScore, which equals to 25000 for Riichi, 750 for HK. 
+         * Centered at startingScore, which equals to 25000 for Riichi, 750 for HK.
          * This component sums to 0 across the table.
          */
         const normalizedFinalScore = (player.score - startingScore) / dividingConstant;

@@ -60,7 +60,7 @@ class JapaneseGameService extends GameService<
         super(prisma.japaneseGame, prisma.japanesePlayerGame, {
             STARTING_SCORE: 25000,
             DIVIDING_CONSTANT: 1000,
-            SCORE_ADJUSTMENT: [55000, 25000, -5000, -75000],
+            SCORE_ADJUSTMENT: [0, 0, 0, 0],
         });
     }
 
