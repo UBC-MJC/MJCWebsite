@@ -313,25 +313,13 @@ abstract class GameService<
         playerScores: number[],
         eloDict: EloDict,
     ): EloChange[] {
-        const eloCalculatorInputs = this.createEloCalculatorInputs(
-            playerGames,
-            playerScores,
-            eloDict,
-        );
-        return this.calculateEloChanges(eloCalculatorInputs);
-    }
-
-    private createEloCalculatorInputs(
-        playerGames: { player: Player; wind: Wind }[],
-        playerScores: number[],
-        eloDict: EloDict,
-    ): EloCalculatorInput[] {
-        return playerGames.map(({ player, wind }) => ({
+        const eloCalculatorInputs = playerGames.map(({ player, wind }) => ({
             id: player.id,
             elo: STARTING_ELO + (player.id in eloDict ? eloDict[player.id] : 0),
             score: playerScores[WIND_ORDER.indexOf(wind)],
             wind,
         }));
+        return this.calculateEloChanges(eloCalculatorInputs);
     }
 
     abstract getNextRound(game: TGame): TNextRound;
