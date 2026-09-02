@@ -1,17 +1,6 @@
 import { WIND_ORDER } from "./game.util";
 import { Wind } from "@prisma/client";
-
-interface EloCalculatorInput {
-    id: string;
-    score: number;
-    elo: number;
-    wind: Wind;
-}
-
-interface EloChangeResult {
-    playerId: string;
-    eloChange: number;
-}
+import type { EloCalculatorInput, EloChange } from "./game.service";
 
 type Placement = 1 | 2 | 3 | 4;
 
@@ -33,8 +22,9 @@ interface PlayerWithPlacement {
  *   Weight of final table points on Elo change.
  *   If you want placement to dominate more strongly, reduce SCORE_K.
  */
-const ELO_DIVISOR = 838; // So that a 100-point Elo difference corresponds to about 1.3x strength difference
-const SCORE_K = 0.05;
+const ELO_DIVISOR = 1263; // So that a 100-point Elo difference corresponds to about 1.2x strength difference
+const SCORE_K = 0.2;
+const SCORE_DIVISOR = 1000;
 
 /**
  * Placement Elo values.
@@ -66,16 +56,11 @@ const PLACEMENT_ELO_MAP: Record<Placement, number> = {
  *   expectedPlacementElo is computed from finish-place probabilities
  *   derived from a Plackett-Luce model based on Elo strengths.
  */
-const getEloChanges = (
-    playerInformation: EloCalculatorInput[],
-    placingAdjustments: number[], // i.e. Uma in Riichi
-    dividingConstant: number,
-): EloChangeResult[] => {
-
+const getJapaneseEloChanges = (playerInformation: EloCalculatorInput[]): EloChange[] => {
     const totalScore = playerInformation.reduce((sum, player) => sum + player.score, 0);
     const startingScore = totalScore / playerInformation.length;
 
-    const playersWithPlacement = getPlacementResults(playerInformation, placingAdjustments);
+    const playersWithPlacement = getPlacementResults(playerInformation);
 
     const rawResults = playersWithPlacement.map((player) => {
         const actualPlacementElo = getActualPlacementElo(player.placement);
@@ -86,10 +71,10 @@ const getEloChanges = (
         /**
          * Final score component.
          *
-         * Centered at startingScore, which equals to 25000 for Riichi, 750 for HK. 
+         * Centered at startingScore, which equals 25000 for Riichi.
          * This component sums to 0 across the table.
          */
-        const normalizedFinalScore = (player.score - startingScore) / dividingConstant;
+        const normalizedFinalScore = (player.score - startingScore) / SCORE_DIVISOR;
         const scoreComponent = SCORE_K * normalizedFinalScore;
 
         const eloChange = placementComponent + scoreComponent;
@@ -113,15 +98,10 @@ const getEloChanges = (
 };
 
 /**
- * Determine placement by adjusted score:
- *   adjustedScore = raw score + placing adjustment for final place
- *
+ * Determine placement by raw score.
  * If tied, earlier wind in WIND_ORDER ranks higher.
  */
-const getPlacementResults = (
-    playerInformation: EloCalculatorInput[],
-    placingAdjustments: number[],
-): PlayerWithPlacement[] => {
+const getPlacementResults = (playerInformation: EloCalculatorInput[]): PlayerWithPlacement[] => {
     const sortedByRawPlacement = playerInformation.sort((a, b) => {
         if (a.score === b.score) {
             return WIND_ORDER.indexOf(a.wind) - WIND_ORDER.indexOf(b.wind);
@@ -129,14 +109,9 @@ const getPlacementResults = (
         return b.score - a.score;
     });
 
-    const playersWithAdjustedScore = sortedByRawPlacement.map((player, index) => ({
-        ...player,
-        adjustedScore: player.score + placingAdjustments[index],
-    }));
-
-    return playersWithAdjustedScore.map((player, index) => ({
+    return sortedByRawPlacement.map((player, index) => ({
         playerId: player.id,
-        score: player.adjustedScore,
+        score: player.score,
         elo: player.elo,
         wind: player.wind,
         placement: (index + 1) as Placement,
@@ -184,14 +159,12 @@ const getPermutations = <T>(items: T[]): T[][] => {
  * For order [A, B, C, D]:
  *   P = P(A first) * P(B second | A removed) * P(C third | A,B removed) * 1
  */
-const getOrderProbability = (
-    orderedPlayers: PlayerWithPlacement[],
-): number => {
+const getOrderProbability = (orderedPlayers: PlayerWithPlacement[]): number => {
     const weights = orderedPlayers.map((player) => getStrengthWeight(player.elo));
     const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
 
-    const {probability} = weights.slice(0, -1).reduce(
-        ({consumedWeight, probability}, weight) => {
+    const { probability } = weights.slice(0, -1).reduce(
+        ({ consumedWeight, probability }, weight) => {
             const remainingWeight = totalWeight - consumedWeight;
             return {
                 consumedWeight: consumedWeight + weight,
@@ -233,4 +206,4 @@ const getExpectedPlacementElo = (
     return expectedPlacementElo;
 };
 
-export { getEloChanges, EloCalculatorInput };
+export { getJapaneseEloChanges };

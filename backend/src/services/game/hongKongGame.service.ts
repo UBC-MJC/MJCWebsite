@@ -8,7 +8,6 @@ import {
     Prisma,
     Wind,
 } from "@prisma/client";
-import { GameService } from "./game.service";
 import {
     addScoreDeltas,
     getEmptyScoreDelta,
@@ -16,6 +15,8 @@ import {
     reduceScoreDeltas,
 } from "./game.util";
 import { ConcludedHongKongRoundT, HongKongTransactionT } from "../../validation/game.validation";
+import { getHongKongEloChanges } from "./hongKongEloCalculator";
+import { GameService } from "./game.service";
 
 type FullHongKongGame = Prisma.HongKongGameGetPayload<{
     include: {
@@ -49,12 +50,10 @@ class HongKongGameService extends GameService<
     HongKongRound
 > {
     constructor() {
-        super(prisma.hongKongGame, prisma.hongKongPlayerGame, {
-            STARTING_SCORE: 750,
-            DIVIDING_CONSTANT: 5,
-            SCORE_ADJUSTMENT: [100, 0, 0, -100],
-        });
+        super(prisma.hongKongGame, prisma.hongKongPlayerGame);
     }
+
+    protected calculateEloChanges = getHongKongEloChanges;
 
     public async createRound(
         game: Pick<FullHongKongGame, "id">,
