@@ -1,13 +1,12 @@
 import { GameStatus, GameType, Player, Prisma, Wind } from "@prisma/client";
 import {
     checkPlayerListUnique,
-    Constants,
-    createEloCalculatorInputs,
     GameFilterArgs,
     generateGameQuery,
     generatePlayerQuery,
+    STARTING_ELO,
+    WIND_ORDER,
 } from "./game.util";
-import { EloCalculatorInput, getEloChanges } from "./eloCalculator";
 import prisma from "../../db";
 import { findPlayerByUsernameOrEmail } from "../player.service";
 import { InvalidGameInputError } from "../../errors/domain.error";
@@ -43,6 +42,13 @@ interface MappedGame<TTransformedRound, TNextRound> {
     rounds: TTransformedRound[];
     eloDeltas: Record<string, number>;
     currentRound: TNextRound;
+}
+
+interface EloCalculatorInput {
+    id: string;
+    score: number;
+    elo: number;
+    wind: Wind;
 }
 
 interface EloChange {
@@ -114,16 +120,9 @@ abstract class GameService<
 > {
     public readonly gameDatabase: GameDatabase<TGame>;
     public readonly playerGameDatabase: PlayerGameDatabase;
-    public readonly constants: Constants;
-
-    protected constructor(
-        gameDatabase: unknown,
-        playerGameDatabase: unknown,
-        constants: Constants,
-    ) {
+    protected constructor(gameDatabase: unknown, playerGameDatabase: unknown) {
         this.gameDatabase = gameDatabase as GameDatabase<TGame>;
         this.playerGameDatabase = playerGameDatabase as PlayerGameDatabase;
-        this.constants = constants;
     }
 
     public async createGame(
@@ -305,21 +304,34 @@ abstract class GameService<
         return this.getEloDeltas(game.players, playerScores, eloDict);
     }
 
+    protected abstract calculateEloChanges: (
+        playerInformation: EloCalculatorInput[],
+    ) => EloChange[];
+
     private getEloDeltas(
         playerGames: { player: Player; wind: Wind }[],
         playerScores: number[],
         eloDict: EloDict,
-    ) {
-        const eloCalculatorInput: EloCalculatorInput[] = createEloCalculatorInputs(
+    ): EloChange[] {
+        const eloCalculatorInputs = this.createEloCalculatorInputs(
             playerGames,
             playerScores,
             eloDict,
         );
-        return getEloChanges(
-            eloCalculatorInput,
-            this.constants.SCORE_ADJUSTMENT,
-            this.constants.DIVIDING_CONSTANT,
-        );
+        return this.calculateEloChanges(eloCalculatorInputs);
+    }
+
+    private createEloCalculatorInputs(
+        playerGames: { player: Player; wind: Wind }[],
+        playerScores: number[],
+        eloDict: EloDict,
+    ): EloCalculatorInput[] {
+        return playerGames.map(({ player, wind }) => ({
+            id: player.id,
+            elo: STARTING_ELO + (player.id in eloDict ? eloDict[player.id] : 0),
+            score: playerScores[WIND_ORDER.indexOf(wind)],
+            wind,
+        }));
     }
 
     abstract getNextRound(game: TGame): TNextRound;
@@ -497,4 +509,4 @@ abstract class GameService<
     }
 }
 
-export { GameService, GameWithRelations, MappedGame };
+export { EloCalculatorInput, EloChange, GameService, GameWithRelations, MappedGame };

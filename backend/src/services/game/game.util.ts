@@ -1,7 +1,5 @@
 import { GameStatus, GameType, Player, Wind } from "@prisma/client";
-import { EloCalculatorInput } from "./eloCalculator";
 import { Transaction } from "../../validation/game.validation";
-import type { EloDict } from "./game.service";
 import { InvalidGameInputError } from "../../errors/domain.error";
 interface GameFilterArgs {
     seasonId?: string;
@@ -11,13 +9,6 @@ interface GameFilterArgs {
 }
 
 const WIND_ORDER: Wind[] = ["EAST", "SOUTH", "WEST", "NORTH"];
-
-export type TupleOfFour<T> = [T, T, T, T];
-export interface Constants {
-    STARTING_SCORE: number;
-    DIVIDING_CONSTANT: number;
-    SCORE_ADJUSTMENT: TupleOfFour<number>;
-}
 
 export const NUM_PLAYERS = 4;
 
@@ -73,22 +64,6 @@ const generateGameQuery = (filter: GameFilterArgs) => {
     return query;
 };
 
-const createEloCalculatorInputs = (
-    playerGames: { player: Player; wind: Wind }[],
-    playerScores: number[],
-    eloDict: EloDict,
-): EloCalculatorInput[] => {
-    return playerGames.map(({ player, wind }) => {
-        const elo = STARTING_ELO + (player.id in eloDict ? eloDict[player.id] : 0);
-        return {
-            id: player.id,
-            elo: elo,
-            score: playerScores[WIND_ORDER.indexOf(wind)],
-            wind: wind,
-        };
-    });
-};
-
 export function range(end: number) {
     return Array.from({ length: end }, (_, i) => i);
 }
@@ -127,7 +102,6 @@ export {
     checkPlayerListUnique,
     generatePlayerQuery,
     generateGameQuery,
-    createEloCalculatorInputs,
     getWind,
     WIND_ORDER,
     Wind,
