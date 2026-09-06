@@ -30,6 +30,10 @@ const makeDummyAdminsAPI = async () => {
     return axios.post<void>(baseUrl + "/admin/makeDummyAdmins", {}, getAuthConfig());
 };
 
+const resetAllCheckInsAPI = async () => {
+    return axios.post<void>(baseUrl + "/admin/checkin/reset", {}, getAuthConfig());
+};
+
 const recalcSeasonAPI = async (variant: GameVariant) => {
     return axios.put<void>(baseUrl + "/admin/recalc/" + variant, {}, getAuthConfig());
 };
@@ -47,4 +51,5 @@ export {
     updateSeasonAPI,
     makeDummyAdminsAPI,
     recalcSeasonAPI,
+    resetAllCheckInsAPI,
 };

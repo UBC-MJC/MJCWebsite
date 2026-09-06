@@ -19,6 +19,7 @@ export default [
         route("resources", "routes/resources.tsx"),
         route("vro2026", "routes/tournament.tsx"),
         route("stats/jp", "routes/statistics-jp.tsx"),
+        route("activity", "routes/checkin.tsx"),
         route("admin", "routes/admin.tsx"),
         route("settings", "routes/settings.tsx"),
         route("unauthorized", "routes/unauthorized.tsx"),

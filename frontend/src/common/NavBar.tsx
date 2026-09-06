@@ -170,6 +170,9 @@ const NavBar = () => {
                 <ListItemButton component={Link} to="/stats/jp" onClick={closeDrawer}>
                     <ListItemText primary="Stats" />
                 </ListItemButton>
+                <ListItemButton component={Link} to="/activity" onClick={closeDrawer}>
+                    <ListItemText primary="Activity" />
+                </ListItemButton>
                 <ListItemButton component={Link} to="/resources" onClick={closeDrawer}>
                     <ListItemText primary="Resources" />
                 </ListItemButton>
@@ -383,6 +386,9 @@ const NavBar = () => {
                             </Button>
                             <Button color="inherit" sx={navButton} component={Link} to="/stats/jp">
                                 Stats
+                            </Button>
+                            <Button color="inherit" sx={navButton} component={Link} to="/activity">
+                                Activity
                             </Button>
                             <Button color="inherit" sx={navButton} component={Link} to="/resources">
                                 Resources

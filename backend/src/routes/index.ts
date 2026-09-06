@@ -34,10 +34,17 @@ import {
     getPlayersHandler,
     makeTestAdminsHandler,
     removeQualificationHandler,
+    resetAllCheckInsHandler,
     updatePlayerHandler,
     updateSeasonHandler,
 } from "../controllers/admin.controller";
 import { getCurrentSeasonHandler, getSeasonsHandler } from "../controllers/season.controller";
+import {
+    checkInHandler,
+    checkOutHandler,
+    getStatusHandler,
+    getCheckedInPlayersHandler
+} from "../controllers/checkin.controller";
 
 const router: Router = Router();
 
@@ -83,5 +90,11 @@ router.put("/admin/seasons/:id", isAuthenticated, isAdmin, updateSeasonHandler);
 router.delete("/admin/seasons/:id", isAuthenticated, isAdmin, deleteSeasonHandler);
 
 router.post("/admin/makeDummyAdmins", isAuthenticated, isAdmin, makeTestAdminsHandler);
+router.post("/admin/checkin/reset", isAuthenticated, isAdmin, resetAllCheckInsHandler)
+
+router.post("/checkin", isAuthenticated, checkInHandler);
+router.post("/checkout", isAuthenticated, checkOutHandler);
+router.get("/checkin", isAuthenticated, getStatusHandler);
+router.get("/checkin/list", getCheckedInPlayersHandler);
 
 export default router;
