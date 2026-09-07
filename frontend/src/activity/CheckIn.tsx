@@ -100,7 +100,7 @@ const CheckIn = () => {
                     />
                 </Box>
             </Stack>
-            <Typography variant="subtitle1" color="text.secondary">Check-in expires after 8 hours</Typography>
+            <Typography variant="subtitle1" color="text.secondary">Check-in expires after 4 hours</Typography>
         </Container>
     );
 };

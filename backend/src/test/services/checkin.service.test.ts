@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import prisma from "../../db";
 import {
+    CHECK_IN_EXPIRATION_HR,
     checkInPlayer,
+    checkInPlayers,
     checkOutPlayer,
     getCheckedInPlayers,
     getStatus,
@@ -43,7 +45,7 @@ describe("CheckIn Service Test", () => {
             },
             data: {
                 checkedInAt: new Date(
-                    Date.now() - 7.999 * 60 * 60 * 1000,
+                    Date.now() - (CHECK_IN_EXPIRATION_HR - 0.001) * 60 * 60 * 1000,
                 ),
             },
         });
@@ -53,7 +55,7 @@ describe("CheckIn Service Test", () => {
             },
             data: {
                 checkedInAt: new Date(
-                    Date.now() - 8.001 * 60 * 60 * 1000,
+                    Date.now() - (CHECK_IN_EXPIRATION_HR + 0.001) * 60 * 60 * 1000,
                 ),
             },
         });
@@ -75,7 +77,7 @@ describe("CheckIn Service Test", () => {
             },
             data: {
                 checkedInAt: new Date(
-                    Date.now() - 7.999 * 60 * 60 * 1000,
+                    Date.now() - (CHECK_IN_EXPIRATION_HR - 0.001) * 60 * 60 * 1000,
                 ),
             },
         });
@@ -85,7 +87,7 @@ describe("CheckIn Service Test", () => {
             },
             data: {
                 checkedInAt: new Date(
-                    Date.now() - 8.001 * 60 * 60 * 1000,
+                    Date.now() - (CHECK_IN_EXPIRATION_HR + 0.001) * 60 * 60 * 1000,
                 ),
             },
         });
@@ -94,5 +96,30 @@ describe("CheckIn Service Test", () => {
         expect(players.some((p) => p.id === activePlayer.id)).toBe(true);
         expect(players.some((p) => p.id === expiredPlayer.id)).toBe(false);
         expect(players.some((p) => p.id === newPlayer.id)).toBe(false);
+    });
+    it("should check in multiple players", async () => {
+        const player1 = initState.players[0];
+        const player2 = initState.players[1];
+        const player3 = initState.players[2];
+        const player4 = initState.players[3];
+        const playerList = [player1, player2, player3, player4];
+        const playerIdList = playerList.map(player => player.id);
+
+        const timeBeforeCheckIn = Date.now();
+        checkInPlayers(playerIdList);
+        const timeAfterCheckIn = Date.now();
+
+        const updatedPlayers = await prisma.player.findMany({
+            where: {
+                id: {
+                    in: playerIdList,
+                },
+            },
+        });
+        for (const player of updatedPlayers) {
+            const checkedInAt = player.checkedInAt!.getTime();
+            expect(checkedInAt).toBeGreaterThanOrEqual(timeBeforeCheckIn);
+            expect(checkedInAt).toBeLessThanOrEqual(timeAfterCheckIn);
+        }
     });
 })

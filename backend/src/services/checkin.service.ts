@@ -1,6 +1,6 @@
 import prisma from "../db";
 
-const CHECK_IN_EXPIRATION_HR = 8; // 8 hours
+const CHECK_IN_EXPIRATION_HR = 4; // Number of hours check-in lasts for
 const CHECK_IN_EXPIRATION_MS = CHECK_IN_EXPIRATION_HR * 60 * 60 * 1000;
 
 const getCheckInCutoffTime = (): Date => { return new Date(Date.now() - CHECK_IN_EXPIRATION_MS); };
@@ -9,6 +9,19 @@ const checkInPlayer = async (playerId: string) => {
     return prisma.player.update({
         where: {
             id: playerId,
+        },
+        data: {
+            checkedInAt: new Date(),
+        },
+    });
+};
+
+const checkInPlayers = async (playerIds: string[]) => {
+    return prisma.player.updateMany({
+        where: {
+            id: {
+                in: playerIds,
+            },
         },
         data: {
             checkedInAt: new Date(),
@@ -69,8 +82,10 @@ const resetAllCheckIns = async () => {
 
 export {
     checkInPlayer,
+    checkInPlayers,
     checkOutPlayer,
     getStatus,
     getCheckedInPlayers,
-    resetAllCheckIns
+    resetAllCheckIns,
+    CHECK_IN_EXPIRATION_HR
 }
