@@ -16,14 +16,16 @@ const GameSummaryBody = <T extends GameVariant>({
                 .map((score, idx) => (
                     <Grid size={6} key={idx}>
                         <Box
-                            display="flex"
-                            justifyContent="space-between"
-                            py={1}
-                            px={1.5}
-                            bgcolor="background.default"
-                            borderRadius={1}
-                            border={1}
-                            borderColor="divider"
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                py: 1,
+                                px: 1.5,
+                                bgcolor: "background.default",
+                                borderRadius: 1,
+                                border: 1,
+                                borderColor: "divider",
+                            }}
                         >
                             <Typography variant="body2">
                                 {mapIndextoPlace(idx)} - {score.username}

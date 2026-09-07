@@ -1,5 +1,4 @@
 import { SxProps, Theme, styled } from "@mui/material/styles";
-import type { SystemProps } from "@mui/system";
 import ToggleButtonGroup, { toggleButtonGroupClasses } from "@mui/material/ToggleButtonGroup";
 
 /**
@@ -7,14 +6,14 @@ import ToggleButtonGroup, { toggleButtonGroupClasses } from "@mui/material/Toggl
  * Mobile: viewport-based height
  * Desktop: 600px
  */
-export const responsiveDataGridContainer = {
+export const responsiveDataGridContainer: SxProps<Theme> = {
     height: {
         xs: "calc(100vh - 350px)", // Mobile: Adapt to available space
         md: 600,
     },
     width: "100%",
     minHeight: 400, // Ensure usability even on small screens
-} satisfies SystemProps<Theme>;
+};
 
 /**
  * Responsive card hover effects
@@ -31,12 +30,12 @@ export const responsiveCardHover: SxProps<Theme> = {
 /**
  * Responsive text truncation with overflow handling
  */
-export const responsiveTextTruncate = {
+export const responsiveTextTruncate: SxProps<Theme> = {
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     maxWidth: { xs: "200px", sm: "300px", md: "100%" },
-} satisfies SystemProps<Theme>;
+};
 
 /**
  * Shared navbar button styling - overrides theme defaults for compact nav buttons

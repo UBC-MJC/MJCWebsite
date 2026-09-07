@@ -303,28 +303,32 @@ const LegacyJapaneseGame = ({
                             }
                             label="Multiple Transactions"
                         />
-                        <SpacedToggleButtonGroup
-                            exclusive
-                            value={transactionType}
-                            onChange={(_event, value) => value && transactionTypeOnChange(value)}
-                            sx={{
-                                display: "flex",
-                                flexWrap: "wrap",
-                                justifyContent: "space-evenly",
-                            }}
-                            aria-label="round type"
-                        >
-                            {getActions().map((button, idx) => (
-                                <ToggleButton
-                                    key={idx}
-                                    value={button.value}
-                                    id={button.name}
-                                    sx={{ minWidth: "100px", flexGrow: 1 }}
-                                >
-                                    {button.name}
-                                </ToggleButton>
-                            ))}
-                        </SpacedToggleButtonGroup>
+                        <Box>
+                            <SpacedToggleButtonGroup
+                                exclusive
+                                value={transactionType}
+                                onChange={(_event, value) =>
+                                    value && transactionTypeOnChange(value)
+                                }
+                                sx={{
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    justifyContent: "space-evenly",
+                                }}
+                                aria-label="round type"
+                            >
+                                {getActions().map((button, idx) => (
+                                    <ToggleButton
+                                        key={idx}
+                                        value={button.value}
+                                        id={button.name}
+                                        sx={{ minWidth: "100px", flexGrow: 1 }}
+                                    >
+                                        {button.name}
+                                    </ToggleButton>
+                                ))}
+                            </SpacedToggleButtonGroup>
+                        </Box>
 
                         <PlayerButtonRow
                             players={players}
@@ -344,7 +348,7 @@ const LegacyJapaneseGame = ({
                         ))}
 
                         {showPointInput(transactionType) && (
-                            <Box my={2}>
+                            <Box sx={{ my: 2 }}>
                                 <PointsInput
                                     pointsWheel={japanesePointsWheel}
                                     onChange={handOnChange}
@@ -373,8 +377,8 @@ const LegacyJapaneseGame = ({
             );
         }
         return (
-            <Stack spacing={2}>
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+            <Stack>
+                <Stack direction={{ xs: "column", sm: "row" }}>
                     <Button variant="contained" disabled={gameOver} onClick={addTransaction}>
                         Add Transaction
                     </Button>
@@ -388,7 +392,7 @@ const LegacyJapaneseGame = ({
                     </Button>
                 </Stack>
                 {transactions.length > 0 && (
-                    <Box mb={2}>{getTransactionListRender(transactions)}</Box>
+                    <Box sx={{ mb: 2 }}>{getTransactionListRender(transactions)}</Box>
                 )}
                 <Button
                     color="success"
@@ -407,13 +411,15 @@ const LegacyJapaneseGame = ({
 
     return (
         <>
-            <Stack alignItems="center" spacing={3} pb={2}>
+            <Stack alignItems="center" spacing={3} sx={{ pb: 2 }}>
                 {enableRecording && !gameOver && getRecordingInterface()}
 
-                <LegacyJapaneseGameTable
-                    rounds={mapRoundsToModifiedRounds(game.rounds)}
-                    players={players}
-                />
+                <Box sx={{ width: "100%" }}>
+                    <LegacyJapaneseGameTable
+                        rounds={mapRoundsToModifiedRounds(game.rounds)}
+                        players={players}
+                    />
+                </Box>
             </Stack>
             <Footer
                 scores={getScoresWithPlayers(game, "jp")}

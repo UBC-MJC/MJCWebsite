@@ -36,9 +36,7 @@ export const NewRoundInput = ({ gameVariant, players }: RoundInputProps) => {
             <Grid container justifyContent="center">
                 <Grid
                     size={{ xs: 12, lg: 4 }}
-                    display="flex"
-                    justifyContent="center"
-                    flexDirection="column"
+                    sx={{ display: "flex", justifyContent: "center", flexDirection: "column" }}
                 >
                     <ToggleButtonGroup
                         orientation="vertical"

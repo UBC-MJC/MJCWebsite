@@ -50,9 +50,9 @@ export default function Root() {
     return (
         <ErrorBoundary>
             <ThemeProvider theme={theme}>
-                <CssBaseline enableColorScheme />
                 <QueryClientProvider client={queryClient}>
                     <AuthContextProvider>
+                        <CssBaseline />
                         <main className="App">
                             <Outlet />
                         </main>

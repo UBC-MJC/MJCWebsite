@@ -136,7 +136,7 @@ const AdminSeason = () => {
     }
 
     return (
-        <>
+        <Stack>
             <Card>
                 <CardHeader title="Active Seasons" />
                 {getCurrentSeasonPanel()}
@@ -188,7 +188,7 @@ const AdminSeason = () => {
 
             <Typography variant="h2">All Seasons</Typography>
 
-            <Box {...responsiveDataGridContainer}>
+            <Box sx={responsiveDataGridContainer}>
                 <DataGrid<Season>
                     columns={playerColumns}
                     rows={seasons}
@@ -202,7 +202,7 @@ const AdminSeason = () => {
                     editMode="row"
                 />
             </Box>
-        </>
+        </Stack>
     );
 };
 

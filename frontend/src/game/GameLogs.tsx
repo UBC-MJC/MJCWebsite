@@ -220,20 +220,31 @@ const GameLogs = <T extends GameVariant>() => {
                                 >
                                     <CardHeader
                                         title={
-                                            <Typography variant="h6" component="div">
-                                                {getGameVariantString(
-                                                    queryGameVariant,
-                                                    game.season.type,
-                                                )}{" "}
-                                                #{game.id}
-                                            </Typography>
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "space-between",
+                                                    flexWrap: "wrap",
+                                                }}
+                                            >
+                                                <Typography variant="h6" component="div">
+                                                    {getGameVariantString(
+                                                        queryGameVariant,
+                                                        game.season.type,
+                                                    )}{" "}
+                                                    #{game.id}
+                                                </Typography>
+                                            </Box>
                                         }
                                         subheader={
                                             <Box
-                                                display="flex"
-                                                alignItems="center"
-                                                gap={0.5}
-                                                mt={1}
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 0.5,
+                                                    mt: 1,
+                                                }}
                                             >
                                                 <CalendarTodayIcon fontSize="small" />
                                                 <Typography variant="caption">

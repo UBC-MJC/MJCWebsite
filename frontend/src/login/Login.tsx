@@ -66,71 +66,73 @@ const Login = () => {
                 justifyContent: "center",
             }}
         >
-            <Card>
-                <CardContent>
-                    <Stack component="form" noValidate onSubmit={handleSubmit}>
-                        <Typography variant="h1">UBC Mahjong Club</Typography>
+            <Stack>
+                <Card>
+                    <CardContent>
+                        <Stack component="form" noValidate onSubmit={handleSubmit}>
+                            <Typography variant="h1">UBC Mahjong Club</Typography>
 
-                        <TextField
-                            fullWidth
-                            required
-                            label="Username or Email"
-                            placeholder="Enter your username or email"
-                            value={username}
-                            error={!!errors.username}
-                            helperText={errors.username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            autoComplete="username"
-                        />
+                            <TextField
+                                fullWidth
+                                required
+                                label="Username or Email"
+                                placeholder="Enter your username or email"
+                                value={username}
+                                error={!!errors.username}
+                                helperText={errors.username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                autoComplete="username"
+                            />
 
-                        <TextField
-                            fullWidth
-                            required
-                            label="Password"
-                            type="password"
-                            placeholder="Enter your password"
-                            value={password}
-                            error={!!errors.password}
-                            helperText={errors.password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            autoComplete="current-password"
-                        />
+                            <TextField
+                                fullWidth
+                                required
+                                label="Password"
+                                type="password"
+                                placeholder="Enter your password"
+                                value={password}
+                                error={!!errors.password}
+                                helperText={errors.password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                autoComplete="current-password"
+                            />
 
-                        <Button fullWidth variant="contained" type="submit" size="large">
-                            Login
-                        </Button>
+                            <Button fullWidth variant="contained" type="submit" size="large">
+                                Login
+                            </Button>
 
-                        <Stack
-                            direction={{ xs: "column", sm: "row" }}
-                            justifyContent="space-between"
-                            alignItems="center"
-                            spacing={1}
-                        >
-                            <Typography variant="body2" color="text.secondary">
-                                Don&apos;t have an account?{" "}
-                                <Link href="/register" underline="hover" fontWeight={600}>
-                                    Sign up
-                                </Link>
-                            </Typography>
-                            <Typography variant="body2">
-                                <Link
-                                    href="/request-password-reset"
-                                    underline="hover"
-                                    fontWeight={600}
-                                >
-                                    Forgot your password?
-                                </Link>
-                            </Typography>
+                            <Stack
+                                direction={{ xs: "column", sm: "row" }}
+                                justifyContent="space-between"
+                                alignItems="center"
+                                spacing={1}
+                            >
+                                <Typography variant="body2" color="text.secondary">
+                                    Don&apos;t have an account?{" "}
+                                    <Link href="/register" underline="hover" fontWeight={600}>
+                                        Sign up
+                                    </Link>
+                                </Typography>
+                                <Typography variant="body2">
+                                    <Link
+                                        href="/request-password-reset"
+                                        underline="hover"
+                                        fontWeight={600}
+                                    >
+                                        Forgot your password?
+                                    </Link>
+                                </Typography>
+                            </Stack>
                         </Stack>
-                    </Stack>
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
 
-            <Box display="flex" justifyContent="center">
-                <Button href="/" variant="text">
-                    Back to Home
-                </Button>
-            </Box>
+                <Box display="flex" justifyContent="center">
+                    <Button href="/" variant="text">
+                        Back to Home
+                    </Button>
+                </Box>
+            </Stack>
         </Container>
     );
 };

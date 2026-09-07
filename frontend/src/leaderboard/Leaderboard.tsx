@@ -15,6 +15,7 @@ import {
     DialogContent,
     DialogTitle,
     IconButton,
+    Stack,
     TextField,
     Typography,
     useMediaQuery,
@@ -38,28 +39,30 @@ const Leaderboard = <T extends GameVariant>({ gameVariant }: GameVariantProp<T>)
         seasons.find((candidate) => candidate.id === selectedSeasonId) ?? defaultSeason ?? null;
     return (
         <Container>
-            <Typography variant="h1">
-                {getGameVariantString(gameVariant, season?.type)} Leaderboard
-            </Typography>
+            <Stack>
+                <Typography variant="h1">
+                    {getGameVariantString(gameVariant, season?.type)} Leaderboard
+                </Typography>
 
-            <Autocomplete
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                getOptionLabel={(option) => `${option.name} (${option.type.replace("_", " ")})`}
-                options={seasons}
-                value={season!}
-                blurOnSelect
-                disableClearable
-                onChange={(_e, value) => setSelectedSeasonId(value.id)}
-                renderInput={(params) => (
-                    <TextField {...params} label="Season" placeholder="Select a season" />
+                <Autocomplete
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    getOptionLabel={(option) => `${option.name} (${option.type.replace("_", " ")})`}
+                    options={seasons}
+                    value={season!}
+                    blurOnSelect
+                    disableClearable
+                    onChange={(_e, value) => setSelectedSeasonId(value.id)}
+                    renderInput={(params) => (
+                        <TextField {...params} label="Season" placeholder="Select a season" />
+                    )}
+                />
+
+                {!season ? (
+                    <Typography variant="body1">No season selected</Typography>
+                ) : (
+                    <LeaderboardDisplay season={season} gameVariant={gameVariant} />
                 )}
-            />
-
-            {!season ? (
-                <Typography variant="body1">No season selected</Typography>
-            ) : (
-                <LeaderboardDisplay season={season} gameVariant={gameVariant} />
-            )}
+            </Stack>
         </Container>
     );
 };
@@ -117,7 +120,7 @@ const LeaderboardDisplay = memo(
                 <Typography variant="body1" color="text.secondary">
                     {season.name} ends {new Date(season.endDate).toDateString()}
                 </Typography>
-                <Box {...responsiveDataGridContainer}>
+                <Box sx={responsiveDataGridContainer}>
                     <DataGrid<(typeof leaderboard)[0]>
                         rows={leaderboard}
                         columns={columns}
@@ -155,9 +158,11 @@ const LeaderboardDisplay = memo(
                     {player && (
                         <>
                             <DialogTitle
-                                display="flex"
-                                alignItems="center"
-                                justifyContent="space-between"
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                }}
                             >
                                 Statistics for {player.username}
                                 <IconButton

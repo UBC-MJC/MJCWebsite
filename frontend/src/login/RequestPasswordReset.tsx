@@ -49,54 +49,58 @@ const RequestPasswordReset = () => {
                 justifyContent: "center",
             }}
         >
-            <Card>
-                <CardContent>
-                    <Stack component="form" onSubmit={handleSubmit}>
-                        <Stack spacing={1}>
-                            <Typography variant="h2" component="h1">
-                                Reset Your Password
-                            </Typography>
-                            <Typography variant="body2" align="center" color="text.secondary">
-                                Enter your username or email and we&apos;ll send you a link to reset
-                                your password.
-                            </Typography>
+            <Stack>
+                <Card>
+                    <CardContent>
+                        <Stack component="form" onSubmit={handleSubmit}>
+                            <Stack spacing={1}>
+                                <Typography variant="h2" component="h1">
+                                    Reset Your Password
+                                </Typography>
+                                <Typography variant="body2" align="center" color="text.secondary">
+                                    Enter your username or email and we&apos;ll send you a link to
+                                    reset your password.
+                                </Typography>
+                            </Stack>
+
+                            <TextField
+                                fullWidth
+                                required
+                                label="Username or Email"
+                                placeholder="Enter your username or email"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                autoComplete="username"
+                            />
+
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                type="submit"
+                                size="large"
+                                disabled={isWaiting}
+                            >
+                                {isWaiting ? "Sending..." : "Send Reset Link"}
+                            </Button>
+
+                            <Box display="flex" justifyContent="center">
+                                <Typography variant="body2" color="text.secondary">
+                                    Remember your password?{" "}
+                                    <Link href="/login" underline="hover" fontWeight={600}>
+                                        Login
+                                    </Link>
+                                </Typography>
+                            </Box>
                         </Stack>
+                    </CardContent>
+                </Card>
 
-                        <TextField
-                            fullWidth
-                            required
-                            label="Username or Email"
-                            placeholder="Enter your username or email"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            autoComplete="username"
-                        />
-
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            type="submit"
-                            size="large"
-                            disabled={isWaiting}
-                        >
-                            {isWaiting ? "Sending..." : "Send Reset Link"}
-                        </Button>
-
-                        <Typography variant="body2" color="text.secondary" align="center">
-                            Remember your password?{" "}
-                            <Link href="/login" underline="hover" fontWeight={600}>
-                                Login
-                            </Link>
-                        </Typography>
-                    </Stack>
-                </CardContent>
-            </Card>
-
-            <Box display="flex" justifyContent="center">
-                <Button href="/" variant="text">
-                    Back to Home
-                </Button>
-            </Box>
+                <Box display="flex" justifyContent="center">
+                    <Button href="/" variant="text">
+                        Back to Home
+                    </Button>
+                </Box>
+            </Stack>
         </Container>
     );
 };

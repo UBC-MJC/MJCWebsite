@@ -6,7 +6,7 @@ const Home = () => {
     return (
         <Container>
             <Typography variant="h1">Home</Typography>
-            <Box component="img" src={logo} alt="UBC Mahjong Club Logo" width="50%" />
+            <Box component="img" src={logo} alt="UBC Mahjong Club Logo" sx={{ width: "50%" }} />
             <p>
                 <Link href="/vro2026">Register for the Vancouver Riichi Open 2026!</Link>
             </p>
