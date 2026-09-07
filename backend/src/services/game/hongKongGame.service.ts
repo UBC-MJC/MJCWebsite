@@ -20,6 +20,7 @@ import { GameService } from "./game.service";
 
 type FullHongKongGame = Prisma.HongKongGameGetPayload<{
     include: {
+        season: true;
         players: {
             include: {
                 player: true;

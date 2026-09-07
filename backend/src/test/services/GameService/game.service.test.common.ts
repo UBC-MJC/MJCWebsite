@@ -3,6 +3,7 @@ import { initialise } from "../util";
 import { getGameService } from "../../../services/game/gameService.factory";
 import { GameStatus, GameType, Wind } from "@prisma/client";
 import type { GameVariant } from "../../../validation/game.validation";
+import prisma from "../../../db";
 
 export function testGameServiceCommon(gameVariant: GameVariant) {
     return describe("Common Game Service Tests", () => {
@@ -13,10 +14,9 @@ export function testGameServiceCommon(gameVariant: GameVariant) {
         });
         it("should start a game and a round", async () => {
             const ret = await gameService.createGame(
-                GameType.RANKED,
+                initState.season,
                 ["testUser1", "testUser2", "testUser3", "testUser4"],
                 "test1",
-                initState.season.id,
             );
             const id = ret.id;
             expect(ret).toMatchObject({
@@ -24,7 +24,6 @@ export function testGameServiceCommon(gameVariant: GameVariant) {
                 recordedById: "test1",
                 seasonId: initState.season.id,
                 status: GameStatus.IN_PROGRESS,
-                type: GameType.RANKED,
             });
             const fullGame = await gameService.getGameOrThrow(id);
             const mappedGame = await gameService.mapGameObject(fullGame);
@@ -59,9 +58,29 @@ export function testGameServiceCommon(gameVariant: GameVariant) {
                 ],
                 recordedById: "test1",
                 rounds: [],
+                season: initState.season,
                 status: GameStatus.IN_PROGRESS,
-                type: GameType.RANKED,
             });
+        });
+
+        it("requires qualification for every competitive season type", async () => {
+            await prisma.player.update({
+                where: { id: "test1" },
+                data:
+                    gameVariant === "jp"
+                        ? { japaneseQualified: false }
+                        : { hongKongQualified: false },
+            });
+
+            const createCompetitiveGame = gameService.createGame(
+                { ...initState.season, type: GameType.TOURNEY },
+                ["testUser1", "testUser2", "testUser3", "testUser4"],
+                "test2",
+            );
+
+            await expect(createCompetitiveGame).rejects.toThrow(
+                "Player not eligible for game type",
+            );
         });
     });
 }

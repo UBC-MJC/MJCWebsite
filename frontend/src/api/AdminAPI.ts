@@ -18,6 +18,10 @@ const getSeasonsAPI = async () => {
     return axios.get<SeasonsAPIDataType>(baseUrl + "/seasons");
 };
 
+const getCurrentSeasonsAPI = async () => {
+    return axios.get<SeasonsAPIDataType>(baseUrl + "/seasons/current");
+};
+
 const createSeasonAdminAPI = async (season: Partial<Season>) => {
     return axios.post<Season>(baseUrl + "/admin/seasons", { season }, getAuthConfig());
 };
@@ -47,6 +51,7 @@ export {
     deletePlayerAPI,
     updatePlayerAPI,
     getSeasonsAPI,
+    getCurrentSeasonsAPI,
     createSeasonAdminAPI,
     updateSeasonAPI,
     makeDummyAdminsAPI,

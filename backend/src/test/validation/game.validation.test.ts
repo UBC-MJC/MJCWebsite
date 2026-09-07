@@ -61,16 +61,15 @@ describe("JapaneseTransactionSchema", () => {
 });
 
 describe("createGameSchema season selection", () => {
-    const request = { gameType: "RANKED", players: ["east", "south", "west", "north"] };
+    const request = { seasonId: "selected-season", players: ["east", "south", "west", "north"] };
 
     it("preserves an explicitly selected season", () => {
-        expect(createGameSchema.parse({ ...request, seasonId: "selected-season" }).seasonId).toBe(
-            "selected-season",
-        );
+        expect(createGameSchema.parse(request).seasonId).toBe("selected-season");
     });
 
-    it("accepts existing clients without a season selection", () => {
-        expect(createGameSchema.parse(request).seasonId).toBeUndefined();
+    it("requires a season selection", () => {
+        const { seasonId: _, ...requestWithoutSeason } = request;
+        expect(createGameSchema.safeParse(requestWithoutSeason).success).toBe(false);
     });
 
     it.each(["", 123, null])("rejects an invalid season selection: %s", (seasonId) => {

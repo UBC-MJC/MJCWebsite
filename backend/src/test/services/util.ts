@@ -68,10 +68,9 @@ export async function initialiseGame<
     recordingPlayerID = "test1",
 ) {
     const initGame = await gameService.createGame(
-        GameType.RANKED,
+        { id: seasonID, type: GameType.RANKED },
         playerUsernames,
         recordingPlayerID,
-        seasonID,
     );
     await gameService.updateGame(initGame.id, state);
     return gameService.getGameOrThrow(initGame.id);

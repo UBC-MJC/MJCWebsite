@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { getGamesAPI } from "@/api/GameAPI";
 import { AxiosError } from "axios";
 import { logger } from "@/common/logger";
@@ -37,7 +37,7 @@ const MAX_GAMES_PER_PAGE = 12;
 
 const GameLogs = <T extends GameVariant>() => {
     const [queryGameVariant, setQueryGameVariant] = useState<GameVariant>(gameVariants[0].variant);
-    const [season, setSeason] = useState<Season | null>(null);
+    const [selectedSeasonId, setSelectedSeasonId] = useState<string>();
     const [queryPlayers, setQueryPlayers] = useState<PlayerNamesDataType[]>([]);
 
     const [loading, setLoading] = useState(false);
@@ -47,20 +47,15 @@ const GameLogs = <T extends GameVariant>() => {
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons();
     const playersResult = usePlayers(queryGameVariant, "CASUAL");
 
-    const seasonsSorted =
-        seasonsSuccess && seasons ? [...seasons].sort((a, b) => b.id.localeCompare(a.id)) : [];
-    useEffect(() => {
-        // Always set the first season (most recent) as the default season if available
-        if (!season && seasonsSorted.length > 0) {
-            setSeason(seasonsSorted[0]);
-        }
-    }, [seasonsSorted]);
+    const seasonsSorted = seasonsSuccess && seasons ? seasons : [];
+    const season =
+        seasonsSorted.find((candidate) => candidate.id === selectedSeasonId) ??
+        seasonsSorted[0] ??
+        null;
 
-    const disableQueryButton = useCallback((): boolean => {
-        return loading || season === null;
-    }, [loading, season]);
+    const queryDisabled = loading || season === null;
 
-    const getGames = useCallback(async () => {
+    const getGames = async () => {
         if (season !== null) {
             setLoading(true);
             try {
@@ -81,7 +76,7 @@ const GameLogs = <T extends GameVariant>() => {
                 setLoading(false);
             }
         }
-    }, [queryGameVariant, season, queryPlayers]);
+    };
 
     const getPaginatedGames = () => {
         const startIdx = (pagination - 1) * MAX_GAMES_PER_PAGE;
@@ -156,7 +151,7 @@ const GameLogs = <T extends GameVariant>() => {
                                         value={season!}
                                         blurOnSelect
                                         disableClearable
-                                        onChange={(_e, value) => setSeason(value)}
+                                        onChange={(_e, value) => setSelectedSeasonId(value.id)}
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
@@ -191,7 +186,7 @@ const GameLogs = <T extends GameVariant>() => {
                             <Box display="flex" justifyContent="center">
                                 <Button
                                     variant="contained"
-                                    disabled={disableQueryButton()}
+                                    disabled={queryDisabled}
                                     onClick={getGames}
                                     size="large"
                                 >
@@ -226,7 +221,10 @@ const GameLogs = <T extends GameVariant>() => {
                                     <CardHeader
                                         title={
                                             <Typography variant="h6" component="div">
-                                                {getGameVariantString(queryGameVariant, game.type)}{" "}
+                                                {getGameVariantString(
+                                                    queryGameVariant,
+                                                    game.season.type,
+                                                )}{" "}
                                                 #{game.id}
                                             </Typography>
                                         }

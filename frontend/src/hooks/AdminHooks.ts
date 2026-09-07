@@ -4,6 +4,7 @@ import {
     deletePlayerAPI,
     getPlayersAdminAPI,
     getSeasonsAPI,
+    getCurrentSeasonsAPI,
     updatePlayerAPI,
     updateSeasonAPI,
 } from "@/api/AdminAPI";
@@ -25,6 +26,20 @@ export function useSeasons() {
             }));
             seasons.sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
             return seasons;
+        },
+    });
+}
+
+export function useCurrentSeasons() {
+    return useQuery({
+        queryKey: ["seasons", "current"],
+        queryFn: async () => {
+            const response = await getCurrentSeasonsAPI();
+            return response.data.map((season) => ({
+                ...season,
+                startDate: new Date(season.startDate),
+                endDate: new Date(season.endDate),
+            }));
         },
     });
 }

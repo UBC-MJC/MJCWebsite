@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import riichiStick from "@/assets/riichiStick.png";
 import { responsiveTextTruncate } from "@/theme/utils";
 import { Box, Stack, Typography, Paper, Chip, alpha } from "@mui/material";
@@ -99,17 +99,14 @@ const PlayerScoreCard = ({
 
 export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) => {
     const [selectedScoreIndex, setSelectedScoreIndex] = useState<number | null>(null);
+    const selectedIndex =
+        selectedScoreIndex !== null && selectedScoreIndex < scores.length
+            ? selectedScoreIndex
+            : null;
     const hasRiichiSticks = riichiList && riichiList.length > 0;
 
-    // Reset selection if scores array changes
-    useEffect(() => {
-        if (selectedScoreIndex !== null && selectedScoreIndex >= scores.length) {
-            setSelectedScoreIndex(null);
-        }
-    }, [scores.length, selectedScoreIndex]);
-
     const handleScoreClick = (index: number) => {
-        setSelectedScoreIndex(selectedScoreIndex === index ? null : index);
+        setSelectedScoreIndex(selectedIndex === index ? null : index);
     };
 
     return (
@@ -160,12 +157,11 @@ export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) =>
 
                         // Calculate difference if a score is selected
                         let scoreDifference: number | null = null;
-                        if (selectedScoreIndex !== null && selectedScoreIndex !== idx) {
-                            const selectedHasRiichi =
-                                riichiList?.includes(selectedScoreIndex) ?? false;
+                        if (selectedIndex !== null && selectedIndex !== idx) {
+                            const selectedHasRiichi = riichiList?.includes(selectedIndex) ?? false;
                             const selectedAdjustedScore = selectedHasRiichi
-                                ? scores[selectedScoreIndex].score - 1000
-                                : scores[selectedScoreIndex].score;
+                                ? scores[selectedIndex].score - 1000
+                                : scores[selectedIndex].score;
                             scoreDifference = adjustedScore - selectedAdjustedScore;
                         }
 
@@ -176,7 +172,7 @@ export const Footer = ({ scores, riichiList, riichiStickCount }: FooterProps) =>
                                 score={adjustedScore}
                                 eloDelta={eloDelta}
                                 hasRiichiStick={hasRiichiStick}
-                                isSelected={selectedScoreIndex === idx}
+                                isSelected={selectedIndex === idx}
                                 scoreDifference={scoreDifference}
                                 onClick={() => handleScoreClick(idx)}
                             />

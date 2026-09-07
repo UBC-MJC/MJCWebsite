@@ -18,10 +18,10 @@ import { getGameVariantString } from "@/common/Utils";
 import { gameRoundString } from "./common/constants";
 import GameSummaryBody from "./common/GameSummaryBody";
 import { useLiveGames } from "@/hooks/GameHooks";
-import type { GameCreationProp, GameVariant } from "@/types";
+import type { GameVariantProp, GameVariant } from "@/types";
 import { responsiveCardHover } from "@/theme/utils";
 
-export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationProp<T>) => {
+export const LiveGames = <T extends GameVariant>({ gameVariant }: GameVariantProp<T>) => {
     const { isPending, error, data: liveGames } = useLiveGames(gameVariant);
 
     const formatDate = (dateString: string) => {
@@ -95,8 +95,11 @@ export const LiveGames = <T extends GameVariant>({ gameVariant }: GameCreationPr
                                                 flexWrap="wrap"
                                             >
                                                 <Typography variant="h6" component="div">
-                                                    {getGameVariantString(gameVariant, game.type)} #
-                                                    {game.id}
+                                                    {getGameVariantString(
+                                                        gameVariant,
+                                                        game.season.type,
+                                                    )}{" "}
+                                                    #{game.id}
                                                 </Typography>
                                                 <Chip
                                                     icon={<AccessTimeIcon />}

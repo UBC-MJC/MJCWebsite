@@ -2,33 +2,34 @@ import { GameType, Prisma, Season } from "@prisma/client";
 import prisma from "../db";
 import { NoCurrentSeasonError } from "../errors/domain.error";
 
-const getCurrentSeasons = async (): Promise<Season[]> => {
+const getCurrentSeasons = async (type?: GameType): Promise<Season[]> => {
+    const now = new Date();
     return prisma.season.findMany({
+        where: {
+            startDate: { lte: now },
+            endDate: { gt: now },
+            ...(type ? { type } : {}),
+        },
         orderBy: { endDate: Prisma.SortOrder.desc },
     });
 };
 
-const findCurrentSeason = async (): Promise<Season | null> => {
-    const seasons: Season[] = await prisma.season.findMany({
-        orderBy: {
-            endDate: Prisma.SortOrder.desc,
-        },
-    });
-
-    if (seasons.length === 0 || seasons[0].endDate < new Date()) {
-        return null;
-    }
-
-    return seasons[0];
+const findCurrentSeason = async (type?: GameType): Promise<Season | null> => {
+    const seasons = await getCurrentSeasons(type);
+    return seasons[0] ?? null;
 };
 
-const getCurrentSeason = async (): Promise<Season> => {
-    const season = await findCurrentSeason();
+const getCurrentSeason = async (type?: GameType): Promise<Season> => {
+    const season = await findCurrentSeason(type);
     if (!season) {
         throw new NoCurrentSeasonError();
     }
 
     return season;
+};
+
+const findSeason = async (id: string): Promise<Season | null> => {
+    return prisma.season.findUnique({ where: { id } });
 };
 
 const findAllSeasons = async (): Promise<Season[]> => {
@@ -80,6 +81,7 @@ export {
     getCurrentSeasons,
     findCurrentSeason,
     getCurrentSeason,
+    findSeason,
     findAllSeasons,
     createSeason,
     updateSeason,

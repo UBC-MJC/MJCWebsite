@@ -98,7 +98,6 @@ model JapaneseGame {
   season       Season               @relation(fields: [seasonId], references: [id])
   seasonId     String
   status       GameStatus
-  type         GameType
   createdAt    DateTime             @default(now())
   endedAt      DateTime?
   recordedBy   Player               @relation(fields: [recordedById], references: [id])
@@ -148,7 +147,6 @@ model HongKongGame {
   season       Season               @relation(fields: [seasonId], references: [id])
   seasonId     String
   status       GameStatus
-  type         GameType
   createdAt    DateTime             @default(now())
   endedAt      DateTime?
   recordedBy   Player               @relation(fields: [recordedById], references: [id])

@@ -5,7 +5,7 @@ import {
     gameVariantSchema,
     setChomboSchema,
 } from "../validation/game.validation";
-import { getCurrentSeason } from "../services/season.service";
+import { findSeason, getCurrentSeason } from "../services/season.service";
 import { GameFilterArgs } from "../services/game/game.util";
 import { createRoundForVariant, getGameService } from "../services/game/gameService.factory";
 import { addGameListener, sendGameUpdate } from "../services/game/liveGame.service";
@@ -30,7 +30,6 @@ const getGamesHandler = async (req: Request, res: Response): Promise<void> => {
             req.query.playerIds === "" || typeof req.query.playerIds === "undefined"
                 ? undefined
                 : req.query.playerIds.toString().split(","),
-        gameType: GameType.RANKED,
         gameStatus: GameStatus.FINISHED,
     };
 
@@ -81,16 +80,15 @@ const getLiveGamesHandler = async (req: Request, res: Response): Promise<void> =
 
 const createGameHandler = async (req: Request, res: Response): Promise<void> => {
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
-    const { players, gameType, seasonId } = createGameSchema.parse(req.body);
-    const selectedSeasonId = seasonId ?? (await getCurrentSeason()).id;
+    const { players, seasonId } = createGameSchema.parse(req.body);
+    const season = await findSeason(seasonId);
+    const now = new Date();
+    if (!season || season.startDate > now || season.endDate <= now) {
+        throw createError.BadRequest("Season is not active");
+    }
 
     const gameService = getGameService(gameVariant);
-    const newGame = await gameService.createGame(
-        gameType,
-        players,
-        req.player.id,
-        selectedSeasonId,
-    );
+    const newGame = await gameService.createGame(season, players, req.player.id);
 
     res.status(201).json({
         id: newGame.id,
@@ -189,7 +187,7 @@ const recalcSeasonHandler = async (req: Request, res: Response): Promise<void> =
     ) {
         throw createError.BadRequest("Invalid season id");
     }
-    const seasonId = requestedSeasonId ?? (await getCurrentSeason()).id;
+    const seasonId = requestedSeasonId ?? (await getCurrentSeason(GameType.RANKED)).id;
     const gameService = getGameService(gameVariant);
     const newEloStats = await gameService.recalcSeason(seasonId);
     res.status(201).json(newEloStats);

@@ -1,17 +1,12 @@
-import { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useContext, useEffect } from "react";
+import { Navigate, useNavigate, useParams } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import type { GameVariant, Game, GamePlayer, RoundByVariant } from "@/types";
-import {
-    addRoundAPI,
-    deleteGameAPI,
-    deleteRoundAPI,
-    getGameAPI,
-    submitGameAPI,
-} from "@/api/GameAPI";
+import { addRoundAPI, deleteGameAPI, deleteRoundAPI, submitGameAPI } from "@/api/GameAPI";
+import { gameQueryKey, useGame } from "@/hooks/GameHooks";
 import { AuthContext } from "@/common/AuthContext";
 import { getGameVariantString, validateGameVariant } from "@/common/Utils";
-import { logger } from "@/common/logger";
 import LoadingFallback from "@/common/LoadingFallback";
 import alert from "@/common/AlertDialog";
 import confirmDialog from "@/common/ConfirmationDialog";
@@ -25,33 +20,17 @@ const Game = <T extends GameVariant>() => {
     const { id, variant: variantParam } = useParams();
     const { player, loading } = useContext(AuthContext);
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const gameId = Number(id);
 
     // Validate and cast variant to GameVariant type
     const variant = (validateGameVariant(variantParam) ? variantParam : undefined) as T | undefined;
-
-    const [game, setGame] = useState<Game<T> | undefined>(undefined);
-
-    useEffect(() => {
-        const fetchGame = async () => {
-            if (isNaN(gameId) || !variant) {
-                navigate("/games/not-found");
-                return;
-            }
-
-            try {
-                const response = await getGameAPI(gameId, variant);
-                setGame(response.data);
-            } catch (error) {
-                logger.error("Error fetching game: ", (error as AxiosError).response?.data);
-                if ((error as AxiosError).response?.status === 404) {
-                    navigate("/games/not-found");
-                    return;
-                }
-            }
-        };
-        fetchGame();
-    }, [gameId, navigate, variant]);
+    const validGameId = Number.isSafeInteger(gameId) && gameId > 0 ? gameId : undefined;
+    const gameQuery = useGame(validGameId, variant);
+    const game = gameQuery.data;
+    const updateGame = (updatedGame: Game<T>) => {
+        queryClient.setQueryData(gameQueryKey(validGameId, variant), updatedGame);
+    };
 
     useEffect(() => {
         // Only setup EventSource for spectators (not the recorder) watching live games
@@ -60,7 +39,7 @@ const Game = <T extends GameVariant>() => {
 
             eventSource.onmessage = (event) => {
                 const gameResult = JSON.parse(event.data);
-                setGame(gameResult);
+                queryClient.setQueryData(gameQueryKey(validGameId, variant), gameResult);
             };
 
             eventSource.onerror = () => {
@@ -73,12 +52,12 @@ const Game = <T extends GameVariant>() => {
                 eventSource.close();
             };
         }
-    }, [game?.id, game?.status, player, variant]);
+    }, [game?.id, game?.recordedById, game?.status, player?.id, queryClient, validGameId, variant]);
 
     const handleSubmitRound = async (roundRequest: RoundByVariant<T>) => {
         try {
             const response = await addRoundAPI(gameId, variant!, roundRequest);
-            setGame(response.data);
+            updateGame(response.data);
         } catch (error) {
             alert(`Add Round Error: ${(error as AxiosError).response?.data}`);
         }
@@ -98,7 +77,7 @@ const Game = <T extends GameVariant>() => {
 
         try {
             const response = await deleteRoundAPI(gameId, variant!);
-            setGame(response.data);
+            updateGame(response.data);
         } catch (e) {
             const error = e as Error;
             await alert(`Delete Round Error: ${error.message}`);
@@ -138,7 +117,7 @@ const Game = <T extends GameVariant>() => {
             await alert(`Game Submitted`);
             const tempGame = { ...game! };
             tempGame.status = "FINISHED";
-            setGame(tempGame);
+            updateGame(tempGame);
         } catch (error) {
             await alert(`Delete Game Error: ${(error as AxiosError).message}`);
         }
@@ -180,12 +159,22 @@ const Game = <T extends GameVariant>() => {
         }
     };
 
-    if (isNaN(gameId) || !validateGameVariant(variant)) {
-        navigate("/games/not-found");
-        return;
-    } else if (typeof game === "undefined") {
+    if (!validGameId || !variant) {
+        return <Navigate to="/games/not-found" replace />;
+    }
+    if (gameQuery.isError) {
+        return (gameQuery.error as AxiosError).response?.status === 404 ? (
+            <Navigate to="/games/not-found" replace />
+        ) : (
+            <Container>
+                <Typography color="error">Failed to load game.</Typography>
+            </Container>
+        );
+    }
+    if (typeof game === "undefined") {
         return <LoadingFallback minHeight="50vh" message="Loading game..." />;
-    } else if (loading) {
+    }
+    if (loading) {
         return <LoadingFallback />;
     }
     const canUpdateGame =
@@ -193,7 +182,7 @@ const Game = <T extends GameVariant>() => {
     const spectatorPadding: number = canUpdateGame ? 0 : 12;
     return (
         <Container sx={{ pb: { xs: 6 + spectatorPadding, sm: 10 + spectatorPadding } }}>
-            <Typography variant="h1">{getGameVariantString(variant, game.type)}</Typography>
+            <Typography variant="h1">{getGameVariantString(variant, game.season.type)}</Typography>
             {game.status === "IN_PROGRESS" && (
                 <Typography variant="h2" color="text.secondary">
                     {gameRoundString(game, variant)}

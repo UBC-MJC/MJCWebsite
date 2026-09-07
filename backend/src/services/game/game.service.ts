@@ -1,4 +1,4 @@
-import { GameStatus, GameType, Player, Prisma, Wind } from "@prisma/client";
+import { GameStatus, GameType, Player, Prisma, Season, Wind } from "@prisma/client";
 import {
     checkPlayerListUnique,
     GameFilterArgs,
@@ -23,7 +23,7 @@ interface GamePlayerWithPlayer {
 interface GameWithRelations {
     id: number;
     seasonId: string;
-    type: GameType;
+    season: Season;
     status: GameStatus;
     recordedById: string;
     createdAt: Date;
@@ -34,7 +34,7 @@ interface GameWithRelations {
 
 interface MappedGame<TTransformedRound, TNextRound> {
     id: number;
-    type: GameType;
+    season: Season;
     status: GameStatus;
     recordedById: string;
     createdAt: Date;
@@ -64,7 +64,6 @@ interface PlayerGameEloUpdate {
 interface GameRecord {
     id: number;
     seasonId: string;
-    type: GameType;
     status: GameStatus;
     recordedById: string;
     createdAt: Date;
@@ -126,10 +125,9 @@ abstract class GameService<
     }
 
     public async createGame(
-        gameType: GameType,
+        season: Pick<Season, "id" | "type">,
         players: string[],
         recorderId: string,
-        seasonId: string,
     ): Promise<GameRecord> {
         checkPlayerListUnique(players);
 
@@ -145,7 +143,7 @@ abstract class GameService<
             return player;
         });
         // Throws error if the player is not eligible for the game type
-        if (gameType === GameType.RANKED) {
+        if (season.type !== GameType.CASUAL) {
             for (const player of foundPlayers) {
                 if (!this.isEligible(player)) {
                     throw new InvalidGameInputError("Player not eligible for game type");
@@ -157,10 +155,9 @@ abstract class GameService<
             data: {
                 season: {
                     connect: {
-                        id: seasonId,
+                        id: season.id,
                     },
                 },
-                type: gameType,
                 status: GameStatus.IN_PROGRESS,
                 recordedBy: {
                     connect: {
@@ -187,6 +184,7 @@ abstract class GameService<
                 id: id,
             },
             include: {
+                season: true,
                 players: {
                     include: {
                         player: true,
@@ -215,6 +213,7 @@ abstract class GameService<
         return this.gameDatabase.findMany({
             where: whereQuery,
             include: {
+                season: true,
                 players: {
                     include: {
                         player: true,
@@ -271,7 +270,7 @@ abstract class GameService<
         }, {});
         return {
             id: game.id,
-            type: game.type,
+            season: game.season,
             status: game.status,
             recordedById: game.recordedById,
             createdAt: game.createdAt,
@@ -300,7 +299,7 @@ abstract class GameService<
                 },
             });
         }
-        const eloDict = await this.getSelectedPlayerElos(game.seasonId, game.players, game.type);
+        const eloDict = await this.getSelectedPlayerElos(game.seasonId, game.players);
         return this.getEloDeltas(game.players, playerScores, eloDict);
     }
 
@@ -323,10 +322,7 @@ abstract class GameService<
     }
 
     abstract getNextRound(game: TGame): TNextRound;
-    public async getAllPlayerElos(
-        seasonId: string,
-        gameType: GameType,
-    ): Promise<PlayerEloSummary[]> {
+    public async getAllPlayerElos(seasonId: string): Promise<PlayerEloSummary[]> {
         const result = await this.playerGameDatabase.groupBy<PlayerEloAggregate[]>({
             by: "playerId",
             _sum: {
@@ -340,7 +336,6 @@ abstract class GameService<
                 game: {
                     seasonId: seasonId,
                     status: GameStatus.FINISHED,
-                    type: gameType,
                 },
             },
         });
@@ -369,7 +364,6 @@ abstract class GameService<
     public async getSelectedPlayerElos(
         seasonId: string,
         playerGames: Pick<GamePlayerWithPlayer, "playerId">[],
-        gameType: GameType,
     ): Promise<EloDict> {
         const playerIds: string[] = playerGames.map((playerGame) => playerGame.playerId);
         const dbResult = await this.playerGameDatabase.groupBy<
@@ -383,7 +377,6 @@ abstract class GameService<
                 game: {
                     seasonId: seasonId,
                     status: GameStatus.FINISHED,
-                    type: gameType,
                 },
                 playerId: {
                     in: playerIds,
@@ -448,7 +441,6 @@ abstract class GameService<
     public async recalcSeason(seasonId: string): Promise<RecalculatedSeason> {
         const finishedGames = await this.getGames({
             seasonId: seasonId,
-            gameType: GameType.RANKED,
             gameStatus: GameStatus.FINISHED,
         });
         finishedGames.sort((a, b) => {
