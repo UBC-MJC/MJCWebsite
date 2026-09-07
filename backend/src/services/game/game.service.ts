@@ -10,6 +10,7 @@ import {
 import prisma from "../../db";
 import { findPlayerByUsernameOrEmail } from "../player.service";
 import { InvalidGameInputError } from "../../errors/domain.error";
+import { checkInPlayers } from "../checkin.service";
 
 export type EloDict = Record<string, number>;
 
@@ -151,6 +152,8 @@ abstract class GameService<
                     throw new InvalidGameInputError("Player not eligible for game type");
                 }
             }
+
+            await checkInPlayers(foundPlayers.map((player) => player.id));
         }
         const playersQuery = generatePlayerQuery(foundPlayers);
         return await this.gameDatabase.create({
