@@ -1,363 +1,170 @@
-# Development Environment Setup
+# Development setup
 
-This guide will help you set up a local development environment for the UBC Mahjong Club website.
+Use Node 24, npm, MySQL 8, and Git. Run commands from the repository root in Bash; Windows users can use WSL.
 
-## Prerequisites
+## Setup
 
-### Required Software
-
-1. **Node.js** (v24 or higher) - [Download](https://nodejs.org/en/download/)
-2. **npm** (comes with Node.js)
-3. **MySQL** (v8.0 or higher) - [Download](https://dev.mysql.com/downloads/mysql/)
-4. **Git** - [Download](https://git-scm.com/downloads)
-
-### Windows Users - WSL Setup
-
-For Windows development, it's recommended to use Windows Subsystem for Linux (WSL2):
-
-1. **Install WSL2:**
-   ```bash
-   wsl --install
-   ```
-   This installs Ubuntu (latest version, currently 22.04)
-
-2. **Set up Node.js on WSL:**
-   Follow [Microsoft's guide](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl) to install Node.js and npm on WSL.
-
-3. **Install MySQL on WSL:**
-   ```bash
-   sudo apt update
-   sudo apt install mysql-server
-   sudo service mysql start
-   ```
-
-## Initial Setup
-
-### 1. Clone the Repository
+Clone the repository and select Node with NVM:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/UBC-MJC/MJCWebsite.git
 cd MJCWebsite
+nvm install
+nvm use
 ```
 
-### 2. Set Up MySQL Database
-
-Create a database and user for development:
+On Ubuntu/WSL, install MySQL and open its prompt:
 
 ```bash
-# Login to MySQL
-mysql -u root -p
+sudo apt update
+sudo apt install mysql-server
+sudo service mysql start
+sudo mysql
+```
 
-# Create database and user
-CREATE DATABASE mahjong;
+Create a local database and account, replacing the password:
+
+```sql
+CREATE DATABASE mahjong CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER 'mahjonguser'@'localhost' IDENTIFIED BY 'your_dev_password';
 GRANT ALL PRIVILEGES ON mahjong.* TO 'mahjonguser'@'localhost';
-FLUSH PRIVILEGES;
 EXIT;
 ```
 
-### 3. Create Environment Files
+Create `.env.development` in the repository root:
 
-#### Development Environment (.env.development)
-
-Create `.env.development` in the project root:
-
-```bash
+```dotenv
 NODE_ENV=development
 PORT=4000
+DATABASE_URL="mysql://mahjonguser:your_dev_password@localhost:3306/mahjong"
+ACCESS_TOKEN_SECRET="replace_with_a_random_secret"
 
-# Database Configuration
-DATABASE_DIALECT=mysql
-DATABASE_HOST=localhost
-DATABASE_PORT=3306
-DATABASE_NAME=mahjong
-DATABASE_USER=mahjonguser
-DATABASE_PASSWORD=your_dev_password
-
-# Prisma Database URL
-DATABASE_URL=mysql://mahjonguser:your_dev_password@localhost:3306/mahjong?schema=public
-
-# JWT Secret (generate a random 32+ character string)
-ACCESS_TOKEN_SECRET=your_random_secret_key_here
-
-# Email Configuration (ask team member for credentials)
-EMAIL_USERNAME=ubcmahjongreset@zohomail.ca
-EMAIL_PASSWORD=
-FROM_EMAIL="UBC Mahjong" <ubcmahjongreset@zohocloud.ca>
+# Required for password-reset email; obtain test credentials from the team.
+EMAIL_USERNAME="your_test_mail_account"
+EMAIL_PASSWORD="your_test_mail_password"
+FROM_EMAIL="UBC Mahjong <your_test_mail_account>"
 ```
 
-**Important:**
-- Replace `your_dev_password` with the password you set for the MySQL user
-- Replace `your_random_secret_key_here` with a random 32+ character string
-- Ask a team member for the email password
+Generate the secret with `openssl rand -hex 32`. Percent-encode special characters in the database URL credentials.
 
-#### Generate a Random Secret
+Copy the configuration to `backend/.env`, which Prisma and the authentication module use. Keep both files synchronized and private:
 
 ```bash
-# Linux/macOS/WSL
-openssl rand -base64 32
-
-# Or use Node.js
-node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+cp .env.development backend/.env
+chmod 600 .env.development backend/.env
 ```
 
-### 4. Initialize the Database
-
-Run Prisma migrations to create database tables:
+Install dependencies, apply migrations, and generate Prisma Client:
 
 ```bash
-cd backend
-npx prisma migrate deploy
-
-# Or for development, push schema directly
-npx prisma db push
+(cd frontend && npm ci) &&
+(
+  cd backend &&
+  npm ci &&
+  npx --no-install prisma migrate deploy &&
+  npx --no-install prisma generate
+)
 ```
 
-### 5. Create an Admin User
-
-After starting the server for the first time:
-
-1. Register a new account at [http://localhost:3000](http://localhost:3000)
-2. Find your user ID and grant admin permissions:
+## Run
 
 ```bash
-mysql -u mahjonguser -p
-# Enter your password
-
-USE mahjong;
-SELECT id, Username FROM Player;
-UPDATE Player SET Admin = 1 WHERE id = 1;
-# Replace '1' with your user ID
-EXIT;
-```
-
-## Running the Development Server
-
-### Start Development Servers
-
-```bash
-# From project root
 ./scripts/dev.sh
 ```
 
-This script will:
-1. Install dependencies automatically (first time or when package.json changes)
-2. Generate Prisma client (if needed)
-3. Start both frontend and backend servers with hot-reloading
-4. Show color-coded logs for each server
+Open `http://localhost:3000`; the API uses `http://localhost:4000/api`. Both servers reload source changes. Press `Ctrl+C` to stop.
 
-### Access the Application
+For separate terminals, run `npm run dev` in `backend/` and `npm start` in `frontend/`. Keep ports 3000/4000 aligned with the frontend API URL and backend CORS settings.
 
-- **Frontend:** [http://localhost:3000](http://localhost:3000)
-- **Backend API:** [http://localhost:4000](http://localhost:4000)
+To make your registered account a local admin, connect with `mysql -u mahjonguser -p mahjong` and run:
 
-### Stop Development Servers
+```sql
+SELECT id, username, email FROM Player;
+UPDATE Player SET admin = TRUE WHERE id = 'paste_your_account_id_here';
+```
 
-Press `Ctrl+C` in the terminal running `dev.sh` - this will stop both servers gracefully.
+## Update after a pull
 
-## Manual Development (Without dev.sh)
-
-If you prefer to run servers separately:
+Refresh dependencies and apply teammates' committed migrations before restarting the servers:
 
 ```bash
-# Terminal 1 - Backend
-cd backend
-npm install
-npx prisma generate
-npm run dev
-
-# Terminal 2 - Frontend
-cd frontend
-npm install
-npm start
+git pull --ff-only &&
+(cd frontend && npm ci) &&
+(
+  cd backend &&
+  npm ci &&
+  npx --no-install prisma migrate deploy &&
+  npx --no-install prisma generate
+)
 ```
 
-## Database Management
+## Schema changes
 
-### Prisma Commands
+Use your own local database. Creating migrations requires a Prisma shadow database; on a MySQL instance dedicated to local development, an administrator can grant:
+
+```sql
+GRANT CREATE, ALTER, DROP, REFERENCES ON *.* TO 'mahjonguser'@'localhost';
+```
+
+These instance-wide privileges are for local development only. See [shadow database setup](https://docs.prisma.io/docs/orm/prisma-migrate/understanding-prisma-migrate/shadow-database) for alternatives.
+
+1. Apply teammates' migrations, then edit `backend/prisma/schema.prisma`.
+2. From `backend/`, create the migration:
+
+   ```bash
+   npx --no-install prisma migrate dev --name describe_change --create-only
+   ```
+
+3. Review the generated SQL, including any backfills needed to preserve data, then apply it:
+
+   ```bash
+   npx --no-install prisma migrate dev
+   npx --no-install prisma generate
+   ```
+
+4. Commit `schema.prisma` and the new migration directory together. Keep previously applied migrations unchanged.
+
+### Preserve local data
+
+Review migration SQL before applying it to valuable data. If Prisma asks to reset, stop and back up first:
 
 ```bash
-# Generate Prisma Client (after schema changes)
-npx prisma generate
-
-# Push schema changes to database (dev)
-npx prisma db push
-
-# Create a migration
-npx prisma migrate dev --name migration_name
-
-# Open Prisma Studio (database GUI)
-npx prisma studio
+(
+  set -e
+  umask 077
+  MJC_LOCAL_BACKUP=$(mktemp /tmp/mjc-local-backup.XXXXXXXX.sql)
+  mysqldump -u mahjonguser -p --single-transaction --no-tablespaces mahjong > "$MJC_LOCAL_BACKUP"
+  test -s "$MJC_LOCAL_BACKUP"
+  printf 'Backup: %s\n' "$MJC_LOCAL_BACKUP"
+)
 ```
 
-### Direct Database Access
+Keep the backup in durable private storage. Inspect `prisma migrate status`, the actual schema, and the migration SQL. Record a migration with `prisma migrate resolve --applied MIGRATION_DIRECTORY_NAME` only after verifying that its changes already exist. See [baselining](https://docs.prisma.io/docs/orm/v6/prisma-migrate/workflows/baselining) for the reconciliation process.
+
+`migrate reset` deletes data. Reserve it for disposable local databases.
+
+## Checks
+
+Run before opening a pull request:
 
 ```bash
-# Access MySQL directly
-mysql -u mahjonguser -p
-
-# Then enter your database password
-USE mahjong;
-SHOW TABLES;
-SELECT * FROM Player;
+(cd frontend && npm run build && npm run lint) &&
+(
+  cd backend &&
+  npx --no-install prisma generate &&
+  npm run build &&
+  npm test -- --run &&
+  npm run lint
+)
 ```
 
-## Project Structure
+Backend tests use Vitest and mock Prisma in service tests. Use `npm test` for watch mode or `npm run coverage` in `backend/`. Run `make format` to format both packages, then review the diff.
 
-```
-MJCWebsite/
-├── frontend/
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   ├── pages/          # Page components
-│   │   ├── services/       # API service layer
-│   │   └── App.tsx         # Main app component
-│   ├── package.json
-│   └── vite.config.ts
-│
-├── backend/
-│   ├── src/
-│   │   ├── routes/         # API route handlers
-│   │   ├── middleware/     # Express middleware
-│   │   ├── services/       # Business logic
-│   │   └── app.ts          # Express app setup
-│   ├── prisma/
-│   │   ├── schema.prisma   # Database schema
-│   │   └── migrations/     # Database migrations
-│   ├── Dockerfile
-│   ├── docker-compose.yml
-│   └── package.json
-│
-└── .env.development        # Development environment variables
-```
-
-## Common Development Tasks
-
-### Making Code Changes
-
-Changes are automatically hot-reloaded:
-- **Frontend:** Vite dev server auto-refreshes
-- **Backend:** Nodemon restarts server on file changes
-
-### Adding Dependencies
-
-```bash
-# Frontend
-cd frontend
-npm install package-name
-
-# Backend
-cd backend
-npm install package-name
-
-# After adding backend dependencies, rebuild Docker
-make down
-make build
-make up
-```
-
-### Database Schema Changes
-
-1. Edit `backend/prisma/schema.prisma`
-2. Run `npx prisma db push` (for development)
-3. Or create a migration: `npx prisma migrate dev --name change_description`
+When adding dependencies, run `npm install PACKAGE_NAME` in the relevant package and commit its `package.json` and `package-lock.json`.
 
 ## Troubleshooting
 
-### MySQL Connection Issues
-
-If you can't connect to MySQL:
-
-1. **Check if MySQL is running:**
-   ```bash
-   # macOS
-   brew services list
-
-   # Linux/WSL
-   sudo service mysql status
-
-   # Windows
-   # Check Services app for MySQL service
-   ```
-
-2. **Start MySQL if needed:**
-   ```bash
-   # macOS
-   brew services start mysql
-
-   # Linux/WSL
-   sudo service mysql start
-
-   # Windows
-   net start MySQL80
-   ```
-
-3. **Verify credentials:**
-   - Check `.env.development` matches your MySQL user/password
-   - Try logging in manually: `mysql -u mahjonguser -p`
-
-4. **Reset MySQL password if needed:**
-   ```bash
-   mysql -u root -p
-   ALTER USER 'mahjonguser'@'localhost' IDENTIFIED BY 'new_password';
-   FLUSH PRIVILEGES;
-   ```
-
-### Port Already in Use
-
-```bash
-# Find process using port 3000 or 4000
-lsof -i :3000
-lsof -i :4000
-
-# Kill the process
-kill -9 <PID>
-```
-
-### dev.sh Script Issues
-
-If `dev.sh` fails to start:
-
-1. **Make script executable:**
-   ```bash
-   chmod +x scripts/dev.sh
-   ```
-
-2. **Check for syntax errors:**
-   ```bash
-   bash -n scripts/dev.sh
-   ```
-
-3. **Run servers manually** (see [Manual Development](#manual-development-without-devsh) section)
-
-### Prisma Client Not Found
-
-```bash
-cd backend
-npx prisma generate
-```
-
-## Environment Variables Reference
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `NODE_ENV` | Environment mode | `development` |
-| `PORT` | Backend server port | `4000` |
-| `DATABASE_URL` | MySQL connection string | `mysql://user:pass@host:3306/db` |
-| `ACCESS_TOKEN_SECRET` | JWT signing secret | Random 32+ char string |
-| `EMAIL_USERNAME` | Email service username | Team credential |
-| `EMAIL_PASSWORD` | Email service password | Team credential |
-
-## Additional Resources
-
-- [Prisma Documentation](https://www.prisma.io/docs)
-- [React Documentation](https://react.dev)
-- [Express Documentation](https://expressjs.com)
-- [MySQL Documentation](https://dev.mysql.com/doc/)
-- [Vite Documentation](https://vitejs.dev)
-- [Team Development Guide](https://docs.google.com/document/d/1FmSUD-EqHhf2XEkG1CkzElLQ91N8OO2Ojf6pMJxwn-s/edit?usp=sharing)
-
-## Getting Help
-
-- Check the [Troubleshooting](#troubleshooting) section
-- Review existing GitHub issues
+- **Database connection:** check the MySQL service, credentials, and both environment files.
+- **Missing dependencies:** run `npm ci` in the affected package.
+- **Missing Prisma types:** run `npx --no-install prisma generate` in `backend/`.
+- **Port conflict:** inspect `lsof -i :3000` and `lsof -i :4000`, then stop the owning development process.

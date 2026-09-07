@@ -1,64 +1,36 @@
 # UBC Mahjong Club Website
 
-A full-stack web application for managing the UBC Mahjong Club, including player statistics, game tracking, leaderboards, and tournament management.
+A web application for club games, player statistics, leaderboards, and tournaments.
 
-## Tech Stack
+## Stack
 
-- **Frontend**: React, TypeScript, Vite, Material-UI
-- **Backend**: Node.js, Express, TypeScript
-- **Database**: MySQL with Prisma ORM
-- **Deployment**: Nginx reverse proxy, systemd service
+- Frontend: React, TypeScript, React Router (SPA), Vite, Material UI, and TanStack Query.
+- Backend: Node.js, Express, TypeScript, and Prisma ORM 6 with MySQL.
+- Production: Nginx serves HTTPS and proxies to Express; systemd manages the application.
 
-## Documentation
+## Get started
 
-- **[Development Setup](DEVELOPMENT.md)** - Local development environment setup
-- **[Deployment Guide](DEPLOYMENT.md)** - Production deployment instructions
-- **[Development Guide](https://docs.google.com/document/d/1FmSUD-EqHhf2XEkG1CkzElLQ91N8OO2Ojf6pMJxwn-s/edit?usp=sharing)** - Additional development resources
-
-## Quick Start
-
-See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed local development setup instructions.
-
-## Project Structure
-
-```
-MJCWebsite/
-├── frontend/          # React frontend application
-├── backend/           # Node.js/Express backend API
-│   ├── src/          # TypeScript source files
-│   └── prisma/       # Database schema and migrations
-├── config/           # Configuration files
-│   ├── nginx/        # Nginx reverse proxy config
-│   └── mjc-website.service  # Systemd service file
-├── scripts/          # Build and deployment scripts
-│   ├── dev.sh        # Development server launcher
-│   ├── prod.sh       # Production build script
-│   ├── start.sh      # Production server starter
-└── build/            # Production build output (gitignored)
-```
-
-## Scripts
-
-### Development
+Use Node 24 from [.nvmrc](.nvmrc). Follow [Development setup](DEVELOPMENT.md), then run:
 
 ```bash
-./scripts/dev.sh      # Start development server locally
+./scripts/dev.sh
 ```
 
-### Production
+Frontend: `http://localhost:3000` · API: `http://localhost:4000/api`
 
-```bash
-./scripts/prod.sh     # Build for production
-./scripts/start.sh    # Start production server
-```
+For production setup and releases, follow the [Deployment guide](DEPLOYMENT.md).
+
+## Project structure
+
+| Directory | Contents |
+| --- | --- |
+| `frontend/src/` | Routes, components, API clients, and hooks |
+| `backend/src/` | Controllers, services, middleware, and tests |
+| `backend/prisma/` | Database schema and migrations |
+| `config/` | Nginx and systemd templates |
+| `scripts/` | Development, build, startup, and Node helpers |
+| `build/` | Generated production application |
 
 ## Contributing
 
-1. Create a feature branch from `main`
-2. Make your changes
-3. Test locally using `./scripts/dev.sh`
-4. Submit a pull request
-
-## License
-
-This project is maintained by the UBC Mahjong Club.
+Create a branch from `main`, make your changes, run the [checks](DEVELOPMENT.md#checks), and submit a pull request. Commit schema changes with their migration SQL, and dependency changes with the relevant lockfile.

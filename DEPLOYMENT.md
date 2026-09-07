@@ -1,410 +1,210 @@
-# Production Deployment & Auto-Start Setup
+# Production deployment
 
-## Prerequisites
+Use Bash on the server, from the checkout root, as the account that owns the application. The current installation uses `/root/MJCWebsite`; use a dedicated application account for new installations.
 
-The setup instructions below will guide you through installing and configuring:
+Nginx terminates HTTPS on port 443 and proxies to Express over HTTP on port 8080. Express serves the SPA and `/api/*`; Prisma connects to MySQL. Allow public access to ports 80/443 and restrict the backend/database ports.
 
-- MySQL server (database)
-- Nginx (reverse proxy)
-- Node.js v24 or higher and npm (should already be installed)
-- Systemd (built-in on Ubuntu/Debian for service management)
+## First installation
 
-## Architecture
+### Host and database
 
-The production setup uses a reverse proxy architecture for security and flexibility:
-
-```
-Internet → Nginx (ports 80/443, runs as root) → Node.js (ports 8080/8443, runs as regular user)
-```
-
-This allows the Node.js application to run as a non-privileged user while still serving on standard HTTP/HTTPS ports.
-
-## Setup Instructions
-
-### 1. Install and Configure MySQL
+Install Node 24 for the application account (`nvm install && nvm use` from the checkout if using NVM). On Ubuntu/Debian:
 
 ```bash
-# Ubuntu/Debian
 sudo apt update
-sudo apt install mysql-server
-
-# Verify installation
-mysql --version
-
-# Secure MySQL installation (optional but recommended)
-sudo mysql_secure_installation
-
-# Start MySQL service
-sudo systemctl start mysql
-
-# Enable MySQL to start on boot
-sudo systemctl enable mysql
-
-# Verify MySQL is running
-sudo systemctl status mysql
+sudo apt install git mysql-server nginx curl openssl
+sudo systemctl enable --now mysql
+git clone https://github.com/UBC-MJC/MJCWebsite.git
+cd MJCWebsite
+sudo mysql
 ```
 
-Create database and user for the application:
+In MySQL, replace the password and run:
 
-```bash
-# Login to MySQL as root
-sudo mysql -u root -p
-
-# Create database and user (replace with your credentials)
-CREATE DATABASE your_database_name;
-CREATE USER 'your_username'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON your_database_name.* TO 'your_username'@'localhost';
-FLUSH PRIVILEGES;
+```sql
+CREATE DATABASE mahjong CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'mahjonguser'@'localhost' IDENTIFIED BY 'your_production_password';
+GRANT ALL PRIVILEGES ON mahjong.* TO 'mahjonguser'@'localhost';
 EXIT;
 ```
 
-Create your `.env.production` file with the database credentials:
+### Environment
 
-```bash
-# .env.production (on production server only)
+Create `.env.production` in the checkout root:
+
+```dotenv
 NODE_ENV=production
-HTTP_PORT=8080
-HTTPS_PORT=8443
-DATABASE_URL=mysql://your_username:your_password@localhost:3306/your_database_name
-# Add other production-specific environment variables here
+PORT=8080
+DATABASE_URL="mysql://mahjonguser:encoded_password@localhost:3306/mahjong"
+ACCESS_TOKEN_SECRET="replace_with_a_random_secret"
+EMAIL_USERNAME="your_mail_account"
+EMAIL_PASSWORD="your_mail_password"
+FROM_EMAIL="UBC Mahjong <your_mail_account>"
 ```
 
-For local development, create a `.env.development` file:
+Generate the secret with `openssl rand -hex 32`, percent-encode database URL credentials, and run `chmod 600 .env.production`. Email uses `smtp.zohocloud.ca:465`.
+
+The build commands below copy this configuration to `build/.env` for Prisma/authentication and `build/.env.production` for application startup. Keep credentials private and clear conflicting environment variables from the deployment shell.
+
+The build script also sources root `.env` as Bash. Use an empty file on a new installation and review any existing contents before building.
+
+### Build and start
+
+For an empty database, run:
 
 ```bash
-# .env.development (local machine only)
-NODE_ENV=development
-PORT=4000
-DATABASE_URL=mysql://dev_user:dev_password@localhost:3306/mjc_dev
-# Add other development-specific environment variables here
+(
+  set -e -o pipefail
+  source scripts/use-node.sh
+  test -s .env.production
+  touch .env
+  mkdir -p logs
+  npm_config_include=dev ./scripts/prod.sh 2>&1 | tee "logs/deploy-$(date +%Y%m%d-%H%M%S).log"
+  install -m 600 .env.production build/.env
+  install -m 600 .env.production build/.env.production
+  (cd build && npx --no-install prisma migrate deploy)
+)
 ```
 
-**Note**: Both `.env.production` and `.env.development` are gitignored for security.
+For an existing database, resolve [migration errors](#migration-errors) before proceeding.
 
-### 2. Install Nginx
-
-```bash
-# Ubuntu/Debian
-sudo apt update
-sudo apt install nginx
-
-# Verify installation
-nginx -v
-```
-
-### 3. Configure Nginx
-
-Edit `config/nginx/mjc-website.conf` and replace placeholders:
-
-- `YOUR_DOMAIN.com` → your domain name
-- `/path/to/MJCWebsite` → absolute path to this project
-
-Then install the configuration:
+Create an edited copy of `config/mjc-website.service`, replacing `YOUR_USERNAME` and every `/path/to/MJCWebsite`. The service account needs access to Node, the build, environment files, and writable `logs/`. Install the edited copy:
 
 ```bash
-# Copy nginx config to sites-available
-sudo cp config/nginx/mjc-website.conf /etc/nginx/sites-available/mjc-website
-
-# Create symbolic link to sites-enabled
-sudo ln -s /etc/nginx/sites-available/mjc-website /etc/nginx/sites-enabled/
-
-# Remove default nginx config (optional)
-sudo rm /etc/nginx/sites-enabled/default
-
-# Test nginx configuration
-sudo nginx -t
-
-# Enable nginx to start on boot
-sudo systemctl enable nginx
-
-# Restart nginx
-sudo systemctl restart nginx
-```
-
-### 4. Build the Application
-
-Before deploying, build the application:
-
-```bash
-# Run the production build script
-./scripts/prod.sh
-```
-
-This will:
-
-- Install frontend dependencies
-- Build the frontend (TypeScript + Vite)
-- Install backend dependencies
-- Build the backend (TypeScript compilation)
-- Generate Prisma client
-- Copy all files to the `build/` directory
-
-### 5. Configure the Systemd Service File
-
-Edit `config/mjc-website.service` and replace placeholders:
-
-- `YOUR_USERNAME` → your system username
-- `/path/to/MJCWebsite` → absolute path to this project
-
-### 6. Install the Systemd Service
-
-```bash
-# Copy service file to systemd directory
-sudo cp config/mjc-website.service /etc/systemd/system/
-
-# Reload systemd to recognize the new service
+sudo cp /path/to/edited/mjc-website.service /etc/systemd/system/mjc-website.service
 sudo systemctl daemon-reload
-
-# Enable the service to start on boot
-sudo systemctl enable mjc-website
-
-# Start the service now
-sudo systemctl start mjc-website
+sudo systemctl enable --now mjc-website
 ```
 
-### 7. Verify the Services
+### HTTPS
+
+Provision the domain's certificate and key. Edit a copy of `config/nginx/mjc-website.conf` with the domain, certificate paths, and project paths. Keep `proxy_pass` aligned with the backend `PORT`.
 
 ```bash
-# Check service status
-sudo systemctl status mjc-website
-
-# View live logs
-sudo journalctl -u mjc-website -f
-
-# View application logs (backend)
-tail -f logs/backend-*.log
-```
-
-## Deployment Workflow
-
-Build and deploy directly on the production server.
-
-#### Initial Deployment
-
-1. **On Production Server:**
-
-   ```bash
-   # Clone or pull latest code
-   git pull origin main
-
-   # Run production build
-   ./scripts/prod.sh
-
-   # Install/update systemd service
-   sudo cp config/mjc-website.service /etc/systemd/system/
-   sudo systemctl daemon-reload
-   sudo systemctl enable mjc-website
-   sudo systemctl start mjc-website
-   ```
-
-#### Subsequent Deployments
-
-When you update the code:
-
-1. **Stop the service:**
-
-   ```bash
-   sudo systemctl stop mjc-website
-   ```
-
-2. **Pull latest code:**
-
-   ```bash
-   git pull origin main
-   ```
-
-3. **Rebuild the application:**
-
-   ```bash
-   ./scripts/prod.sh
-   ```
-
-4. **Restart the service:**
-   ```bash
-   sudo systemctl start mjc-website
-   ```
-
-**Drawbacks:**
-
-- ⏱️ Slower (must install dependencies and compile)
-- 🔧 Requires build tools on server
-- 📦 Larger server footprint
-
-### Quick Restart (no code changes)
-
-If you only need to restart the server without rebuilding:
-
-```bash
-sudo systemctl restart mjc-website
-```
-
-## Service Management Commands
-
-### Node.js Application Service
-
-```bash
-# Start the service
-sudo systemctl start mjc-website
-
-# Stop the service
-sudo systemctl stop mjc-website
-
-# Restart the service
-sudo systemctl restart mjc-website
-
-# Check status
-sudo systemctl status mjc-website
-
-# Disable auto-start on boot
-sudo systemctl disable mjc-website
-
-# Enable auto-start on boot
-sudo systemctl enable mjc-website
-```
-
-### Nginx Service
-
-```bash
-# Start nginx
-sudo systemctl start nginx
-
-# Stop nginx
-sudo systemctl stop nginx
-
-# Restart nginx
-sudo systemctl restart nginx
-
-# Reload configuration (without downtime)
-sudo systemctl reload nginx
-
-# Check status
-sudo systemctl status nginx
-
-# Test configuration
+sudo cp /path/to/edited/mjc-website.conf /etc/nginx/sites-available/mjc-website
+sudo ln -s /etc/nginx/sites-available/mjc-website /etc/nginx/sites-enabled/mjc-website
 sudo nginx -t
+sudo systemctl enable --now nginx
+sudo systemctl reload nginx
 ```
 
-### MySQL Service
+Create the symlink once. Disable any conflicting default site before testing. Configure DNS and certificate renewal, then run the [verification checks](#verification).
+
+## Deploy an update
+
+### Normal path
+
+From a clean checkout on `main` with first-time setup complete, run the block below. Schedule downtime while the application rebuilds. For schema changes, review the migration SQL and take a [backup](#add-a-backup) first.
 
 ```bash
-# Start MySQL
-sudo systemctl start mysql
-
-# Stop MySQL
-sudo systemctl stop mysql
-
-# Restart MySQL
-sudo systemctl restart mysql
-
-# Check status
-sudo systemctl status mysql
-
-# Enable auto-start on boot
-sudo systemctl enable mysql
-
-# Disable auto-start on boot
-sudo systemctl disable mysql
+(
+  set -e
+  git pull --ff-only origin main
+  source scripts/use-node.sh
+  test -s .env.production
+  sudo systemctl stop mjc-website
+  npm_config_include=dev ./scripts/prod.sh
+  install -m 600 .env.production build/.env.production
+  (cd build && npx --no-install prisma migrate deploy)
+  sudo systemctl start mjc-website
+)
 ```
 
-## How It Works
+Then run the [verification checks](#verification). If the build or migration fails, the service stays stopped; fix the error or follow [recovery](#recovery).
 
-1. **MySQL Auto-Start**: MySQL service starts on boot (enabled during installation)
-2. **Nginx Auto-Start**: Nginx starts on boot and listens on ports 80 and 443
-3. **Node.js Application Auto-Start**: The systemd service will:
-   - Wait for MySQL to be ready (`After=mysql.service`)
-   - Run the start script (`scripts/start.sh`)
-   - Start the pre-built Node.js server on ports 8080 (HTTP) and 8443 (HTTPS)
-   - Auto-restart on failure (with 10-second delay)
-   - Log output to `logs/backend-YYYYMMDD.log`
-4. **Traffic Flow**: Nginx receives requests on ports 80/443 and proxies them to Node.js on ports 8080/8443
+`prod.sh` builds the application and generates Prisma Client; the separate `migrate deploy` step applies committed SQL migrations using `build/.env`.
 
-**Note**: The build process (`prod.sh`) is run separately before starting the service. The service only runs the already-built application via `start.sh`.
+### Add a backup
+
+Run this **before the normal path**, while the checkout still matches the running build. Adjust the database name as needed; this assumes local MySQL administrative access through `sudo`.
+
+```bash
+(
+  set -e
+  umask 077
+  MJC_BACKUP_DIR=$(mktemp -d "../mjc-deploy-backup.XXXXXXXX")
+  MJC_BACKUP_DIR=$(cd "$MJC_BACKUP_DIR" && pwd)
+  cp -a build scripts .nvmrc "$MJC_BACKUP_DIR/"
+  git rev-parse HEAD > "$MJC_BACKUP_DIR/commit.txt"
+  sudo mysqldump --single-transaction --routines --triggers --events --no-tablespaces \
+    mahjong > "$MJC_BACKUP_DIR/database.sql"
+  test -s "$MJC_BACKUP_DIR/database.sql"
+  printf 'Keep this backup path: %s\n' "$MJC_BACKUP_DIR"
+)
+```
+
+### Add pre-deployment checks
+
+Run before the normal path to inspect incoming changes and the deployed migration history:
+
+```bash
+git fetch origin &&
+git log --oneline HEAD..origin/main &&
+git diff HEAD origin/main -- backend/prisma/ &&
+(source scripts/use-node.sh && cd build && npx --no-install prisma migrate status)
+```
+
+### Save build output
+
+Replace the `prod.sh` line in the normal path with:
+
+```bash
+set -o pipefail
+mkdir -p logs
+npm_config_include=dev ./scripts/prod.sh 2>&1 | tee "logs/deploy-$(date +%Y%m%d-%H%M%S).log"
+```
+
+## Verification
+
+Replace the hostname with your domain:
+
+```bash
+sudo systemctl status mjc-website --no-pager
+curl --fail --silent --show-error -o /dev/null -w '%{http_code}\n' https://YOUR_DOMAIN.com/
+curl --fail --silent --show-error https://YOUR_DOMAIN.com/api/seasons
+```
+
+Check the pages and API routes affected by the release. For a quick restart of the existing build, run `sudo systemctl restart mjc-website`.
+
+## Migration errors
+
+Back up before reconciling a failed migration or existing database. Compare `_prisma_migrations`, the actual schema, and the committed SQL. If a migration's changes are already present, record it from `build/`:
+
+```bash
+npx --no-install prisma migrate resolve --applied MIGRATION_DIRECTORY_NAME
+```
+
+Use this only after verifying those changes. See [baselining](https://docs.prisma.io/docs/orm/v6/prisma-migrate/workflows/baselining) and [failed migration recovery](https://docs.prisma.io/docs/orm/v6/prisma-migrate/workflows/patching-and-hotfixing). Never reset the production database to resolve migration history.
+
+## Recovery
+
+Check that the previous application is compatible with any SQL already applied. Restore matching startup scripts and Node requirements first if they changed, then set the actual backup path below:
+
+```bash
+(
+  set -e
+  MJC_BACKUP_DIR=/absolute/path/from/deployment/output
+  test -f "$MJC_BACKUP_DIR/commit.txt"
+  test -d "$MJC_BACKUP_DIR/build"
+  diff -qr "$MJC_BACKUP_DIR/scripts" scripts
+  cmp "$MJC_BACKUP_DIR/.nvmrc" .nvmrc
+  sudo systemctl stop mjc-website
+  MJC_FAILED_DIR=$(mktemp -d ../mjc-failed-release.XXXXXXXX)
+  if [ -d build ]; then mv build "$MJC_FAILED_DIR/build"; fi
+  cp -a "$MJC_BACKUP_DIR/build" build
+  sudo systemctl start mjc-website
+)
+```
+
+Repeat verification. Record the restored commit from `commit.txt` and reconcile the checkout before the next deployment.
+
+Restoring a build leaves database changes in place. A database restore loses writes since the backup; plan and validate it separately.
 
 ## Logs
 
-### Application Logs
+- Application: `logs/backend-YYYYMMDD.log`, dated when the process starts.
+- Service: `sudo journalctl -u mjc-website -n 50 --no-pager` and `logs/systemd-*.log`.
+- Build: the `tee` log saved by the deployment commands.
+- Nginx: `/var/log/nginx/mjc-website-access.log` and `mjc-website-error.log`.
 
-- **Systemd logs**: `sudo journalctl -u mjc-website`
-- **Backend logs**: `logs/backend-YYYYMMDD.log` (daily rotation)
-- **Build logs**: Output from `prod.sh` (shown during build)
-- **Systemd output**: `logs/systemd-output.log`
-- **Systemd errors**: `logs/systemd-error.log`
-
-### Nginx Logs
-
-- **Access logs**: `/var/log/nginx/mjc-website-access.log`
-- **Error logs**: `/var/log/nginx/mjc-website-error.log`
-- **General nginx logs**: `/var/log/nginx/access.log` and `/var/log/nginx/error.log`
-
-To view nginx logs in real-time:
-
-```bash
-sudo tail -f /var/log/nginx/mjc-website-access.log
-sudo tail -f /var/log/nginx/mjc-website-error.log
-```
-
-## Environment Variables
-
-The application uses environment-specific `.env` files:
-
-- **Development**: `.env.development` (local machine, gitignored)
-- **Production**: `.env.production` (production server, gitignored)
-
-The correct file is loaded automatically based on the `NODE_ENV` environment variable.
-
-### Common Environment Variables
-
-- `NODE_ENV` - Set to `production` or `development`
-- `HTTP_PORT` (default: 8080) - HTTP port for Node.js server
-- `HTTPS_PORT` (default: 8443) - HTTPS port for Node.js server
-- `PORT` (development only, default: 4000) - Development server port
-- `DATABASE_URL` - MySQL connection string
-
-**Security Note**: Never commit `.env.production` or `.env.development` to git. These files contain sensitive credentials and are already in `.gitignore`.
-
-## Troubleshooting
-
-### Node.js Application Issues
-
-If the service fails to start:
-
-1. Check logs: `sudo journalctl -u mjc-website -n 50`
-2. Check backend logs: `tail -f logs/backend-*.log`
-3. Verify paths in `mjc-website.service` are correct
-4. Ensure `.env.production` file exists in project root
-5. Verify build directory exists: `ls -la build/`
-6. Verify MySQL is running: `sudo systemctl status mysql`
-7. Test the build manually: `./scripts/prod.sh`
-8. Test the start script manually: `./scripts/start.sh`
-9. Check if ports 8080/8443 are available: `sudo netstat -tlnp | grep -E '8080|8443'`
-
-### Nginx Issues
-
-If nginx fails to start or proxy correctly:
-
-1. Test configuration: `sudo nginx -t`
-2. Check nginx error logs: `sudo tail -f /var/log/nginx/error.log`
-3. Verify SSL certificate paths in nginx config are correct
-4. Ensure ports 80/443 are not in use: `sudo netstat -tlnp | grep -E ':80|:443'`
-5. Check if Node.js is running: `curl -k https://localhost:8443`
-6. Verify firewall allows ports 80/443: `sudo ufw status`
-
-### Common Issues
-
-**502 Bad Gateway Error**:
-
-- Node.js application is not running
-- Check: `sudo systemctl status mjc-website`
-- Verify Node.js is listening: `curl -k https://localhost:8443`
-
-**Connection Refused**:
-
-- Nginx is not running
-- Check: `sudo systemctl status nginx`
-- Firewall blocking ports 80/443
-
-**SSL Certificate Errors**:
-
-- Verify certificate paths in `config/nginx/mjc-website.conf`
-- Ensure certificates are readable by nginx user
-- Check certificate validity: `openssl x509 -in /path/to/cert.crt -text -noout`
+For a 502, check the service and `http://127.0.0.1:8080/api/seasons`. For HTTPS/configuration errors, run `sudo nginx -t` and inspect the Nginx error log.

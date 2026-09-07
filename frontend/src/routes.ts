@@ -17,7 +17,7 @@ export default [
         route("games/:variant/:id", "routes/game.tsx"),
         route("games", "routes/game-logs.tsx"),
         route("resources", "routes/resources.tsx"),
-        route("vro2026", "routes/tournament.tsx"),
+        // route("vro2026", "routes/tournament.tsx"),
         route("stats/jp", "routes/statistics-jp.tsx"),
         route("activity", "routes/checkin.tsx"),
         route("admin", "routes/admin.tsx"),
