@@ -1,5 +1,5 @@
-import { ReactNode, useEffect, useCallback } from "react";
-import { createContext, useState } from "react";
+import { ReactNode, createContext } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { loginAPICall, registerAPICall } from "@/api/AuthAPI";
 import { getCurrentPlayer } from "@/api/AccountAPI";
@@ -23,54 +23,39 @@ const AuthContext = createContext<AuthContextType>({
     reloadPlayer: notInstantiated,
 });
 
+const currentPlayerKey = ["currentPlayer"] as const;
+
 const AuthContextProvider = (props: ChildProps) => {
     const navigate = useNavigate();
-    const [player, setPlayer] = useState<Player | undefined>(undefined);
-    const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        const abortController = new AbortController();
-
-        const checkAuth = async () => {
-            // Check if user is already authenticated via cookie
+    const queryClient = useQueryClient();
+    const currentPlayerQuery = useQuery({
+        queryKey: currentPlayerKey,
+        queryFn: async (): Promise<Player | null> => {
             try {
                 const response = await getCurrentPlayer();
-                if (!abortController.signal.aborted) {
-                    setPlayer(response.data.player);
-                }
+                return response.data.player;
             } catch {
-                // No valid session, user is not logged in
-                if (!abortController.signal.aborted) {
-                    setPlayer(undefined);
-                }
-            } finally {
-                if (!abortController.signal.aborted) {
-                    setLoading(false);
-                }
+                return null;
             }
-        };
-        checkAuth();
+        },
+        retry: false,
+    });
+    const player = currentPlayerQuery.data ?? undefined;
+    const loading = currentPlayerQuery.isPending;
 
-        return () => {
-            abortController.abort();
-        };
-    }, []);
-
-    const authLogin = useCallback(async (loginData: LoginDataType) => {
+    const authLogin = async (loginData: LoginDataType) => {
         const apiResponse = await loginAPICall(loginData);
-        const playerAPIData = apiResponse.data;
-        setPlayer(playerAPIData.player);
+        queryClient.setQueryData(currentPlayerKey, apiResponse.data.player);
         navigate("/");
-    }, []);
+    };
 
-    const authRegister = useCallback(async (registerData: RegisterDataType) => {
+    const authRegister = async (registerData: RegisterDataType) => {
         const apiResponse = await registerAPICall(registerData);
-        const playerAPIData = apiResponse.data;
-        setPlayer(playerAPIData.player);
+        queryClient.setQueryData(currentPlayerKey, apiResponse.data.player);
         navigate("/");
-    }, []);
+    };
 
-    const authLogout = useCallback(async () => {
+    const authLogout = async () => {
         try {
             await fetch(`${baseUrl}/logout`, {
                 method: "POST",
@@ -79,21 +64,20 @@ const AuthContextProvider = (props: ChildProps) => {
         } catch (error) {
             logger.error("Logout error:", error);
         }
-        setPlayer(undefined);
+        queryClient.setQueryData(currentPlayerKey, null);
         navigate("/login");
-    }, []);
+    };
 
-    const reloadPlayer = useCallback(async () => {
+    const reloadPlayer = async () => {
         try {
             const response = await getCurrentPlayer();
-            setPlayer(response.data.player);
+            queryClient.setQueryData(currentPlayerKey, response.data.player);
         } catch (error) {
             logger.error("Error reloading player:", error);
-            // If token is invalid/expired, log out
-            setPlayer(undefined);
+            queryClient.setQueryData(currentPlayerKey, null);
             navigate("/login");
         }
-    }, []);
+    };
 
     return (
         <AuthContext.Provider

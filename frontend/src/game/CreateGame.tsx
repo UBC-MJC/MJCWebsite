@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { createGameAPI } from "@/api/GameAPI";
 import { AxiosError } from "axios";
 import { withPlayerCondition } from "@/common/withPlayerCondition";
 import { useNavigate } from "react-router";
 import { getGameVariantString } from "@/common/Utils";
 import { usePlayers } from "@/hooks/GameHooks";
+import { useCurrentSeasons } from "@/hooks/AdminHooks";
+import { AuthContext } from "@/common/AuthContext";
 import LoadingFallback from "@/common/LoadingFallback";
 import {
     Autocomplete,
@@ -17,13 +19,21 @@ import {
     Box,
     Alert,
 } from "@mui/material";
-import type { GameCreationProp, GameVariant, Player, PlayerNamesDataType } from "@/types";
+import type { GameVariantProp, GameVariant, Player, PlayerNamesDataType, Season } from "@/types";
 
-const CreateGameComponent = <T extends GameVariant>({
-    gameVariant,
-    gameType,
-}: GameCreationProp<T>) => {
+const CreateGameComponent = <T extends GameVariant>({ gameVariant }: GameVariantProp<T>) => {
     const navigate = useNavigate();
+    const { player } = useContext(AuthContext);
+    const currentSeasonsResult = useCurrentSeasons();
+    const eligibleSeasons = (currentSeasonsResult.data ?? []).filter((candidate) => {
+        if (candidate.type === "CASUAL") return true;
+        return gameVariant === "jp" ? player?.japaneseQualified : player?.hongKongQualified;
+    });
+    const [selectedSeasonId, setSelectedSeasonId] = useState<string>();
+    const season =
+        eligibleSeasons.find((candidate) => candidate.id === selectedSeasonId) ??
+        eligibleSeasons[0] ??
+        null;
 
     const [eastPlayer, setEastPlayer] = useState<PlayerNamesDataType | null>(null);
     const [southPlayer, setSouthPlayer] = useState<PlayerNamesDataType | null>(null);
@@ -31,21 +41,30 @@ const CreateGameComponent = <T extends GameVariant>({
     const [northPlayer, setNorthPlayer] = useState<PlayerNamesDataType | null>(null);
     const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
-    const playerNamesResult = usePlayers(gameVariant, gameType);
+    const playerNamesResult = usePlayers(gameVariant, season?.type);
+
+    const selectSeason = (selectedSeason: Season) => {
+        setSelectedSeasonId(selectedSeason.id);
+        setEastPlayer(null);
+        setSouthPlayer(null);
+        setWestPlayer(null);
+        setNorthPlayer(null);
+        setAttemptedSubmit(false);
+    };
 
     const createGame = async () => {
         setAttemptedSubmit(true);
 
-        if (playerSelectMissing() || playerListNotUnique()) {
+        if (!season || playerSelectMissing() || playerListNotUnique()) {
             return;
         }
 
         const playerList = [eastPlayer, southPlayer, westPlayer, northPlayer];
         try {
             const response = await createGameAPI(
-                gameType,
                 gameVariant,
                 playerList.map((playerName) => playerName!.username),
+                season.id,
             );
             navigate(`/games/${gameVariant}/${response.data.id}`);
         } catch (error) {
@@ -53,11 +72,8 @@ const CreateGameComponent = <T extends GameVariant>({
         }
     };
 
-    const title = `Create ${getGameVariantString(gameVariant, gameType)} Game`;
+    const title = `Create ${getGameVariantString(gameVariant, season?.type)} Game`;
 
-    // const playerSelectMissing = !eastPlayer || !southPlayer || !westPlayer || !northPlayer;
-
-    // Get validation errors
     const getValidationErrors = () => {
         const errors: string[] = [];
 
@@ -93,6 +109,26 @@ const CreateGameComponent = <T extends GameVariant>({
     };
 
     const validationErrors = attemptedSubmit ? getValidationErrors() : [];
+    if (currentSeasonsResult.isPending) {
+        return <LoadingFallback minHeight="50vh" message="Loading active seasons..." />;
+    }
+    if (currentSeasonsResult.error) {
+        return (
+            <Container>
+                <Alert severity="error">Failed to load active seasons.</Alert>
+            </Container>
+        );
+    }
+    if (eligibleSeasons.length === 0) {
+        return (
+            <Container>
+                <Typography variant="h1">
+                    Create {getGameVariantString(gameVariant)} Game
+                </Typography>
+                <Alert severity="info">There are no active seasons you can record games for.</Alert>
+            </Container>
+        );
+    }
     if (playerNamesResult.error)
         return (
             <Container>
@@ -110,6 +146,16 @@ const CreateGameComponent = <T extends GameVariant>({
         <Container>
             <Stack spacing={4}>
                 <Typography variant="h1">{title}</Typography>
+
+                <Autocomplete
+                    options={eligibleSeasons}
+                    value={season!}
+                    getOptionLabel={(option) => `${option.name} (${option.type.replace("_", " ")})`}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    disableClearable
+                    onChange={(_event, value) => selectSeason(value)}
+                    renderInput={(params) => <TextField {...params} label="Season" />}
+                />
 
                 <Grid container spacing={3}>
                     <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
@@ -216,20 +262,9 @@ const CreateGameComponent = <T extends GameVariant>({
 
 const hasGamePermissions = <T extends GameVariant>(
     player: Player | undefined,
-    props: GameCreationProp<T>,
+    _props: GameVariantProp<T>,
 ): boolean => {
-    if (player === undefined) {
-        return false;
-    }
-    if (props.gameType === "CASUAL") {
-        return true; // everyone is allowed to start casual games
-    }
-    if (props.gameVariant === "jp") {
-        return player.japaneseQualified;
-    } else if (props.gameVariant === "hk") {
-        return player.hongKongQualified;
-    }
-    return false;
+    return player !== undefined;
 };
 
 const CreateGame = withPlayerCondition(CreateGameComponent, hasGamePermissions, "/unauthorized");

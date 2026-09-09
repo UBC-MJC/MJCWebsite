@@ -38,12 +38,12 @@ import {
     updatePlayerHandler,
     updateSeasonHandler,
 } from "../controllers/admin.controller";
-import { getCurrentSeasonHandler, getSeasonsHandler } from "../controllers/season.controller";
+import { getCurrentSeasonsHandler, getSeasonsHandler } from "../controllers/season.controller";
 import {
     checkInHandler,
     checkOutHandler,
     getStatusHandler,
-    getCheckedInPlayersHandler
+    getCheckedInPlayersHandler,
 } from "../controllers/checkin.controller";
 
 const router: Router = Router();
@@ -66,7 +66,7 @@ router.post("/games/:gameVariant/:id/chombo", isAuthenticated, setChomboHandler)
 router.delete("/games/:gameVariant/:id/rounds", isAuthenticated, deleteLastRoundHandler);
 
 router.get("/players/qualified/:gameVariant/:gameType/names", getQualifiedPlayersHandler);
-router.get("/players/qualified/:gameVariant/:gameType/leaderboard", getPlayerLeaderboardHandler);
+router.get("/players/qualified/:gameVariant/leaderboard", getPlayerLeaderboardHandler);
 
 router.get("/players/current", isAuthenticated, getCurrentPlayerHandler);
 router.put("/players/current/settings", isAuthenticated, updateSettingsHandler);
@@ -76,14 +76,14 @@ router.get(
     "/players/:playerId/:gameVariant/:seasonId/placement-history",
     getPlacementHistoryHandler,
 );
-router.get("/seasons/current", getCurrentSeasonHandler);
+router.get("/seasons/current", getCurrentSeasonsHandler);
 router.get("/seasons", getSeasonsHandler);
 
 router.get("/admin/players", isAuthenticated, isAdmin, getPlayersHandler);
 router.put("/admin/players/:id", isAuthenticated, isAdmin, updatePlayerHandler);
 router.delete("/admin/players/:id", isAuthenticated, isAdmin, deletePlayerHandler);
 
-router.put("/admin/recalc/:gameVariant/", isAuthenticated, isAdmin, recalcSeasonHandler);
+router.put("/admin/recalc/:gameVariant/:seasonId", isAuthenticated, isAdmin, recalcSeasonHandler);
 router.put("/admin/removeQualification", isAuthenticated, isAdmin, removeQualificationHandler);
 router.post("/admin/seasons", isAuthenticated, isAdmin, createSeasonHandler);
 router.put("/admin/seasons/:id", isAuthenticated, isAdmin, updateSeasonHandler);

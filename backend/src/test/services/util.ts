@@ -50,7 +50,7 @@ export async function createTestPlayers() {
 }
 export async function initialise() {
     const players = await createTestPlayers();
-    const season = await createSeason("testSeason", new Date(), new Date());
+    const season = await createSeason("testSeason", GameType.RANKED, new Date(), new Date());
     return { players, season };
 }
 
@@ -68,10 +68,9 @@ export async function initialiseGame<
     recordingPlayerID = "test1",
 ) {
     const initGame = await gameService.createGame(
-        GameType.RANKED,
+        { id: seasonID, type: GameType.RANKED },
         playerUsernames,
         recordingPlayerID,
-        seasonID,
     );
     await gameService.updateGame(initGame.id, state);
     return gameService.getGameOrThrow(initGame.id);

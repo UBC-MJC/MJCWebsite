@@ -1,24 +1,12 @@
 import { Request, Response } from "express";
-import { findAllSeasons, findCurrentSeason } from "../services/season.service";
-import createError from "http-errors";
+import { findAllSeasons, getCurrentSeasons } from "../services/season.service";
 
-const getCurrentSeasonHandler = async (_req: Request, res: Response): Promise<void> => {
-    const season = await findCurrentSeason();
-    if (!season) {
-        throw createError.NotFound("No season in progress");
-    }
-
-    res.status(200).json({
-        id: season.id,
-        name: season.name,
-        startDate: season.startDate,
-        endDate: season.endDate,
-    });
+const getCurrentSeasonsHandler = async (_req: Request, res: Response): Promise<void> => {
+    res.status(200).json(await getCurrentSeasons());
 };
 
 const getSeasonsHandler = async (_req: Request, res: Response): Promise<void> => {
-    const seasons = await findAllSeasons();
-    res.json(seasons);
+    res.json(await findAllSeasons());
 };
 
-export { getCurrentSeasonHandler, getSeasonsHandler };
+export { getCurrentSeasonsHandler, getSeasonsHandler };

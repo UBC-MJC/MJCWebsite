@@ -26,6 +26,7 @@ import { getJapaneseEloChanges } from "./japaneseEloCalculator";
 
 type FullJapaneseGame = Prisma.JapaneseGameGetPayload<{
     include: {
+        season: true;
         players: {
             include: {
                 player: true;
@@ -269,6 +270,7 @@ class JapaneseGameService extends GameService<
                 },
             },
             include: {
+                season: true,
                 players: {
                     include: {
                         player: true,

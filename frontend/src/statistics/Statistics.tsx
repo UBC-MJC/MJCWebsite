@@ -10,6 +10,7 @@ import type { GameVariant, Season } from "@/types";
 const ALL_SEASONS: Season = {
     id: "all",
     name: "All Seasons",
+    type: "RANKED",
     startDate: new Date("00000101"),
     endDate: new Date(),
 };

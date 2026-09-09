@@ -2,23 +2,16 @@ import { Request, Response } from "express";
 import createError from "http-errors";
 import {
     createGameSchema,
+    gameIdSchema,
     gameVariantSchema,
     setChomboSchema,
 } from "../validation/game.validation";
-import { getCurrentSeason } from "../services/season.service";
+import { seasonIdSchema } from "../validation/season.validation";
+import { findSeason } from "../services/season.service";
 import { GameFilterArgs } from "../services/game/game.util";
 import { createRoundForVariant, getGameService } from "../services/game/gameService.factory";
 import { addGameListener, sendGameUpdate } from "../services/game/liveGame.service";
-import { GameStatus, GameType } from "@prisma/client";
-
-const parseGameId = (value: unknown): number => {
-    const gameId = typeof value === "string" ? Number(value) : Number.NaN;
-    if (!Number.isSafeInteger(gameId) || gameId <= 0) {
-        throw createError.NotFound("Invalid game id");
-    }
-
-    return gameId;
-};
+import { GameStatus } from "@prisma/client";
 
 const getGamesHandler = async (req: Request, res: Response): Promise<void> => {
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
@@ -30,7 +23,6 @@ const getGamesHandler = async (req: Request, res: Response): Promise<void> => {
             req.query.playerIds === "" || typeof req.query.playerIds === "undefined"
                 ? undefined
                 : req.query.playerIds.toString().split(","),
-        gameType: GameType.RANKED,
         gameStatus: GameStatus.FINISHED,
     };
 
@@ -44,7 +36,7 @@ const respondWithGame = async (
     res: Response,
     addListener: boolean,
 ): Promise<void> => {
-    const id = parseGameId(req.params.id);
+    const id = gameIdSchema.parse(req.params.id);
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
 
     const gameService = getGameService(gameVariant);
@@ -81,11 +73,15 @@ const getLiveGamesHandler = async (req: Request, res: Response): Promise<void> =
 
 const createGameHandler = async (req: Request, res: Response): Promise<void> => {
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
-    const { players, gameType } = createGameSchema.parse(req.body);
-    const season = await getCurrentSeason();
+    const { players, seasonId } = createGameSchema.parse(req.body);
+    const season = await findSeason(seasonId);
+    const now = new Date();
+    if (!season || season.startDate > now || season.endDate <= now) {
+        throw createError.BadRequest("Season is not active");
+    }
 
     const gameService = getGameService(gameVariant);
-    const newGame = await gameService.createGame(gameType, players, req.player.id, season.id);
+    const newGame = await gameService.createGame(season, players, req.player.id);
 
     res.status(201).json({
         id: newGame.id,
@@ -94,7 +90,7 @@ const createGameHandler = async (req: Request, res: Response): Promise<void> => 
 
 const deleteGameHandler = async (req: Request, res: Response): Promise<void> => {
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
-    const gameId = parseGameId(req.params.id);
+    const gameId = gameIdSchema.parse(req.params.id);
 
     const gameService = getGameService(gameVariant);
     const game = await gameService.getGame(gameId);
@@ -112,7 +108,7 @@ const deleteGameHandler = async (req: Request, res: Response): Promise<void> => 
 
 const submitGameHandler = async (req: Request, res: Response): Promise<void> => {
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
-    const gameId = parseGameId(req.params.id);
+    const gameId = gameIdSchema.parse(req.params.id);
 
     const gameService = getGameService(gameVariant);
     const game = await gameService.getGame(gameId);
@@ -130,7 +126,7 @@ const submitGameHandler = async (req: Request, res: Response): Promise<void> => 
 
 const createRoundHandler = async (req: Request, res: Response): Promise<void> => {
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
-    const gameId = parseGameId(req.params.id);
+    const gameId = gameIdSchema.parse(req.params.id);
     const roundRequest: unknown = req.body?.roundRequest;
 
     const gameService = getGameService(gameVariant);
@@ -153,7 +149,7 @@ const createRoundHandler = async (req: Request, res: Response): Promise<void> =>
 
 const deleteLastRoundHandler = async (req: Request, res: Response): Promise<void> => {
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
-    const gameId = parseGameId(req.params.id);
+    const gameId = gameIdSchema.parse(req.params.id);
 
     const gameService = getGameService(gameVariant);
     const game = await gameService.getGame(gameId);
@@ -177,16 +173,16 @@ const deleteLastRoundHandler = async (req: Request, res: Response): Promise<void
 
 const recalcSeasonHandler = async (req: Request, res: Response): Promise<void> => {
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
-    const seasonId = await getCurrentSeason();
+    const seasonId = seasonIdSchema.parse(req.params.seasonId);
     const gameService = getGameService(gameVariant);
-    const newEloStats = await gameService.recalcSeason(seasonId.id);
+    const newEloStats = await gameService.recalcSeason(seasonId);
     res.status(201).json(newEloStats);
 };
 
 const setChomboHandler = async (req: Request, res: Response): Promise<void> => {
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
     const { playerId, chomboCount } = setChomboSchema.parse(req.body);
-    const gameId = parseGameId(req.params.id);
+    const gameId = gameIdSchema.parse(req.params.id);
     const gameService = getGameService(gameVariant);
     const result = await gameService.setChombo(gameId, playerId, chomboCount);
     res.status(201).json(result);

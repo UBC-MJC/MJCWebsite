@@ -73,24 +73,10 @@ const NavBar = () => {
                             onClick={closeDrawer}
                             color="inherit"
                         >
-                            <ListItemText primary={getGameVariantString("jp", "RANKED")} />
-                        </ListItemButton>
-                        <ListItemButton
-                            component={Link}
-                            to="/leaderboard/jp/casual"
-                            onClick={closeDrawer}
-                        >
-                            <ListItemText primary={getGameVariantString("jp", "CASUAL")} />
+                            <ListItemText primary={getGameVariantString("jp")} />
                         </ListItemButton>
                         <ListItemButton component={Link} to="/leaderboard/hk" onClick={closeDrawer}>
-                            <ListItemText primary={getGameVariantString("hk", "RANKED")} />
-                        </ListItemButton>
-                        <ListItemButton
-                            component={Link}
-                            to="/leaderboard/hk/casual"
-                            onClick={closeDrawer}
-                        >
-                            <ListItemText primary={getGameVariantString("hk", "CASUAL")} />
+                            <ListItemText primary={getGameVariantString("hk")} />
                         </ListItemButton>
                     </List>
                 </Collapse>
@@ -102,41 +88,19 @@ const NavBar = () => {
                         </ListItem>
                         <Collapse in={recordGameOpen} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
-                                {player.japaneseQualified && (
-                                    <ListItemButton
-                                        component={Link}
-                                        to="/games/create/jp"
-                                        onClick={closeDrawer}
-                                    >
-                                        <ListItemText
-                                            primary={getGameVariantString("jp", "RANKED")}
-                                        />
-                                    </ListItemButton>
-                                )}
                                 <ListItemButton
                                     component={Link}
-                                    to="/games/create/jp/casual"
+                                    to="/games/create/jp"
                                     onClick={closeDrawer}
                                 >
-                                    <ListItemText primary={getGameVariantString("jp", "CASUAL")} />
+                                    <ListItemText primary={getGameVariantString("jp")} />
                                 </ListItemButton>
-                                {player.hongKongQualified && (
-                                    <ListItemButton
-                                        component={Link}
-                                        to="/games/create/hk"
-                                        onClick={closeDrawer}
-                                    >
-                                        <ListItemText
-                                            primary={getGameVariantString("hk", "RANKED")}
-                                        />
-                                    </ListItemButton>
-                                )}
                                 <ListItemButton
                                     component={Link}
-                                    to="/games/create/hk/casual"
+                                    to="/games/create/hk"
                                     onClick={closeDrawer}
                                 >
-                                    <ListItemText primary={getGameVariantString("hk", "CASUAL")} />
+                                    <ListItemText primary={getGameVariantString("hk")} />
                                 </ListItemButton>
                             </List>
                         </Collapse>
@@ -263,28 +227,14 @@ const NavBar = () => {
                                     to="/leaderboard/jp"
                                     onClick={() => setLeaderboardAnchor(null)}
                                 >
-                                    {getGameVariantString("jp", "RANKED")}
-                                </MenuItem>
-                                <MenuItem
-                                    component={Link}
-                                    to="/leaderboard/jp/casual"
-                                    onClick={() => setLeaderboardAnchor(null)}
-                                >
-                                    {getGameVariantString("jp", "CASUAL")}
+                                    {getGameVariantString("jp")}
                                 </MenuItem>
                                 <MenuItem
                                     component={Link}
                                     to="/leaderboard/hk"
                                     onClick={() => setLeaderboardAnchor(null)}
                                 >
-                                    {getGameVariantString("hk", "RANKED")}
-                                </MenuItem>
-                                <MenuItem
-                                    component={Link}
-                                    to="/leaderboard/hk/casual"
-                                    onClick={() => setLeaderboardAnchor(null)}
-                                >
-                                    {getGameVariantString("hk", "CASUAL")}
+                                    {getGameVariantString("hk")}
                                 </MenuItem>
                             </Menu>
                             {!loading && player && (
@@ -313,37 +263,19 @@ const NavBar = () => {
                                             horizontal: "left",
                                         }}
                                     >
-                                        {player.japaneseQualified && (
-                                            <MenuItem
-                                                component={Link}
-                                                to="/games/create/jp"
-                                                onClick={() => setRecordGameAnchor(null)}
-                                            >
-                                                {getGameVariantString("jp", "RANKED")}
-                                            </MenuItem>
-                                        )}
                                         <MenuItem
                                             component={Link}
-                                            to="/games/create/jp/casual"
+                                            to="/games/create/jp"
                                             onClick={() => setRecordGameAnchor(null)}
                                         >
-                                            {getGameVariantString("jp", "CASUAL")}
+                                            {getGameVariantString("jp")}
                                         </MenuItem>
-                                        {player.hongKongQualified && (
-                                            <MenuItem
-                                                component={Link}
-                                                to="/games/create/hk"
-                                                onClick={() => setRecordGameAnchor(null)}
-                                            >
-                                                {getGameVariantString("hk", "RANKED")}
-                                            </MenuItem>
-                                        )}
                                         <MenuItem
                                             component={Link}
-                                            to="/games/create/hk/casual"
+                                            to="/games/create/hk"
                                             onClick={() => setRecordGameAnchor(null)}
                                         >
-                                            {getGameVariantString("hk", "CASUAL")}
+                                            {getGameVariantString("hk")}
                                         </MenuItem>
                                     </Menu>
                                 </>

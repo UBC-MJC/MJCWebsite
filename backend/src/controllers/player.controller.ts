@@ -17,7 +17,7 @@ import {
 } from "../services/player.service";
 import { addAuthCookieToResponse, generateToken } from "../middleware/jwt";
 import bcrypt from "bcryptjs";
-import { getCurrentSeason } from "../services/season.service";
+import { findSeason } from "../services/season.service";
 import { STARTING_ELO } from "../services/game/game.util";
 import { getGameService } from "../services/game/gameService.factory";
 import { gameTypeSchema, gameVariantSchema } from "../validation/game.validation";
@@ -29,6 +29,14 @@ interface PlayerStatisticsParams {
     gameVariant: string;
     seasonId: string;
 }
+
+const requireStringParam = (value: unknown, errorMessage: string): string => {
+    if (typeof value !== "string" || value.length === 0) {
+        throw createError.BadRequest(errorMessage);
+    }
+
+    return value;
+};
 
 const registerHandler = async (req: Request, res: Response): Promise<void> => {
     const registerPlayerRequest = registerSchema.parse(req.body);
@@ -103,20 +111,14 @@ const getQualifiedPlayersHandler = async (req: Request, res: Response): Promise<
 
 const getPlayerLeaderboardHandler = async (req: Request, res: Response): Promise<void> => {
     const gameVariant = gameVariantSchema.parse(req.params.gameVariant);
-    const gameType = gameTypeSchema.parse(req.params.gameType);
-    let seasonId: string;
-    if (typeof req.query.seasonId === "string" && req.query.seasonId.length > 0) {
-        seasonId = req.query.seasonId;
-    } else {
-        if (typeof req.query.seasonId !== "undefined") {
-            throw createError.BadRequest("Invalid season id");
-        }
-        const season = await getCurrentSeason();
-        seasonId = season.id;
+    const seasonId = requireStringParam(req.query.seasonId, "Invalid season id");
+    const season = await findSeason(seasonId);
+    if (!season) {
+        throw createError.NotFound("Season not found");
     }
 
     const gameService = getGameService(gameVariant);
-    const playerElos = await gameService.getAllPlayerElos(seasonId, gameType);
+    const playerElos = await gameService.getAllPlayerElos(seasonId);
     playerElos.forEach((playerElo) => {
         playerElo.elo = Number(playerElo.elo) + STARTING_ELO;
         playerElo.gameCount = Number(playerElo.gameCount);

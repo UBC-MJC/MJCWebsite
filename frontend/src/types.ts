@@ -21,9 +21,8 @@ export type GameType = "RANKED" | "PLAY_OFF" | "TOURNEY" | "CASUAL";
 
 export type GameVariant = "jp" | "hk";
 
-export interface GameCreationProp<T extends GameVariant> {
+export interface GameVariantProp<T extends GameVariant> {
     gameVariant: T;
-    gameType: GameType;
 }
 
 export interface LoginDataType {
@@ -66,6 +65,7 @@ export interface Player {
 }
 
 export interface Season {
+    type: GameType;
     id: string;
     name: string;
     startDate: Date;
@@ -85,7 +85,7 @@ export interface AuthContextType {
 
 export interface Game<T extends GameVariant> {
     id: string;
-    type: GameType;
+    season: Season;
     status: string;
     recordedById: string;
     createdAt: string;
