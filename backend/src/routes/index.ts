@@ -83,7 +83,7 @@ router.get("/admin/players", isAuthenticated, isAdmin, getPlayersHandler);
 router.put("/admin/players/:id", isAuthenticated, isAdmin, updatePlayerHandler);
 router.delete("/admin/players/:id", isAuthenticated, isAdmin, deletePlayerHandler);
 
-router.put("/admin/recalc/:gameVariant/", isAuthenticated, isAdmin, recalcSeasonHandler);
+router.put("/admin/recalc/:gameVariant/:seasonId", isAuthenticated, isAdmin, recalcSeasonHandler);
 router.put("/admin/removeQualification", isAuthenticated, isAdmin, removeQualificationHandler);
 router.post("/admin/seasons", isAuthenticated, isAdmin, createSeasonHandler);
 router.put("/admin/seasons/:id", isAuthenticated, isAdmin, updateSeasonHandler);

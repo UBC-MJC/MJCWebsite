@@ -1,12 +1,14 @@
 import * as z from "zod";
 
 import { GameType, HongKongTransactionType, JapaneseTransactionType, Wind } from "@prisma/client";
+import { seasonIdSchema } from "./season.validation";
 
+const gameIdSchema = z.string().transform(Number).pipe(z.int().positive());
 const gameVariantSchema = z.enum(["jp", "hk"]);
 const gameTypeSchema = z.enum(GameType);
 
 const createGameSchema = z.object({
-    seasonId: z.string().min(1),
+    seasonId: seasonIdSchema,
     players: z.array(z.string()).length(4),
 });
 
@@ -83,6 +85,7 @@ type HongKongTransactionT = z.infer<typeof HongKongTransactionSchema>;
 type Transaction = JapaneseTransactionT | HongKongTransactionT;
 
 export {
+    gameIdSchema,
     createGameSchema,
     gameVariantSchema,
     gameTypeSchema,
