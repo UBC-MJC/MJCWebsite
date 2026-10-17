@@ -3,7 +3,7 @@ CREATE TEMPORARY TABLE `_SeasonGameType` (
     `seasonId` VARCHAR(191) NOT NULL,
     `type` ENUM('RANKED', 'PLAY_OFF', 'TOURNEY', 'CASUAL') NOT NULL,
     PRIMARY KEY (`seasonId`, `type`)
-);
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 INSERT IGNORE INTO `_SeasonGameType` (`seasonId`, `type`)
 SELECT `seasonId`, `type` FROM `JapaneseGame`;

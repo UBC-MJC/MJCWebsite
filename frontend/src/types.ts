@@ -181,11 +181,6 @@ export type HongKongTransactionType =
     | "SELF_DRAW_PAO"
     | "RESHUFFLE";
 
-export interface OptionsType<T> {
-    label: string;
-    value: T;
-}
-
 export interface StatisticsType {
     totalRounds: number;
     dealInCount: number;

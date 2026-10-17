@@ -39,7 +39,11 @@ const Statistics = ({ gameVariant }: { gameVariant: GameVariant }) => {
                     <Grid size={6}>
                         <Autocomplete
                             isOptionEqualToValue={(option, value) => option.id === value.id}
-                            getOptionLabel={(option) => option.name}
+                            getOptionLabel={(option) =>
+                                option.id === ALL_SEASONS.id
+                                    ? option.name
+                                    : `${option.name} (${option.type.replace("_", " ")})`
+                            }
                             options={allSeasons}
                             blurOnSelect
                             disableClearable

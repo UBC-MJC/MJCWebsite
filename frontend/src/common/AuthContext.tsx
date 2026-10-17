@@ -1,6 +1,8 @@
 import { ReactNode, createContext } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
+import { isAxiosError } from "axios";
+import { Alert, Button, Container, Stack } from "@mui/material";
 import { loginAPICall, registerAPICall } from "@/api/AuthAPI";
 import { getCurrentPlayer } from "@/api/AccountAPI";
 import { baseUrl } from "@/api/APIUtils";
@@ -34,8 +36,11 @@ const AuthContextProvider = (props: ChildProps) => {
             try {
                 const response = await getCurrentPlayer();
                 return response.data.player;
-            } catch {
-                return null;
+            } catch (error) {
+                if (isAxiosError(error) && error.response?.status === 401) {
+                    return null;
+                }
+                throw error;
             }
         },
         retry: false,
@@ -69,15 +74,30 @@ const AuthContextProvider = (props: ChildProps) => {
     };
 
     const reloadPlayer = async () => {
-        try {
-            const response = await getCurrentPlayer();
-            queryClient.setQueryData(currentPlayerKey, response.data.player);
-        } catch (error) {
-            logger.error("Error reloading player:", error);
-            queryClient.setQueryData(currentPlayerKey, null);
+        const result = await currentPlayerQuery.refetch();
+        if (result.isError) {
+            logger.error("Error reloading player:", result.error);
+        } else if (result.data === null) {
             navigate("/login");
         }
     };
+
+    if (currentPlayerQuery.isError && currentPlayerQuery.data === undefined) {
+        return (
+            <Container maxWidth="sm" sx={{ py: 4 }}>
+                <Stack spacing={2}>
+                    <Alert severity="error">Unable to check your session. Please try again.</Alert>
+                    <Button
+                        variant="contained"
+                        disabled={currentPlayerQuery.isFetching}
+                        onClick={() => void currentPlayerQuery.refetch()}
+                    >
+                        Retry
+                    </Button>
+                </Stack>
+            </Container>
+        );
+    }
 
     return (
         <AuthContext.Provider

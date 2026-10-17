@@ -11,9 +11,6 @@ import type {
     HongKongRound,
     JapaneseHandInput,
     HongKongHandInput,
-    PlayerNamesDataType,
-    OptionsType,
-    Season,
     LeaderboardType,
 } from "@/types";
 
@@ -191,26 +188,6 @@ export function getJapaneseStartingScore(): number[] {
 
 export function getHongKongStartingScore(): number[] {
     return Array(NUM_PLAYERS).fill(HONGKONG_STARTING_POINT);
-}
-
-export function mapPlayerNameToOption(
-    playerNameDatas: PlayerNamesDataType[],
-): OptionsType<string>[] {
-    return sortOptions(
-        playerNameDatas.map((playerNameData) => {
-            return { label: playerNameData.username, value: playerNameData.playerId };
-        }),
-    );
-}
-
-export function sortOptions(options: OptionsType<string>[]) {
-    return options.sort((a, b) => a.label.localeCompare(b.label));
-}
-
-export function mapSeasonToOption(seasons: Season[]): OptionsType<Season>[] {
-    return seasons.map((season) => {
-        return { label: season.name, value: season };
-    });
 }
 
 export function mapLeaderboardToOneDecimal(leaderboards: LeaderboardType[]) {

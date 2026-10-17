@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { AuthContext } from "@/common/AuthContext";
 import {
     Button,
@@ -51,7 +51,9 @@ const Login = () => {
         } catch (err) {
             setErrors({
                 username: " ",
-                password: (err as AxiosError).response?.data as string,
+                password: isAxiosError(err)
+                    ? String(err.response?.data ?? err.message)
+                    : "Login failed",
             });
         }
     };

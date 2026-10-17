@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { makeDummyAdminsAPI, recalcSeasonAPI, removeQualificationAPI } from "@/api/AdminAPI";
 import { logger } from "@/common/logger";
 import LoadingFallback from "@/common/LoadingFallback";
@@ -159,7 +159,10 @@ const AdminPlayers = () => {
         try {
             await makeDummyAdminsAPI();
         } catch (err) {
-            logger.log("Error making dummy admins: ", (err as AxiosError).response?.data);
+            logger.log(
+                "Error making dummy admins: ",
+                isAxiosError(err) ? (err.response?.data ?? err.message) : err,
+            );
         }
     };
 
@@ -169,7 +172,10 @@ const AdminPlayers = () => {
             const response = await recalcSeasonAPI("hk", selectedSeason.id);
             logger.log("HK Recalculation Complete", response.data);
         } catch (err) {
-            logger.log("Error recalculating hk", (err as AxiosError).response?.data);
+            logger.log(
+                "Error recalculating hk",
+                isAxiosError(err) ? (err.response?.data ?? err.message) : err,
+            );
         }
     };
 
@@ -179,7 +185,10 @@ const AdminPlayers = () => {
             const response = await recalcSeasonAPI("jp", selectedSeason.id);
             logger.log("JP Recalculation Complete", response.data);
         } catch (err) {
-            logger.log("Error recalculating riichi", (err as AxiosError).response?.data);
+            logger.log(
+                "Error recalculating riichi",
+                isAxiosError(err) ? (err.response?.data ?? err.message) : err,
+            );
         }
     };
 

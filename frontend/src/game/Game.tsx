@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import type { GameVariant, Game, GamePlayer, RoundByVariant } from "@/types";
 import { addRoundAPI, deleteGameAPI, deleteRoundAPI, submitGameAPI } from "@/api/GameAPI";
 import { gameQueryKey, useGame } from "@/hooks/GameHooks";
@@ -59,7 +59,10 @@ const Game = <T extends GameVariant>() => {
             const response = await addRoundAPI(gameId, variant!, roundRequest);
             updateGame(response.data);
         } catch (error) {
-            alert(`Add Round Error: ${(error as AxiosError).response?.data}`);
+            const message = isAxiosError(error)
+                ? (error.response?.data ?? error.message)
+                : "Unexpected error";
+            alert(`Add Round Error: ${message}`);
         }
     };
 
@@ -78,9 +81,11 @@ const Game = <T extends GameVariant>() => {
         try {
             const response = await deleteRoundAPI(gameId, variant!);
             updateGame(response.data);
-        } catch (e) {
-            const error = e as Error;
-            await alert(`Delete Round Error: ${error.message}`);
+        } catch (error) {
+            const message = isAxiosError(error)
+                ? (error.response?.data ?? error.message)
+                : "Unexpected error";
+            await alert(`Delete Round Error: ${message}`);
         }
     };
 
@@ -97,9 +102,11 @@ const Game = <T extends GameVariant>() => {
             await deleteGameAPI(gameId, variant!);
             await alert(`Game Deleted`);
             navigate("/");
-        } catch (e) {
-            const error = e as Error;
-            await alert(`Delete Game Error: ${error.message}`);
+        } catch (error) {
+            const message = isAxiosError(error)
+                ? (error.response?.data ?? error.message)
+                : "Unexpected error";
+            await alert(`Delete Game Error: ${message}`);
         }
     };
 
@@ -119,7 +126,8 @@ const Game = <T extends GameVariant>() => {
             tempGame.status = "FINISHED";
             updateGame(tempGame);
         } catch (error) {
-            await alert(`Delete Game Error: ${(error as AxiosError).message}`);
+            const message = isAxiosError(error) ? error.message : "Unexpected error";
+            await alert(`Delete Game Error: ${message}`);
         }
     };
 
@@ -162,16 +170,17 @@ const Game = <T extends GameVariant>() => {
     if (!validGameId || !variant) {
         return <Navigate to="/games/not-found" replace />;
     }
-    if (gameQuery.isError) {
-        return (gameQuery.error as AxiosError).response?.status === 404 ? (
-            <Navigate to="/games/not-found" replace />
-        ) : (
-            <Container>
-                <Typography color="error">Failed to load game.</Typography>
-            </Container>
-        );
-    }
+
     if (typeof game === "undefined") {
+        if (gameQuery.isError) {
+            return isAxiosError(gameQuery.error) && gameQuery.error.response?.status === 404 ? (
+                <Navigate to="/games/not-found" replace />
+            ) : (
+                <Container>
+                    <Typography color="error">Failed to load game.</Typography>
+                </Container>
+            );
+        }
         return <LoadingFallback minHeight="50vh" message="Loading game..." />;
     }
     if (loading) {

@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import {
     Button,
     Card,
@@ -75,7 +75,9 @@ const Register = () => {
             logger.log("Registration successful!");
         } catch (err) {
             setErrors({
-                password: String((err as AxiosError).response?.data || "Registration failed"),
+                password: isAxiosError(err)
+                    ? String(err.response?.data ?? err.message)
+                    : "Registration failed",
             });
         }
     };

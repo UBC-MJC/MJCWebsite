@@ -1,9 +1,9 @@
 import { useContext, useState } from "react";
 import { createGameAPI } from "@/api/GameAPI";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { withPlayerCondition } from "@/common/withPlayerCondition";
 import { useNavigate } from "react-router";
-import { getGameVariantString } from "@/common/Utils";
+import { getDefaultSeason, getGameVariantString } from "@/common/Utils";
 import { usePlayers } from "@/hooks/GameHooks";
 import { useCurrentSeasons } from "@/hooks/AdminHooks";
 import { AuthContext } from "@/common/AuthContext";
@@ -32,8 +32,7 @@ const CreateGameComponent = <T extends GameVariant>({ gameVariant }: GameVariant
     const [selectedSeasonId, setSelectedSeasonId] = useState<string>();
     const season =
         eligibleSeasons.find((candidate) => candidate.id === selectedSeasonId) ??
-        eligibleSeasons[0] ??
-        null;
+        getDefaultSeason(eligibleSeasons);
 
     const [eastPlayer, setEastPlayer] = useState<PlayerNamesDataType | null>(null);
     const [southPlayer, setSouthPlayer] = useState<PlayerNamesDataType | null>(null);
@@ -68,7 +67,10 @@ const CreateGameComponent = <T extends GameVariant>({ gameVariant }: GameVariant
             );
             navigate(`/games/${gameVariant}/${response.data.id}`);
         } catch (error) {
-            alert(`Error creating game: ${(error as AxiosError).response?.data}`);
+            const message = isAxiosError(error)
+                ? (error.response?.data ?? error.message)
+                : "Unexpected error";
+            alert(`Error creating game: ${message}`);
         }
     };
 

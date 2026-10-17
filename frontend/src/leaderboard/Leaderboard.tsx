@@ -1,7 +1,7 @@
 import type { GameVariantProp, Season, GameVariant, LeaderboardType } from "@/types";
 
 import { memo, useState } from "react";
-import { getGameVariantString } from "@/common/Utils";
+import { getDefaultSeason, getGameVariantString } from "@/common/Utils";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayerLeaderboard } from "@/hooks/LeaderboardHooks";
 import LoadingFallback from "@/common/LoadingFallback";
@@ -31,12 +31,8 @@ const Leaderboard = <T extends GameVariant>({ gameVariant }: GameVariantProp<T>)
     if (!seasonsSuccess) {
         return <LoadingFallback minHeight="50vh" message="Loading seasons..." />;
     }
-    const now = new Date();
-    const defaultSeason =
-        seasons.find((candidate) => candidate.startDate <= now && now < candidate.endDate) ??
-        seasons[0];
     const season =
-        seasons.find((candidate) => candidate.id === selectedSeasonId) ?? defaultSeason ?? null;
+        seasons.find((candidate) => candidate.id === selectedSeasonId) ?? getDefaultSeason(seasons);
     return (
         <Container>
             <Stack>

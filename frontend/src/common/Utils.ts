@@ -1,7 +1,7 @@
 import { PickerData } from "react-simple-wheel-picker";
 import { generateJapaneseCurrentScore } from "@/game/jp/controller/JapaneseRound";
 import { generateHongKongCurrentScore } from "@/game/hk/controller/HongKongRound";
-import type { GameVariant, GameType, Game, JapaneseRound, HongKongRound } from "@/types";
+import type { GameVariant, GameType, Game, JapaneseRound, HongKongRound, Season } from "@/types";
 
 const japanesePoints: PickerData[] = Array.from({ length: 13 }, (_, k) => {
     return {
@@ -95,6 +95,16 @@ const getGameVariantString = (gameVariant: GameVariant, gameType?: GameType): st
         : `Hong Kong ${capitalizedGameType}`;
 };
 
+const getDefaultSeason = (seasons: Season[]): Season | null => {
+    const now = new Date();
+    return (
+        seasons.find((candidate) => candidate.type === "RANKED") ??
+        seasons.find((candidate) => candidate.startDate <= now && now < candidate.endDate) ??
+        seasons[0] ??
+        null
+    );
+};
+
 const mapWindToCharacter = (wind: string): string => {
     if (wind === "EAST") {
         return "東";
@@ -156,6 +166,7 @@ export {
     hongKongRoundLabels,
     windComparison,
     getGameVariantString,
+    getDefaultSeason,
     validateGameVariant,
     mapWindToCharacter,
     mapChineseNumerals,

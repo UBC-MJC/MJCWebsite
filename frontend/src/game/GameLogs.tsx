@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getGamesAPI } from "@/api/GameAPI";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { logger } from "@/common/logger";
 import {
     Box,
@@ -72,7 +72,10 @@ const GameLogs = <T extends GameVariant>() => {
                     alert("No games found");
                 }
             } catch (error) {
-                logger.error("Error fetching games: ", (error as AxiosError).response?.data);
+                logger.error(
+                    "Error fetching games: ",
+                    isAxiosError(error) ? (error.response?.data ?? error.message) : error,
+                );
                 setLoading(false);
             }
         }
@@ -144,7 +147,9 @@ const GameLogs = <T extends GameVariant>() => {
                                 <Grid size={{ xs: 12, md: 4 }}>
                                     <Autocomplete
                                         options={seasonsSorted}
-                                        getOptionLabel={(option) => option.name}
+                                        getOptionLabel={(option) =>
+                                            `${option.name} (${option.type.replace("_", " ")})`
+                                        }
                                         isOptionEqualToValue={(option, value) =>
                                             option.id === value.id
                                         }

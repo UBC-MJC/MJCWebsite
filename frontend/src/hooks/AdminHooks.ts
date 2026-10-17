@@ -8,7 +8,7 @@ import {
     updatePlayerAPI,
     updateSeasonAPI,
 } from "@/api/AdminAPI";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import type { Season, Player } from "@/types";
 import { logger } from "@/common/logger";
 
@@ -54,8 +54,11 @@ export function useCreateSeasonMutation(player?: Player) {
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: seasonsKey }); // TODO: return the updated seasons
         },
-        onError: (error: AxiosError) => {
-            logger.log("Error creating season: ", error.response?.data);
+        onError: (error) => {
+            logger.log(
+                "Error creating season: ",
+                isAxiosError(error) ? (error.response?.data ?? error.message) : error,
+            );
         },
     });
 }
@@ -70,8 +73,11 @@ export function useUpdateSeasonMutation(player?: Player) {
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: seasonsKey }); // TODO: return the updated seasons
         },
-        onError: (error: AxiosError) => {
-            logger.log("Error updating season: ", error.response?.data);
+        onError: (error) => {
+            logger.log(
+                "Error updating season: ",
+                isAxiosError(error) ? (error.response?.data ?? error.message) : error,
+            );
         },
     });
 }
@@ -100,8 +106,11 @@ export function useDeletePlayerMutation(player?: Player) {
         onSuccess: async (_response) => {
             await queryClient.invalidateQueries({ queryKey: adminPlayersKey });
         },
-        onError: (error: AxiosError) => {
-            logger.log("Error deleting player: ", error.response?.data);
+        onError: (error) => {
+            logger.log(
+                "Error deleting player: ",
+                isAxiosError(error) ? (error.response?.data ?? error.message) : error,
+            );
         },
     });
 }
@@ -116,8 +125,11 @@ export function useSavePlayerMutation(player?: Player) {
         onSuccess: async (_response) => {
             await queryClient.invalidateQueries({ queryKey: adminPlayersKey });
         },
-        onError: (error: AxiosError) => {
-            logger.log("Error updating player: ", error.response?.data);
+        onError: (error) => {
+            logger.log(
+                "Error updating player: ",
+                isAxiosError(error) ? (error.response?.data ?? error.message) : error,
+            );
         },
     });
 }
