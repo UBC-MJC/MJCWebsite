@@ -43,7 +43,6 @@ const AuthContextProvider = (props: ChildProps) => {
                 throw error;
             }
         },
-        retry: false,
     });
     const player = currentPlayerQuery.data ?? undefined;
     const loading = currentPlayerQuery.isPending;
