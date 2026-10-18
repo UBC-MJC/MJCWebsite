@@ -1,7 +1,7 @@
-import type { GameCreationProp, Season, GameVariant, GameType, LeaderboardType } from "@/types";
+import type { GameVariantProp, Season, GameVariant, LeaderboardType } from "@/types";
 
-import { memo, useEffect, useState } from "react";
-import { getGameVariantString } from "@/common/Utils";
+import { memo, useState } from "react";
+import { getDefaultSeason, getGameVariantString } from "@/common/Utils";
 import { useSeasons } from "@/hooks/AdminHooks";
 import { usePlayerLeaderboard } from "@/hooks/LeaderboardHooks";
 import LoadingFallback from "@/common/LoadingFallback";
@@ -24,39 +24,30 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { DisplayStatistics } from "@/statistics/Statistics";
 
-const Leaderboard = <T extends GameVariant>({ gameVariant, gameType }: GameCreationProp<T>) => {
-    const [season, setSeason] = useState<Season | null>(null);
+const Leaderboard = <T extends GameVariant>({ gameVariant }: GameVariantProp<T>) => {
+    const [selectedSeasonId, setSelectedSeasonId] = useState<string>();
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons();
-
-    useEffect(() => {
-        // Set the currently active season, or fallback to the most recent season
-        if (seasonsSuccess && seasons && seasons.length > 0) {
-            const now = new Date();
-            const activeSeason = seasons.find(
-                (s) => new Date(s.startDate) <= now && now < new Date(s.endDate),
-            );
-            setSeason(activeSeason ?? seasons[0]);
-        }
-    }, [seasonsSuccess, seasons]);
 
     if (!seasonsSuccess) {
         return <LoadingFallback minHeight="50vh" message="Loading seasons..." />;
     }
+    const season =
+        seasons.find((candidate) => candidate.id === selectedSeasonId) ?? getDefaultSeason(seasons);
     return (
         <Container>
             <Stack>
                 <Typography variant="h1">
-                    {getGameVariantString(gameVariant, gameType)} Leaderboard
+                    {getGameVariantString(gameVariant, season?.type)} Leaderboard
                 </Typography>
 
                 <Autocomplete
                     isOptionEqualToValue={(option, value) => option.id === value.id}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => `${option.name} (${option.type.replace("_", " ")})`}
                     options={seasons}
                     value={season!}
                     blurOnSelect
                     disableClearable
-                    onChange={(_e, value) => setSeason(value)}
+                    onChange={(_e, value) => setSelectedSeasonId(value.id)}
                     renderInput={(params) => (
                         <TextField {...params} label="Season" placeholder="Select a season" />
                     )}
@@ -65,11 +56,7 @@ const Leaderboard = <T extends GameVariant>({ gameVariant, gameType }: GameCreat
                 {!season ? (
                     <Typography variant="body1">No season selected</Typography>
                 ) : (
-                    <LeaderboardDisplay
-                        season={season}
-                        gameType={gameType}
-                        gameVariant={gameVariant}
-                    />
+                    <LeaderboardDisplay season={season} gameVariant={gameVariant} />
                 )}
             </Stack>
         </Container>
@@ -114,20 +101,8 @@ const columns: GridColDef[] = [
     },
 ];
 const LeaderboardDisplay = memo(
-    ({
-        gameVariant,
-        gameType,
-        season,
-    }: {
-        gameVariant: GameVariant;
-        gameType: GameType;
-        season: Season;
-    }) => {
-        const { isSuccess, data: leaderboard } = usePlayerLeaderboard(
-            gameVariant,
-            gameType,
-            season,
-        );
+    ({ gameVariant, season }: { gameVariant: GameVariant; season: Season }) => {
+        const { isSuccess, data: leaderboard } = usePlayerLeaderboard(gameVariant, season);
         const [player, setPlayer] = useState<LeaderboardType | undefined>(undefined);
         const theme = useTheme();
         const isMobile = useMediaQuery(theme.breakpoints.down("sm"));

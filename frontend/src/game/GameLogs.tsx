@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { getGamesAPI } from "@/api/GameAPI";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { logger } from "@/common/logger";
 import {
     Box,
@@ -37,7 +37,7 @@ const MAX_GAMES_PER_PAGE = 12;
 
 const GameLogs = <T extends GameVariant>() => {
     const [queryGameVariant, setQueryGameVariant] = useState<GameVariant>(gameVariants[0].variant);
-    const [season, setSeason] = useState<Season | null>(null);
+    const [selectedSeasonId, setSelectedSeasonId] = useState<string>();
     const [queryPlayers, setQueryPlayers] = useState<PlayerNamesDataType[]>([]);
 
     const [loading, setLoading] = useState(false);
@@ -47,20 +47,15 @@ const GameLogs = <T extends GameVariant>() => {
     const { isSuccess: seasonsSuccess, data: seasons } = useSeasons();
     const playersResult = usePlayers(queryGameVariant, "CASUAL");
 
-    const seasonsSorted =
-        seasonsSuccess && seasons ? [...seasons].sort((a, b) => b.id.localeCompare(a.id)) : [];
-    useEffect(() => {
-        // Always set the first season (most recent) as the default season if available
-        if (!season && seasonsSorted.length > 0) {
-            setSeason(seasonsSorted[0]);
-        }
-    }, [seasonsSorted]);
+    const seasonsSorted = seasonsSuccess && seasons ? seasons : [];
+    const season =
+        seasonsSorted.find((candidate) => candidate.id === selectedSeasonId) ??
+        seasonsSorted[0] ??
+        null;
 
-    const disableQueryButton = useCallback((): boolean => {
-        return loading || season === null;
-    }, [loading, season]);
+    const queryDisabled = loading || season === null;
 
-    const getGames = useCallback(async () => {
+    const getGames = async () => {
         if (season !== null) {
             setLoading(true);
             try {
@@ -77,11 +72,14 @@ const GameLogs = <T extends GameVariant>() => {
                     alert("No games found");
                 }
             } catch (error) {
-                logger.error("Error fetching games: ", (error as AxiosError).response?.data);
+                logger.error(
+                    "Error fetching games: ",
+                    isAxiosError(error) ? (error.response?.data ?? error.message) : error,
+                );
                 setLoading(false);
             }
         }
-    }, [queryGameVariant, season, queryPlayers]);
+    };
 
     const getPaginatedGames = () => {
         const startIdx = (pagination - 1) * MAX_GAMES_PER_PAGE;
@@ -149,14 +147,16 @@ const GameLogs = <T extends GameVariant>() => {
                                 <Grid size={{ xs: 12, md: 4 }}>
                                     <Autocomplete
                                         options={seasonsSorted}
-                                        getOptionLabel={(option) => option.name}
+                                        getOptionLabel={(option) =>
+                                            `${option.name} (${option.type.replace("_", " ")})`
+                                        }
                                         isOptionEqualToValue={(option, value) =>
                                             option.id === value.id
                                         }
                                         value={season!}
                                         blurOnSelect
                                         disableClearable
-                                        onChange={(_e, value) => setSeason(value)}
+                                        onChange={(_e, value) => setSelectedSeasonId(value.id)}
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
@@ -191,7 +191,7 @@ const GameLogs = <T extends GameVariant>() => {
                             <Box display="flex" justifyContent="center">
                                 <Button
                                     variant="contained"
-                                    disabled={disableQueryButton()}
+                                    disabled={queryDisabled}
                                     onClick={getGames}
                                     size="large"
                                 >
@@ -236,7 +236,7 @@ const GameLogs = <T extends GameVariant>() => {
                                                 <Typography variant="h6" component="div">
                                                     {getGameVariantString(
                                                         queryGameVariant,
-                                                        game.type,
+                                                        game.season.type,
                                                     )}{" "}
                                                     #{game.id}
                                                 </Typography>

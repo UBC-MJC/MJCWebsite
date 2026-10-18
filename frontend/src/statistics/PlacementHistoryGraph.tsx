@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo } from "react";
 import { Box, Paper, Stack, Typography, Grid } from "@mui/material";
 import { LineChart } from "@mui/x-charts/LineChart";
 
@@ -22,26 +22,11 @@ const PLACEMENT_COLORS = {
 };
 
 export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps) => {
-    const { graphData, stats } = useMemo(() => {
-        if (!data || data.length === 0) {
-            return {
-                graphData: [],
-                stats: { 1: 0, 2: 0, 3: 0, 4: 0 },
-            };
-        }
-
-        // Calculate placement statistics
-        const placementStats = { 1: 0, 2: 0, 3: 0, 4: 0 };
-
-        data.forEach((entry) => {
-            placementStats[entry.placement as 1 | 2 | 3 | 4]++;
-        });
-
-        return {
-            graphData: data,
-            stats: placementStats,
-        };
-    }, [data]);
+    const graphData = data ?? [];
+    const stats = { 1: 0, 2: 0, 3: 0, 4: 0 };
+    graphData.forEach((entry) => {
+        stats[entry.placement]++;
+    });
 
     if (graphData.length === 0) {
         return (

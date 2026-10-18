@@ -5,6 +5,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { AuthContextProvider } from "@/common/AuthContext";
 import ErrorBoundary from "@/common/ErrorBoundary";
 import { pageMeta } from "@/common/pageMeta";
+import { shouldRetryQuery } from "@/common/queryRetry";
 import { createAppTheme } from "@/theme";
 import "@/App.scss";
 
@@ -12,8 +13,11 @@ const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
             staleTime: 5000,
-            retry: 1,
+            retry: shouldRetryQuery,
             refetchOnWindowFocus: false,
+        },
+        mutations: {
+            retry: false,
         },
     },
 });

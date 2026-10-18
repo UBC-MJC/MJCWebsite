@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { submitRequestPasswordResetAPI } from "@/api/AccountAPI";
 import alert from "@/common/AlertDialog";
 import {
@@ -35,7 +35,11 @@ const RequestPasswordReset = () => {
             );
         } catch (err) {
             setIsWaiting(false);
-            alert(String((err as AxiosError).response?.data || "Password reset submission failed"));
+            alert(
+                isAxiosError(err)
+                    ? String(err.response?.data ?? err.message)
+                    : "Password reset submission failed",
+            );
         }
     };
 

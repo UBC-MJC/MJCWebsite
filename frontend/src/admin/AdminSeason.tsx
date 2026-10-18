@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
-import type { Season } from "@/types";
+import type { GameType, Season } from "@/types";
 import { logger } from "@/common/logger";
 import LoadingFallback from "@/common/LoadingFallback";
 import {
@@ -16,6 +16,10 @@ import {
     TextField,
     Typography,
     Stack,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
 } from "@mui/material";
 import { useCreateSeasonMutation, useUpdateSeasonMutation, useSeasons } from "@/hooks/AdminHooks";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -30,6 +34,11 @@ const playerColumns: GridColDef<Season>[] = [
         headerName: "Season Name",
         flex: 1,
         editable: true,
+    },
+    {
+        field: "type",
+        headerName: "Type",
+        flex: 1,
     },
     {
         field: "startDate",
@@ -52,6 +61,7 @@ const AdminSeason = () => {
     // Call all hooks unconditionally at the top
     const [showCreateSeasonModal, setShowCreateSeasonModal] = useState<boolean>(false);
     const [name, setName] = useState<string>("");
+    const [type, setType] = useState<GameType>("RANKED");
     const [endDate, setEndDate] = useState<Dayjs | null>(dayjs().add(9, "weeks").add(5, "days"));
     const { isPending, error, data } = useSeasons();
     const createSeasonMut = useCreateSeasonMutation(player || undefined);
@@ -65,13 +75,14 @@ const AdminSeason = () => {
     if (!player) {
         return <>No player logged in</>;
     }
-    const handleCreate = (name: string, endDate?: Date) => {
+    const handleCreate = (name: string, type: GameType, endDate?: Date) => {
         if (!name || !endDate) {
             logger.log("Error creating season: name or endDate is undefined");
             return;
         }
         const season: Omit<Season, "id"> = {
             name,
+            type,
             startDate: new Date(),
             endDate,
         };
@@ -95,77 +106,85 @@ const AdminSeason = () => {
     }
 
     function getCurrentSeasonPanel() {
-        if (seasons.length > 0 && new Date(seasons[0].endDate) > new Date()) {
-            const currentSeason = seasons[0];
-            return (
-                <CardContent>
-                    <Stack spacing={1}>
-                        <Typography variant="h3">{currentSeason.name}</Typography>
-                        <Typography variant="body1">
-                            Start Date: {currentSeason.startDate.toDateString()}
-                        </Typography>
-                        <Typography variant="body1">
-                            End Date: {currentSeason.endDate.toDateString()}
-                        </Typography>
-                    </Stack>
-                </CardContent>
-            );
-        }
-
+        const now = new Date();
+        const currentSeasons = seasons.filter(
+            (season) => season.startDate <= now && now < season.endDate,
+        );
         return (
-            <>
-                <CardContent>
-                    <Stack spacing={1}>
-                        <Typography variant="body1">No current season</Typography>
-                        <Button variant="contained" onClick={() => setShowCreateSeasonModal(true)}>
-                            Create Season
-                        </Button>
-                    </Stack>
-                </CardContent>
-                <Dialog
-                    open={showCreateSeasonModal}
-                    onClose={() => setShowCreateSeasonModal(false)}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle>Create Season</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            required
-                            fullWidth
-                            margin="dense"
-                            label="Season Name"
-                            type="text"
-                            value={name}
-                            error={!name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker
-                                label="End Date"
-                                value={endDate}
-                                disablePast
-                                onChange={(newValue) => setEndDate(newValue)}
-                            />
-                        </LocalizationProvider>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setShowCreateSeasonModal(false)}>Close</Button>
-                        <Button onClick={() => handleCreate(name, endDate?.toDate())} autoFocus>
-                            Create Season
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </>
+            <CardContent>
+                <Stack spacing={2}>
+                    {currentSeasons.length === 0 ? (
+                        <Typography variant="body1">No active seasons</Typography>
+                    ) : (
+                        currentSeasons.map((season) => (
+                            <Box key={season.id}>
+                                <Typography variant="h3">{season.name}</Typography>
+                                <Typography variant="body1">Type: {season.type}</Typography>
+                                <Typography variant="body1">
+                                    {season.startDate.toDateString()} –{" "}
+                                    {season.endDate.toDateString()}
+                                </Typography>
+                            </Box>
+                        ))
+                    )}
+                    <Button variant="contained" onClick={() => setShowCreateSeasonModal(true)}>
+                        Create Season
+                    </Button>
+                </Stack>
+            </CardContent>
         );
     }
 
     return (
         <Stack>
             <Card>
-                <CardHeader title="Current Season" />
+                <CardHeader title="Active Seasons" />
                 {getCurrentSeasonPanel()}
             </Card>
+
+            <Dialog open={showCreateSeasonModal} onClose={() => setShowCreateSeasonModal(false)}>
+                <DialogTitle>Create Season</DialogTitle>
+                <DialogContent>
+                    <Stack spacing={2} mt={1}>
+                        <TextField
+                            required
+                            fullWidth
+                            label="Season Name"
+                            value={name}
+                            error={!name}
+                            onChange={(event) => setName(event.target.value)}
+                        />
+                        <FormControl fullWidth>
+                            <InputLabel id="season-type-label">Type</InputLabel>
+                            <Select
+                                labelId="season-type-label"
+                                label="Type"
+                                value={type}
+                                onChange={(event) => setType(event.target.value as GameType)}
+                            >
+                                <MenuItem value="RANKED">Ranked</MenuItem>
+                                <MenuItem value="PLAY_OFF">Playoff</MenuItem>
+                                <MenuItem value="TOURNEY">Tournament</MenuItem>
+                                <MenuItem value="CASUAL">Casual</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                label="End Date"
+                                value={endDate}
+                                disablePast
+                                onChange={setEndDate}
+                            />
+                        </LocalizationProvider>
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowCreateSeasonModal(false)}>Close</Button>
+                    <Button onClick={() => handleCreate(name, type, endDate?.toDate())} autoFocus>
+                        Create Season
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             <Typography variant="h2">All Seasons</Typography>
 

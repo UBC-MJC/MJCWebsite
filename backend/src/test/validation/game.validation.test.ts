@@ -1,10 +1,42 @@
 import { JapaneseTransactionType } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 
-import { JapaneseTransactionSchema } from "../../validation/game.validation";
+import {
+    createGameSchema,
+    gameIdSchema,
+    JapaneseTransactionSchema,
+} from "../../validation/game.validation";
 
 const scoreDeltas = [-1000, 0, 1000, 0];
 const hand = { dora: 0, fu: 30, han: 1 };
+
+describe("gameIdSchema", () => {
+    it.each(["1", "42", String(Number.MAX_SAFE_INTEGER)])(
+        "parses a positive safe integer: %s",
+        (id) => {
+            expect(gameIdSchema.parse(id)).toBe(Number(id));
+        },
+    );
+
+    it.each([
+        undefined,
+        null,
+        1,
+        true,
+        ["1"],
+        "",
+        "   ",
+        "0",
+        "-1",
+        "1.5",
+        "abc",
+        "1abc",
+        "Infinity",
+        "9007199254740992",
+    ])("rejects an invalid game id: %j", (id) => {
+        expect(gameIdSchema.safeParse(id).success).toBe(false);
+    });
+});
 
 describe("JapaneseTransactionSchema", () => {
     it.each([JapaneseTransactionType.DEAL_IN, JapaneseTransactionType.SELF_DRAW])(
@@ -57,5 +89,22 @@ describe("JapaneseTransactionSchema", () => {
                 paoPlayerIndex: 0,
             }).success,
         ).toBe(false);
+    });
+});
+
+describe("createGameSchema season selection", () => {
+    const request = { seasonId: "selected-season", players: ["east", "south", "west", "north"] };
+
+    it("preserves an explicitly selected season", () => {
+        expect(createGameSchema.parse(request).seasonId).toBe("selected-season");
+    });
+
+    it("requires a season selection", () => {
+        const { seasonId: _, ...requestWithoutSeason } = request;
+        expect(createGameSchema.safeParse(requestWithoutSeason).success).toBe(false);
+    });
+
+    it.each(["", "   ", 123, null])("rejects an invalid season selection: %s", (seasonId) => {
+        expect(createGameSchema.safeParse({ ...request, seasonId }).success).toBe(false);
     });
 });

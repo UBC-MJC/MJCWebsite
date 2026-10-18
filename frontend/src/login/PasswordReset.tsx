@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { submitPasswordResetAPI } from "@/api/AccountAPI";
 import alert from "@/common/AlertDialog";
 import { useNavigate } from "react-router";
@@ -52,7 +52,11 @@ const PasswordReset = ({ playerId, token }: PasswordResetProps) => {
             alert(`Password reset successfully. Please login with your new password.`);
             navigate(`/login`);
         } catch (err) {
-            setError((err as AxiosError).response?.data as string);
+            setError(
+                isAxiosError(err)
+                    ? String(err.response?.data ?? err.message)
+                    : "Password reset failed",
+            );
             setIsWaiting(false);
         }
     };

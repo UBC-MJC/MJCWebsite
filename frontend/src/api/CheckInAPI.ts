@@ -1,15 +1,15 @@
 import axios from "axios";
 import { baseUrl, getAuthConfig } from "./APIUtils";
 
-type CheckInStatus = {
+interface CheckInStatus {
     checkedInAt: string | null;
-};
+}
 
-type CheckedInPlayer = {
+interface CheckedInPlayer {
     id: string;
     username: string;
     checkedInAt: string;
-};
+}
 
 const checkInAPI = async () => {
     return axios.post(baseUrl + "/checkin", {}, getAuthConfig());
@@ -31,5 +31,5 @@ export {
     checkInAPI,
     checkOutAPI,
     getStatusAPI,
-    getCheckedInPlayersAPI
-}
+    getCheckedInPlayersAPI,
+};

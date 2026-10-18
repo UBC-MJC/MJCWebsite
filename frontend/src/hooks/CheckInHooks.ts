@@ -1,13 +1,8 @@
-import {
-    checkInAPI,
-    checkOutAPI,
-    getCheckedInPlayersAPI,
-    getStatusAPI
-} from "@/api/CheckInAPI";
+import { checkInAPI, checkOutAPI, getCheckedInPlayersAPI, getStatusAPI } from "@/api/CheckInAPI";
 import { resetAllCheckInsAPI } from "@/api/AdminAPI";
 import { logger } from "@/common/logger";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 
 export function useCheckedInPlayers() {
     return useQuery({
@@ -15,8 +10,8 @@ export function useCheckedInPlayers() {
         queryFn: async () => {
             const response = await getCheckedInPlayersAPI();
             return response.data.players;
-        }
-    })
+        },
+    });
 }
 
 export function useCheckInStatus(enabled: boolean) {
@@ -45,22 +40,31 @@ export function useCheckInAction() {
     const checkIn = useMutation({
         mutationFn: checkInAPI,
         onSuccess: invalidateCheckInQueries,
-        onError: (error: AxiosError) => {
-            logger.log("Error checking-in player: ", error.response?.data);
+        onError: (error) => {
+            logger.log(
+                "Error checking-in player: ",
+                isAxiosError(error) ? (error.response?.data ?? error.message) : error,
+            );
         },
     });
     const checkOut = useMutation({
         mutationFn: checkOutAPI,
         onSuccess: invalidateCheckInQueries,
-        onError: (error: AxiosError) => {
-            logger.log("Error checking-out player: ", error.response?.data);
+        onError: (error) => {
+            logger.log(
+                "Error checking-out player: ",
+                isAxiosError(error) ? (error.response?.data ?? error.message) : error,
+            );
         },
     });
     const resetCheckIns = useMutation({
         mutationFn: resetAllCheckInsAPI,
         onSuccess: invalidateCheckInQueries,
-        onError: (error: AxiosError) => {
-            logger.log("Error resetting check-ins: ", error.response?.data);
+        onError: (error) => {
+            logger.log(
+                "Error resetting check-ins: ",
+                isAxiosError(error) ? (error.response?.data ?? error.message) : error,
+            );
         },
     });
 
@@ -68,5 +72,5 @@ export function useCheckInAction() {
         checkIn,
         checkOut,
         resetCheckIns,
-    }
+    };
 }

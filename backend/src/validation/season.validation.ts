@@ -1,7 +1,11 @@
 import { z } from "zod";
+import { GameType } from "@prisma/client";
+
+const seasonIdSchema = z.string().regex(/\S/, "Invalid season id");
 
 const createSeasonSchema = z.object({
     name: z.string(),
+    type: z.enum(GameType),
     startDate: z.string(),
     endDate: z.string(),
 });
@@ -17,4 +21,10 @@ const updateSeasonSchema = z.object({
 
 type UpdateSeasonType = z.infer<typeof updateSeasonSchema>;
 
-export { createSeasonSchema, CreateSeasonType, updateSeasonSchema, UpdateSeasonType };
+export {
+    seasonIdSchema,
+    createSeasonSchema,
+    CreateSeasonType,
+    updateSeasonSchema,
+    UpdateSeasonType,
+};

@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { makeDummyAdminsAPI, recalcSeasonAPI, removeQualificationAPI } from "@/api/AdminAPI";
 import { logger } from "@/common/logger";
 import LoadingFallback from "@/common/LoadingFallback";
@@ -8,6 +8,7 @@ import {
     useDeletePlayerMutation,
     useSavePlayerMutation,
     useAdminPlayers,
+    useSeasons,
 } from "@/hooks/AdminHooks";
 import type { Player } from "@/types";
 import {
@@ -18,7 +19,9 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    MenuItem,
     Stack,
+    TextField,
     useMediaQuery,
     useTheme,
 } from "@mui/material";
@@ -36,6 +39,7 @@ import { responsiveDataGridContainer } from "@/theme/utils";
 const AdminPlayers = () => {
     const { player, loading } = useContext(AuthContext);
     const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+    const [selectedSeasonId, setSelectedSeasonId] = useState("");
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -43,6 +47,8 @@ const AdminPlayers = () => {
     const { isPending, data, error } = useAdminPlayers(player || undefined);
     const deletePlayerMut = useDeletePlayerMutation(player || undefined);
     const savePlayerMut = useSavePlayerMutation(player || undefined);
+    const { data: seasons, isPending: seasonsPending, error: seasonsError } = useSeasons();
+    const selectedSeason = seasons?.find((season) => season.id === selectedSeasonId);
 
     // Early return after all hooks
     if (loading) {
@@ -153,25 +159,36 @@ const AdminPlayers = () => {
         try {
             await makeDummyAdminsAPI();
         } catch (err) {
-            logger.log("Error making dummy admins: ", (err as AxiosError).response?.data);
+            logger.log(
+                "Error making dummy admins: ",
+                isAxiosError(err) ? (err.response?.data ?? err.message) : err,
+            );
         }
     };
 
-    const recalcCurrentSeasonHK = async () => {
+    const recalcSelectedSeasonHK = async () => {
+        if (!selectedSeason) return;
         try {
-            const response = await recalcSeasonAPI("hk");
+            const response = await recalcSeasonAPI("hk", selectedSeason.id);
             logger.log("HK Recalculation Complete", response.data);
         } catch (err) {
-            logger.log("Error recalculating hk", (err as AxiosError).response?.data);
+            logger.log(
+                "Error recalculating hk",
+                isAxiosError(err) ? (err.response?.data ?? err.message) : err,
+            );
         }
     };
 
-    const recalcCurrentSeasonJP = async () => {
+    const recalcSelectedSeasonJP = async () => {
+        if (!selectedSeason) return;
         try {
-            const response = await recalcSeasonAPI("jp");
+            const response = await recalcSeasonAPI("jp", selectedSeason.id);
             logger.log("JP Recalculation Complete", response.data);
         } catch (err) {
-            logger.log("Error recalculating riichi", (err as AxiosError).response?.data);
+            logger.log(
+                "Error recalculating riichi",
+                isAxiosError(err) ? (err.response?.data ?? err.message) : err,
+            );
         }
     };
 
@@ -211,15 +228,52 @@ const AdminPlayers = () => {
                     editMode="row"
                 />
             </Box>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ my: 2 }}>
+                <TextField
+                    select
+                    required
+                    label="Season to recalculate"
+                    value={selectedSeason?.id ?? ""}
+                    onChange={(event) => setSelectedSeasonId(event.target.value)}
+                    disabled={seasonsPending || !!seasonsError || !seasons?.length}
+                    error={!!seasonsError}
+                    helperText={
+                        seasonsError
+                            ? "Unable to load seasons"
+                            : seasonsPending
+                              ? "Loading seasons..."
+                              : !seasons?.length
+                                ? "No seasons available"
+                                : "Select a season to recalculate its Elo"
+                    }
+                    sx={{ minWidth: 240 }}
+                >
+                    {seasons?.map((season) => (
+                        <MenuItem key={season.id} value={season.id}>
+                            {season.name} ({season.type})
+                        </MenuItem>
+                    ))}
+                </TextField>
+                <Button
+                    variant="outlined"
+                    color="warning"
+                    onClick={recalcSelectedSeasonHK}
+                    disabled={!selectedSeason || !!seasonsError}
+                >
+                    Recalc Elo for HK games (Expensive operation!)
+                </Button>
+                <Button
+                    variant="outlined"
+                    color="warning"
+                    onClick={recalcSelectedSeasonJP}
+                    disabled={!selectedSeason || !!seasonsError}
+                >
+                    Recalc Elo for JP games (Expensive operation!)
+                </Button>
+            </Stack>
             <Stack direction={{ xs: "column", sm: "row" }}>
                 <Button variant="outlined" color="warning" onClick={removeQualificationAPI}>
                     Remove all qualification
-                </Button>
-                <Button variant="outlined" color="warning" onClick={recalcCurrentSeasonHK}>
-                    Recalc Elo for HK games (Expensive operation!)
-                </Button>
-                <Button variant="outlined" color="warning" onClick={recalcCurrentSeasonJP}>
-                    Recalc Elo for JP games (Expensive operation!)
                 </Button>
                 <Button
                     variant="outlined"

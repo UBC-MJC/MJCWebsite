@@ -1,10 +1,9 @@
-import { GameStatus, GameType, Player, Wind } from "@prisma/client";
+import { GameStatus, Player, Wind } from "@prisma/client";
 import { Transaction } from "../../validation/game.validation";
 import { InvalidGameInputError } from "../../errors/domain.error";
 interface GameFilterArgs {
     seasonId?: string;
     playerIds?: string[];
-    gameType?: GameType;
     gameStatus?: GameStatus;
 }
 
@@ -37,7 +36,6 @@ const generatePlayerQuery = (playerList: Player[]) => {
 const generateGameQuery = (filter: GameFilterArgs) => {
     const query: {
         seasonId?: string;
-        type?: GameType;
         status?: GameStatus;
         AND?: { players: { some: { playerId: string } } }[];
     } = {};
@@ -54,9 +52,6 @@ const generateGameQuery = (filter: GameFilterArgs) => {
                 },
             };
         });
-    }
-    if (typeof filter.gameType !== "undefined") {
-        query.type = filter.gameType;
     }
     if (typeof filter.gameStatus !== "undefined") {
         query.status = filter.gameStatus;

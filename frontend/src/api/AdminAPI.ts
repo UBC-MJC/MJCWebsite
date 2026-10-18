@@ -18,6 +18,10 @@ const getSeasonsAPI = async () => {
     return axios.get<SeasonsAPIDataType>(baseUrl + "/seasons");
 };
 
+const getCurrentSeasonsAPI = async () => {
+    return axios.get<SeasonsAPIDataType>(baseUrl + "/seasons/current");
+};
+
 const createSeasonAdminAPI = async (season: Partial<Season>) => {
     return axios.post<Season>(baseUrl + "/admin/seasons", { season }, getAuthConfig());
 };
@@ -34,8 +38,12 @@ const resetAllCheckInsAPI = async () => {
     return axios.post<void>(baseUrl + "/admin/checkin/reset", {}, getAuthConfig());
 };
 
-const recalcSeasonAPI = async (variant: GameVariant) => {
-    return axios.put<void>(baseUrl + "/admin/recalc/" + variant, {}, getAuthConfig());
+const recalcSeasonAPI = async (variant: GameVariant, seasonId: string) => {
+    return axios.put<void>(
+        `${baseUrl}/admin/recalc/${variant}/${encodeURIComponent(seasonId)}`,
+        {},
+        getAuthConfig(),
+    );
 };
 
 export async function removeQualificationAPI() {
@@ -47,6 +55,7 @@ export {
     deletePlayerAPI,
     updatePlayerAPI,
     getSeasonsAPI,
+    getCurrentSeasonsAPI,
     createSeasonAdminAPI,
     updateSeasonAPI,
     makeDummyAdminsAPI,

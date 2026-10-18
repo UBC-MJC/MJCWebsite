@@ -1,15 +1,17 @@
 import { getGameAPI, getLiveGamesAPI, getPlayerNames } from "@/api/GameAPI";
-import { useQuery } from "@tanstack/react-query";
+import { skipToken, useQuery } from "@tanstack/react-query";
 import type { GameVariant, GameType } from "@/types";
 
-export function usePlayers(gameVariant: GameVariant, gameType: GameType) {
+export function usePlayers(gameVariant: GameVariant, gameType?: GameType) {
     // When gameType === "CASUAL", a list of all players is returned.
     return useQuery({
         queryKey: ["players", gameVariant, gameType],
-        queryFn: async () => {
-            const playerNamesResponse = await getPlayerNames(gameVariant, gameType);
-            return playerNamesResponse.data;
-        },
+        queryFn: gameType
+            ? async () => {
+                  const playerNamesResponse = await getPlayerNames(gameVariant, gameType);
+                  return playerNamesResponse.data;
+              }
+            : skipToken,
     });
 }
 
@@ -23,12 +25,21 @@ export function useLiveGames<T extends GameVariant>(gameVariant: T) {
     });
 }
 
-export function useGame(gameId: number, gameVariant: GameVariant) {
+export const gameQueryKey = (gameId: number | undefined, gameVariant: GameVariant | undefined) =>
+    ["Game", gameId, gameVariant] as const;
+
+export function useGame<T extends GameVariant>(
+    gameId: number | undefined,
+    gameVariant: T | undefined,
+) {
     return useQuery({
-        queryKey: ["Game", gameId, gameVariant],
-        queryFn: async () => {
-            const response = await getGameAPI(gameId, gameVariant);
-            return response.data;
-        },
+        queryKey: gameQueryKey(gameId, gameVariant),
+        queryFn:
+            gameId !== undefined && gameVariant
+                ? async () => {
+                      const response = await getGameAPI(gameId, gameVariant);
+                      return response.data;
+                  }
+                : skipToken,
     });
-} // TODO: extract this out
+}

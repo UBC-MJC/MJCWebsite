@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "@/common/AuthContext";
 import { updateUsernameAPI } from "@/api/AccountAPI";
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { logger } from "@/common/logger";
 import LoadingFallback from "@/common/LoadingFallback";
 import {
@@ -37,7 +37,10 @@ const Settings = () => {
             await reloadPlayer();
             setShowUpdateUsernameModal(false);
         } catch (error) {
-            logger.log("Error updating username: ", (error as AxiosError).response?.data);
+            logger.log(
+                "Error updating username: ",
+                isAxiosError(error) ? (error.response?.data ?? error.message) : error,
+            );
         }
     };
 

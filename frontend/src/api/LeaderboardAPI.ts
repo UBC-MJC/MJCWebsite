@@ -1,14 +1,10 @@
 import axios from "axios";
 import { baseUrl } from "./APIUtils";
-import type { Season, GameType, LeaderboardType } from "@/types";
+import type { LeaderboardType } from "@/types";
 
-const getCurrentSeason = async () => {
-    return axios.get<Season>(baseUrl + "/seasons/current");
-};
-
-const getPlayerLeaderboard = async (gameVariant: string, gameType: GameType, seasonId: string) => {
+const getPlayerLeaderboard = async (gameVariant: string, seasonId: string) => {
     return axios.get<{ players: LeaderboardType[] }>(
-        `${baseUrl}/players/qualified/${gameVariant}/${gameType}/leaderboard/?seasonId=${seasonId}`,
+        `${baseUrl}/players/qualified/${gameVariant}/leaderboard?seasonId=${seasonId}`,
     );
 };
 
@@ -37,4 +33,4 @@ async function getPlacementHistory(playerId: string, gameVariant: string, season
     >(baseUrl + "/players/" + playerId + "/" + gameVariant + "/" + seasonId + "/placement-history");
 }
 
-export { getCurrentSeason, getPlayerLeaderboard, getUserStatistics, getPlacementHistory };
+export { getPlayerLeaderboard, getUserStatistics, getPlacementHistory };
