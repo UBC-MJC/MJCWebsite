@@ -46,6 +46,7 @@ export const navButton: SxProps<Theme> = {
     padding: "6px 8px",
     borderRadius: 1,
     fontSize: "1rem",
+    fontWeight: 500, // Lighter than action buttons, so a row of nav links doesn't read as bold
     whiteSpace: "nowrap",
 };
 
