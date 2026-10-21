@@ -1,7 +1,15 @@
 import { PickerData } from "react-simple-wheel-picker";
 import { generateJapaneseCurrentScore } from "@/game/jp/controller/JapaneseRound";
 import { generateHongKongCurrentScore } from "@/game/hk/controller/HongKongRound";
-import type { GameVariant, GameType, Game, JapaneseRound, HongKongRound, Season } from "@/types";
+import type {
+    GameVariant,
+    GameType,
+    Game,
+    JapaneseRound,
+    HongKongRound,
+    Season,
+    PartialJapaneseRound,
+} from "@/types";
 
 const japanesePoints: PickerData[] = Array.from({ length: 13 }, (_, k) => {
     return {
@@ -123,6 +131,12 @@ const mapChineseNumerals = (num: number): string => {
     const table = ["零", "一", "二", "三", "四"];
     return table[num];
 };
+
+export function getRowString(row: PartialJapaneseRound) {
+    return `${mapWindToCharacter(row.roundWind)}${mapChineseNumerals(row.roundNumber)}局 ${
+        row.bonus
+    }本場`;
+}
 
 const range = (end: number): number[] => {
     return Array.from({ length: end }, (_, i) => i);
