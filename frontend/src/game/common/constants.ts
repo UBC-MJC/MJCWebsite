@@ -1,7 +1,6 @@
 import { isJapaneseGameEnd } from "@/game/jp/controller/JapaneseRound";
 import { isHongKongGameEnd } from "@/game/hk/controller/HongKongRound";
-import { mapWindToCharacter } from "@/common/Utils";
-import { getRowString } from "@/game/jp/legacy/LegacyJapaneseGameTable";
+import { getRowString, mapWindToCharacter } from "@/common/Utils";
 import type {
     GameVariant,
     Game,

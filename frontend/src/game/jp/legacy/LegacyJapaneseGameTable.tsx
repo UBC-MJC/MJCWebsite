@@ -1,7 +1,7 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { mapChineseNumerals, mapWindToCharacter } from "@/common/Utils";
+import { getRowString } from "@/common/Utils";
 import TableDisplay from "@/game/common/TableDisplay";
-import type { JapaneseRound, PartialJapaneseRound, GamePlayer } from "@/types";
+import type { JapaneseRound, GamePlayer } from "@/types";
 
 interface LegacyGameTableProps {
     rounds: ModifiedJapaneseRound[];
@@ -9,12 +9,6 @@ interface LegacyGameTableProps {
 }
 
 export type ModifiedJapaneseRound = JapaneseRound & { scoreDeltas: number[] };
-
-export function getRowString(row: PartialJapaneseRound) {
-    return `${mapWindToCharacter(row.roundWind)}${mapChineseNumerals(row.roundNumber)}局 ${
-        row.bonus
-    }本場`;
-}
 
 const LegacyJapaneseGameTable = ({ rounds, players }: LegacyGameTableProps) => {
     const columns: GridColDef<ModifiedJapaneseRound>[] = [
