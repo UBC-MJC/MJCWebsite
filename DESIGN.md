@@ -8,10 +8,12 @@ MUI theme (`frontend/src/theme/`). Components take values from the theme, never 
 
 ## Brand facts
 
-- **Brand colour: none confirmed.** The club has no brand colour. The red in the MJC logo is a
-  candidate for the accent, nothing more. Open, see below.
-- **Placement colours: confirmed.** Gold, silver and bronze mark 1st, 2nd and 3rd. 4th is a neutral
-  grey; its exact value is open, but it must meet the contrast targets below in both modes.
+- **Brand colour: none.** The 中 red stays in the MJC logo and is not used in the UI: darkened
+  enough to carry white text, it is nearly the same colour as the error red.
+- **Accent: ink, confirmed** (2026-10-21). Near-black in light mode, near-white in dark. Hue on
+  screen always carries meaning: red and green for losses, gains and errors only.
+- **Placement colours: confirmed.** Gold, silver and bronze mark 1st, 2nd and 3rd; 4th is a plain
+  neutral. They live in the theme as `palette.placement`, one set per mode, all at least 3:1.
 - **Typeface: Source Sans 3, confirmed** (2026-10-21). One family for every role, self-hosted from
   `@fontsource-variable/source-sans-3`. It was picked for its narrow tabular digits, so scores fit
   phone columns. Round notation and other CJK text use each device's own CJK font.
@@ -22,8 +24,10 @@ MUI theme (`frontend/src/theme/`). Components take values from the theme, never 
 
 1. **App pages are for operating.** Colour marks actions, state and data, never decoration. The home
    page is for persuading and may use type and colour more boldly, but within the same theme.
-2. **One accent.** It marks primary actions, the active nav item, focus and selection. Headings,
-   icons and backgrounds don't get it.
+2. **One accent: ink.** It marks primary actions, the active nav item, focus rings and selection.
+   Selected toggles are filled, because the record flow selects both the winner and the player who
+   dealt in, and the selection must not imply a gain or a loss. Headings, icons and backgrounds
+   don't get the accent, and links are underlined because colour alone doesn't set them apart.
 3. **Flat surfaces.** Spacing and dividers separate content. At most one level of card. Elevation is
    only for things that float: menus, dialogs, the nav drawer.
 4. **Type carries the hierarchy.** One family in four roles: heading, body, label, data. Body text is
@@ -87,9 +91,8 @@ theme.
 - 3:1 for large text (24px, or 18.7px bold)
 - 3:1 for UI parts: icons, borders, focus rings, chart marks, placement colours
 
-These are targets; the club hasn't formally committed to WCAG. Known failures are listed in the plan.
-On main, the 4th-place colour `#404040` in `statistics/PlacementHistoryGraph.tsx` is 1.8:1 against
-MUI's dark background.
+These are targets; the club hasn't formally committed to WCAG. The theme's palette, including field
+outlines and placement colours, meets them in both modes. Check any colour added outside the theme.
 
 **Colour is never the only signal.** Placements also show the rank, deltas a sign, status a word or
 icon.
@@ -117,10 +120,6 @@ PR checks (screenshots, typecheck, lint, critique) are in the plan's Constraints
 ## Open decisions
 
 - TODO: Light and dark, or dark only? Default: keep both (Settings already offers them).
-- TODO: One accent, or the dragon-tile accent picker? Default: one accent. The picker would come later,
-  as its own PR.
-- TODO: Which accent colour? The logo red (中) is the candidate. The club has no brand colour to
-  match.
 - TODO: Hero image: keep the generated illustration (credited), commission new art, or use club
   photos?
 - TODO: Chombos column visible by default or hidden? A team decision, not a design one.

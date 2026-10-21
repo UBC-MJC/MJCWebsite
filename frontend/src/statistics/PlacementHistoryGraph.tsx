@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Box, Paper, Stack, Typography, Grid } from "@mui/material";
+import { Box, Paper, Stack, Typography, Grid, useTheme } from "@mui/material";
 import { LineChart } from "@mui/x-charts/LineChart";
 
 interface PlacementHistoryEntry {
@@ -14,14 +14,8 @@ interface PlacementHistoryGraphProps {
     data: PlacementHistoryEntry[];
 }
 
-const PLACEMENT_COLORS = {
-    1: "#FFD700", // Gold
-    2: "#C0C0C0", // Silver
-    3: "#CD7F32", // Bronze
-    4: "#404040", // Dark Gray/Black
-};
-
 export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps) => {
+    const theme = useTheme();
     const graphData = data ?? [];
     const stats = { 1: 0, 2: 0, 3: 0, 4: 0 };
     graphData.forEach((entry) => {
@@ -81,20 +75,28 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
                             dataset={chartData}
                             xAxis={[{ dataKey: "game", label: "Game Number" }]}
                             yAxis={[{ reverse: true, min: 1, max: 4, label: "Placement" }]}
-                            series={[{ dataKey: "placement", showMark: true }]}
+                            series={[
+                                {
+                                    dataKey: "placement",
+                                    showMark: true,
+                                    color: theme.palette.text.secondary,
+                                },
+                            ]}
                             slots={{
                                 mark: (props) => {
                                     const { x, y, dataIndex } = props;
                                     const placement = chartData[dataIndex]?.placement;
-                                    const color = placement ? PLACEMENT_COLORS[placement] : "#000";
+                                    const color = placement
+                                        ? theme.palette.placement[placement]
+                                        : theme.palette.text.primary;
                                     return (
                                         <circle
                                             cx={x}
                                             cy={y}
                                             r={5}
                                             fill={color}
-                                            stroke="#333"
-                                            strokeWidth={1}
+                                            stroke={theme.palette.background.paper}
+                                            strokeWidth={1.5}
                                         />
                                     );
                                 },
@@ -116,7 +118,7 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
             <Grid container spacing={2}>
                 <Grid size={6}>
                     <Paper sx={{ p: 2, textAlign: "center" }}>
-                        <Typography variant="h4" color={PLACEMENT_COLORS[1]} fontWeight="bold">
+                        <Typography variant="h4" color="placement.1" fontWeight="bold">
                             {stats[1]}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
@@ -130,7 +132,7 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
 
                 <Grid size={6}>
                     <Paper sx={{ p: 2, textAlign: "center" }}>
-                        <Typography variant="h4" color={PLACEMENT_COLORS[2]} fontWeight="bold">
+                        <Typography variant="h4" color="placement.2" fontWeight="bold">
                             {stats[2]}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
@@ -144,7 +146,7 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
 
                 <Grid size={6}>
                     <Paper sx={{ p: 2, textAlign: "center" }}>
-                        <Typography variant="h4" color={PLACEMENT_COLORS[3]} fontWeight="bold">
+                        <Typography variant="h4" color="placement.3" fontWeight="bold">
                             {stats[3]}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
@@ -158,7 +160,7 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
 
                 <Grid size={6}>
                     <Paper sx={{ p: 2, textAlign: "center" }}>
-                        <Typography variant="h4" color={PLACEMENT_COLORS[4]} fontWeight="bold">
+                        <Typography variant="h4" color="placement.4" fontWeight="bold">
                             {stats[4]}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">

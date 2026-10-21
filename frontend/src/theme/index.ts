@@ -1,23 +1,52 @@
 import "@fontsource-variable/source-sans-3";
 import type {} from "@mui/x-data-grid/themeAugmentation";
-import { createTheme, Theme, ThemeOptions } from "@mui/material/styles";
+import { alpha, createTheme, PaletteOptions, Theme, ThemeOptions } from "@mui/material/styles";
 import { enUS } from "@mui/x-date-pickers/locales";
 
-const colors = {
-    light: "#FAFAFA",
-} as const;
+type Placement = 1 | 2 | 3 | 4;
+
+declare module "@mui/material/styles" {
+    interface Palette {
+        placement: Record<Placement, string>;
+    }
+    interface PaletteOptions {
+        placement?: Record<Placement, string>;
+    }
+}
+
+// Ink is the one accent: it marks actions, the active page, focus and selection. Hue always carries meaning:
+// red and green for losses, gains and errors, gold to bronze for placements (see DESIGN.md)
+const lightPalette: PaletteOptions = {
+    primary: { main: "#1b1c1e", dark: "#3a3c41", contrastText: "#ffffff" }, // `dark` is the contained-button hover
+    secondary: { main: "#5f6166", contrastText: "#ffffff" },
+    error: { main: "#c22826" },
+    warning: { main: "#a45e00" },
+    info: { main: "#0e6a9b" },
+    success: { main: "#137738" },
+    text: { primary: "#1b1c1e", secondary: "#5f6166" },
+    background: { default: "#fafafa", paper: "#ffffff" },
+    divider: "#e2e3e6",
+    placement: { 1: "#946d00", 2: "#808388", 3: "#a25e2b", 4: "#3a3d42" },
+};
+
+const darkPalette: PaletteOptions = {
+    primary: { main: "#ececee", dark: "#c9cace", contrastText: "#121212" },
+    secondary: { main: "#a6a8ae", dark: "#8e9096", contrastText: "#121212" },
+    error: { main: "#f97770" },
+    warning: { main: "#f9b64f" },
+    info: { main: "#81bfeb" },
+    success: { main: "#67d283" },
+    text: { primary: "#ececee", secondary: "#a6a8ae" },
+    background: { default: "#121212", paper: "#1c1c1f" },
+    divider: "#2e2f33",
+    placement: { 1: "#eec651", 2: "#babec4", 3: "#da915f", 4: "#7f8793" },
+};
 
 // "Source Sans 3 Fallback" is Arial scaled to Source Sans 3's metrics, so text doesn't reflow when the web font swaps in
 const fontFamily = '"Source Sans 3 Variable", "Source Sans 3 Fallback", system-ui, sans-serif';
 
 export const createAppTheme = (): Theme => {
     const baseThemeOptions: ThemeOptions = {
-        palette: {
-            background: {
-                default: colors.light,
-                paper: "#ffffff",
-            },
-        },
         // Roles: heading (h1 page title, h2 section, h3 subsection; h4–h6 step down to body size),
         // body (body1/body2), label (subtitle, caption, button) and data (tabular figures, set on body below)
         typography: {
@@ -86,7 +115,7 @@ export const createAppTheme = (): Theme => {
         },
         components: {
             MuiCssBaseline: {
-                styleOverrides: {
+                styleOverrides: (theme) => ({
                     "@font-face": {
                         fontFamily: "Source Sans 3 Fallback",
                         src: 'local("Arial")',
@@ -98,6 +127,80 @@ export const createAppTheme = (): Theme => {
                     // Scores, Elo and deltas line up in columns and don't shift as values change
                     body: {
                         fontVariantNumeric: "tabular-nums",
+                        accentColor: theme.palette.primary.main,
+                    },
+                    "::selection": {
+                        backgroundColor: alpha(theme.palette.primary.main, 0.2),
+                    },
+                }),
+            },
+            // Flat bar on the page surface; the accent marks the active link, not the bar
+            MuiAppBar: {
+                defaultProps: {
+                    elevation: 0,
+                },
+                styleOverrides: {
+                    root: ({ theme }) => ({
+                        borderBottom: `1px solid ${theme.palette.divider}`,
+                    }),
+                },
+            },
+            // Keyboard focus gets a visible ring in the accent, on every button-like control
+            MuiButtonBase: {
+                styleOverrides: {
+                    root: ({ theme }) => ({
+                        "&.Mui-focusVisible": {
+                            outline: `2px solid ${theme.palette.primary.main}`,
+                            outlineOffset: 2,
+                        },
+                    }),
+                },
+            },
+            // Ink text needs an underline to read as a link, and a hover-only underline never shows on phones
+            MuiLink: {
+                styleOverrides: {
+                    root: {
+                        textUnderlineOffset: "0.15em",
+                    },
+                    underlineHover: ({ theme }) => ({
+                        textDecoration: "underline",
+                        textDecorationColor: alpha(theme.palette.text.primary, 0.4),
+                        "&:hover": {
+                            textDecorationColor: "currentColor",
+                        },
+                    }),
+                },
+            },
+            // Field outlines reach 3:1 so empty inputs are findable at the table
+            MuiOutlinedInput: {
+                styleOverrides: {
+                    notchedOutline: ({ theme }) => ({
+                        borderColor: "#83868b",
+                        ...theme.applyStyles("dark", {
+                            borderColor: "#707378",
+                        }),
+                    }),
+                },
+            },
+            // A selected toggle (winner, deal-in, riichi) is filled, so it can't be mistaken for unselected
+            MuiToggleButton: {
+                styleOverrides: {
+                    root: ({ theme, ownerState }) => {
+                        const color =
+                            ownerState.color && ownerState.color !== "standard"
+                                ? theme.palette[ownerState.color]
+                                : theme.palette.primary;
+                        return {
+                            "&.Mui-selected, &.Mui-selected:hover": {
+                                backgroundColor: color.main,
+                                color: color.contrastText,
+                            },
+                            "@media (hover: hover)": {
+                                "&.Mui-selected:hover": {
+                                    backgroundColor: color.dark,
+                                },
+                            },
+                        };
                     },
                 },
             },
@@ -175,5 +278,11 @@ export const createAppTheme = (): Theme => {
         spacing: 8,
     };
 
-    return createTheme({ ...baseThemeOptions, colorSchemes: { dark: true } }, enUS);
+    return createTheme(
+        {
+            ...baseThemeOptions,
+            colorSchemes: { light: { palette: lightPalette }, dark: { palette: darkPalette } },
+        },
+        enUS,
+    );
 };
