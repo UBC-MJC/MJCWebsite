@@ -45,13 +45,15 @@
     "prettier": "^3.3.3",
     "sass": "^1.81.0",
     "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.0"
+    "typescript-eslint": "^8.58.0",
+    "vitest": "^3.2.7"
   },
   "scripts": {
     "start": "react-router dev --host 0.0.0.0",
     "build": "npm run typecheck && react-router build",
     "serve": "vite preview --outDir build/client",
     "typecheck": "react-router typegen && tsc -b",
+    "test": "vitest",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
     "format": "prettier --ignore-path .eslintignore --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}'"

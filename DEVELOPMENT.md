@@ -148,7 +148,7 @@ Keep the backup in durable private storage. Inspect `prisma migrate status`, the
 Run before opening a pull request:
 
 ```bash
-(cd frontend && npm run build && npm run lint) &&
+(cd frontend && npm run build && npm test -- --run && npm run lint) &&
 (
   cd backend &&
   npx --no-install prisma generate &&
@@ -158,7 +158,7 @@ Run before opening a pull request:
 )
 ```
 
-Backend tests use Vitest and mock Prisma in service tests. Use `npm test` for watch mode or `npm run coverage` in `backend/`. Run `make format` to format both packages, then review the diff.
+Backend tests use Vitest and mock Prisma in service tests. Use `npm test` for watch mode or `npm run coverage` in `backend/`. Frontend tests also use Vitest and cover pure game logic; they live in `frontend/src/test/`, mirroring the `src/` layout, and run with `npm test` in `frontend/`. Run `make format` to format both packages, then review the diff.
 
 When adding dependencies, run `npm install PACKAGE_NAME` in the relevant package and commit its `package.json` and `package-lock.json`.
 
