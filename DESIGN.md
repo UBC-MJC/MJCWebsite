@@ -57,8 +57,8 @@ These are why the old branch read as AI-made.
 
 ## Engineering rules
 
-Main doesn't follow most of these yet: `frontend/src/theme/utils.ts` uses `100vh` and a bare
-`:hover`. The theme PR fixes the global cases. Page PRs fix their own pages.
+The theme follows these. Some pages don't yet: the login pages, `WithoutNav` and `ErrorBoundary` still
+use `100vh`. Page PRs fix their own pages.
 
 **Inputs are at least 16px on phones.** iOS Safari zooms the page when it focuses a smaller input. MUI
 inputs use `body1`, which the theme keeps at 1rem, so `TextField`, `Select` and `Autocomplete` are

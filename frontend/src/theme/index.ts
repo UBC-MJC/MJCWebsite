@@ -182,7 +182,8 @@ export const createAppTheme = (): Theme => {
                     }),
                 },
             },
-            // A selected toggle (winner, deal-in, riichi) is filled, so it can't be mistaken for unselected
+            // A selected toggle (winner, deal-in, riichi) is filled, so it can't be mistaken for unselected.
+            // Unselected ones stay quiet, and the weight doesn't change on selection so labels don't shift
             MuiToggleButton: {
                 styleOverrides: {
                     root: ({ theme, ownerState }) => {
@@ -191,6 +192,8 @@ export const createAppTheme = (): Theme => {
                                 ? theme.palette[ownerState.color]
                                 : theme.palette.primary;
                         return {
+                            fontWeight: 500,
+                            color: theme.palette.text.secondary,
                             "&.Mui-selected, &.Mui-selected:hover": {
                                 backgroundColor: color.main,
                                 color: color.contrastText,
@@ -236,15 +239,27 @@ export const createAppTheme = (): Theme => {
                     },
                 },
             },
-            // Consistent card styling with hover effects
+            // Default panels (elevation 1: plain Paper, Card) are flat with a hairline edge. Shadows stay
+            // for things that float: menus (8), the score footer (8), the drawer (16) and dialogs (24).
+            // The edge is an inset outline rather than a border, so it takes no space and layouts don't shift
+            MuiPaper: {
+                styleOverrides: {
+                    root: ({ theme, ownerState }) =>
+                        ownerState.variant === "elevation" && ownerState.elevation === 1
+                            ? {
+                                  boxShadow: "none",
+                                  backgroundImage: "none",
+                                  outline: `1px solid ${theme.palette.divider}`,
+                                  outlineOffset: -1,
+                              }
+                            : {},
+                },
+            },
             MuiCard: {
                 styleOverrides: {
-                    root: ({ theme }) => ({
+                    root: {
                         borderRadius: 12,
-                        border: "1px solid",
-                        borderColor: theme.palette.divider,
-                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                    }),
+                    },
                 },
             },
             // Container with responsive vertical/horizontal spacing

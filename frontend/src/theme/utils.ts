@@ -8,7 +8,7 @@ import ToggleButtonGroup, { toggleButtonGroupClasses } from "@mui/material/Toggl
  */
 export const responsiveDataGridContainer: SxProps<Theme> = {
     height: {
-        xs: "calc(100vh - 350px)", // Mobile: Adapt to available space
+        xs: "calc(100dvh - 350px)", // Mobile: Adapt to available space (dvh excludes the browser bars)
         md: 600,
     },
     width: "100%",
@@ -16,14 +16,18 @@ export const responsiveDataGridContainer: SxProps<Theme> = {
 };
 
 /**
- * Responsive card hover effects
- * Reduced transform on mobile to prevent layout shifts
+ * Hover affordance for clickable cards: the card's edge darkens, nothing moves.
+ * Only on devices that can hover, since a tap would otherwise leave the card stuck in its hover state
  */
 export const responsiveCardHover: SxProps<Theme> = {
-    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-    "&:hover": {
-        transform: { xs: "none", sm: "translateY(-4px)" },
-        boxShadow: { xs: 2, sm: 6 },
+    transition: "outline-color 150ms ease-out",
+    "@media (hover: hover)": {
+        "&:hover": {
+            outlineColor: (theme) => theme.palette.text.secondary,
+        },
+    },
+    "@media (prefers-reduced-motion: reduce)": {
+        transition: "none",
     },
 };
 
