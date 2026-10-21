@@ -224,10 +224,6 @@ export const createAppTheme = (): Theme => {
                     sx: {
                         minHeight: 44,
                         padding: "10px 20px",
-                        minWidth: {
-                            xs: "100%",
-                            sm: "200px",
-                        },
                     },
                 },
                 styleOverrides: {
