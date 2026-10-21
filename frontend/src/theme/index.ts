@@ -15,7 +15,9 @@ declare module "@mui/material/styles" {
 }
 
 // Ink is the one accent: it marks actions, the active page, focus and selection. Hue always carries meaning:
-// red and green for losses, gains and errors, gold to bronze for placements (see DESIGN.md)
+// red and green for losses, gains and errors, gold to bronze for placements (see DESIGN.md).
+// `divider` stays translucent like MUI's default: DataGrid (and Table) derive their line colour from it
+// by assuming a translucent ink, and an opaque divider makes their lines vanish
 const lightPalette: PaletteOptions = {
     primary: { main: "#1b1c1e", dark: "#3a3c41", contrastText: "#ffffff" }, // `dark` is the contained-button hover
     secondary: { main: "#5f6166", contrastText: "#ffffff" },
@@ -25,7 +27,7 @@ const lightPalette: PaletteOptions = {
     success: { main: "#137738" },
     text: { primary: "#1b1c1e", secondary: "#5f6166" },
     background: { default: "#fafafa", paper: "#ffffff" },
-    divider: "#e2e3e6",
+    divider: "rgba(27, 28, 30, 0.12)",
     placement: { 1: "#946d00", 2: "#808388", 3: "#a25e2b", 4: "#3a3d42" },
 };
 
@@ -38,7 +40,7 @@ const darkPalette: PaletteOptions = {
     success: { main: "#67d283" },
     text: { primary: "#ececee", secondary: "#a6a8ae" },
     background: { default: "#121212", paper: "#1c1c1f" },
-    divider: "#2e2f33",
+    divider: "rgba(236, 236, 238, 0.12)",
     placement: { 1: "#eec651", 2: "#babec4", 3: "#da915f", 4: "#7f8793" },
 };
 
