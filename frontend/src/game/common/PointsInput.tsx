@@ -9,11 +9,11 @@ interface PointsInputProps {
 
 const PointsInput = ({ pointsWheel, onChange }: PointsInputProps) => {
     return (
-        <Stack spacing={2} alignItems="center">
+        <Stack spacing={2}>
             <Typography variant="h3" component="h5">
                 Hand:
             </Typography>
-            <Stack direction="row" spacing={2} justifyContent="center">
+            <Stack direction="row" spacing={2}>
                 {pointsWheel.map((wheel) => (
                     <DropdownInput
                         key={wheel.value}
