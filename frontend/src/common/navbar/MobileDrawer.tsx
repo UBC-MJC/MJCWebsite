@@ -15,6 +15,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Link } from "react-router";
 import type { Player } from "@/types";
 import Wordmark from "./Wordmark";
+import { leadingBar } from "./navStyles";
 import {
     adminLink,
     isLinkActive,
@@ -26,19 +27,8 @@ import {
 } from "./navLinks";
 
 // Every destination is one tap: groups are labelled and always open, not accordions. New game isn't here: it stays
-// in the bar at every width. An ink bar on the leading edge marks where you are, matching the desktop bar's
-// underline: on the current page's row, or on a group's label for a page of the group that has no row (a game
-// page, under Games). Forced colours would repaint its background as Canvas and hide it
-const leadingBar = {
-    content: '""',
-    position: "absolute",
-    left: 0,
-    top: 8,
-    bottom: 8,
-    width: 3,
-    bgcolor: "primary.main",
-    "@media (forced-colors: active)": { forcedColorAdjust: "none", bgcolor: "CanvasText" },
-};
+// in the bar at every width. The leading bar marks the current page's row, or a group's label for a page of the
+// group that has no row (a game page, under Games)
 
 const drawerItemSx = (inset: boolean): SxProps<Theme> => ({
     position: "relative",

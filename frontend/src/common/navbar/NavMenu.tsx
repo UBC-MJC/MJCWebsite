@@ -4,6 +4,7 @@ import type { SxProps, Theme } from "@mui/material/styles";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Link } from "react-router";
 import { isLinkActive, type NavLink } from "./navLinks";
+import { leadingBar } from "./navStyles";
 
 const chevronSx = (open: boolean): SxProps<Theme> => ({
     transition: "transform 150ms ease-out",
@@ -67,6 +68,7 @@ export const menuLink = (link: NavLink, pathname: string) => {
             to={link.to}
             selected={active}
             aria-current={active ? "page" : undefined}
+            sx={{ position: "relative", "&.Mui-selected::before": leadingBar }}
         >
             {link.label}
         </MenuItem>
