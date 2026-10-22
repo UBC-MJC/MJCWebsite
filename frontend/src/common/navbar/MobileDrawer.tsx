@@ -26,25 +26,30 @@ import {
 } from "./navLinks";
 
 // Every destination is one tap: groups are labelled and always open, not accordions. New game isn't here: it stays
-// in the bar at every width. The current page's row gets an ink bar on its leading edge, matching the desktop
-// bar's underline
+// in the bar at every width. An ink bar on the leading edge marks where you are, matching the desktop bar's
+// underline: on the current page's row, or on a group's label for a page of the group that has no row (a game
+// page, under Games). Forced colours would repaint its background as Canvas and hide it
+const leadingBar = {
+    content: '""',
+    position: "absolute",
+    left: 0,
+    top: 8,
+    bottom: 8,
+    width: 3,
+    bgcolor: "primary.main",
+    "@media (forced-colors: active)": { forcedColorAdjust: "none", bgcolor: "CanvasText" },
+};
+
 const drawerItemSx = (inset: boolean): SxProps<Theme> => ({
     position: "relative",
     minHeight: 44,
     py: 0.5, // MUI's default padding would make each row 48px and push Log out below the fold on phones
     pl: inset ? 4 : 2,
-    "&.Mui-selected::before": {
-        content: '""',
-        position: "absolute",
-        left: 0,
-        top: 8,
-        bottom: 8,
-        width: 3,
-        bgcolor: "primary.main",
-    },
+    "&.Mui-selected::before": leadingBar,
 });
 
-const subheaderSx: SxProps<Theme> = {
+const subheaderSx = (current: boolean): SxProps<Theme> => ({
+    position: "relative",
     lineHeight: "32px",
     mt: 1,
     fontWeight: 600, // so each group's "Riichi" and "Hong Kong" rows read as belonging to it
@@ -52,7 +57,8 @@ const subheaderSx: SxProps<Theme> = {
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
-};
+    ...(current && { color: "text.primary", "&::before": leadingBar }),
+});
 
 interface DrawerLinkProps {
     link: NavLink;
@@ -79,20 +85,22 @@ const DrawerLink = ({ link, pathname, inset = false, onClose }: DrawerLinkProps)
     );
 };
 
-const DrawerGroup = ({ label, children }: { label: ReactNode; children: ReactNode }) => {
+interface DrawerGroupProps {
+    label: ReactNode;
+    current?: boolean;
+    children: ReactNode;
+}
+
+// The label sits outside the list so screen readers don't count it as one of the group's items
+const DrawerGroup = ({ label, current = false, children }: DrawerGroupProps) => {
     const id = useId();
     return (
-        <List
-            disablePadding
-            aria-labelledby={id}
-            subheader={
-                <ListSubheader id={id} disableSticky sx={subheaderSx}>
-                    {label}
-                </ListSubheader>
-            }
-        >
-            {children}
-        </List>
+        <Box role="group" aria-labelledby={id}>
+            <ListSubheader component="div" id={id} disableSticky sx={subheaderSx(current)}>
+                {label}
+            </ListSubheader>
+            <List disablePadding>{children}</List>
+        </Box>
     );
 };
 
@@ -125,7 +133,7 @@ const MobileDrawer = ({ player, loading, pathname, onClose, onLogout }: MobileDr
                 }}
             >
                 <Wordmark onClick={onClose} />
-                <IconButton aria-label="Close menu" onClick={onClose}>
+                <IconButton color="inherit" aria-label="Close menu" onClick={onClose}>
                     <CloseIcon />
                 </IconButton>
             </Box>
@@ -133,7 +141,11 @@ const MobileDrawer = ({ player, loading, pathname, onClose, onLogout }: MobileDr
             <Box component="nav" aria-label="Main">
                 {mainNav.map((item) =>
                     isNavGroup(item) ? (
-                        <DrawerGroup key={item.label} label={item.label}>
+                        <DrawerGroup
+                            key={item.label}
+                            label={item.label}
+                            current={item.match?.test(pathname)}
+                        >
                             {groupLinks(item.links)}
                         </DrawerGroup>
                     ) : (

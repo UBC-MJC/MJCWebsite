@@ -21,6 +21,9 @@ export type NavItem = NavLink | NavGroup;
 
 export const isNavGroup = (item: NavItem): item is NavGroup => "links" in item;
 
+/** A single game's page, where its rounds are recorded */
+export const gamePage = /^\/games\/(jp|hk)\/\d+$/;
+
 // Leaderboards, live games and game creation still have one route per variant, so they are grouped here.
 // Each group becomes a single link in the PR that merges its pages into one
 export const mainNav: NavItem[] = [
@@ -38,7 +41,7 @@ export const mainNav: NavItem[] = [
             { label: `Live ${getGameVariantString("hk")}`, to: "/games/current/hk" },
             { label: "Game logs", to: "/games" },
         ],
-        match: /^\/games\/(jp|hk)\/\d+$/, // a single game
+        match: gamePage,
     },
     // Only Riichi has a stats page so far
     { label: `${getGameVariantString("jp")} stats`, to: "/stats/jp" },

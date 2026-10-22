@@ -1,21 +1,23 @@
-import { memo, useContext, useState } from "react";
-import { AppBar, Box, Drawer, IconButton, Toolbar } from "@mui/material";
+import { memo, useContext, useId, useState } from "react";
+import { AppBar, Box, Drawer, IconButton, Skeleton, Toolbar } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useLocation } from "react-router";
 import { AuthContext } from "@/common/AuthContext";
+import { LoginButton, NewGameMenu } from "./BarActions";
 import DesktopNav from "./DesktopNav";
 import MobileDrawer from "./MobileDrawer";
-import { NewGameMenu } from "./NavMenu";
 import Wordmark from "./Wordmark";
 import { DESKTOP } from "./navLinks";
 
-// Below DESKTOP the bar is the menu button, the wordmark and New game, and the links live in the drawer. Both
-// layouts are rendered and CSS picks one, so phones don't flash the desktop links while a media query resolves
+// Below DESKTOP the bar is the menu button, the wordmark and one action (New game, or Log in when signed out),
+// and the links live in the drawer. Both layouts are rendered and CSS picks one, so phones don't flash the desktop
+// links while a media query resolves
 const NavBar = () => {
     const { player, loading, logout } = useContext(AuthContext);
     const { pathname } = useLocation();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const closeDrawer = () => setDrawerOpen(false);
+    const drawerId = useId();
 
     return (
         <>
@@ -47,7 +49,9 @@ const NavBar = () => {
                     <IconButton
                         color="inherit"
                         aria-label="Open menu"
+                        aria-haspopup="dialog"
                         aria-expanded={drawerOpen}
+                        aria-controls={drawerOpen ? drawerId : undefined}
                         edge="start"
                         onClick={() => setDrawerOpen(true)}
                         sx={{ display: { [DESKTOP]: "none" } }}
@@ -55,11 +59,15 @@ const NavBar = () => {
                         <MenuIcon />
                     </IconButton>
                     <Wordmark />
-                    {!loading && player && (
-                        <Box sx={{ display: { [DESKTOP]: "none" }, ml: "auto" }}>
+                    <Box sx={{ display: { [DESKTOP]: "none" }, ml: "auto" }}>
+                        {loading ? (
+                            <Skeleton variant="rounded" width={112} height={44} />
+                        ) : player ? (
                             <NewGameMenu pathname={pathname} />
-                        </Box>
-                    )}
+                        ) : (
+                            <LoginButton />
+                        )}
+                    </Box>
                     <DesktopNav
                         player={player}
                         loading={loading}
@@ -67,7 +75,20 @@ const NavBar = () => {
                         onLogout={logout}
                     />
                 </Toolbar>
-                <Drawer anchor="left" open={drawerOpen} onClose={closeDrawer}>
+                <Drawer
+                    anchor="left"
+                    open={drawerOpen}
+                    onClose={closeDrawer}
+                    // MUI leaves the panel an unnamed element; screen readers should hear a named modal dialog
+                    slotProps={{
+                        paper: {
+                            id: drawerId,
+                            role: "dialog",
+                            "aria-modal": true,
+                            "aria-label": "Site menu",
+                        },
+                    }}
+                >
                     <MobileDrawer
                         player={player}
                         loading={loading}

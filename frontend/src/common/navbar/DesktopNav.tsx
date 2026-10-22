@@ -2,14 +2,14 @@ import { Box, Button, Divider, MenuItem, Skeleton } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
 import { Link } from "react-router";
 import type { Player } from "@/types";
-import { NavMenu, NewGameMenu, menuLink } from "./NavMenu";
+import { LoginButton, NewGameMenu } from "./BarActions";
+import { NavMenu, menuLink } from "./NavMenu";
 import {
     DESKTOP,
     adminLink,
     isItemActive,
     isLinkActive,
     isNavGroup,
-    loginLink,
     mainNav,
     settingsLink,
 } from "./navLinks";
@@ -39,6 +39,8 @@ const navLinkSx = (active: boolean): SxProps<Theme> => ({
         height: 2,
         bgcolor: "primary.main",
         opacity: active ? 1 : 0,
+        // Forced colours would repaint the bar's background as Canvas and hide it
+        "@media (forced-colors: active)": { forcedColorAdjust: "none", bgcolor: "CanvasText" },
     },
     "&.Mui-focusVisible": { outlineOffset: -2 },
     "&[aria-expanded=true]": { color: "text.primary" },
@@ -75,7 +77,11 @@ const DesktopNav = ({ player, loading, pathname, onLogout }: DesktopNavProps) =>
                         <NavMenu
                             key={item.label}
                             label={item.label}
-                            triggerProps={{ sx: navLinkSx(active) }}
+                            // A menu trigger isn't a page, so it says its section is current with "true"
+                            triggerProps={{
+                                sx: navLinkSx(active),
+                                "aria-current": active ? "true" : undefined,
+                            }}
                         >
                             {item.links.map((link) => menuLink(link, pathname))}
                         </NavMenu>
@@ -124,7 +130,11 @@ const DesktopNav = ({ player, loading, pathname, onLogout }: DesktopNavProps) =>
                                 </Box>
                             }
                             align="right"
-                            triggerProps={{ sx: navLinkSx(accountActive) }}
+                            triggerProps={{
+                                sx: navLinkSx(accountActive),
+                                "aria-current": accountActive ? "true" : undefined,
+                                "aria-label": `Account: ${player.username}`,
+                            }}
                         >
                             {menuLink(settingsLink, pathname)}
                             {player.admin && menuLink(adminLink, pathname)}
@@ -133,14 +143,7 @@ const DesktopNav = ({ player, loading, pathname, onLogout }: DesktopNavProps) =>
                         </NavMenu>
                     </>
                 ) : (
-                    <Button
-                        variant="contained"
-                        component={Link}
-                        to={loginLink.to}
-                        sx={{ minHeight: 44, px: 2, whiteSpace: "nowrap" }}
-                    >
-                        {loginLink.label}
-                    </Button>
+                    <LoginButton />
                 )}
             </Box>
         </Box>

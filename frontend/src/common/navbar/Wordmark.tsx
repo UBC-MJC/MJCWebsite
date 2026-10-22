@@ -1,8 +1,8 @@
 import { Box, Typography } from "@mui/material";
 import { Link } from "react-router";
 
-// "UBC Mahjong" on phones leaves room for the New game button down to 320px. A link isn't a ButtonBase, so it
-// needs the theme's focus ring spelled out
+// "UBC Mahjong" on phones leaves room for the New game button down to 320px. The 44px line height makes the whole
+// row a touch target. A link isn't a ButtonBase, so it needs the theme's focus ring spelled out
 const Wordmark = ({ onClick }: { onClick?: () => void }) => (
     <Typography
         component={Link}
@@ -14,6 +14,7 @@ const Wordmark = ({ onClick }: { onClick?: () => void }) => (
             color: "text.primary",
             fontSize: "1.125rem",
             fontWeight: 700,
+            lineHeight: "44px",
             textDecoration: "none",
             borderRadius: 0.5,
             "&:focus-visible": {

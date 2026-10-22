@@ -3,7 +3,7 @@ import { Button, Menu, MenuItem, type ButtonProps } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Link } from "react-router";
-import { isItemActive, isLinkActive, newGameGroup, type NavLink } from "./navLinks";
+import { isLinkActive, type NavLink } from "./navLinks";
 
 const chevronSx = (open: boolean): SxProps<Theme> => ({
     transition: "transform 150ms ease-out",
@@ -45,8 +45,11 @@ export const NavMenu = ({ label, triggerProps, align = "left", children }: NavMe
                 onClose={close}
                 anchorOrigin={{ vertical: "bottom", horizontal: align }}
                 transformOrigin={{ vertical: "top", horizontal: align }}
-                // Any item click closes the menu, so each item doesn't need its own handler
-                slotProps={{ list: { "aria-labelledby": `${id}-trigger`, onClick: close } }}
+                // The menu is never narrower than its trigger, and any item click closes it
+                slotProps={{
+                    paper: { sx: { minWidth: anchor?.offsetWidth } },
+                    list: { "aria-labelledby": `${id}-trigger`, onClick: close },
+                }}
             >
                 {children}
             </Menu>
@@ -67,30 +70,5 @@ export const menuLink = (link: NavLink, pathname: string) => {
         >
             {link.label}
         </MenuItem>
-    );
-};
-
-// The bar's one filled action, at every width. On a create page it turns outlined so it doesn't compete with the
-// page's own Create Game button; the transparent border keeps both variants the same width.
-// minHeight is restated because passing `sx` replaces the theme's default Button `sx`
-export const NewGameMenu = ({ pathname }: { pathname: string }) => {
-    const current = isItemActive(pathname, newGameGroup);
-    return (
-        <NavMenu
-            label={newGameGroup.label}
-            triggerProps={{
-                variant: current ? "outlined" : "contained",
-                color: "primary",
-                sx: {
-                    minHeight: 44,
-                    px: { xs: 1.5, sm: 2 },
-                    flexShrink: 0,
-                    whiteSpace: "nowrap",
-                    ...(!current && { border: "1px solid transparent" }),
-                },
-            }}
-        >
-            {newGameGroup.links.map((link) => menuLink(link, pathname))}
-        </NavMenu>
     );
 };
