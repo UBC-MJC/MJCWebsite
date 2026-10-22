@@ -280,18 +280,28 @@ export const createAppTheme = (): Theme => {
             },
             // Default panels (elevation 1: plain Paper, Card) are flat with a hairline edge. Shadows stay
             // for things that float: menus (8), the score footer (8), the drawer (16) and dialogs (24).
-            // The edge is an inset outline rather than a border, so it takes no space and layouts don't shift
+            // The edge is an inset outline rather than a border, so it takes no space and layouts don't shift.
+            // Forced colours drop shadows, so floating surfaces get an outline there instead of losing their edge
             MuiPaper: {
                 styleOverrides: {
-                    root: ({ theme, ownerState }) =>
-                        ownerState.variant === "elevation" && ownerState.elevation === 1
+                    root: ({ theme, ownerState }) => {
+                        if (ownerState.variant !== "elevation") return {};
+                        if (ownerState.elevation === 1) {
+                            return {
+                                boxShadow: "none",
+                                backgroundImage: "none",
+                                outline: `1px solid ${theme.palette.divider}`,
+                                outlineOffset: -1,
+                            };
+                        }
+                        return ownerState.elevation
                             ? {
-                                  boxShadow: "none",
-                                  backgroundImage: "none",
-                                  outline: `1px solid ${theme.palette.divider}`,
-                                  outlineOffset: -1,
+                                  "@media (forced-colors: active)": {
+                                      outline: "1px solid CanvasText",
+                                  },
                               }
-                            : {},
+                            : {};
+                    },
                 },
             },
             MuiCard: {
