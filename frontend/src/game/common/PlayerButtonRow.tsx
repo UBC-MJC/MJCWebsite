@@ -22,7 +22,6 @@ const PlayerButtonRow = <T extends string>({
                     <ToggleButton
                         key={idx}
                         id={`name-${label}-${idx}`}
-                        color={getVariant(label)}
                         sx={{
                             maxWidth: "22.5%",
                             overflow: "clip",
@@ -40,12 +39,5 @@ const PlayerButtonRow = <T extends string>({
         </Stack>
     );
 };
-
-function getVariant(label: string) {
-    if (label === "RIICHI") {
-        return "secondary";
-    }
-    return "primary";
-}
 
 export default PlayerButtonRow;
