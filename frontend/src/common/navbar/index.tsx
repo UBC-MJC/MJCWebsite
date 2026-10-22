@@ -45,35 +45,50 @@ const NavBar = () => {
                 Skip to content
             </Box>
             <AppBar position="static" color="inherit">
-                <Toolbar sx={{ gap: 1 }}>
-                    <IconButton
-                        color="inherit"
-                        aria-label="Open menu"
-                        aria-haspopup="dialog"
-                        aria-expanded={drawerOpen}
-                        aria-controls={drawerOpen ? drawerId : undefined}
-                        edge="start"
-                        onClick={() => setDrawerOpen(true)}
-                        sx={{ display: { [DESKTOP]: "none" } }}
+                <Toolbar disableGutters>
+                    {/* Same width and side padding as the page's Container (lg), so the wordmark sits over the
+                        page heading and the bar's right edge over the content's */}
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            alignSelf: "stretch",
+                            gap: 1,
+                            width: "100%",
+                            maxWidth: "lg",
+                            mx: "auto",
+                            px: { xs: 2, md: 3 },
+                        }}
                     >
-                        <MenuIcon />
-                    </IconButton>
-                    <Wordmark />
-                    <Box sx={{ display: { [DESKTOP]: "none" }, ml: "auto" }}>
-                        {loading ? (
-                            <Skeleton variant="rounded" width={112} height={44} />
-                        ) : player ? (
-                            <NewGameMenu pathname={pathname} />
-                        ) : (
-                            <LoginButton />
-                        )}
+                        <IconButton
+                            color="inherit"
+                            aria-label="Open menu"
+                            aria-haspopup="dialog"
+                            aria-expanded={drawerOpen}
+                            aria-controls={drawerOpen ? drawerId : undefined}
+                            edge="start"
+                            onClick={() => setDrawerOpen(true)}
+                            sx={{ display: { [DESKTOP]: "none" } }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Wordmark />
+                        <Box sx={{ display: { [DESKTOP]: "none" }, ml: "auto" }}>
+                            {loading ? (
+                                <Skeleton variant="rounded" width={112} height={44} />
+                            ) : player ? (
+                                <NewGameMenu pathname={pathname} />
+                            ) : (
+                                <LoginButton />
+                            )}
+                        </Box>
+                        <DesktopNav
+                            player={player}
+                            loading={loading}
+                            pathname={pathname}
+                            onLogout={logout}
+                        />
                     </Box>
-                    <DesktopNav
-                        player={player}
-                        loading={loading}
-                        pathname={pathname}
-                        onLogout={logout}
-                    />
                 </Toolbar>
                 <Drawer
                     anchor="left"
