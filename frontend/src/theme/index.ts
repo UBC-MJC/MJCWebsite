@@ -161,6 +161,31 @@ export const createAppTheme = (): Theme => {
                     }),
                 },
             },
+            // The ring is the only focus signal. MUI's focus ripple is a grey disc that pulses for as long as the
+            // control has focus, even with reduced motion on, so every component that draws one has it off (click
+            // ripples stay). Button, IconButton and ToggleButton turn it off in their own entries below
+            MuiTab: { defaultProps: { disableFocusRipple: true } },
+            MuiSwitch: { defaultProps: { disableFocusRipple: true } },
+            MuiRadio: { defaultProps: { disableFocusRipple: true } },
+            MuiCheckbox: { defaultProps: { disableFocusRipple: true } },
+            // Menu and list rows span their container, which clips a ring drawn outside them, so theirs sits inside.
+            // Menu rows also keep a 44px touch height: MUI drops them to 36px from sm up, where tablets get menus too
+            MuiMenuItem: {
+                styleOverrides: {
+                    root: ({ theme }) => ({
+                        minHeight: 44,
+                        [theme.breakpoints.up("sm")]: { minHeight: 44 },
+                        "&.Mui-focusVisible": { outlineOffset: -2 },
+                    }),
+                },
+            },
+            MuiListItemButton: {
+                styleOverrides: {
+                    root: {
+                        "&.Mui-focusVisible": { outlineOffset: -2 },
+                    },
+                },
+            },
             // Ink text needs an underline to read as a link, and a hover-only underline never shows on phones
             MuiLink: {
                 styleOverrides: {
@@ -190,6 +215,9 @@ export const createAppTheme = (): Theme => {
             // A selected toggle (winner, deal-in, riichi) is filled, so it can't be mistaken for unselected.
             // Unselected ones stay quiet, and the weight doesn't change on selection so labels don't shift
             MuiToggleButton: {
+                defaultProps: {
+                    disableFocusRipple: true,
+                },
                 styleOverrides: {
                     root: ({ theme, ownerState }) => {
                         const color =
@@ -224,6 +252,7 @@ export const createAppTheme = (): Theme => {
             MuiButton: {
                 defaultProps: {
                     disableElevation: true,
+                    disableFocusRipple: true,
                     sx: {
                         minHeight: 44,
                         padding: "10px 20px",
@@ -283,6 +312,9 @@ export const createAppTheme = (): Theme => {
 
             // IconButton touch targets
             MuiIconButton: {
+                defaultProps: {
+                    disableFocusRipple: true,
+                },
                 styleOverrides: {
                     root: {
                         padding: 12, // Ensures 44px touch target with 20px icon
