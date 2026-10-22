@@ -42,16 +42,19 @@ const Game = <T extends GameVariant>() => {
                 queryClient.setQueryData(gameQueryKey(validGameId, variant), gameResult);
             };
 
-            eventSource.onerror = () => {
-                // Close the connection on error and don't retry
-                eventSource.close();
-            };
+            // No onerror handler. When a proxy drops the stream, EventSource reconnects by itself
+            // after the server's retry delay, and it gives up for good on an HTTP error such as a
+            // 404 or 502. Never reconnect from onerror: re-running this effect on error once opened
+            // connections in a tight loop and took production down.
 
             // Cleanup function to close EventSource when component unmounts
             return () => {
                 eventSource.close();
             };
         }
+        // Only primitives here: every message stores a new game object, so depending on `game`
+        // would reconnect on each update.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [game?.id, game?.recordedById, game?.status, player?.id, queryClient, validGameId, variant]);
 
     const handleSubmitRound = async (roundRequest: RoundByVariant<T>) => {

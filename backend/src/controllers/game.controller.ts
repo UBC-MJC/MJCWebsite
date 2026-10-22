@@ -121,7 +121,11 @@ const submitGameHandler = async (req: Request, res: Response): Promise<void> => 
     }
 
     await gameService.submitGame(game);
+    const finishedGame = await gameService.getGameOrThrow(gameId);
+    const gameResult = await gameService.mapGameObject(finishedGame);
     res.status(201).json({});
+    // Spectators see the game end, and their pages close the live connection.
+    sendGameUpdate(gameResult, gameVariant);
 };
 
 const createRoundHandler = async (req: Request, res: Response): Promise<void> => {
