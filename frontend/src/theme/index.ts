@@ -137,6 +137,15 @@ export const createAppTheme = (): Theme => {
                     "::selection": {
                         backgroundColor: alpha(theme.palette.primary.main, 0.2),
                     },
+                    // Reduced motion: transitions end at once. MUI sets the drawer slide, menu grow and dialog fade
+                    // inline, hence !important. Keyframe animations stay, since spinners and skeletons carry meaning
+                    "@media (prefers-reduced-motion: reduce)": {
+                        "*, *::before, *::after": {
+                            transitionDuration: "0.01ms !important",
+                            transitionDelay: "0s !important",
+                            scrollBehavior: "auto !important",
+                        },
+                    },
                 }),
             },
             // Flat bar on the page surface; the accent marks the active link, not the bar
