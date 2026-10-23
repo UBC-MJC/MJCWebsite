@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 
-// In production nginx closes a response after 60s without data, and Cloudflare after about 100s.
-// A round takes minutes, so keep the stream busy with a comment line, which EventSource ignores.
 const HEARTBEAT_INTERVAL_MS = 25_000;
-// How long a spectator's browser waits before reconnecting after the stream drops.
 const RECONNECT_DELAY_MS = 5_000;
 
 type ClientListenerMap = Record<string, Response[]>;
@@ -28,13 +25,10 @@ const addGameListener = (
         "Content-Type": "text/event-stream",
         Connection: "keep-alive",
         "Cache-Control": "no-cache",
-        // Keeps nginx from buffering the stream even if proxy_buffering is turned back on.
         "X-Accel-Buffering": "no",
     };
     res.writeHead(200, headers);
 
-    // Every connection starts with the whole game, so a spectator who reconnects catches up on
-    // anything they missed while disconnected.
     const data = `retry: ${RECONNECT_DELAY_MS}\ndata: ${JSON.stringify(gameResult)}\n\n`;
     res.write(data);
 

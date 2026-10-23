@@ -13,7 +13,6 @@ function createSpectator() {
 
 describe("liveGame.service", () => {
     beforeEach(() => {
-        // Also freezes Date.now(), so spectators added in one test join in the same millisecond.
         vi.useFakeTimers();
     });
 
