@@ -42,16 +42,12 @@ const Game = <T extends GameVariant>() => {
                 queryClient.setQueryData(gameQueryKey(validGameId, variant), gameResult);
             };
 
-            eventSource.onerror = () => {
-                // Close the connection on error and don't retry
-                eventSource.close();
-            };
-
             // Cleanup function to close EventSource when component unmounts
             return () => {
                 eventSource.close();
             };
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [game?.id, game?.recordedById, game?.status, player?.id, queryClient, validGameId, variant]);
 
     const handleSubmitRound = async (roundRequest: RoundByVariant<T>) => {

@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
-import { recalcSeasonHandler } from "../../controllers/game.controller";
+import { GameStatus } from "@prisma/client";
+import { recalcSeasonHandler, submitGameHandler } from "../../controllers/game.controller";
 import { getGameService } from "../../services/game/gameService.factory";
+import { sendGameUpdate } from "../../services/game/liveGame.service";
 
 vi.mock("../../services/game/gameService.factory", () => ({
     getGameService: vi.fn(),
@@ -53,4 +55,37 @@ describe("recalcSeasonHandler", () => {
             expect(res.json).toHaveBeenCalledWith(result);
         },
     );
+});
+
+describe("submitGameHandler", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it.each(["hk", "jp"])("sends the finished %s game to spectators", async (gameVariant) => {
+        const game = { id: 7, status: GameStatus.IN_PROGRESS, recordedById: "recorder" };
+        const finishedGame = { ...game, status: GameStatus.FINISHED };
+        const gameResult = { id: 7, status: GameStatus.FINISHED, rounds: [] };
+        const gameService = {
+            getGame: vi.fn().mockResolvedValue(game),
+            submitGame: vi.fn().mockResolvedValue({}),
+            getGameOrThrow: vi.fn().mockResolvedValue(finishedGame),
+            mapGameObject: vi.fn().mockResolvedValue(gameResult),
+        };
+        vi.mocked(getGameService).mockReturnValue(
+            gameService as unknown as ReturnType<typeof getGameService>,
+        );
+        const req = {
+            params: { gameVariant, id: "7" },
+            player: { id: "recorder" },
+        } as unknown as Request;
+        const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+
+        await submitGameHandler(req, res as unknown as Response);
+
+        expect(gameService.submitGame).toHaveBeenCalledWith(game);
+        expect(gameService.mapGameObject).toHaveBeenCalledWith(finishedGame);
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(sendGameUpdate).toHaveBeenCalledWith(gameResult, gameVariant);
+    });
 });

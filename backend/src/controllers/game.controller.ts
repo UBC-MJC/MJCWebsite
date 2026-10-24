@@ -121,7 +121,10 @@ const submitGameHandler = async (req: Request, res: Response): Promise<void> => 
     }
 
     await gameService.submitGame(game);
+    const finishedGame = await gameService.getGameOrThrow(gameId);
+    const gameResult = await gameService.mapGameObject(finishedGame);
     res.status(201).json({});
+    sendGameUpdate(gameResult, gameVariant);
 };
 
 const createRoundHandler = async (req: Request, res: Response): Promise<void> => {
