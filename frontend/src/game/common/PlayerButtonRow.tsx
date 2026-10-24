@@ -17,18 +17,11 @@ const PlayerButtonRow = <T extends string>({
     return (
         <Stack spacing={1}>
             <Typography variant="h3">{label[0] + label.slice(1).toLowerCase()}:</Typography>
-            <Stack
-                direction="row"
-                spacing={1}
-                alignContent={"center"}
-                maxWidth={"100%"}
-                justifyContent={"center"}
-            >
+            <Stack direction="row" spacing={1} alignContent={"center"} maxWidth={"100%"}>
                 {players.map((player, idx) => (
                     <ToggleButton
                         key={idx}
                         id={`name-${label}-${idx}`}
-                        color={getVariant(label)}
                         sx={{
                             maxWidth: "22.5%",
                             overflow: "clip",
@@ -46,12 +39,5 @@ const PlayerButtonRow = <T extends string>({
         </Stack>
     );
 };
-
-function getVariant(label: string) {
-    if (label === "RIICHI") {
-        return "secondary";
-    }
-    return "primary";
-}
 
 export default PlayerButtonRow;

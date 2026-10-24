@@ -1,7 +1,7 @@
-import { Link } from "@mui/material";
+import { Container, Link } from "@mui/material";
 export const Resources = () => {
     return (
-        <div className={"my-4"}>
+        <Container>
             <h1>Study resources</h1>
             <h2>Riichi Mahjong</h2>
             <p>
@@ -57,6 +57,6 @@ export const Resources = () => {
                     Charter
                 </Link>
             </p>
-        </div>
+        </Container>
     );
 };

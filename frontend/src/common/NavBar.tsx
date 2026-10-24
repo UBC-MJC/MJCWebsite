@@ -186,7 +186,7 @@ const NavBar = () => {
     );
 
     return (
-        <AppBar position="static" color="info">
+        <AppBar position="static" color="inherit">
             <Toolbar>
                 {isMobile && (
                     <IconButton
@@ -343,7 +343,7 @@ const NavBar = () => {
                                     height={36}
                                     sx={{
                                         borderRadius: 1,
-                                        bgcolor: "rgba(255, 255, 255, 0.1)",
+                                        bgcolor: "action.hover",
                                     }}
                                 />
                             ) : player ? (

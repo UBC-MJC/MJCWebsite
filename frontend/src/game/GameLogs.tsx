@@ -113,9 +113,7 @@ const GameLogs = <T extends GameVariant>() => {
     return (
         <Container>
             <Stack spacing={3}>
-                <Typography variant="h1" align="center">
-                    Game Logs
-                </Typography>
+                <Typography variant="h1">Game Logs</Typography>
 
                 {/* Search Filters */}
                 <Card>

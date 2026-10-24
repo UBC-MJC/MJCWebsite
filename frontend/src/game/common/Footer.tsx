@@ -41,21 +41,24 @@ const PlayerScoreCard = ({
                 py: 1.5,
                 borderRadius: 2,
                 cursor: "pointer",
-                transition: "all 0.2s ease-in-out",
+                transition: "background-color 150ms ease-out, border-color 150ms ease-out",
                 border: 2,
                 borderColor: "transparent",
                 userSelect: "none",
+                "@media (prefers-reduced-motion: reduce)": {
+                    transition: "none",
+                },
                 // Selected state styling
                 ...(isSelected && {
                     borderColor: (theme) => theme.palette.primary.main,
                     bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-                    transform: "scale(1.02)",
                 }),
-                // Hover effect (disabled when selected)
+                // Hover effect (disabled when selected, and only where hover exists so a tap doesn't stick)
                 ...(!isSelected && {
-                    "&:hover": {
-                        bgcolor: (theme) => alpha(theme.palette.primary.main, 0.05),
-                        transform: "translateY(-2px)",
+                    "@media (hover: hover)": {
+                        "&:hover": {
+                            bgcolor: (theme) => alpha(theme.palette.primary.main, 0.05),
+                        },
                     },
                 }),
             }}
