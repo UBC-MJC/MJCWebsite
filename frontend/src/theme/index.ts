@@ -117,6 +117,9 @@ export const createAppTheme = (): Theme => {
         },
         components: {
             MuiCssBaseline: {
+                defaultProps: {
+                    enableColorScheme: true,
+                },
                 styleOverrides: (theme) => ({
                     "@font-face": {
                         fontFamily: "Source Sans 3 Fallback",
