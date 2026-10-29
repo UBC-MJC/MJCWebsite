@@ -37,6 +37,7 @@ const PlayerScoreCard = ({
             sx={{
                 flex: 1,
                 minWidth: 0,
+                textAlign: "center",
                 px: { xs: 1, sm: 2 },
                 py: 1.5,
                 borderRadius: 2,

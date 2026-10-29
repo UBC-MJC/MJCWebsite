@@ -25,7 +25,7 @@ export const PlacementHistoryGraph = memo(({ data }: PlacementHistoryGraphProps)
     if (graphData.length === 0) {
         return (
             <Paper sx={{ p: 2 }}>
-                <Typography>No placement history available</Typography>
+                <Typography align="center">No placement history available</Typography>
             </Paper>
         );
     }
