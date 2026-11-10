@@ -58,7 +58,7 @@ const RequestPasswordReset = () => {
                     <CardContent>
                         <Stack component="form" onSubmit={handleSubmit}>
                             <Stack spacing={1}>
-                                <Typography variant="h2" component="h1">
+                                <Typography variant="h2" component="h1" align="center">
                                     Reset Your Password
                                 </Typography>
                                 <Typography variant="body2" align="center" color="text.secondary">

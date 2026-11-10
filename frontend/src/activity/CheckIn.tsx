@@ -35,28 +35,28 @@ const CheckIn = () => {
 
     return (
         <Container>
-            <Typography variant="h1">Check-In</Typography>
             <Stack spacing={2}>
-                <Container>
-                    {!loading && player && (
-                        <Box sx={{ "& > button": { m: 1 } }}>
+                <Typography variant="h1">Check-In</Typography>
+                {!loading && player && (
+                    <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap" }}>
+                        <Button
+                            size="large"
+                            variant="contained"
+                            onClick={() => checkIn.mutate()}
+                            disabled={checkedIn || statusLoading}
+                        >
+                            Check In
+                        </Button>
+                        <Button
+                            size="large"
+                            variant="outlined"
+                            onClick={() => checkOut.mutate()}
+                            disabled={!checkedIn || statusLoading}
+                        >
+                            Check Out
+                        </Button>
+                        {player.admin && (
                             <Button
-                                size="large"
-                                variant="contained"
-                                onClick={() => checkIn.mutate()}
-                                disabled={checkedIn || statusLoading}
-                            >
-                                Check In
-                            </Button>
-                            <Button
-                                size="large"
-                                variant="outlined"
-                                onClick={() => checkOut.mutate()}
-                                disabled={!checkedIn || statusLoading}
-                            >
-                                Check Out
-                            </Button>
-                            {player.admin && (<Button
                                 size="large"
                                 variant="outlined"
                                 color="warning"
@@ -64,18 +64,15 @@ const CheckIn = () => {
                                 disabled={false}
                             >
                                 Manual Reset
-                            </Button>)
-                            }
-                        </Box>
-                    )}
-                    {!loading && !player && (
-                        <Box sx={{ display: "flex", justifyContent: "center" }}>
-                            <Alert severity="info" variant="outlined">
-                                Login to check in/out.
-                            </Alert>
-                        </Box>
-                    )}
-                </Container>
+                            </Button>
+                        )}
+                    </Stack>
+                )}
+                {!loading && !player && (
+                    <Alert severity="info" variant="outlined">
+                        Login to check in/out.
+                    </Alert>
+                )}
                 <Box sx={responsiveDataGridContainer}>
                     <DataGrid
                         rows={checkedInPlayers}

@@ -61,14 +61,7 @@ const Settings = () => {
             <Typography variant="h2" gutterBottom>
                 Settings
             </Typography>
-            <Box
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    p: 3,
-                }}
-            >
+            <Box sx={{ py: 3 }}>
                 <FormControl>
                     <FormLabel id="theme-toggle-label">Theme</FormLabel>
                     <RadioGroup
@@ -86,7 +79,7 @@ const Settings = () => {
                     </RadioGroup>
                 </FormControl>
             </Box>
-            <Box sx={{ pt: 2, display: "flex", justifyContent: "center" }}>
+            <Box sx={{ pt: 2 }}>
                 <Button
                     onClick={() => setShowUpdateUsernameModal(true)}
                     variant="contained"

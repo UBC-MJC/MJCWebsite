@@ -72,7 +72,9 @@ const Login = () => {
                 <Card>
                     <CardContent>
                         <Stack component="form" noValidate onSubmit={handleSubmit}>
-                            <Typography variant="h1">UBC Mahjong Club</Typography>
+                            <Typography variant="h1" align="center">
+                                UBC Mahjong Club
+                            </Typography>
 
                             <TextField
                                 fullWidth
