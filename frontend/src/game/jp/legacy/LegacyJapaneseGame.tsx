@@ -292,9 +292,9 @@ const LegacyJapaneseGame = ({
 
     const getRecordingInterface = () => {
         return (
-            <Card>
+            <Card sx={{ width: "100%", maxWidth: 600 }}>
                 <CardContent>
-                    <Stack alignItems="center">
+                    <Stack spacing={3}>
                         <FormControlLabel
                             control={
                                 <Switch
@@ -370,6 +370,7 @@ const LegacyJapaneseGame = ({
                     variant="contained"
                     disabled={gameOver}
                     onClick={submitSingleTransactionRound}
+                    fullWidth
                     size="large"
                 >
                     Submit Round
@@ -377,8 +378,8 @@ const LegacyJapaneseGame = ({
             );
         }
         return (
-            <Stack>
-                <Stack direction={{ xs: "column", sm: "row" }}>
+            <Stack spacing={1}>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
                     <Button variant="contained" disabled={gameOver} onClick={addTransaction}>
                         Add Transaction
                     </Button>

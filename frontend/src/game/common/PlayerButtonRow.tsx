@@ -1,5 +1,6 @@
-import { Stack, ToggleButton, Typography } from "@mui/material";
+import { Box, Stack, ToggleButton, Typography } from "@mui/material";
 import type { GamePlayer } from "@/types";
+import { responsiveTextTruncate } from "@/theme/utils";
 
 interface PlayerButtonRow<T extends string> {
     players: GamePlayer[];
@@ -17,25 +18,22 @@ const PlayerButtonRow = <T extends string>({
     return (
         <Stack spacing={1}>
             <Typography variant="h3">{label[0] + label.slice(1).toLowerCase()}:</Typography>
-            <Stack direction="row" spacing={1} alignContent={"center"} maxWidth={"100%"}>
+            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 1 }}>
                 {players.map((player, idx) => (
                     <ToggleButton
                         key={idx}
                         id={`name-${label}-${idx}`}
-                        sx={{
-                            maxWidth: "22.5%",
-                            overflow: "clip",
-                            whiteSpace: "nowrap",
-                            // textOverflow: "ellipsis"
-                        }}
+                        sx={{ minWidth: 0, px: 0.5 }}
                         value={player.id}
                         selected={labelPlayerIds.includes(idx)}
                         onChange={() => onChange(idx, label)}
                     >
-                        {player.username}
+                        <Box component="span" sx={responsiveTextTruncate}>
+                            {player.username}
+                        </Box>
                     </ToggleButton>
                 ))}
-            </Stack>
+            </Box>
         </Stack>
     );
 };

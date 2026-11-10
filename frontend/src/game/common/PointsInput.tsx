@@ -13,7 +13,7 @@ const PointsInput = ({ pointsWheel, onChange }: PointsInputProps) => {
             <Typography variant="h3" component="h5">
                 Hand:
             </Typography>
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={2} sx={{ "& > *": { flex: 1, minWidth: 0 } }}>
                 {pointsWheel.map((wheel) => (
                     <DropdownInput
                         key={wheel.value}
