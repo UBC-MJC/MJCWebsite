@@ -1,6 +1,7 @@
-import { Box, Button, Divider, MenuItem, Skeleton } from "@mui/material";
-import type { SxProps, Theme } from "@mui/material/styles";
+import { Box, Button, Divider, MenuItem, Skeleton, Stack } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { Link } from "react-router";
+import { truncate } from "@/theme/utils";
 import type { Player } from "@/types";
 import { LoginButton, NewGameMenu } from "./BarActions";
 import { NavMenu, menuLink } from "./NavMenu";
@@ -13,43 +14,28 @@ import {
     mainNav,
     settingsLink,
 } from "./navLinks";
+import { underline } from "./navStyles";
 
-// Links fill the bar's height so the current page's link can put an ink bar on the bar's bottom edge, like a tab.
-// The bar, not just the colour, marks the page, and the weight never changes so labels don't shift. The focus ring
-// sits inside because the link is as tall as the bar, and an open menu's trigger reads as current.
-// minHeight is restated because passing `sx` replaces the theme's default Button `sx`
-const navLinkSx = (active: boolean): SxProps<Theme> => ({
+const NavTab = styled(Button)(({ theme }) => ({
     alignSelf: "stretch",
     position: "relative",
     minWidth: 0,
-    minHeight: 44,
-    px: 1.5,
+    padding: theme.spacing(0.75, 1.5),
     borderRadius: 0,
-    color: active ? "text.primary" : "text.secondary",
-    fontSize: "1rem",
-    fontWeight: 500,
+    color: theme.palette.text.secondary,
+    fontSize: theme.typography.body1.fontSize,
+    fontWeight: theme.typography.fontWeightMedium,
     whiteSpace: "nowrap",
     transition: "color 150ms ease-out",
-    "&::after": {
-        content: '""',
-        position: "absolute",
-        left: 12,
-        right: 12,
-        bottom: -1, // over the bar's bottom border
-        height: 2,
-        bgcolor: "primary.main",
-        opacity: active ? 1 : 0,
-        // Forced colours would repaint the bar's background as Canvas and hide it
-        "@media (forced-colors: active)": { forcedColorAdjust: "none", bgcolor: "CanvasText" },
-    },
+    "&::after": { ...underline(theme), opacity: 0 },
+    "&[aria-current], &[aria-expanded=true]": { color: theme.palette.text.primary },
+    "&[aria-current]::after": { opacity: 1 },
     "&.Mui-focusVisible": { outlineOffset: -2 },
-    "&[aria-expanded=true]": { color: "text.primary" },
-    "& .MuiButton-endIcon": { ml: 0.25 },
+    "& .MuiButton-endIcon": { marginLeft: theme.spacing(0.25) },
     "@media (hover: hover)": {
-        "&:hover": { color: "text.primary", bgcolor: "transparent" },
+        "&:hover": { color: theme.palette.text.primary, backgroundColor: "transparent" },
     },
-    "@media (prefers-reduced-motion: reduce)": { transition: "none" },
-});
+})) as typeof Button;
 
 interface DesktopNavProps {
     player: Player | undefined;
@@ -77,37 +63,31 @@ const DesktopNav = ({ player, loading, pathname, onLogout }: DesktopNavProps) =>
                         <NavMenu
                             key={item.label}
                             label={item.label}
-                            // A menu trigger isn't a page, so it says its section is current with "true"
-                            triggerProps={{
-                                sx: navLinkSx(active),
-                                "aria-current": active ? "true" : undefined,
-                            }}
+                            Trigger={NavTab}
+                            // "true", not "page": the trigger stands for a section, not the current page
+                            triggerProps={{ "aria-current": active ? "true" : undefined }}
                         >
                             {item.links.map((link) => menuLink(link, pathname))}
                         </NavMenu>
                     ) : (
-                        <Button
+                        <NavTab
                             key={item.label}
                             color="inherit"
                             component={Link}
                             to={item.to}
                             aria-current={active ? "page" : undefined}
-                            sx={navLinkSx(active)}
                         >
                             {item.label}
-                        </Button>
+                        </NavTab>
                     );
                 })}
             </Box>
-            <Box
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    ml: "auto",
-                    pl: 2,
-                    minWidth: 0,
-                }}
+            <Stack
+                direction="row"
+                alignItems="center"
+                spacing={1}
+                useFlexGap
+                sx={{ ml: "auto", pl: 2, minWidth: 0 }}
             >
                 {loading ? (
                     <Skeleton variant="rounded" width={200} height={44} />
@@ -118,20 +98,14 @@ const DesktopNav = ({ player, loading, pathname, onLogout }: DesktopNavProps) =>
                             label={
                                 <Box
                                     component="span"
-                                    sx={{
-                                        display: "block",
-                                        minWidth: 0,
-                                        maxWidth: 160,
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                    }}
+                                    sx={{ ...truncate, display: "block", maxWidth: 160 }}
                                 >
                                     {player.username}
                                 </Box>
                             }
                             align="right"
+                            Trigger={NavTab}
                             triggerProps={{
-                                sx: navLinkSx(accountActive),
                                 "aria-current": accountActive ? "true" : undefined,
                                 "aria-label": `Account: ${player.username}`,
                             }}
@@ -145,7 +119,7 @@ const DesktopNav = ({ player, loading, pathname, onLogout }: DesktopNavProps) =>
                 ) : (
                     <LoginButton />
                 )}
-            </Box>
+            </Stack>
         </Box>
     );
 };

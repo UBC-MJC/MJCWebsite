@@ -2,6 +2,7 @@ import "@fontsource-variable/source-sans-3";
 import type {} from "@mui/x-data-grid/themeAugmentation";
 import { alpha, createTheme, PaletteOptions, Theme, ThemeOptions } from "@mui/material/styles";
 import { enUS } from "@mui/x-date-pickers/locales";
+import { focusRing } from "./utils";
 
 type Placement = 1 | 2 | 3 | 4;
 
@@ -162,12 +163,7 @@ export const createAppTheme = (): Theme => {
             // Keyboard focus gets a visible ring in the accent, on every button-like control
             MuiButtonBase: {
                 styleOverrides: {
-                    root: ({ theme }) => ({
-                        "&.Mui-focusVisible": {
-                            outline: `2px solid ${theme.palette.primary.main}`,
-                            outlineOffset: 2,
-                        },
-                    }),
+                    root: ({ theme }) => ({ "&.Mui-focusVisible": focusRing(theme) }),
                 },
             },
             // The ring is the only focus signal. MUI's focus ripple is a grey disc that pulses for as long as the

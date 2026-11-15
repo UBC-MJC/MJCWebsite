@@ -1,17 +1,46 @@
 import { memo, useContext, useId, useState } from "react";
 import { AppBar, Box, Drawer, IconButton, Skeleton, Toolbar } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useLocation } from "react-router";
 import { AuthContext } from "@/common/AuthContext";
+import { focusRing } from "@/theme/utils";
 import { LoginButton, NewGameMenu } from "./BarActions";
 import DesktopNav from "./DesktopNav";
 import MobileDrawer from "./MobileDrawer";
 import Wordmark from "./Wordmark";
 import { DESKTOP } from "./navLinks";
 
-// Below DESKTOP the bar is the menu button, the wordmark and one action (New game, or Log in when signed out),
-// and the links live in the drawer. Both layouts are rendered and CSS picks one, so phones don't flash the desktop
-// links while a media query resolves
+const SkipLink = styled("a")(({ theme }) => ({
+    ...focusRing(theme),
+    position: "absolute",
+    top: theme.spacing(1),
+    left: theme.spacing(2),
+    zIndex: theme.zIndex.appBar + 1,
+    padding: theme.spacing(1.25, 2),
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: theme.palette.background.paper,
+    color: theme.palette.text.primary,
+    fontWeight: 600,
+    textDecoration: "none",
+    transform: "translateY(-200%)",
+    "&:focus": { transform: "none" },
+}));
+
+// Same width and gutters as the page's lg Container, so the bar lines up with the content
+const BarRow = styled("div")(({ theme }) => ({
+    display: "flex",
+    alignItems: "center",
+    alignSelf: "stretch",
+    gap: theme.spacing(1),
+    width: "100%",
+    maxWidth: theme.breakpoints.values.lg,
+    margin: "0 auto",
+    padding: theme.spacing(0, 2),
+    [theme.breakpoints.up("md")]: { padding: theme.spacing(0, 3) },
+}));
+
+// Both layouts render and CSS picks one, so phones never flash the desktop links
 const NavBar = () => {
     const { player, loading, logout } = useContext(AuthContext);
     const { pathname } = useLocation();
@@ -21,45 +50,10 @@ const NavBar = () => {
 
     return (
         <>
-            {/* Hidden until focused: the first Tab press offers a jump past the bar */}
-            <Box
-                component="a"
-                href="#main-content"
-                sx={(theme) => ({
-                    position: "absolute",
-                    top: 8,
-                    left: 16,
-                    zIndex: theme.zIndex.appBar + 1,
-                    px: 2,
-                    py: 1.25,
-                    borderRadius: 1,
-                    bgcolor: "background.paper",
-                    color: "text.primary",
-                    fontWeight: 600,
-                    textDecoration: "none",
-                    outline: `2px solid ${theme.palette.primary.main}`,
-                    transform: "translateY(-200%)",
-                    "&:focus": { transform: "none" },
-                })}
-            >
-                Skip to content
-            </Box>
+            <SkipLink href="#main-content">Skip to content</SkipLink>
             <AppBar position="static" color="inherit">
                 <Toolbar disableGutters>
-                    {/* Same width and side padding as the page's Container (lg), so the wordmark sits over the
-                        page heading and the bar's right edge over the content's */}
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            alignSelf: "stretch",
-                            gap: 1,
-                            width: "100%",
-                            maxWidth: "lg",
-                            mx: "auto",
-                            px: { xs: 2, md: 3 },
-                        }}
-                    >
+                    <BarRow>
                         <IconButton
                             color="inherit"
                             aria-label="Open menu"
@@ -88,13 +82,12 @@ const NavBar = () => {
                             pathname={pathname}
                             onLogout={logout}
                         />
-                    </Box>
+                    </BarRow>
                 </Toolbar>
                 <Drawer
                     anchor="left"
                     open={drawerOpen}
                     onClose={closeDrawer}
-                    // MUI leaves the panel an unnamed element; screen readers should hear a named modal dialog
                     slotProps={{
                         paper: {
                             id: drawerId,

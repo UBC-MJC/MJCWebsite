@@ -1,6 +1,17 @@
 import { SxProps, Theme, styled } from "@mui/material/styles";
 import ToggleButtonGroup, { toggleButtonGroupClasses } from "@mui/material/ToggleButtonGroup";
 
+export const focusRing = (theme: Theme) => ({
+    outline: `2px solid ${theme.palette.primary.main}`,
+    outlineOffset: 2,
+});
+
+export const truncate = {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+} as const;
+
 /**
  * Responsive DataGrid container with mobile-optimized heights
  * Mobile: viewport-based height

@@ -1,34 +1,28 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { Link } from "react-router";
+import { focusRing, truncate } from "@/theme/utils";
 
-// "UBC Mahjong" on phones leaves room for the New game button down to 320px. The 44px line height makes the whole
-// row a touch target. A link isn't a ButtonBase, so it needs the theme's focus ring spelled out
+const WordmarkLink = styled(Link)(({ theme }) => ({
+    ...truncate,
+    minWidth: 0,
+    color: theme.palette.text.primary,
+    fontSize: theme.typography.h5.fontSize,
+    fontWeight: theme.typography.fontWeightBold,
+    lineHeight: "44px", // the whole line is the touch target
+    textDecoration: "none",
+    borderRadius: 2,
+    "&:focus-visible": focusRing(theme),
+}));
+
 const Wordmark = ({ onClick }: { onClick?: () => void }) => (
-    <Typography
-        component={Link}
-        to="/"
-        onClick={onClick}
-        noWrap
-        sx={(theme) => ({
-            minWidth: 0,
-            color: "text.primary",
-            fontSize: "1.125rem",
-            fontWeight: 700,
-            lineHeight: "44px",
-            textDecoration: "none",
-            borderRadius: 0.5,
-            "&:focus-visible": {
-                outline: `2px solid ${theme.palette.primary.main}`,
-                outlineOffset: 2,
-            },
-        })}
-    >
+    <WordmarkLink to="/" onClick={onClick}>
         UBC Mahjong
         <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
             {" "}
             Club
         </Box>
-    </Typography>
+    </WordmarkLink>
 );
 
 export default Wordmark;

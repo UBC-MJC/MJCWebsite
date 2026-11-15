@@ -9,10 +9,12 @@ import {
     ListItemText,
     ListSubheader,
     Skeleton,
+    Stack,
 } from "@mui/material";
-import type { SxProps, Theme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link } from "react-router";
+import { truncate } from "@/theme/utils";
 import type { Player } from "@/types";
 import Wordmark from "./Wordmark";
 import { leadingBar } from "./navStyles";
@@ -26,29 +28,23 @@ import {
     type NavLink,
 } from "./navLinks";
 
-// Every destination is one tap: groups are labelled and always open, not accordions. New game isn't here: it stays
-// in the bar at every width. The leading bar marks the current page's row, or a group's label for a page of the
-// group that has no row (a game page, under Games)
-
-const drawerItemSx = (inset: boolean): SxProps<Theme> => ({
+const DrawerItem = styled(ListItemButton)(({ theme }) => ({
     position: "relative",
     minHeight: 44,
-    py: 0.5, // MUI's default padding would make each row 48px and push Log out below the fold on phones
-    pl: inset ? 4 : 2,
-    "&.Mui-selected::before": leadingBar,
-});
+    paddingTop: theme.spacing(0.5),
+    paddingBottom: theme.spacing(0.5),
+    "&.Mui-selected::before": leadingBar(theme),
+})) as typeof ListItemButton;
 
-const subheaderSx = (current: boolean): SxProps<Theme> => ({
+const GroupLabel = styled(ListSubheader)(({ theme }) => ({
+    ...truncate,
     position: "relative",
+    marginTop: theme.spacing(1),
     lineHeight: "32px",
-    mt: 1,
-    fontWeight: 600, // so each group's "Riichi" and "Hong Kong" rows read as belonging to it
-    bgcolor: "transparent",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    ...(current && { color: "text.primary", "&::before": leadingBar }),
-});
+    fontWeight: 600,
+    backgroundColor: "transparent",
+    "&[data-current]": { color: theme.palette.text.primary, "&::before": leadingBar(theme) },
+})) as typeof ListSubheader;
 
 interface DrawerLinkProps {
     link: NavLink;
@@ -61,16 +57,16 @@ const DrawerLink = ({ link, pathname, inset = false, onClose }: DrawerLinkProps)
     const active = isLinkActive(pathname, link);
     return (
         <ListItem disablePadding>
-            <ListItemButton
+            <DrawerItem
                 component={Link}
                 to={link.to}
                 selected={active}
                 aria-current={active ? "page" : undefined}
                 onClick={onClose}
-                sx={drawerItemSx(inset)}
+                sx={{ pl: inset ? 4 : 2 }}
             >
                 <ListItemText primary={link.label} />
-            </ListItemButton>
+            </DrawerItem>
         </ListItem>
     );
 };
@@ -81,14 +77,14 @@ interface DrawerGroupProps {
     children: ReactNode;
 }
 
-// The label sits outside the list so screen readers don't count it as one of the group's items
+// The label sits outside the list so screen readers don't count it as one of the items
 const DrawerGroup = ({ label, current = false, children }: DrawerGroupProps) => {
     const id = useId();
     return (
         <Box role="group" aria-labelledby={id}>
-            <ListSubheader component="div" id={id} disableSticky sx={subheaderSx(current)}>
+            <GroupLabel component="div" id={id} disableSticky data-current={current || undefined}>
                 {label}
-            </ListSubheader>
+            </GroupLabel>
             <List disablePadding>{children}</List>
         </Box>
     );
@@ -110,23 +106,19 @@ const MobileDrawer = ({ player, loading, pathname, onClose, onLogout }: MobileDr
 
     return (
         <Box sx={{ width: 280, maxWidth: "85vw", pb: "calc(env(safe-area-inset-bottom) + 8px)" }}>
-            <Box
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 1,
-                    minHeight: 56,
-                    pt: "env(safe-area-inset-top)",
-                    pl: 2,
-                    pr: 0.5,
-                }}
+            <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                spacing={1}
+                useFlexGap
+                sx={{ minHeight: 56, pt: "env(safe-area-inset-top)", pl: 2, pr: 0.5 }}
             >
                 <Wordmark onClick={onClose} />
                 <IconButton color="inherit" aria-label="Close menu" onClick={onClose}>
                     <CloseIcon />
                 </IconButton>
-            </Box>
+            </Stack>
             <Divider />
             <Box component="nav" aria-label="Main">
                 {mainNav.map((item) =>
@@ -154,15 +146,15 @@ const MobileDrawer = ({ player, loading, pathname, onClose, onLogout }: MobileDr
                 <DrawerGroup label={player.username}>
                     {groupLinks(player.admin ? [settingsLink, adminLink] : [settingsLink])}
                     <ListItem disablePadding>
-                        <ListItemButton
+                        <DrawerItem
                             onClick={() => {
                                 onLogout();
                                 onClose();
                             }}
-                            sx={drawerItemSx(true)}
+                            sx={{ pl: 4 }}
                         >
                             <ListItemText primary="Log out" />
-                        </ListItemButton>
+                        </DrawerItem>
                     </ListItem>
                 </DrawerGroup>
             ) : (

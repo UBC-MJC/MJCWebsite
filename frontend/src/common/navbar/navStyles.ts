@@ -1,12 +1,29 @@
-// An ink bar on the leading edge marks where you are: on the current page's row in the drawer and in every
-// dropdown, matching the desktop bar's underline. Forced colours would repaint its background as Canvas and hide it
-export const leadingBar = {
-    content: '""',
-    position: "absolute",
+import type { Theme } from "@mui/material/styles";
+
+const currentMark = (theme: Theme) =>
+    ({
+        content: '""',
+        position: "absolute",
+        backgroundColor: theme.palette.primary.main,
+        // Forced colours would repaint the mark as Canvas, hiding it
+        "@media (forced-colors: active)": {
+            forcedColorAdjust: "none",
+            backgroundColor: "CanvasText",
+        },
+    }) as const;
+
+export const leadingBar = (theme: Theme) => ({
+    ...currentMark(theme),
     left: 0,
-    top: 8,
-    bottom: 8,
+    top: theme.spacing(1),
+    bottom: theme.spacing(1),
     width: 3,
-    bgcolor: "primary.main",
-    "@media (forced-colors: active)": { forcedColorAdjust: "none", bgcolor: "CanvasText" },
-};
+});
+
+export const underline = (theme: Theme) => ({
+    ...currentMark(theme),
+    left: theme.spacing(1.5),
+    right: theme.spacing(1.5),
+    bottom: -1, // over the bar's bottom border
+    height: 2,
+});
