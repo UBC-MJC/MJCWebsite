@@ -9,7 +9,7 @@ const BarAction = styled(Button)(({ theme }) => ({
     whiteSpace: "nowrap",
     padding: theme.spacing(0.75, 1.5),
     [theme.breakpoints.up("sm")]: { padding: theme.spacing(0.75, 2) },
-    // Same 1px border as the outlined variant, so switching variants doesn't change the width
+    // Matches the outlined variant's border, so both variants are the same width
     [`&.${buttonClasses.contained}`]: { border: "1px solid transparent" },
 })) as typeof Button;
 

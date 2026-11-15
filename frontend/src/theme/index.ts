@@ -138,8 +138,7 @@ export const createAppTheme = (): Theme => {
                     "::selection": {
                         backgroundColor: alpha(theme.palette.primary.main, 0.2),
                     },
-                    // Reduced motion: transitions end at once. MUI sets the drawer slide, menu grow and dialog fade
-                    // inline, hence !important. Keyframe animations stay, since spinners and skeletons carry meaning
+                    // !important beats MUI's inline transitions; keyframe spinners and skeletons still run
                     "@media (prefers-reduced-motion: reduce)": {
                         "*, *::before, *::after": {
                             transitionDuration: "0.01ms !important",
@@ -166,15 +165,12 @@ export const createAppTheme = (): Theme => {
                     root: ({ theme }) => ({ "&.Mui-focusVisible": focusRing(theme) }),
                 },
             },
-            // The ring is the only focus signal. MUI's focus ripple is a grey disc that pulses for as long as the
-            // control has focus, even with reduced motion on, so every component that draws one has it off (click
-            // ripples stay). Button, IconButton and ToggleButton turn it off in their own entries below
+            // The focus ring replaces MUI's pulsing focus ripple; click ripples stay
             MuiTab: { defaultProps: { disableFocusRipple: true } },
             MuiSwitch: { defaultProps: { disableFocusRipple: true } },
             MuiRadio: { defaultProps: { disableFocusRipple: true } },
             MuiCheckbox: { defaultProps: { disableFocusRipple: true } },
-            // Menu and list rows span their container, which clips a ring drawn outside them, so theirs sits inside.
-            // Menu rows also keep a 44px touch height: MUI drops them to 36px from sm up, where tablets get menus too
+            // Full-width rows clip an outer focus ring, so theirs is inset. MUI shrinks menu rows to 36px from sm up
             MuiMenuItem: {
                 styleOverrides: {
                     root: ({ theme }) => ({
@@ -276,8 +272,7 @@ export const createAppTheme = (): Theme => {
             },
             // Default panels (elevation 1: plain Paper, Card) are flat with a hairline edge. Shadows stay
             // for things that float: menus (8), the score footer (8), the drawer (16) and dialogs (24).
-            // The edge is an inset outline rather than a border, so it takes no space and layouts don't shift.
-            // Forced colours drop shadows, so floating surfaces get an outline there instead of losing their edge
+            // The edge is an inset outline rather than a border, so it takes no space and layouts don't shift
             MuiPaper: {
                 styleOverrides: {
                     root: ({ theme, ownerState }) => {
@@ -290,6 +285,7 @@ export const createAppTheme = (): Theme => {
                                 outlineOffset: -1,
                             };
                         }
+                        // Forced colours drop shadows, so floating surfaces need an outline there
                         return ownerState.elevation
                             ? {
                                   "@media (forced-colors: active)": {

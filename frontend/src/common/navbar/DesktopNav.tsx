@@ -64,7 +64,7 @@ const DesktopNav = ({ player, loading, pathname, onLogout }: DesktopNavProps) =>
                             key={item.label}
                             label={item.label}
                             Trigger={NavTab}
-                            // "true", not "page": the trigger stands for a section, not the current page
+                            // "true", not "page": a menu trigger marks a section, not a page
                             triggerProps={{ "aria-current": active ? "true" : undefined }}
                         >
                             {item.links.map((link) => menuLink(link, pathname))}

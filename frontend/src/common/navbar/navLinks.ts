@@ -1,7 +1,6 @@
 import { getGameVariantString } from "@/common/Utils";
 
-// The bar shows every link from this breakpoint up and moves them into the drawer below it.
-// Five links and two actions need about 1060px with a long username, so md (900px) is too narrow
+// With New game and a long username the full bar needs about 1060px, so below lg it uses the drawer
 export const DESKTOP = "lg";
 
 export interface NavLink {
@@ -9,7 +8,6 @@ export interface NavLink {
     to: string;
 }
 
-/** Destinations shown together: a menu in the desktop bar, a labelled group in the drawer */
 export interface NavGroup {
     label: string;
     links: NavLink[];
@@ -21,11 +19,8 @@ export type NavItem = NavLink | NavGroup;
 
 export const isNavGroup = (item: NavItem): item is NavGroup => "links" in item;
 
-/** A single game's page, where its rounds are recorded */
 export const gamePage = /^\/games\/(jp|hk)\/\d+$/;
 
-// Leaderboards, live games and game creation still have one route per variant, so they are grouped here.
-// Each group becomes a single link in the PR that merges its pages into one
 export const mainNav: NavItem[] = [
     {
         label: "Leaderboard",
@@ -43,13 +38,11 @@ export const mainNav: NavItem[] = [
         ],
         match: gamePage,
     },
-    // Only Riichi has a stats page so far
     { label: `${getGameVariantString("jp")} stats`, to: "/stats/jp" },
     { label: "Check in", to: "/activity" },
     { label: "Resources", to: "/resources" },
 ];
 
-/** Signed-in players only. It lives in the bar at every width, not in the drawer */
 export const newGameGroup: NavGroup = {
     label: "New game",
     links: [
@@ -62,7 +55,7 @@ export const settingsLink: NavLink = { label: "Settings", to: "/settings" };
 export const adminLink: NavLink = { label: "Admin", to: "/admin" };
 export const loginLink: NavLink = { label: "Log in", to: "/login" };
 
-// Exact match only: `/games` (the logs) must not light up on /games/create/jp or a game page
+// Exact match, or Game logs (/games) would light up on every game page
 export const isLinkActive = (pathname: string, link: NavLink) =>
     (pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname) === link.to;
 
