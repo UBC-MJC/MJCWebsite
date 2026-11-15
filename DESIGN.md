@@ -72,10 +72,11 @@ sx={{ "@media (hover: hover)": { "&:hover": { bgcolor: "action.hover" } } }}
 ```
 
 **Respect reduced motion.** Keep transitions short (150–300ms) and animate only `transform` and
-`opacity`. Turn non-essential motion off when the user asks:
+`opacity`. The theme ends every transition at once when the user asks for reduced motion, so components
+don't need their own rule. Turn off non-essential keyframe animations yourself:
 
 ```tsx
-sx={{ "@media (prefers-reduced-motion: reduce)": { transition: "none", animation: "none" } }}
+sx={{ "@media (prefers-reduced-motion: reduce)": { animation: "none" } }}
 ```
 
 **`100dvh`, not `100vh`.** On phones `100vh` includes the area behind the browser bars, so
@@ -111,6 +112,32 @@ in `frontend/src/root.tsx` has `viewport-fit=cover`, which main doesn't set yet.
 - Refer to them by name, never by pixel value.
 - Write the `xs` case first, then add larger keys in responsive `sx` objects.
 - Use `useMediaQuery` only to render something different, never for styling CSS can do.
+
+**Put each style at the first level that fits:**
+1. The theme (`frontend/src/theme/`), for anything used in more than one feature. Shared helpers such
+   as `focusRing` and `truncate` are in `theme/utils.ts`.
+2. A named `styled()` component at the top of the file, for a component's own look: anything over five
+   properties or that depends on state. Style state from attributes the markup already has
+   (`aria-current`, `aria-expanded`, `.Mui-selected`) instead of a prop. Cast it to keep the
+   `component` prop: `styled(Button)(…) as typeof Button`.
+3. Inline `sx`, for a few layout props such as spacing, `display` or a responsive value. ESLint warns
+   on an `sx` object with more than five properties.
+
+Use theme values (`theme.spacing()`, `theme.palette`, `theme.typography`) instead of raw pixels, rems
+or hex. Don't give a `Button` its own `sx` to change how it looks: the theme sets its 44px minimum
+height through `defaultProps.sx`, which any `sx` replaces. `styled(Button)` keeps it.
+
+**Comments say what the code can't.** Comment only where a reader would otherwise break the code, such
+as a library quirk or a choice that looks like a mistake, and keep it to one line. Design reasoning
+(why this breakpoint, why the button is outlined) goes in the commit message.
+
+```tsx
+// Needed: the code looks wrong without it
+// "true", not "page": a menu trigger marks a section, not a page
+
+// Not needed: says what the code already shows
+// Hidden until focused: the first Tab press offers a jump past the bar
+```
 
 **Images are WebP** (or AVIF), with `width`/`height` or `aspectRatio` set, and lazy-loaded below the
 fold.
