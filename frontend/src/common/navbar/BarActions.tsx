@@ -1,16 +1,11 @@
-import { Button, buttonClasses } from "@mui/material";
+import { Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Link } from "react-router";
 import { NavMenu, menuLink } from "./NavMenu";
 import { gamePage, isItemActive, loginLink, newGameGroup } from "./navLinks";
 
 const BarAction = styled(Button)(({ theme }) => ({
-    flexShrink: 0,
-    whiteSpace: "nowrap",
     padding: theme.spacing(0.75, 1.5),
-    [theme.breakpoints.up("sm")]: { padding: theme.spacing(0.75, 2) },
-    // Matches the outlined variant's border, so both variants are the same width
-    [`&.${buttonClasses.contained}`]: { border: "1px solid transparent" },
 })) as typeof Button;
 
 export const NewGameMenu = ({ pathname }: { pathname: string }) => {

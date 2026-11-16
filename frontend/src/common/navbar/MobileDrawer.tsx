@@ -29,19 +29,12 @@ import {
 } from "./navLinks";
 
 const DrawerItem = styled(ListItemButton)(({ theme }) => ({
-    position: "relative",
-    minHeight: 44,
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
     "&.Mui-selected::before": leadingBar(theme),
 })) as typeof ListItemButton;
 
 const GroupLabel = styled(ListSubheader)(({ theme }) => ({
     ...truncate,
     position: "relative",
-    marginTop: theme.spacing(1),
-    lineHeight: "32px",
-    fontWeight: 600,
     backgroundColor: "transparent",
     "&[data-current]": { color: theme.palette.text.primary, "&::before": leadingBar(theme) },
 })) as typeof ListSubheader;
@@ -105,14 +98,12 @@ const MobileDrawer = ({ player, loading, pathname, onClose, onLogout }: MobileDr
         ));
 
     return (
-        <Box sx={{ width: 280, maxWidth: "85vw", pb: "calc(env(safe-area-inset-bottom) + 8px)" }}>
+        <Box sx={{ width: 280 }}>
             <Stack
                 direction="row"
                 alignItems="center"
                 justifyContent="space-between"
-                spacing={1}
-                useFlexGap
-                sx={{ minHeight: 56, pt: "env(safe-area-inset-top)", pl: 2, pr: 0.5 }}
+                sx={{ pl: 2 }}
             >
                 <Wordmark onClick={onClose} />
                 <IconButton color="inherit" aria-label="Close menu" onClick={onClose}>
@@ -137,7 +128,7 @@ const MobileDrawer = ({ player, loading, pathname, onClose, onLogout }: MobileDr
                     ),
                 )}
             </Box>
-            <Divider sx={{ my: 1 }} />
+            <Divider />
             {loading ? (
                 <Box sx={{ px: 2, py: 1 }}>
                     <Skeleton variant="rounded" height={40} />

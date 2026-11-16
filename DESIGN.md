@@ -115,7 +115,7 @@ in `frontend/src/root.tsx` has `viewport-fit=cover`, which main doesn't set yet.
 
 **Put each style at the first level that fits:**
 1. The theme (`frontend/src/theme/`), for anything used in more than one feature. Shared helpers such
-   as `focusRing` and `truncate` are in `theme/utils.ts`.
+   as `truncate` are in `theme/utils.ts`.
 2. A named `styled()` component at the top of the file, for a component's own look: anything over five
    properties or that depends on state. Style state from attributes the markup already has
    (`aria-current`, `aria-expanded`, `.Mui-selected`) instead of a prop. Cast it to keep the

@@ -39,7 +39,6 @@ const DesktopNav = ({ player, loading, pathname, onLogout }: DesktopNavProps) =>
                 display: { xs: "none", [DESKTOP]: "flex" },
                 alignSelf: "stretch",
                 flexGrow: 1,
-                ml: 1,
             }}
         >
             <Box component="nav" aria-label="Main" sx={{ display: "flex" }}>
@@ -68,13 +67,7 @@ const DesktopNav = ({ player, loading, pathname, onLogout }: DesktopNavProps) =>
                     );
                 })}
             </Box>
-            <Stack
-                direction="row"
-                alignItems="center"
-                spacing={1}
-                useFlexGap
-                sx={{ ml: "auto", pl: 2, minWidth: 0 }}
-            >
+            <Stack direction="row" alignItems="center" sx={{ ml: "auto" }}>
                 {loading ? (
                     <Skeleton variant="rounded" width={200} height={44} />
                 ) : player ? (

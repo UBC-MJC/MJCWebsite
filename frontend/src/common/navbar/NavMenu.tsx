@@ -7,7 +7,6 @@ import { isLinkActive, type NavLink } from "./navLinks";
 import { leadingBar } from "./navStyles";
 
 const NavMenuItem = styled(MenuItem)(({ theme }) => ({
-    position: "relative",
     "&.Mui-selected::before": leadingBar(theme),
 })) as typeof MenuItem;
 
@@ -40,14 +39,7 @@ export const NavMenu = ({
                 aria-haspopup="true"
                 aria-controls={open ? `${id}-menu` : undefined}
                 aria-expanded={open ? "true" : undefined}
-                endIcon={
-                    <KeyboardArrowDownIcon
-                        sx={{
-                            transition: "transform 150ms ease-out",
-                            transform: open ? "rotate(180deg)" : "none",
-                        }}
-                    />
-                }
+                endIcon={<KeyboardArrowDownIcon />}
                 onClick={(event) => setAnchor(event.currentTarget)}
             >
                 {label}
@@ -59,10 +51,7 @@ export const NavMenu = ({
                 onClose={close}
                 anchorOrigin={{ vertical: "bottom", horizontal: align }}
                 transformOrigin={{ vertical: "top", horizontal: align }}
-                slotProps={{
-                    paper: { sx: { minWidth: anchor?.offsetWidth } },
-                    list: { "aria-labelledby": `${id}-trigger`, onClick: close },
-                }}
+                slotProps={{ list: { "aria-labelledby": `${id}-trigger`, onClick: close } }}
             >
                 {children}
             </Menu>

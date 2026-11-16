@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Link } from "react-router";
-import { focusRing, truncate } from "@/theme/utils";
+import { truncate } from "@/theme/utils";
 
 const WordmarkLink = styled(Link)(({ theme }) => ({
     ...truncate,
@@ -11,8 +11,6 @@ const WordmarkLink = styled(Link)(({ theme }) => ({
     fontWeight: theme.typography.fontWeightBold,
     lineHeight: "44px", // the whole line is the touch target
     textDecoration: "none",
-    borderRadius: 2,
-    "&:focus-visible": focusRing(theme),
 }));
 
 const Wordmark = ({ onClick }: { onClick?: () => void }) => (
