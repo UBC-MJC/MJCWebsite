@@ -57,9 +57,9 @@ export default function Root() {
                 <QueryClientProvider client={queryClient}>
                     <AuthContextProvider>
                         <CssBaseline />
-                        <main className="App">
+                        <div className="App">
                             <Outlet />
-                        </main>
+                        </div>
                     </AuthContextProvider>
                 </QueryClientProvider>
             </ThemeProvider>

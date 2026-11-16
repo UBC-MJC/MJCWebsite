@@ -137,6 +137,14 @@ export const createAppTheme = (): Theme => {
                     "::selection": {
                         backgroundColor: alpha(theme.palette.primary.main, 0.2),
                     },
+                    // !important beats MUI's inline transitions; keyframe spinners and skeletons still run
+                    "@media (prefers-reduced-motion: reduce)": {
+                        "*, *::before, *::after": {
+                            transitionDuration: "0.01ms !important",
+                            transitionDelay: "0s !important",
+                            scrollBehavior: "auto !important",
+                        },
+                    },
                 }),
             },
             // Flat bar on the page surface; the accent marks the active link, not the bar
@@ -159,6 +167,27 @@ export const createAppTheme = (): Theme => {
                             outlineOffset: 2,
                         },
                     }),
+                },
+            },
+            // The focus ring replaces MUI's pulsing focus ripple; click ripples stay
+            MuiTab: { defaultProps: { disableFocusRipple: true } },
+            MuiSwitch: { defaultProps: { disableFocusRipple: true } },
+            MuiRadio: { defaultProps: { disableFocusRipple: true } },
+            MuiCheckbox: { defaultProps: { disableFocusRipple: true } },
+            // Full-width rows clip an outer focus ring, so theirs is inset. MUI shrinks menu rows to 36px from sm up
+            MuiMenuItem: {
+                styleOverrides: {
+                    root: ({ theme }) => ({
+                        [theme.breakpoints.up("sm")]: { minHeight: 44 },
+                        "&.Mui-focusVisible": { outlineOffset: -2 },
+                    }),
+                },
+            },
+            MuiListItemButton: {
+                styleOverrides: {
+                    root: {
+                        "&.Mui-focusVisible": { outlineOffset: -2 },
+                    },
                 },
             },
             // Ink text needs an underline to read as a link, and a hover-only underline never shows on phones
@@ -190,6 +219,9 @@ export const createAppTheme = (): Theme => {
             // A selected toggle (winner, deal-in, riichi) is filled, so it can't be mistaken for unselected.
             // Unselected ones stay quiet, and the weight doesn't change on selection so labels don't shift
             MuiToggleButton: {
+                defaultProps: {
+                    disableFocusRipple: true,
+                },
                 styleOverrides: {
                     root: ({ theme, ownerState }) => {
                         const color =
@@ -224,6 +256,7 @@ export const createAppTheme = (): Theme => {
             MuiButton: {
                 defaultProps: {
                     disableElevation: true,
+                    disableFocusRipple: true,
                     sx: {
                         minHeight: 44,
                         padding: "10px 20px",
@@ -245,15 +278,25 @@ export const createAppTheme = (): Theme => {
             // The edge is an inset outline rather than a border, so it takes no space and layouts don't shift
             MuiPaper: {
                 styleOverrides: {
-                    root: ({ theme, ownerState }) =>
-                        ownerState.variant === "elevation" && ownerState.elevation === 1
+                    root: ({ theme, ownerState }) => {
+                        if (ownerState.variant !== "elevation") return {};
+                        if (ownerState.elevation === 1) {
+                            return {
+                                boxShadow: "none",
+                                backgroundImage: "none",
+                                outline: `1px solid ${theme.palette.divider}`,
+                                outlineOffset: -1,
+                            };
+                        }
+                        // Forced colours drop shadows, so floating surfaces need an outline there
+                        return ownerState.elevation
                             ? {
-                                  boxShadow: "none",
-                                  backgroundImage: "none",
-                                  outline: `1px solid ${theme.palette.divider}`,
-                                  outlineOffset: -1,
+                                  "@media (forced-colors: active)": {
+                                      outline: "1px solid CanvasText",
+                                  },
                               }
-                            : {},
+                            : {};
+                    },
                 },
             },
             MuiCard: {
@@ -283,6 +326,9 @@ export const createAppTheme = (): Theme => {
 
             // IconButton touch targets
             MuiIconButton: {
+                defaultProps: {
+                    disableFocusRipple: true,
+                },
                 styleOverrides: {
                     root: {
                         padding: 12, // Ensures 44px touch target with 20px icon

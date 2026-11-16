@@ -47,6 +47,10 @@ export default tseslint.config(
             }],
             "react-hooks/rules-of-hooks": "error",
             "react-hooks/exhaustive-deps": "warn",
+            "no-restricted-syntax": ["warn", {
+                selector: 'JSXAttribute[name.name="sx"] ObjectExpression[properties.length>5]',
+                message: "sx object with more than 5 properties: use a named styled() component or the theme (DESIGN.md).",
+            }],
         },
         settings: {
             react: {

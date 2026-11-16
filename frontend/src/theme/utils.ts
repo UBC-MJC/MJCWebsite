@@ -1,6 +1,12 @@
 import { SxProps, Theme, styled } from "@mui/material/styles";
 import ToggleButtonGroup, { toggleButtonGroupClasses } from "@mui/material/ToggleButtonGroup";
 
+export const truncate = {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+} as const;
+
 /**
  * Responsive DataGrid container with mobile-optimized heights
  * Mobile: viewport-based height
@@ -39,19 +45,6 @@ export const responsiveTextTruncate: SxProps<Theme> = {
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     maxWidth: { xs: "200px", sm: "300px", md: "100%" },
-};
-
-/**
- * Shared navbar button styling - overrides theme defaults for compact nav buttons
- */
-export const navButton: SxProps<Theme> = {
-    minWidth: "auto",
-    minHeight: "auto",
-    padding: "6px 8px",
-    borderRadius: 1,
-    fontSize: "1rem",
-    fontWeight: 500, // Lighter than action buttons, so a row of nav links doesn't read as bold
-    whiteSpace: "nowrap",
 };
 
 export const SpacedToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
