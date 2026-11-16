@@ -19,11 +19,3 @@ export const leadingBar = (theme: Theme) => ({
     bottom: theme.spacing(1),
     width: 3,
 });
-
-export const underline = (theme: Theme) => ({
-    ...currentMark(theme),
-    left: theme.spacing(1.5),
-    right: theme.spacing(1.5),
-    bottom: -1, // over the bar's bottom border
-    height: 2,
-});

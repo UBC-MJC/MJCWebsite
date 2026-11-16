@@ -14,27 +14,13 @@ import {
     mainNav,
     settingsLink,
 } from "./navLinks";
-import { underline } from "./navStyles";
 
 const NavTab = styled(Button)(({ theme }) => ({
-    alignSelf: "stretch",
-    position: "relative",
-    minWidth: 0,
     padding: theme.spacing(0.75, 1.5),
-    borderRadius: 0,
     color: theme.palette.text.secondary,
-    fontSize: theme.typography.body1.fontSize,
-    fontWeight: theme.typography.fontWeightMedium,
-    whiteSpace: "nowrap",
-    transition: "color 150ms ease-out",
-    "&::after": { ...underline(theme), opacity: 0 },
     "&[aria-current], &[aria-expanded=true]": { color: theme.palette.text.primary },
-    "&[aria-current]::after": { opacity: 1 },
+    "&[aria-current]": { borderBottom: "2px solid" },
     "&.Mui-focusVisible": { outlineOffset: -2 },
-    "& .MuiButton-endIcon": { marginLeft: theme.spacing(0.25) },
-    "@media (hover: hover)": {
-        "&:hover": { color: theme.palette.text.primary, backgroundColor: "transparent" },
-    },
 })) as typeof Button;
 
 interface DesktopNavProps {
